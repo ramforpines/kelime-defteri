@@ -304,7 +304,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.1.0';
+const APP_VERSION='4.1.1';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -523,6 +523,18 @@ function applyReset(){
   const set=S.set,prof=S.prof;S=fresh();S.set=set;S.prof=prof;S.upd=Date.now();persistLocal();
   try{localStorage.setItem(rk,String(Date.now()))}catch(e){}
 }
+async function checkReset(){
+  if(!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return;
+  try{
+    const r=await sb.from('profiles').select('reset_at').eq('user_id',CLOUD.uid).maybeSingle();
+    if(r.error||!r.data||!r.data.reset_at)return;
+    CLOUD.resetAt=r.data.reset_at;
+    const before=S;applyReset();
+    if(S!==before){try{dReset()}catch(e){}render();schedulePush();toast('İlerlemen sıfırlandı. Yeni başlangıç!')}
+  }catch(e){}
+}
+setInterval(()=>{if(!document.hidden)checkReset()},45000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReset()});
 async function loadAnn(){
   try{
     const r=await sb.from('announcement').select('body,updated_at').eq('id',1).maybeSingle();
