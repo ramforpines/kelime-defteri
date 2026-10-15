@@ -8,6 +8,7 @@ language plpgsql security definer set search_path = public as $$
 begin
   new.un := coalesce((select username from public.profiles where user_id = new.user_id), '');
   new.ad := exists(select 1 from public.admins where user_id = new.user_id);
+  if new.av = 49 and not new.ad then new.av := 0; end if;   -- 49 = yalnızca yöneticiye açık F-16 avatarı
   return new;
 end $$;
 drop trigger if exists scores_fill_un_trg on public.scores;
