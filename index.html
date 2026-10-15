@@ -110,10 +110,13 @@ nav button{position:relative;border:0;background:none;border-radius:10px;min-hei
 [data-lg="8"]{--lc:#f43f5e;--ll:#ffd1b0;--ld:#9f1239;--rw:4px}
 [data-lg="9"]{--lc:#fbbf24;--ll:#fff7c2;--ld:#b45309;--rw:4.5px}
 [data-lg="admin"]{--ll:#f9e08a;--ld:#7a5a0c;--rw:3.5px}
-.rk[data-lg]::before,.pbar[data-lg]::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:var(--rw);pointer-events:none;z-index:1;
+.rk[data-lg]::before,.pbar[data-lg]::before,.cm[data-lg]::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:var(--rw);pointer-events:none;z-index:1;
   background:repeating-linear-gradient(135deg,var(--ld) 0 2px,var(--ll) 2px 4px,var(--lc) 4px 6px,var(--ll) 6px 7px,var(--ld) 7px 9px);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
-.rk[data-lg],.pbar[data-lg],.sheet[data-lg]{--nc:color-mix(in srgb,var(--ld) 80%,var(--ink))}
+.cm[data-lg]{position:relative;overflow:hidden;--lc:var(--line)}
+.cm[data-lg] .cn{color:var(--nc)}.cm .cu{font-weight:500;opacity:.8}
+.cm[data-lg="admin"] .cn{color:#ff3b3b}.cm[data-lg="admin"] .cb{color:#f8e9b4}.cm[data-lg="admin"] .ct,.cm[data-lg="admin"] .ct button{color:#b9a463}
+.rk[data-lg],.pbar[data-lg],.cm[data-lg],.sheet[data-lg]{--nc:color-mix(in srgb,var(--ld) 80%,var(--ink))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) [data-lg]{--nc:var(--ll)}}
 :root[data-theme="dark"] [data-lg]{--nc:var(--ll)}
 .rk[data-lg],.pbar[data-lg]{border-color:transparent}
@@ -294,7 +297,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='3.3.0';
+const APP_VERSION='3.4.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -1563,6 +1566,7 @@ function chatUnread(peer){
 function chatPeer(id){
   const r=CLOUD.lb.find(x=>x.id===id);
   if(r)return r;
+  if(id===CLOUD.uid)return{id,name:S.prof.name||CLOUD.defName,un:CLOUD.username,color:S.prof.color,av:S.prof.av,fr:S.prof.frame};
   const m=CHAT.dm.find(x=>x.user_id===id);
   return{id,name:m?m.sname:'Kullanıcı',color:0,av:0,fr:''};
 }
@@ -1585,12 +1589,15 @@ function chatMsgs(){
   return CHAT.dm.filter(m=>m.user_id===C.peer||m.to_user===C.peer);
 }
 function chatMsgHtml(m,prev){
-  const me=m.user_id===CLOUD.uid,d=new Date(m.created_at),day=d.toLocaleDateString('sv-SE');
+  const me=m.user_id===CLOUD.uid,d=new Date(m.created_at),day=d.toLocaleDateString('sv-SE'),id=m.user_id;
   const pd=prev?new Date(prev.created_at).toLocaleDateString('sv-SE'):'';
   const sep=day!==pd?`<div class="cdt">${day===today()?'Bugün':fmt(day)}</div>`:'';
   const tm=d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
   const can=me||(CLOUD.admin&&!m.to_user);
-  return sep+`<div class="cm ${me?'me':''}">${!me&&UI.chat.view==='pub'?`<div class="cn row" data-pc="${esc(m.user_id)}" style="gap:6px">${(()=>{const r=chatPeer(m.user_id);return avatar(r.name||m.sname,r.color,false,r.av,'')})()}<span>${esc(m.sname||'Kullanıcı')}</span></div>`:''}<div class="cb">${esc(m.body)}</div><div class="ct"><span>${tm}</span>${can?`<button data-act="chat-del" data-id="${m.id}" aria-label="Sil">sil</button>`:''}</div></div>`;
+  const adm=isAdm(id),g=adm?'admin':(leagueMap()[id]|0),th=adm||g>=6;
+  let hd='';
+  if(UI.chat.view==='pub'){const r=chatPeer(id),un=r.un||(me?CLOUD.username:'');hd=`<div class="cn row" data-pc="${esc(id)}" style="gap:6px">${avatar(r.name||m.sname,r.color,false,r.av,'')}<span>${esc(m.sname||r.name||'Kullanıcı')}${un?` <span class="cu">@${esc(un)}</span>`:''}</span></div>`}
+  return sep+`<div class="cm ${me?'me':''}" ${th?`data-lg="${g}"`:''}>${hd}<div class="cb">${esc(m.body)}</div><div class="ct"><span>${tm}</span>${can?`<button data-act="chat-del" data-id="${m.id}" aria-label="Sil">sil</button>`:''}</div></div>`;
 }
 function chatPaint(){
   const el=document.getElementById('chatlist');
