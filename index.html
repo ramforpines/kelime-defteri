@@ -219,7 +219,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='2.3.0';
+const APP_VERSION='2.4.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -673,7 +673,7 @@ const ORTHO_SETS=['monday tuesday wednesday thursday friday saturday sunday','ja
 const KNOWN=new Set(DATA.map(r=>String(r[0]).toLowerCase()));
 function closedClass(w){
   const k=w.word.toLowerCase().trim(),p=posKey(w);
-  if(/^(preposition|conjunction|pronoun|determiner|modal|exclamation|interjection|prefix)/.test(str(w.pos).toLowerCase()))return'func';
+  if(/^(preposition|conjunction|pronoun|determiner|modal|exclamation|interjection|prefix|suffix)/.test(str(w.pos).toLowerCase()))return'func';
   if(p==='number'&&!/\s/.test(k)&&/^[a-z]+$/.test(k)&&k!=='score'&&k!=='mortality')return'ortho';
   if(CARD_NUM.indexOf(k)!==-1)return'ortho';
   if(ORTHO_SETS.some(a=>a.indexOf(k)!==-1))return'ortho';
