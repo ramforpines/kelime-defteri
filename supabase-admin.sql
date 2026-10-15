@@ -117,6 +117,112 @@ grant execute on function public.admin_delete_user(uuid) to authenticated;
 grant execute on function public.is_admin() to authenticated;
 grant execute on function public.is_approved() to authenticated;
 
+-- 4b) Ek yönetim özellikleri (şifre sıfırlama, detaylı liste, tablo denetimi, toplu onay, duyuru)
+create extension if not exists pgcrypto with schema extensions;
+alter table public.profiles add column if not exists lb_blocked boolean not null default false;
+alter table public.profiles add column if not exists reset_at timestamptz;
+
+create or replace function public.is_blocked(uid uuid) returns boolean
+language sql security definer stable set search_path = public as $$
+  select coalesce((select lb_blocked from public.profiles where user_id = uid), false)
+$$;
+grant execute on function public.is_blocked(uuid) to authenticated;
+
+-- Liderlik tablosundan çıkarılanlar başkalarına görünmez (kendi satırını görür)
+drop policy if exists "scores_select" on public.scores;
+create policy "scores_select" on public.scores for select to authenticated
+  using (public.is_approved() and ((hide = false and not public.is_blocked(user_id)) or auth.uid() = user_id));
+
+-- Duyuru: tek satırlık tablo, onaylı herkes okur, yalnızca yönetici fonksiyonla yazar
+create table if not exists public.announcement (
+  id int primary key default 1 check (id = 1),
+  body text not null default '',
+  updated_at timestamptz not null default now()
+);
+insert into public.announcement(id, body) values (1, '') on conflict do nothing;
+alter table public.announcement enable row level security;
+drop policy if exists "ann_select" on public.announcement;
+create policy "ann_select" on public.announcement for select to authenticated using (public.is_approved());
+revoke all on public.announcement from anon;
+
+drop function if exists public.admin_list_users();
+create or replace function public.admin_list_users()
+returns table(user_id uuid, username text, name text, approved boolean, is_admin boolean,
+              created_at timestamptz, last_sign_in_at timestamptz,
+              ap numeric, ans int, cor int, lrn int, active_at timestamptz,
+              lb_blocked boolean, reset_at timestamptz)
+language plpgsql security definer set search_path = public, auth as $$
+begin
+  if not public.is_admin() then raise exception 'not allowed'; end if;
+  return query
+    select p.user_id, p.username, s.name, p.approved,
+           exists(select 1 from public.admins a where a.user_id = p.user_id),
+           p.created_at, u.last_sign_in_at,
+           s.ap::numeric, s.ans::int, s.cor::int, s.lrn::int, s.updated_at,
+           p.lb_blocked, p.reset_at
+    from public.profiles p
+    left join public.scores s on s.user_id = p.user_id
+    left join auth.users u on u.id = p.user_id
+    order by p.approved asc, p.created_at desc;
+end $$;
+
+create or replace function public.admin_set_approved_many(targets uuid[], flag boolean)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'not allowed'; end if;
+  update public.profiles set approved = flag where user_id = any(targets)
+    and not exists(select 1 from public.admins a where a.user_id = profiles.user_id);
+end $$;
+
+create or replace function public.admin_set_blocked(target uuid, flag boolean)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'not allowed'; end if;
+  update public.profiles set lb_blocked = flag where user_id = target;
+end $$;
+
+-- İlerleme ve puanı sıfırla: sunucudaki kopya silinir, kullanıcının cihazları bir sonraki açılışta yerel kopyayı da siler
+create or replace function public.admin_reset_progress(target uuid)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'not allowed'; end if;
+  delete from public.scores where user_id = target;
+  delete from public.user_state where user_id = target;
+  update public.profiles set reset_at = now() where user_id = target;
+end $$;
+
+create or replace function public.admin_reset_password(target uuid, new_password text)
+returns void language plpgsql security definer set search_path = public, auth, extensions as $$
+begin
+  if not public.is_admin() then raise exception 'not allowed'; end if;
+  if length(coalesce(new_password, '')) < 6 then raise exception 'password too short'; end if;
+  if exists(select 1 from public.admins where user_id = target) and target <> auth.uid() then
+    raise exception 'cannot reset another admin';
+  end if;
+  update auth.users set encrypted_password = extensions.crypt(new_password, extensions.gen_salt('bf')),
+         updated_at = now() where id = target;
+end $$;
+
+create or replace function public.admin_set_announcement(msg text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'not allowed'; end if;
+  update public.announcement set body = left(coalesce(msg, ''), 400), updated_at = now() where id = 1;
+end $$;
+
+revoke all on function public.admin_set_approved_many(uuid[], boolean) from public, anon;
+revoke all on function public.admin_set_blocked(uuid, boolean) from public, anon;
+revoke all on function public.admin_reset_progress(uuid) from public, anon;
+revoke all on function public.admin_reset_password(uuid, text) from public, anon;
+revoke all on function public.admin_set_announcement(text) from public, anon;
+revoke all on function public.admin_list_users() from public, anon;
+grant execute on function public.admin_set_approved_many(uuid[], boolean) to authenticated;
+grant execute on function public.admin_set_blocked(uuid, boolean) to authenticated;
+grant execute on function public.admin_reset_progress(uuid) to authenticated;
+grant execute on function public.admin_reset_password(uuid, text) to authenticated;
+grant execute on function public.admin_set_announcement(text) to authenticated;
+grant execute on function public.admin_list_users() to authenticated;
+
 -- 5) Kendinizi yönetici yapın: aşağıdaki satırdaki KULLANICI_ADINIZ yerine uygulamadaki kullanıcı adınızı yazın (küçük harf)
 insert into public.admins(user_id)
 select user_id from public.profiles where username = 'KULLANICI_ADINIZ'
