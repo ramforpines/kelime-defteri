@@ -304,7 +304,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.3.0';
+const APP_VERSION='4.4.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -597,6 +597,85 @@ async function loadAnn(){
   if(UI.tab==='today'&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render();
 }
 function annSeen(){try{return localStorage.getItem('kd-ann-'+CLOUD.uid)||''}catch(e){return ''}}
+/* ---------- reklam panosu (açılışta, kapatılabilir) ---------- */
+const ADS=[{id:'erol-kafe',name:'Erol Kafe',svg:()=>{
+ const sp=(x,y,s,d)=>`<g transform="translate(${x} ${y})"><g class="ad-tw" style="animation-delay:${d}s"><path d="M0 -${s} Q0 0 ${s} 0 Q0 0 0 ${s} Q0 0 -${s} 0 Q0 0 0 -${s}Z" fill="#fff" stroke="#ffe08a" stroke-width="1"/></g></g>`;
+ const steam=(x,y,d)=>`<path class="ad-st" style="animation-delay:${d}s" d="M${x} ${y} q-8 -10 0 -20 q8 -10 0 -20" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/>`;
+ const pep=[[-30,-22],[8,-38],[34,-8],[-6,-2],[-38,16],[22,26],[-4,40],[44,22]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="10" fill="url(#adPp)" stroke="#8f1d14" stroke-width="1"/><circle cx="${x-3}" cy="${y-3}" r="2" fill="#ff9a8a" opacity=".7"/>`).join('');
+ return`<svg viewBox="0 0 360 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Erol Kafe: pizza, pide, hamburger, çay ve kahve">
+<defs>
+<linearGradient id="adBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfeaff"/><stop offset=".38" stop-color="#fff1d6"/><stop offset=".72" stop-color="#ffd7a1"/><stop offset="1" stop-color="#f7a76c"/></linearGradient>
+<linearGradient id="adWin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9f7ff"/><stop offset="1" stop-color="#a9dcff"/></linearGradient>
+<linearGradient id="adWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9743a"/><stop offset="1" stop-color="#7a4421"/></linearGradient>
+<radialGradient id="adPz" cx=".5" cy=".45" r=".6"><stop offset="0" stop-color="#ffd25a"/><stop offset=".7" stop-color="#f6a81c"/><stop offset="1" stop-color="#d9770b"/></radialGradient>
+<radialGradient id="adPp" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#e5533c"/><stop offset="1" stop-color="#a3231a"/></radialGradient>
+<linearGradient id="adBun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6b45a"/><stop offset="1" stop-color="#cf7a22"/></linearGradient>
+<linearGradient id="adPat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a3a1d"/><stop offset="1" stop-color="#47200f"/></linearGradient>
+<linearGradient id="adPide" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3b862"/><stop offset="1" stop-color="#bf7425"/></linearGradient>
+<linearGradient id="adTea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a3d"/><stop offset="1" stop-color="#b3280f"/></linearGradient>
+<linearGradient id="adCup" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ece6dd"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#d9d1c5"/></linearGradient>
+<radialGradient id="adCof" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#e6b789"/><stop offset=".6" stop-color="#a9652f"/><stop offset="1" stop-color="#5a2e12"/></radialGradient>
+<linearGradient id="adShine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<linearGradient id="adTitle" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd24d"/><stop offset=".5" stop-color="#ff8a1f"/><stop offset="1" stop-color="#d4350f"/></linearGradient>
+<filter id="adSh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#5a2b0a" flood-opacity=".35"/></filter>
+<filter id="adBlur"><feGaussianBlur stdDeviation="2.5"/></filter>
+<clipPath id="adTclip"><rect x="40" y="26" width="280" height="66"/></clipPath>
+</defs>
+<rect width="360" height="500" fill="url(#adBg)"/>
+<g opacity=".95"><rect x="22" y="100" width="92" height="120" rx="10" fill="url(#adWin)" stroke="#fff" stroke-width="4"/><path d="M68 100v120M22 160h92" stroke="#fff" stroke-width="3"/><rect x="246" y="100" width="92" height="120" rx="10" fill="url(#adWin)" stroke="#fff" stroke-width="4"/><path d="M292 100v120M246 160h92" stroke="#fff" stroke-width="3"/><path d="M30 215q16-20 30-6q10-18 28-4q12-14 20 10Z" fill="#6fbf73" opacity=".8"/><path d="M252 215q16-20 30-6q10-18 28-4q12-14 20 10Z" fill="#5fae66" opacity=".8"/></g>
+<g>${[[60,70,18],[300,60,14],[330,130,10],[20,60,10],[180,110,12],[110,250,16],[250,240,14]].map(([x,y,r],i)=>`<circle class="ad-bk" style="animation-delay:${i*.5}s" cx="${x}" cy="${y}" r="${r}" fill="#fff6c9" opacity=".55" filter="url(#adBlur)"/>`).join('')}</g>
+<g stroke="#8a5a2b" stroke-width="2"><path d="M70 0v40M290 0v40"/></g>
+<g><path d="M52 52a18 14 0 0 1 36 0Z" fill="#e0442b"/><ellipse cx="70" cy="56" rx="14" ry="5" fill="#fff3b0" class="ad-lamp"/><path d="M272 52a18 14 0 0 1 36 0Z" fill="#e0442b"/><ellipse cx="290" cy="56" rx="14" ry="5" fill="#fff3b0" class="ad-lamp" style="animation-delay:.8s"/></g>
+<g class="ad-in" style="--d:.05s"><g filter="url(#adSh)"><text x="180" y="78" text-anchor="middle" font-family="'Arial Black',Impact,system-ui,sans-serif" font-weight="900" font-size="54" letter-spacing="2" fill="#7a1f08" stroke="#7a1f08" stroke-width="7" stroke-linejoin="round">EROL KAFE</text></g>
+<text x="180" y="78" text-anchor="middle" font-family="'Arial Black',Impact,system-ui,sans-serif" font-weight="900" font-size="54" letter-spacing="2" fill="url(#adTitle)" stroke="#fff3c4" stroke-width="1.5">EROL KAFE</text>
+<g clip-path="url(#adTclip)"><rect class="ad-sw" x="-80" y="20" width="60" height="80" fill="url(#adShine)" transform="skewX(-20)"/></g></g>
+<rect x="0" y="372" width="360" height="128" fill="url(#adWood)"/><path d="M0 372h360" stroke="#d99a5c" stroke-width="4"/><path d="M0 410h360M0 452h360" stroke="#5e3217" stroke-width="1.5" opacity=".5"/>
+<g class="ad-in" style="--d:.55s"><g class="ad-fl" style="animation-delay:.2s"><g transform="translate(112 190)" filter="url(#adSh)"><circle r="82" fill="#e9a23b"/><circle r="82" fill="none" stroke="#c97d1c" stroke-width="3"/><circle r="70" fill="#c53a22"/><circle r="66" fill="url(#adPz)"/><path d="M-50 -30q20 18 45 8q22 -6 40 14M-44 20q26 -14 50 2q20 12 36 -6" fill="none" stroke="#ffe9a0" stroke-width="7" stroke-linecap="round" opacity=".8"/>${pep}<g fill="#2f8f3a"><path d="M-14 -22q8 -14 18 -4q-6 12 -18 4Z"/><path d="M18 10q8 -14 18 -4q-6 12 -18 4Z"/><path d="M-30 34q8 -14 18 -4q-6 12 -18 4Z"/></g><path d="M-82 0H-22" stroke="#7a3a0a" stroke-width="0"/><path d="M40 -66a82 82 0 0 1 36 28" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".55"/></g></g></g>
+<g class="ad-in" style="--d:.8s"><g class="ad-fl" style="animation-delay:.9s"><g transform="translate(262 196)" filter="url(#adSh)"><path d="M-60 -6q0 -56 60 -56t60 56Z" fill="url(#adBun)"/><path d="M-44 -34q-4 -18 18 -26" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".5"/><g fill="#fff3d0">${[[-30,-34,-20],[-8,-46,10],[16,-40,30],[34,-26,60],[-18,-22,-10],[8,-24,20],[-40,-14,-30]].map(([x,y,r])=>`<ellipse cx="${x}" cy="${y}" rx="4.5" ry="2.4" transform="rotate(${r} ${x} ${y})"/>`).join('')}</g><path d="M-66 -4q10 12 22 0q10 12 22 0q10 12 22 0q10 12 22 0q10 12 22 0q10 12 22 0v8h-132Z" fill="#6cc04a"/><rect x="-62" y="4" width="124" height="12" rx="3" fill="#e84a2f"/><path d="M-62 16h124l-10 16l-18 -6l-18 12l-18 -12l-18 8l-14 -10l-18 8Z" fill="#ffc83a"/><rect x="-64" y="20" width="128" height="22" rx="11" fill="url(#adPat)"/><path d="M-56 26q56 6 112 0" stroke="#a65a30" stroke-width="2" fill="none" opacity=".6"/><path d="M-62 44h124q0 18 -22 18h-80q-22 0 -22 -18Z" fill="url(#adBun)"/></g></g></g>
+<g class="ad-in" style="--d:1.05s"><g class="ad-fl" style="animation-delay:.5s"><g transform="translate(180 322)" filter="url(#adSh)"><path d="M-104 0Q-60 -34 0 -34T104 0Q60 34 0 34T-104 0Z" fill="url(#adPide)"/><path d="M-104 0Q-60 -34 0 -34T104 0Q60 34 0 34T-104 0Z" fill="none" stroke="#8e5518" stroke-width="2.5"/><path d="M-80 0Q-40 -20 0 -20T80 0Q40 20 0 20T-80 0Z" fill="#fff0b3"/><path d="M-70 -2Q-30 -12 0 -10T70 -2" fill="none" stroke="#ffc83a" stroke-width="6" stroke-linecap="round" opacity=".8"/><ellipse cx="0" cy="-1" rx="17" ry="11" fill="#fff"/><circle cx="0" cy="-1" r="9" fill="#ffb81c"/><circle cx="-3" cy="-4" r="3" fill="#fff" opacity=".7"/>${[-56,-36,36,56].map(x=>`<circle cx="${x}" cy="${x<0?-1:1}" r="7" fill="#b3321e"/><circle cx="${x-2}" cy="${(x<0?-1:1)-2}" r="1.8" fill="#ff9a8a"/>`).join('')}<g fill="#2f8f3a"><path d="M-22 10q6 -9 13 -2q-4 8 -13 2Z"/><path d="M14 -16q6 -9 13 -2q-4 8 -13 2Z"/></g></g></g></g>
+<g class="ad-in" style="--d:1.3s"><g class="ad-fl" style="animation-delay:1.2s"><g transform="translate(78 420)" filter="url(#adSh)"><ellipse cx="0" cy="40" rx="46" ry="11" fill="#fff"/><ellipse cx="0" cy="38" rx="32" ry="7" fill="#e4dccf"/><path d="M-24 -36h48l-6 70q-1 6 -7 6h-22q-6 0 -7 -6Z" fill="#ffffff" opacity=".35"/><path d="M-21 -20h42l-5 52q-1 5 -6 5h-20q-5 0 -6 -5Z" fill="url(#adTea)"/><path d="M-24 -36q-3 0 -2 6l6 66q1 6 8 6h24q7 0 8 -6l6 -66q1 -6 -2 -6" fill="none" stroke="#fff" stroke-width="3"/><path d="M-26 -22q24 8 52 0" fill="none" stroke="#fff" stroke-width="2.5" opacity=".7"/><path d="M-14 -14l4 40" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"/><path d="M30 28l30 -34" stroke="#bfc4cc" stroke-width="3" stroke-linecap="round"/>${steam(-6,-40,0)}${steam(8,-40,.9)}</g></g></g>
+<g class="ad-in" style="--d:1.55s"><g class="ad-fl" style="animation-delay:.7s"><g transform="translate(282 424)" filter="url(#adSh)"><ellipse cx="0" cy="36" rx="58" ry="13" fill="#fff"/><ellipse cx="0" cy="34" rx="42" ry="8" fill="#e4dccf"/><path d="M-42 -14h84q0 46 -26 52h-32q-26 -6 -26 -52Z" fill="url(#adCup)"/><path d="M42 -2q28 -2 24 18q-4 18 -30 18" fill="none" stroke="#e6dfd2" stroke-width="7" stroke-linecap="round"/><ellipse cx="0" cy="-14" rx="42" ry="12" fill="#f4eee4"/><ellipse cx="0" cy="-14" rx="36" ry="9.5" fill="url(#adCof)"/><path d="M0 -8c-14 -6 -14 -14 -6 -15c4 0 6 3 6 3s2 -3 6 -3c8 1 8 9 -6 15Z" fill="#fbeedd"/><path d="M-30 6q4 22 14 30" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>${steam(-12,-30,.3)}${steam(10,-30,1.2)}</g></g></g>
+<g class="ad-in" style="--d:1.9s"><rect x="40" y="470" width="280" height="2" fill="#fff" opacity=".0"/></g>
+${sp(30,150,9,0)}${sp(330,95,8,.6)}${sp(188,150,7,1.1)}${sp(52,330,8,.3)}${sp(320,340,9,.9)}${sp(210,250,6,1.4)}${sp(150,400,7,.5)}${sp(228,395,6,1.7)}${sp(340,230,7,1.2)}${sp(15,260,6,.8)}
+</svg>`}}];
+function adCss(){return`
+#adov{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(20,12,6,.62);backdrop-filter:blur(3px);animation:adfade .25s ease both}
+#adov .adb{position:relative;width:min(92vw,400px);max-height:92vh;border-radius:22px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);border:3px solid #ffe29a;background:#fff;animation:adbox .45s cubic-bezier(.2,1.3,.4,1) both}
+#adov svg{display:block;width:100%;height:auto;max-height:80vh}
+#adov .adx{position:absolute;top:8px;right:8px;width:38px;height:38px;border-radius:50%;border:2px solid #fff;background:rgba(40,20,8,.75);color:#fff;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
+#adov .adt{position:absolute;top:10px;left:10px;font:600 11px system-ui,sans-serif;color:#5a2b0a;background:rgba(255,255,255,.8);padding:3px 8px;border-radius:99px;z-index:2}
+#adov .adc{display:block;width:100%;padding:13px;border:0;background:linear-gradient(#ff9a2e,#e5561a);color:#fff;font:700 15px system-ui,sans-serif;cursor:pointer}
+.ad-in{transform-box:fill-box;transform-origin:50% 60%;opacity:0;animation:adpop .8s cubic-bezier(.2,1.6,.4,1) forwards;animation-delay:var(--d,0s)}
+.ad-fl{transform-box:fill-box;transform-origin:center;animation:adfl 3.2s ease-in-out infinite}
+.ad-st{animation:adst 2.4s ease-in-out infinite}
+.ad-tw{transform-box:fill-box;transform-origin:center;animation:adtw 1.8s ease-in-out infinite}
+.ad-bk{animation:adbk 4s ease-in-out infinite}
+.ad-lamp{animation:adlamp 2.6s ease-in-out infinite}
+.ad-sw{animation:adsw 3.2s ease-in-out 1.2s infinite}
+@keyframes adpop{0%{opacity:0;transform:scale(.05) translateY(40px) rotate(-12deg)}60%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes adfl{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(1.2deg)}}
+@keyframes adst{0%{opacity:0;transform:translateY(8px)}40%{opacity:.8}100%{opacity:0;transform:translateY(-14px)}}
+@keyframes adtw{0%,100%{opacity:0;transform:scale(.2) rotate(0)}50%{opacity:1;transform:scale(1.25) rotate(45deg)}}
+@keyframes adbk{0%,100%{opacity:.25}50%{opacity:.7}}
+@keyframes adlamp{0%,100%{opacity:.7}50%{opacity:1}}
+@keyframes adsw{0%{transform:translateX(0) skewX(-20deg)}60%,100%{transform:translateX(520px) skewX(-20deg)}}
+@keyframes adfade{from{opacity:0}to{opacity:1}}
+@keyframes adbox{from{opacity:0;transform:scale(.85) translateY(20px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ad-in,.ad-fl,.ad-st,.ad-tw,.ad-bk,.ad-lamp,.ad-sw,#adov .adb{animation:none!important;opacity:1!important}.ad-st{opacity:.5!important}}
+`}
+const AD={shown:false};
+function adClose(){const o=document.getElementById('adov');if(o)o.remove();document.removeEventListener('keydown',adKey)}
+function adKey(e){if(e.key==='Escape')adClose()}
+function adShow(){
+  if(AD.shown||!ADS.length||document.getElementById('adov'))return;AD.shown=true;
+  const a=ADS[0];
+  if(!document.getElementById('adcss')){const s=document.createElement('style');s.id='adcss';s.textContent=adCss();document.head.appendChild(s)}
+  const o=document.createElement('div');o.id='adov';o.setAttribute('role','dialog');o.setAttribute('aria-label','Reklam: '+a.name);
+  o.innerHTML=`<div class="adb"><span class="adt">Reklam</span><button class="adx" aria-label="Kapat" type="button">×</button>${a.svg()}<button class="adc" type="button">Kapat ve devam et</button></div>`;
+  o.addEventListener('click',e=>{if(e.target===o||e.target.closest('.adx,.adc'))adClose()});
+  document.addEventListener('keydown',adKey);
+  document.body.appendChild(o);
+}
 async function onLogin(user){
   CLOUD.uid=user.id;CLOUD.username=(user.email||'').split('@')[0];CLOUD.defName=CLOUD.username;CLOUD.ready=true;
   S=load(user.id);
@@ -604,7 +683,7 @@ async function onLogin(user){
   if(CLOUD.approved===false){render();return}
   applyReset();
   if(!S.prof.name)S.prof.name=CLOUD.username;
-  render();
+  render();adShow();
   if(CLOUD.admin){loadUsers();loadAdminStats()}
   loadAnn();loadMyFb();appPing();loadStats();if(CLOUD.admin)loadAdminFb();
   try{await pullState()}catch(e){}
