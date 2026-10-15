@@ -145,6 +145,13 @@ nav button{position:relative;border:0;background:none;border-radius:10px;min-hei
 @media (prefers-reduced-motion:reduce){.frm.bld .wob,.frm.bld .drp{animation:none}}
 nav .nbd{position:absolute;top:2px;right:6px;font-style:normal;background:var(--bad);color:#fff;border-radius:8px;padding:0 5px;font-size:.62rem}
 .chatlist{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;height:calc(100vh - 330px);min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.dhud{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dside{display:flex;align-items:center;gap:10px;min-width:0;flex:1;text-align:left}.dside.r{flex-direction:row-reverse;text-align:right}
+.dside b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px}
+.dside .mono{font-size:1.4rem;font-weight:800}
+.dvs{font-weight:800;color:var(--muted);font-size:.9rem}
+.dprog{display:flex;flex-direction:column;gap:4px;margin-top:8px}.dprog .bar{height:6px}.dprog .bar.opp>i{background:var(--bad)}
+.bar.tm{height:12px}
 .cm{flex:none;max-width:84%;align-self:flex-start;background:var(--surface2);border-radius:12px;padding:6px 10px;overflow-wrap:anywhere}
 .cm.me{align-self:flex-end;background:var(--accent-soft)}
 .cm .cn{font-size:.72rem;font-weight:700;color:var(--muted);cursor:pointer}
@@ -297,7 +304,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='3.6.1';
+const APP_VERSION='4.0.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -540,6 +547,7 @@ async function onLogin(user){
   applyDecay();evalAwards();persistLocal();render();refreshBoard();schedulePush();
 }
 function onLogout(){
+  try{dReset()}catch(e){}
   clearTimeout(pushT);CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
 }
 async function initAuth(){
@@ -1136,7 +1144,7 @@ function render(){
   let h='';
   if(UI.tab==='today')h=vToday();
   else if(UI.tab==='dict')h=vDict();
-  else if(UI.tab==='quiz')h=UI.quiz?vQuiz():vQuizSetup();
+  else if(UI.tab==='quiz')h=UI.quiz?vQuiz():(UI.qmode==='duel'?vDuel():vQuizSetup());
   else if(UI.tab==='review')h=vReview();
   else if(UI.tab==='rank')h=vRank();
   else if(UI.tab==='chat')h=vChat();
@@ -1244,7 +1252,7 @@ function vQuizSetup(){
   const s=S.set;
   const remaining=W.filter(w=>!S.learned[w.word]&&(s.level==='Hepsi'||w.level===s.level)&&typeOK(w)).length;
   const tc=W.reduce((m,w)=>{if(!S.learned[w.word]&&(s.level==='Hepsi'||w.level===s.level)){const g=posGroup(w);m[g]=(m[g]||0)+1}return m},{});
-  return`<div class="top"><h1>Test</h1></div><div class="card stack">
+  return`<div class="top"><h1>Test</h1></div><div class="seg" style="margin-bottom:12px"><button class="chip" aria-pressed="true" data-act="qmode" data-v="solo">Normal test</button><button class="chip" aria-pressed="false" data-act="qmode" data-v="duel">⚔ Düello</button></div><div class="card stack">
     <div><h3>Soru sayısı</h3><div class="seg" style="margin-top:8px">${[10,20,30,40].map(n=>`<button class="chip" aria-pressed="${s.count===n}" data-set="count" data-v="${n}">${n}</button>`).join('')}</div></div>
     <div><h3>Seviye</h3><div class="seg" style="margin-top:8px">${['Hepsi'].concat(LEVELS).map(n=>`<button class="chip" aria-pressed="${s.level===n}" data-set="level" data-v="${n}">${n}</button>`).join('')}</div></div>
     <div><h3>Tür</h3><div class="seg" style="margin-top:8px"><button class="chip" aria-pressed="${(s.type||'Hepsi')==='Hepsi'}" data-set="type" data-v="Hepsi">Hepsi</button>${POSG.filter(g=>tc[g]).map(g=>`<button class="chip" aria-pressed="${s.type===g}" data-set="type" data-v="${esc(g)}">${esc(trType(g))} (${nf(tc[g])})</button>`).join('')}</div></div>
@@ -1700,6 +1708,212 @@ function chatOpen(tab){
 }
 setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false)return;if(UI.tab==='chat')chatLoad()},4000);
 setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||UI.tab==='chat')return;chatLoad()},45000);
+// ---- 1v1 Düello ----
+const DQ_N=20,DQ_T=15;
+const DUEL={phase:'lobby',id:null,d:null,off:0,qs:null,idx:0,tq:0,sel:null,bot:null,opp:'',err:'',rec:null,find:0,findT:null,poll:null,tick:null,busy:false,me:{s:0,c:0,t:0}};
+UI.qmode='solo';
+function seededQs(seed,n){
+  const orig=Math.random;let a=seed>>>0;
+  Math.random=()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296};
+  const out=[];
+  try{
+    const pool=shuffle(W.slice());
+    for(const w of pool){
+      if(out.length>=n)break;
+      const fs=applicable(w);if(!fs.length)continue;
+      const f=fs[Math.floor(Math.random()*fs.length)];
+      const b=buildQuestion(w,f);if(!b)continue;
+      out.push({w,f,question:b.question,correct:b.correct,options:shuffle([b.correct].concat(b.distractors))});
+    }
+  }finally{Math.random=orig}
+  return out;
+}
+const dNow=()=>Date.now()+DUEL.off;
+const dIsP1=()=>DUEL.d&&DUEL.d.p1===CLOUD.uid;
+function dMine(){const d=DUEL.d;if(!d)return{s:0,c:0,a:0,t:0};return dIsP1()?{s:d.s1,c:d.c1,a:d.a1,t:+d.t1}:{s:d.s2,c:d.c2,a:d.a2,t:+d.t2}}
+function dOpp(){
+  const d=DUEL.d;if(!d)return{s:0,c:0,a:0,t:0};
+  if(DUEL.bot){const b=DUEL.bot,el=Date.now()-b.t0;let a=0,s=0,c=0;for(let i=0;i<b.times.length;i++){if(b.times[i]<=el){a++;if(b.oks[i]){c++;s+=b.pts[i]}}}return{s,c,a,t:0}}
+  return dIsP1()?{s:d.s2,c:d.c2,a:d.a2,t:+d.t2}:{s:d.s1,c:d.c1,a:d.a1,t:+d.t1};
+}
+function dOppId(){const d=DUEL.d;if(!d)return null;if(DUEL.bot)return'bot';return dIsP1()?d.p2:d.p1}
+function dPeer(id){return id==='bot'?{id:'bot',name:'Bot Kemal',color:3,av:36,fr:''}:chatPeer(id)}
+function dStop(){clearTimeout(DUEL.findT);clearInterval(DUEL.poll);clearInterval(DUEL.tick);DUEL.findT=DUEL.poll=DUEL.tick=null}
+function dReset(){dStop();Object.assign(DUEL,{phase:'lobby',id:null,d:null,qs:null,idx:0,sel:null,bot:null,err:'',find:0,busy:false,me:{s:0,c:0,t:0}})}
+async function duelRecord(){
+  if(!sb||!CLOUD.uid)return;
+  try{
+    const r=await sb.from('duels').select('id,p1,p2,winner,s1,s2,created_at').eq('status','done').order('created_at',{ascending:false}).limit(200);
+    if(r.error)throw r.error;
+    const L=r.data||[];let w=0,l=0,dr=0;L.forEach(x=>{if(!x.winner)dr++;else if(x.winner===CLOUD.uid)w++;else l++});
+    DUEL.rec={w,l,d:dr,last:L.slice(0,5).map(x=>!x.winner?'D':x.winner===CLOUD.uid?'W':'L')};DUEL.recErr='';
+  }catch(e){DUEL.rec=null;DUEL.recErr=/duels|42P01|PGRST205|schema cache/i.test(String(e&&(e.message||e.code)||''))?'setup':'err'}
+  if(UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')render();
+}
+async function duelFind(){
+  if(!sb||!CLOUD.uid)return;
+  dReset();DUEL.phase='search';DUEL.find=Date.now();render();
+  const step=async()=>{
+    if(DUEL.phase!=='search')return;
+    try{
+      const r=await sb.rpc('duel_join',{p_wn:W.length});
+      if(DUEL.phase!=='search')return;
+      if(r.error)throw r.error;
+      if(r.data){await duelStart(r.data);return}
+    }catch(e){DUEL.err=/duel_join|PGRST202|schema cache|42883/i.test(String(e&&(e.message||e.code)||''))?'setup':'err';DUEL.phase='lobby';render();return}
+    DUEL.findT=setTimeout(step,2000);
+  };
+  step();
+  DUEL.tick=setInterval(()=>{if(DUEL.phase==='search'){const el=document.getElementById('dsec');if(el)el.textContent=Math.floor((Date.now()-DUEL.find)/1000);if(Date.now()-DUEL.find>25000&&!DUEL.longWait){DUEL.longWait=true;render()}}},500);
+}
+async function duelCancel(){
+  const was=DUEL.phase;dReset();DUEL.longWait=false;render();
+  if(sb&&CLOUD.uid&&was==='search'){try{await sb.rpc('duel_cancel')}catch(e){}}
+}
+async function duelFetch(){
+  if(!DUEL.id||DUEL.bot)return;
+  try{
+    const r=await sb.rpc('duel_state',{did:DUEL.id});
+    if(r.error||!r.data)return;
+    DUEL.off=new Date(r.data.now).getTime()-Date.now();
+    DUEL.d=r.data.d;
+  }catch(e){}
+}
+async function duelStart(id){
+  dStop();DUEL.id=id;DUEL.longWait=false;
+  await duelFetch();
+  const d=DUEL.d;if(!d){DUEL.err='err';DUEL.phase='lobby';render();return}
+  if(d.wn!==W.length){DUEL.err='ver';DUEL.phase='lobby';render();return}
+  DUEL.qs=seededQs(d.seed,d.qn);
+  const m=dMine();DUEL.idx=Math.min(m.a,d.qn);DUEL.sel=null;
+  DUEL.phase=d.status==='done'?'result':(DUEL.idx>=d.qn?'wait':'count');
+  DUEL.tq=0;
+  duelLoops();render();
+}
+function duelStartBot(){
+  dReset();
+  const seed=Math.floor(Math.random()*2147480000);
+  const times=[],oks=[],pts=[];let t=5000;
+  for(let i=0;i<DQ_N;i++){const ms=2500+Math.random()*7500;t+=ms+700;const ok=Math.random()<.72;times.push(t-5000);oks.push(ok);pts.push(ok?100+Math.round(50*(1-ms/(DQ_T*1000))):0)}
+  DUEL.bot={t0:Date.now()+5000,times,oks,pts};
+  const now=Date.now();
+  DUEL.d={id:'bot',p1:CLOUD.uid,p2:'bot',seed,wn:W.length,qn:DQ_N,per_q:DQ_T,start_at:new Date(now+5000).toISOString(),status:'active',s1:0,s2:0,c1:0,c2:0,a1:0,a2:0,t1:0,t2:0};
+  DUEL.off=0;DUEL.id='bot';DUEL.qs=seededQs(seed,DQ_N);DUEL.idx=0;DUEL.sel=null;DUEL.phase='count';
+  duelLoops();render();
+}
+function duelLoops(){
+  clearInterval(DUEL.poll);clearInterval(DUEL.tick);
+  if(!DUEL.bot)DUEL.poll=setInterval(async()=>{
+    if(!['count','play','wait'].includes(DUEL.phase))return;
+    await duelFetch();duelHud();
+    if(DUEL.d&&DUEL.d.status==='done'&&DUEL.phase!=='result'&&(DUEL.phase==='wait'||dNow()>new Date(DUEL.d.start_at).getTime()+DQ_N*DQ_T*1000))duelEnd();
+  },1500);
+  DUEL.tick=setInterval(duelTick,100);
+}
+function duelTick(){
+  const d=DUEL.d;if(!d)return;
+  const st=new Date(d.start_at).getTime();
+  if(DUEL.phase==='count'){
+    const left=Math.ceil((st-dNow())/1000);
+    if(left<=0){DUEL.phase='play';DUEL.tq=Date.now();render();return}
+    const el=document.getElementById('dcount');if(el&&el.textContent!==String(left))el.textContent=left;
+  }else if(DUEL.phase==='play'){
+    const el=Date.now()-DUEL.tq;
+    const f=document.getElementById('dtmf');if(f)f.style.width=Math.max(0,100-el/(DQ_T*10))+'%';
+    const tx=document.getElementById('dtmt');if(tx)tx.textContent=Math.max(0,Math.ceil((DQ_T*1000-el)/1000));
+    if(DUEL.sel===null&&el>=DQ_T*1000)duelAnswer(-1);
+  }
+  if(DUEL.bot&&DUEL.phase==='wait'){
+    const o=dOpp();if(o.a>=DQ_N)duelEnd();
+  }
+  if(DUEL.bot&&DUEL.phase!=='result')duelHud();
+}
+function duelHud(){const el=document.getElementById('dhud');if(el)el.innerHTML=dHudHtml()}
+function duelAnswer(i){
+  if(DUEL.phase!=='play'||DUEL.sel!==null)return;
+  const it=DUEL.qs[DUEL.idx],ok=i>=0&&it.options[i]===it.correct;
+  const ms=Math.min(DQ_T*1000,Math.max(300,Date.now()-DUEL.tq));
+  DUEL.sel=i;DUEL.lastOk=ok;
+  const pts=ok?100+Math.round(50*(1-ms/(DQ_T*1000))):0;
+  const idx=DUEL.idx;
+  if(DUEL.bot){const d=DUEL.d;d.a1++;d.s1+=pts;if(ok)d.c1++;d.t1+=ms}
+  else{
+    const d=DUEL.d;if(d){if(dIsP1()){d.a1=Math.max(d.a1,idx+1);d.s1+=pts;if(ok)d.c1++}else{d.a2=Math.max(d.a2,idx+1);d.s2+=pts;if(ok)d.c2++}}
+    sb.rpc('duel_report',{did:DUEL.id,idx,ok,ms}).then(r=>{if(r&&r.error)DUEL.err='report'}).catch(()=>{});
+  }
+  render();
+  setTimeout(()=>{
+    if(DUEL.phase!=='play')return;
+    DUEL.idx++;DUEL.sel=null;
+    if(DUEL.idx>=DQ_N){DUEL.phase='wait';render();if(DUEL.bot)return;duelFetch().then(()=>{if(DUEL.d&&DUEL.d.status==='done')duelEnd()})}
+    else{DUEL.tq=Date.now();render()}
+  },ok?700:1300);
+}
+async function duelEnd(){
+  if(DUEL.phase==='result')return;
+  if(DUEL.bot){
+    const d=DUEL.d,o=dOpp();d.s2=o.s;d.c2=o.c;d.a2=o.a;d.status='done';
+    d.winner=d.s1>d.s2?CLOUD.uid:d.s2>d.s1?'bot':null;
+  }else{await duelFetch()}
+  DUEL.phase='result';dStop();
+  if(!DUEL.bot)duelRecord();
+  render();
+}
+function dHudHtml(){
+  const m=dMine(),o=dOpp(),op=dPeer(dOppId()),me=chatPeer(CLOUD.uid),n=DQ_N;
+  const side=(p,s,right)=>`<div class="dside ${right?'r':''}">${avatar(p.name,p.color,false,p.av,'')}<div><b>${esc(p.name)}</b><div class="mono">${s.s}</div></div></div>`;
+  return`<div class="dhud">${side(me,m,false)}<span class="dvs">VS</span>${side(op,o,true)}</div>
+  <div class="dprog"><div class="bar"><i style="width:${Math.round(m.a/n*100)}%"></i></div><div class="bar opp"><i style="width:${Math.round(o.a/n*100)}%"></i></div></div>`;
+}
+function vDuel(){
+  const P=DUEL.phase,d=DUEL.d,n=DQ_N;
+  const seg=`<div class="seg"><button class="chip" aria-pressed="false" data-act="qmode" data-v="solo">Normal test</button><button class="chip" aria-pressed="true" data-act="qmode" data-v="duel">⚔ Düello</button></div>`;
+  let body='';
+  if(P==='lobby'){
+    const R=DUEL.rec;
+    let err='';
+    if(DUEL.err==='setup'||DUEL.recErr==='setup')err=`<div class="fb bad">Düello henüz kurulmadı. Yönetici, <b>supabase-duel.sql</b> dosyasını Supabase SQL Editor'da bir kez çalıştırmalı.</div>`;
+    else if(DUEL.err==='ver')err=`<div class="fb bad">Rakibinle kelime listesi sürümün farklı. Uygulamayı kapatıp yeniden aç.</div>`;
+    else if(DUEL.err==='err')err=`<div class="fb bad">Bağlantı sorunu. Biraz sonra tekrar dene.</div>`;
+    body=`<div class="card stack"><h2>⚔ 1v1 Düello</h2>
+      <div class="muted small">Eşleştirmeyle bir rakip bulunur, ikiniz de aynı ${n} soruyu çözersiniz. Soru başına ${DQ_T} saniye var. Doğru cevap 100 puan, hızlı cevap en çok 50 puan hız bonusu getirir. En çok puanı toplayan kazanır.</div>
+      ${R?`<div class="kp"><div><b>${R.w}</b><span>galibiyet</span></div><div><b>${R.l}</b><span>mağlubiyet</span></div><div><b>${R.d}</b><span>beraberlik</span></div></div>${R.last.length?`<div class="row" style="gap:6px">${R.last.map(x=>`<span class="badge ${x==='W'?'ok':x==='L'?'warn':''}">${x==='W'?'G':x==='L'?'M':'B'}</span>`).join('')}<span class="muted small">son maçlar</span></div>`:''}`:''}
+      ${err}
+      <button class="btn primary block" data-act="duel-find">Rakip bul</button>
+      <button class="btn block" data-act="duel-bot">Botla alıştır</button></div>`;
+  }else if(P==='search'){
+    const lw=DUEL.longWait;
+    body=`<div class="card stack" style="text-align:center"><h2>Rakip aranıyor…</h2><div class="mono" style="font-size:2rem"><span id="dsec">0</span> sn</div>
+      <div class="muted small">${lw?'Şu an kuyrukta başka biri yok. Beklemeye devam edebilir ya da botla alıştırabilirsin.':'Aynı anda aranan biri olunca eşleşirsiniz.'}</div>
+      ${lw?'<button class="btn block" data-act="duel-bot">Botla alıştır</button>':''}
+      <button class="btn block" data-act="duel-cancel">İptal</button></div>`;
+  }else if(P==='count'){
+    const left=Math.max(1,Math.ceil((new Date(d.start_at).getTime()-dNow())/1000));
+    body=`<div class="card stack" style="text-align:center"><div id="dhud">${dHudHtml()}</div><div class="muted">${DUEL.bot?'Alıştırma maçı':'Rakip bulundu'}. Başlıyor…</div><div class="mono" style="font-size:4rem;font-weight:800" id="dcount">${left}</div></div>`;
+  }else if(P==='play'){
+    const it=DUEL.qs[DUEL.idx],ans=DUEL.sel!==null;
+    body=`<div id="dhud">${dHudHtml()}</div>
+    <div class="row" style="gap:10px;margin:8px 0"><div class="bar tm" style="flex:1"><i id="dtmf" style="width:100%;transition:none"></i></div><b class="mono" id="dtmt">${DQ_T}</b><span class="mono muted">${DUEL.idx+1}/${n}</span></div>
+    <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${FEAT[it.f]}</span>${lvTag(it.w.level)}</div>
+    <h2>${esc(it.question)}</h2>
+    <div class="opts">${it.options.map((o,i)=>{let c='';if(ans){if(o===it.correct)c='ok';else if(i===DUEL.sel)c='bad'}return`<button class="opt ${c}" data-act="duel-opt" data-v="${i}" ${ans?'disabled':''}><kbd>${i+1}</kbd><span>${esc(o)}</span></button>`}).join('')}</div>
+    ${ans?`<div class="fb ${DUEL.lastOk?'ok':'bad'}"><b class="t">${DUEL.sel===-1?'Süre doldu':DUEL.lastOk?'Doğru':'Yanlış'}</b>${DUEL.lastOk?'':` <span class="small">Doğru cevap: <b>${esc(it.correct)}</b></span>`}</div>`:''}</div>`;
+  }else if(P==='wait'){
+    body=`<div class="card stack" style="text-align:center"><div id="dhud">${dHudHtml()}</div><h2>Bitirdin</h2><div class="muted">Rakibin bitirmesi bekleniyor…</div></div>`;
+  }else{
+    const m=dMine(),o=dOpp(),op=dPeer(dOppId());
+    const win=d.winner===CLOUD.uid,draw=!d.winner;
+    const avg=m.a?Math.round(m.t/m.a/100)/10:0;
+    body=`<div class="card stack" style="text-align:center"><h1 style="margin:0">${draw?'🤝 Berabere':win?'🏆 Kazandın!':'😤 Kaybettin'}</h1>
+      <div id="dhud">${dHudHtml()}</div>
+      <div class="kp"><div><b>${m.c}/${n}</b><span>doğru</span></div><div><b>${avg||'–'}</b><span>ort. süre (sn)</span></div><div><b>${o.c}/${n}</b><span>rakip doğru</span></div></div>
+      ${DUEL.bot?'<div class="muted small">Alıştırma maçı kayda geçmez.</div>':''}
+      <button class="btn primary block" data-act="duel-find">Yeni rakip bul</button>
+      <button class="btn block" data-act="duel-exit">Çık</button></div>`;
+  }
+  const inGame=['count','play','wait'].includes(P);
+  return`<div class="top"><h1>Düello</h1></div><div class="stack">${inGame?'':seg}${body}</div>`;
+}
 function setTab(t){
   if(t==='quiz'&&UI.quiz&&UI.quiz.done)UI.quiz=null;
   UI.tab=t;try{sessionStorage.setItem('kd-tab',t)}catch(e){}
@@ -1731,6 +1945,12 @@ document.addEventListener('click',async e=>{
     case'chat-back':UI.chat.peer=null;render();break;
     case'chat-send':chatSend();break;
     case'chat-del':{const id=+g('data-id');const adm=CHAT.pub.some(m=>m.id===id&&m.user_id!==CLOUD.uid);const r=adm?await sb.rpc('admin_delete_chat',{mid:id}):await sb.from('chat_messages').delete().eq('id',id);if(r.error)toast('Silinemedi.');else{CHAT.pub=CHAT.pub.filter(m=>m.id!==id);CHAT.dm=CHAT.dm.filter(m=>m.id!==id);chatPaint()}break}
+    case'qmode':UI.qmode=g('data-v');if(UI.qmode==='duel'){if(DUEL.phase==='result')dReset();duelRecord()}render();break;
+    case'duel-find':duelFind();break;
+    case'duel-cancel':duelCancel();break;
+    case'duel-bot':if(DUEL.phase==='search'){try{sb.rpc('duel_cancel')}catch(e){}}duelStartBot();break;
+    case'duel-opt':duelAnswer(+g('data-v'));break;
+    case'duel-exit':dReset();render();break;
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
     case'start-review':startQuiz('review',false);break;
@@ -1818,6 +2038,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&UI.card){UI.card=null;render();return}
   if(e.key==='Enter'&&e.target.id==='chin'){e.preventDefault();chatSend();return}
   if(e.key==='Enter'&&!CLOUD.uid&&/^au-/.test(e.target.id||'')){e.preventDefault();doAuth();return}
+  if(UI.tab==='quiz'&&DUEL.phase==='play'&&!UI.quiz&&!/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)&&e.key>='1'&&e.key<='4'){duelAnswer(+e.key-1);return}
   if(UI.tab!=='quiz'||!UI.quiz||UI.quiz.done)return;
   if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
   const it=UI.quiz.items[UI.quiz.i];
