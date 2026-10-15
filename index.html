@@ -209,7 +209,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='2.0.0';
+const APP_VERSION='2.0.1';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[]}}
@@ -312,12 +312,6 @@ function addPts(delta,kind){
   d.p=np;S.tp=Math.max(0,(S.tp||0)+eff);
   const q=UI.quiz;if(q&&q.pts)q.pts[kind]=(q.pts[kind]||0)+eff;
   return eff;
-}
-function payFactor(word,n){
-  const dim=n<=150?1:n<=300?.5:.25,t=today();
-  if(!S.wd||S.wd.d!==t)S.wd={d:t,m:{}};
-  const c=S.wd.m[word]=(S.wd.m[word]||0)+1;
-  return c>3?0:dim;
 }
 function applyDecay(){
   if(!S.pc)return 0;
@@ -814,7 +808,7 @@ function answer(idx){
   const lv=S.lv[w.level]||(S.lv[w.level]=[0,0]);
   lv[ok?0:1]++;
   const dl=d.l||(d.l={});const dv=dl[w.level]||(dl[w.level]=[0,0]);dv[0]++;if(ok)dv[1]++;
-  const cf=COEF[w.level]||1,bq=cf*(TYPEC[it.f]||1)*payFactor(w.word,d.a);
+  const cf=COEF[w.level]||1,bq=cf*(TYPEC[it.f]||1);
   let pt=0;
   if(ok){pt+=addPts(bq,'c');const G=Math.max(GOAL_MIN,S.set.goal||GOAL_MIN);if(d.c===G)pt+=addPts(10+Math.min(streak(),10),'b')}
   else if((S.tp||0)>=450)pt+=addPts(-0.25*bq,'w');
@@ -1188,8 +1182,7 @@ function vRank(){
       <div class="muted">Soru türü: Türkçe 1, Tür 1, Tanım 1,1, V2/V3 1,1, Örnek 1,15, Eş ve Zıt anlam 1,2.</div>
       <div><b>Bonuslar:</b> yeni kelimeyi öğrenmek +3 × seviye katsayısı, tekrar listesinden bir kelimeyi çıkarmak +2, günlük hedefi tamamlamak +10 ve seri bonusu (en fazla +10).</div>
       <div><b>Altın ve üstü liglerde</b> yanlış cevap, doğru cevap puanının dörtte biri kadar puan düşürür. Günlük puan sıfırın altına inmez.</div>
-      <div><b>Günlük asgari hedef:</b> 1150 puanın altında 20 doğru, 1150 puandan itibaren 35, 2000 puandan itibaren 50 doğru. Tutturmayan her gün için toplam puanından sırasıyla %1, %2 ve %2 kesilir.</div>
-      <div><b>Fazla çözümde azalma:</b> günde ilk 150 soru tam puan, 150–300 arası yarım, sonrası çeyrek puan. Aynı kelimeden günde en fazla 3 soru puan getirir.</div></div></details>
+      <div><b>Günlük asgari hedef:</b> 1150 puanın altında 20 doğru, 1150 puandan itibaren 35, 2000 puandan itibaren 50 doğru. Tutturmayan her gün için toplam puanından sırasıyla %1, %2 ve %2 kesilir.</div></div></details>
     ${!CLOUD.write?'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. Sıraya girmek için sahibinden "Katkıda bulunan" izni iste.</div>':''}
     ${S.prof.name&&!S.prof.show?'<div class="card small muted">Profilin gizli, tabloda görünmüyorsun. Profil sekmesinden açabilirsin.</div>':''}
     ${CLOUD.lbErr?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':''}`;
