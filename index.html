@@ -209,7 +209,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='1.4.0';
+const APP_VERSION='1.5.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0}}
@@ -428,13 +428,13 @@ async function onLogin(user){
   if(!S.prof.name)S.prof.name=CLOUD.username;
   render();
   if(CLOUD.admin)loadUsers();
-  loadAnn();
+  loadAnn();loadMyFb();if(CLOUD.admin)loadAdminFb();
   try{await pullState()}catch(e){}
   if(!S.prof.name)S.prof.name=CLOUD.username;
   evalAwards();persistLocal();render();refreshBoard();schedulePush();
 }
 function onLogout(){
-  clearTimeout(pushT);CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
+  clearTimeout(pushT);CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
 }
 async function initAuth(){
   try{
@@ -520,6 +520,87 @@ async function saveAnn(clear){
     A.annDraft=null;toast(v?'Duyuru yayınlandı.':'Duyuru kaldırıldı.');
     await loadAnn();render();
   }catch(e){toast('Duyuru kaydedilemedi.')}
+}
+/* ---------- geri bildirim ---------- */
+const FBK={oneri:'Öneri',hata:'Hata',soru:'Soru',diger:'Diğer'};
+const FBS={new:'Gönderildi',read:'Okundu',done:'Çözüldü'};
+const fdt=s=>s?new Date(s).toLocaleString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+const fbSeenKey=()=>'kd-fbseen-'+CLOUD.uid;
+const fbUnread=()=>{let t='';try{t=localStorage.getItem(fbSeenKey())||''}catch(e){}return UI.fb.list.filter(m=>m.reply&&m.replied_at&&m.replied_at>t).length};
+const fbNew=()=>UI.afb.list.filter(m=>m.status==='new').length;
+function quietRender(){if(UI.tab==='me'&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render()}
+async function loadMyFb(){
+  if(!sb||!CLOUD.uid||CLOUD.approved===false)return;
+  try{
+    const r=await sb.from('feedback').select('id,kind,body,status,reply,created_at,replied_at').eq('user_id',CLOUD.uid).order('created_at',{ascending:false}).limit(50);
+    if(r.error)throw r.error;
+    const had=UI.fb.loaded;UI.fb.list=r.data||[];UI.fb.loaded=true;UI.fb.err='';
+    if(!had&&fbUnread()&&UI.tab!=='me')toast('Yöneticiden yanıt var: Ben > Geri bildirim');
+  }catch(e){UI.fb.err=/PGRST205|42P01|does not exist|schema cache/i.test(String((e&&(e.message||e.code))||''))?'setup':'err'}
+  quietRender();
+}
+async function loadAdminFb(){
+  if(!sb||!CLOUD.admin)return;
+  const A=UI.afb;A.busy=true;
+  try{
+    const r=await sb.rpc('admin_list_feedback');
+    if(r.error)throw r.error;
+    A.list=r.data||[];A.loaded=true;A.err='';
+  }catch(e){A.err=/PGRST202|does not exist|schema cache/i.test(String((e&&(e.message||e.code))||''))?'setup':'err'}
+  A.busy=false;quietRender();
+}
+async function sendFb(){
+  const F=UI.fb,el=document.getElementById('fbq');
+  const v=((el?el.value:F.draft)||'').trim();
+  if(v.length<5){toast('Mesaj en az 5 karakter olmalı.');return}
+  if(!navigator.onLine){toast('Mesaj göndermek için internet gerekir.');return}
+  F.busy=true;F.draft=v;render();
+  try{
+    const r=await sb.from('feedback').insert({user_id:CLOUD.uid,kind:F.kind,body:v.slice(0,1000)});
+    if(r.error)throw r.error;
+    F.draft='';toast('Mesajın yöneticiye gönderildi.');
+  }catch(e){
+    const m=String((e&&(e.message||e.code))||'');
+    toast(/row-level|42501|policy/i.test(m)?'Günlük 5 mesaj sınırına ulaştın, yarın tekrar dene.':/PGRST205|42P01|schema cache/i.test(m)?'Mesaj özelliği henüz kurulmadı.':'Mesaj gönderilemedi, tekrar dene.');
+  }
+  F.busy=false;await loadMyFb();render();
+}
+async function afbAct(kind,id){
+  const A=UI.afb,el=document.getElementById('fbr-'+id);
+  const rt=(el?el.value:(A.reply[id]||'')).trim();
+  A.busy=true;render();
+  try{
+    let r;
+    if(kind==='del')r=await sb.rpc('admin_delete_feedback',{fid:+id});
+    else if(kind==='reply'){if(rt.length<2){A.busy=false;render();toast('Önce bir yanıt yaz.');return}r=await sb.rpc('admin_set_feedback',{fid:+id,new_status:'done',reply_text:rt});delete A.reply[id]}
+    else r=await sb.rpc('admin_set_feedback',{fid:+id,new_status:kind,reply_text:null});
+    if(r.error)throw r.error;
+    toast(kind==='del'?'Mesaj silindi.':kind==='reply'?'Yanıt gönderildi.':'Güncellendi.');
+  }catch(e){toast('İşlem yapılamadı.')}
+  A.del=null;await loadAdminFb();render();
+}
+function vFeedback(){
+  const F=UI.fb;
+  try{localStorage.setItem(fbSeenKey(),new Date().toISOString())}catch(e){}
+  const setup=F.err==='setup'?'<div class="card small muted">Mesaj özelliği henüz etkinleştirilmemiş. Yönetici kurulumu tamamlayınca burada görünür.</div>':'';
+  return`<div class="card stack"><h2>Yöneticiye mesaj</h2><div class="small muted">Öneri, hata ya da sorularını yaz. Yönetici yanıtlarsa burada görürsün. Günde en fazla 5 mesaj gönderebilirsin.</div>
+  <div class="seg">${Object.keys(FBK).map(k=>`<button class="chip" aria-pressed="${F.kind===k}" data-act="fb-kind" data-v="${k}">${FBK[k]}</button>`).join('')}</div>
+  <textarea id="fbq" class="nameinp" rows="4" maxlength="1000" placeholder="Mesajını yaz…">${esc(F.draft)}</textarea>
+  <button class="btn primary" data-act="fb-send" ${F.busy?'disabled':''}>${F.busy?'Gönderiliyor…':'Gönder'}</button></div>${setup}
+  <div class="top" style="margin:4px 0 0"><h2 style="margin:0">Mesajların</h2></div>
+  ${!F.loaded&&!F.err?'<div class="empty">Yükleniyor…</div>':F.list.length?F.list.map(m=>`<div class="entry"><div class="row" style="justify-content:space-between"><span><span class="badge">${FBK[m.kind]||'Diğer'}</span> <span class="muted small">${fdt(m.created_at)}</span></span><span class="badge ${m.status==='done'?'ok':m.status==='read'?'warn':''}">${FBS[m.status]||''}</span></div><div style="margin-top:8px;overflow-wrap:anywhere;white-space:pre-wrap">${esc(m.body)}</div>${m.reply?`<div class="card" style="margin-top:10px;border-color:var(--accent)"><div class="small muted">Yönetici yanıtı · ${fdt(m.replied_at)}</div><div style="overflow-wrap:anywhere;white-space:pre-wrap">${esc(m.reply)}</div></div>`:''}</div>`).join(''):`<div class="empty card">Henüz mesaj göndermedin.</div>`}`;
+}
+function vMsgs(){
+  const A=UI.afb;
+  const list=A.list.filter(m=>A.filter==='all'||m.status==='new');
+  return`<div class="card stack"><div class="seg"><button class="chip" aria-pressed="${A.filter==='new'}" data-act="afb-filter" data-v="new">Yeni (${fbNew()})</button><button class="chip" aria-pressed="${A.filter==='all'}" data-act="afb-filter" data-v="all">Hepsi (${A.list.length})</button></div>
+  <div class="row"><button class="btn" data-act="afb-load" ${A.busy?'disabled':''}>${A.busy?'Yükleniyor…':'Yenile'}</button></div>
+  ${A.err==='setup'?'<div class="small" style="color:var(--bad)">Mesaj özelliği için supabase-feedback.sql henüz çalıştırılmamış.</div>':A.err?'<div class="small" style="color:var(--bad)">Mesajlar alınamadı.</div>':''}</div>
+  ${!A.loaded&&!A.err?'<div class="empty">Yükleniyor…</div>':list.length?list.map(m=>`<div class="entry"><div class="row" style="justify-content:space-between;align-items:flex-start"><div style="min-width:0"><b style="overflow-wrap:anywhere">${esc(m.name||m.username||'?')}</b> <span class="badge">${FBK[m.kind]||'Diğer'}</span><br><span class="muted small">@${esc(m.username||'')} · ${fdt(m.created_at)}</span></div><span class="badge ${m.status==='done'?'ok':m.status==='new'?'warn':''}">${FBS[m.status]||''}</span></div>
+  <div style="margin-top:8px;overflow-wrap:anywhere;white-space:pre-wrap">${esc(m.body)}</div>
+  ${m.reply?`<div class="card" style="margin-top:10px"><div class="small muted">Yanıtın · ${fdt(m.replied_at)}</div><div style="overflow-wrap:anywhere;white-space:pre-wrap">${esc(m.reply)}</div></div>`:''}
+  <textarea id="fbr-${m.id}" data-fid="${m.id}" class="nameinp" rows="2" maxlength="1000" style="margin-top:10px" placeholder="${m.reply?'Yeni yanıt (öncekinin yerine geçer)':'Yanıt yaz…'}">${esc(A.reply[m.id]||'')}</textarea>
+  <div class="row" style="margin-top:8px;flex-wrap:wrap"><button class="btn primary" data-act="afb-reply" data-u="${m.id}">Yanıtla</button>${m.status==='new'?`<button class="btn" data-act="afb-read" data-u="${m.id}">Okundu</button>`:''}${m.status!=='done'?`<button class="btn" data-act="afb-done" data-u="${m.id}">Çözüldü</button>`:''}${A.del===String(m.id)?`<button class="btn danger" data-act="afb-del-yes" data-u="${m.id}">Evet, sil</button><button class="btn" data-act="afb-del-no">Vazgeç</button>`:`<button class="btn danger" data-act="afb-del" data-u="${m.id}">Sil</button>`}</div></div>`).join(''):'<div class="empty card">Bu listede mesaj yok.</div>'}`;
 }
 function vAdmin(){
   const A=UI.adm;
@@ -757,7 +838,7 @@ function streak(){
 const learnedCount=()=>Object.keys(S.learned).filter(k=>BYWORD.has(k)).length;
 
 /* ---------- arayüz ---------- */
-const UI={card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'stats',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
+const UI={fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'stats',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
 try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz')UI.tab=t}catch(e){}
 const ICON={
   today:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
@@ -921,10 +1002,12 @@ function vReview(){
   </div>`;
 }
 function vMe(){
-  const seg=[['stats','İstatistik'],['learned','Öğrenilenler'],['prof','Profil'],['set','Ayarlar']];
+  const fu=fbUnread();
+  const seg=[['stats','İstatistik'],['learned','Öğrenilenler'],['prof','Profil'],['fb','Geri bildirim'+(fu?' ('+fu+')':'')],['set','Ayarlar']];
+  if(CLOUD.admin)seg.push(['msg','Mesajlar'+(fbNew()?' ('+fbNew()+')':'')]);
   if(CLOUD.admin)seg.push(['adm','Yönetim'+(UI.adm.loaded&&UI.adm.list.some(u=>!u.approved)?' ('+UI.adm.list.filter(u=>!u.approved).length+')':'')]);
   let body='';
-  if(UI.me==='stats')body=vStats();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
+  if(UI.me==='stats')body=vStats();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='fb')body=vFeedback();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
   return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${body}</div>`;
 }
 function vStats(){
@@ -1144,6 +1227,16 @@ document.addEventListener('click',async e=>{
     case'unlearn':{const w=g('data-w');delete S.learned[w];save();render();toast('Kelime tekrar öğrenilecekler arasına alındı.');break}
     case'notif':toggleNotif();break;
     case'recheck':{await checkAccess();if(CLOUD.approved!==false){await onLogin({id:CLOUD.uid,email:CLOUD.username+'@x'})}else{toast('Henüz onaylanmadı.');render()}break}
+    case'fb-kind':{const el2=document.getElementById('fbq');if(el2)UI.fb.draft=el2.value;UI.fb.kind=g('data-v');render();break}
+    case'fb-send':sendFb();break;
+    case'afb-filter':UI.afb.filter=g('data-v');render();break;
+    case'afb-load':loadAdminFb();break;
+    case'afb-reply':afbAct('reply',g('data-u'));break;
+    case'afb-read':afbAct('read',g('data-u'));break;
+    case'afb-done':afbAct('done',g('data-u'));break;
+    case'afb-del':UI.afb.del=g('data-u');render();break;
+    case'afb-del-no':UI.afb.del=null;render();break;
+    case'afb-del-yes':afbAct('del',g('data-u'));break;
     case'card-close':UI.card=null;render();break;
     case'noop':break;
     case'adm-load':loadUsers();break;
@@ -1182,6 +1275,8 @@ document.addEventListener('click',async e=>{
   }
 });
 document.addEventListener('input',e=>{
+  if(e.target.id==='fbq'){UI.fb.draft=e.target.value;return}
+  if(e.target.dataset&&e.target.dataset.fid){UI.afb.reply[e.target.dataset.fid]=e.target.value;return}
   if(e.target.id==='annq'){UI.adm.annDraft=e.target.value;return}
   if(e.target.id==='adq'){UI.adm.q=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('adq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
   if(e.target.id==='q'){UI.dict.q=e.target.value;UI.dict.limit=40;UI.dict.open=null;$('#dlist').innerHTML=dictList()}
@@ -1239,6 +1334,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeo
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__bip=e;if(UI.tab==='me'&&UI.me==='set')render()});
 window.addEventListener('online',()=>{schedulePush();refreshBoard()});
 setInterval(()=>{if(!document.hidden&&(UI.tab==='rank'||UI.tab==='today'))refreshBoard()},60000);
+setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return;loadMyFb();if(CLOUD.admin)loadAdminFb()},120000);
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
 render();maybeNotify();initAuth();
 })();
