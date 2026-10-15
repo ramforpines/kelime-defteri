@@ -140,11 +140,18 @@ nav button{position:relative;border:0;background:none;border-radius:10px;min-hei
 .sheet.adm .btn{background:#17110a;border-color:#8a6510;color:#f3e3b0}
 .sheet.adm .badge{background:#2a2310;color:#e9cf7a}
 .frm.bld .wob{animation:bwob 3.2s ease-in-out infinite;transform-origin:0 0}
-.frm.bld .drp{transform-box:fill-box;transform-origin:50% 0;animation:bdrip 3.2s ease-in-out infinite}
-.frm.bld .drp.d1{animation-delay:-.8s}.frm.bld .drp.d2{animation-delay:-1.6s}.frm.bld .drp.d3{animation-delay:-2.2s}
-@keyframes bwob{0%,100%{transform:rotate(-2.5deg) scale(1)}50%{transform:rotate(2.5deg) scale(1.02)}}
-@keyframes bdrip{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.25)}}
-@media (prefers-reduced-motion:reduce){.frm.bld .wob,.frm.bld .drp{animation:none}}
+.frm.bld .fl{transform-box:fill-box;transform-origin:50% 100%;animation:bfl .55s ease-in-out infinite alternate}
+.frm.bld .fl.in{animation-duration:.4s}
+.frm.bld .emb{animation:bemb 1.9s ease-in-out infinite}
+.frm.bld .hg{transform-box:fill-box;transform-origin:50% 0;animation:bdrip 3.2s ease-in-out infinite}
+.frm.bld .bd{transform-box:fill-box;transform-origin:50% 0;opacity:0;animation:bfall 3.4s cubic-bezier(.5,0,.9,.6) infinite}
+@keyframes bwob{0%,100%{transform:rotate(-2.2deg) scale(1)}50%{transform:rotate(2.2deg) scale(1.015)}}
+@keyframes bdrip{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.3)}}
+@keyframes bfl{from{transform:scale(.82,.9) skewX(-5deg)}to{transform:scale(1.08,1.22) skewX(5deg)}}
+@keyframes bemb{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes bfall{0%{opacity:0;transform:translateY(0) scale(.2)}12%{opacity:1;transform:translateY(0) scale(1)}28%{opacity:1;transform:translateY(5px) scale(1.05,1.25)}100%{opacity:0;transform:translateY(330px) scale(.9,1.5)}}
+@media (prefers-reduced-motion:reduce){.frm.bld .wob,.frm.bld .fl,.frm.bld .emb,.frm.bld .hg{animation:none}.frm.bld .bd{animation:none;opacity:0}}
+.rk[data-lg="admin"],.pbar[data-lg="admin"],.cm[data-lg="admin"]{z-index:3}
 nav .nbd{position:absolute;top:2px;right:6px;font-style:normal;background:var(--bad);color:#fff;border-radius:8px;padding:0 5px;font-size:.62rem}
 .chatlist{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;height:calc(100vh - 330px);min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
 .dhud{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -306,7 +313,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.7.0';
+const APP_VERSION='4.8.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -1553,10 +1560,32 @@ const PAL={
  sampiyonluk:{d:'#6b3f04',m:'#f2b01e',l:'#fff6bf',g:'#fde047',c:'#f59e0b'}};
 const GOLD={d:'#6b3f04',m:'#e2a31f',l:'#fff2ad'};
 function bloodFrame(){
-  const u='b'+(++FU),N=22,pts=[];
-  for(let i=0;i<N*4;i++){const a=(i/(N*4))*2*Math.PI,ph=i%4,r=(ph===1||ph===2)?60:52;pts.push((Math.sin(a)*r).toFixed(1)+','+(-Math.cos(a)*r).toFixed(1))}
-  const drips=[[-34,52,9],[8,57,14],[38,46,7],[-8,58,6]].map(([x,y,h],i)=>`<g class="drp d${i}"><path d="M${x-2.6} ${y-4}Q${x-2.6} ${y+h} ${x} ${y+h+4}Q${x+2.6} ${y+h} ${x+2.6} ${y-4}z" fill="#991b1b" stroke="#2b0000" stroke-width="1"/><ellipse cx="${x-.8}" cy="${y+h-1}" rx=".8" ry="1.8" fill="#fecaca" opacity=".7"/></g>`).join('');
-  return`<svg class="frm bld" viewBox="-100 -100 200 200" aria-hidden="true" style="--gc:rgba(120,0,0,.9)"><defs><radialGradient id="r${u}" cx=".5" cy=".5" r=".5"><stop offset=".78" stop-color="#3a0505"/><stop offset=".9" stop-color="#8f1212"/><stop offset="1" stop-color="#4a0606"/></radialGradient><linearGradient id="l${u}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6b6b" stop-opacity=".75"/><stop offset=".5" stop-color="#7f1d1d" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></linearGradient></defs><g class="wob"><path d="M${pts.join('L')}ZM44 0A44 44 0 1 0-44 0A44 44 0 1 0 44 0Z" fill="url(#r${u})" fill-rule="evenodd" stroke="#1a0000" stroke-width="2.4" stroke-linejoin="round"/><path d="M${pts.join('L')}Z" fill="none" stroke="url(#l${u})" stroke-width="2.6" stroke-linejoin="round"/><circle r="45" fill="none" stroke="#1a0000" stroke-width="3"/><circle r="46.6" fill="none" stroke="#ef4444" stroke-opacity=".55" stroke-width="1"/>${drips}</g></svg>`;
+  const u='b'+(++FU),R=Math.PI/180,f=n=>Math.round(n*10)/10;
+  // yanan alevler (en arkada): halka çevresinde dışa doğru
+  const flame=(a,h,w,d)=>`<g transform="rotate(${a})"><path class="fl" style="animation-delay:${d}s" d="M${-w},-45 C${f(-w*1.25)},${f(-45-h*.45)} ${f(-w*.3)},${f(-45-h*.55)} ${f(w*.1)},${-45-h} C${f(w*.3)},${f(-45-h*.6)} ${f(w*1.35)},${f(-45-h*.4)} ${w},-45Z" fill="url(#fl${u})"/><path class="fl in" style="animation-delay:${d+.15}s" d="M${f(-w*.55)},-45 C${f(-w*.7)},${f(-45-h*.35)} ${f(-w*.1)},${f(-45-h*.45)} 0,${f(-45-h*.7)} C${f(w*.2)},${f(-45-h*.4)} ${f(w*.8)},${f(-45-h*.3)} ${f(w*.55)},-45Z" fill="#ffe27a"/></g>`;
+  let fl='';for(let i=0;i<18;i++){const a=i*20+((i%2)?4:-3);fl+=flame(a,(i%3===0?34:i%3===1?27:21),(i%3===0?8.5:7),(i*.17)%1.4)}
+  // kıvrık dikenler
+  const thorn=(a,len,w,bend)=>`<path transform="rotate(${a})" d="M${-w},-48 C${f(-w*.9)},${f(-48-len*.5)} ${f(bend*.5)},${f(-48-len*.8)} ${bend},${-48-len} C${f(bend*.6+w*.4)},${f(-48-len*.7)} ${f(w*.9)},${f(-48-len*.4)} ${w},-48Z" fill="url(#th${u})" stroke="#140000" stroke-width="1.1" stroke-linejoin="round"/><path transform="rotate(${a})" d="M${f(-w*.2)},-49 Q${f(bend*.3)},${f(-48-len*.5)} ${f(bend*.92)},${f(-48-len*.93)}" fill="none" stroke="#ff8a7a" stroke-opacity=".55" stroke-width=".9" stroke-linecap="round"/>`;
+  let th='';for(let i=0;i<24;i++){const a=i*15+7.5;if([45,135,225,315].some(x=>Math.abs(a-x)<12)||[32,-32,328].some(x=>Math.abs(a-x)<10))continue;th+=thorn(a,i%2?20:29,4.6,i%2?3:-3.5)}
+  // yabalar (üç dişli çatal)
+  const fork=a=>`<g transform="rotate(${a})"><rect x="-1.9" y="-66" width="3.8" height="19" fill="url(#mt${u})" stroke="#0b0b10" stroke-width=".9"/><path d="M-12,-64 Q0,-55 12,-64 L12,-67 Q0,-59 -12,-67Z" fill="url(#mt${u})" stroke="#0b0b10" stroke-width=".9"/><polygon points="-2,-66 2,-66 2,-82 0,-92 -2,-82" fill="url(#mt${u})" stroke="#0b0b10" stroke-width=".9" stroke-linejoin="round"/><polygon points="-13.5,-67 -9.5,-67 -9.5,-79 -11.5,-87 -13.5,-79" fill="url(#mt${u})" stroke="#0b0b10" stroke-width=".9" stroke-linejoin="round"/><polygon points="9.5,-67 13.5,-67 13.5,-79 11.5,-87 9.5,-79" fill="url(#mt${u})" stroke="#0b0b10" stroke-width=".9" stroke-linejoin="round"/><circle cy="-48" r="2.6" fill="#c81414" stroke="#1a0000" stroke-width=".8"/></g>`;
+  // boynuzlar
+  const horn=(a,m)=>`<g transform="rotate(${a}) scale(${m} 1)"><path d="M-7,-47 C-9,-66 -2,-84 16,-97 C8,-82 7,-66 7,-47Z" fill="url(#hn${u})" stroke="#140000" stroke-width="1.3" stroke-linejoin="round"/><path d="M-3.5,-52 C-4,-68 2,-82 12,-92" fill="none" stroke="#ffb4a8" stroke-opacity=".5" stroke-width="1.1" stroke-linecap="round"/><path d="M-8,-60 L7,-58M-7.5,-68 L6,-66.5M-5,-76 L5,-74.5" stroke="#2a0000" stroke-opacity=".6" stroke-width=".9"/></g>`;
+  // kan damlaları: halkadan sarkar, şişer, kopar ve ekran boyunca düşer
+  const dropPath=(x,y,s)=>`M${x} ${y-4*s}C${f(x+3*s)} ${y} ${f(x+3.4*s)} ${f(y+3.4*s)} ${x} ${f(y+4.4*s)}C${f(x-3.4*s)} ${f(y+3.4*s)} ${f(x-3*s)} ${y} ${x} ${y-4*s}Z`;
+  const D=[[-36,3,0,2.9],[-22,2.5,1.1,3.6],[-9,3.3,.4,3.2],[5,2.7,1.9,4.1],[18,3.2,.8,3],[31,2.6,2.3,3.7],[41,2.9,1.5,3.4]];
+  const drops=D.map(([x,s,d,t])=>{const y=Math.round(Math.sqrt(Math.max(0,54*54-x*x)));return`<g class="bd" style="animation-delay:${d}s;animation-duration:${t}s"><path d="${dropPath(x,y,s)}" fill="#a30d0d" stroke="#2b0000" stroke-width=".9"/><ellipse cx="${f(x-s*.6)}" cy="${f(y+s*1.6)}" rx="${f(s*.28)}" ry="${f(s*.7)}" fill="#fecaca" opacity=".75"/></g>`}).join('');
+  const hang=[[-30,13],[-14,8],[12,15],[28,9],[0,6]].map(([x,h],i)=>{const y=Math.round(Math.sqrt(Math.max(0,53*53-x*x)));return`<g class="hg" style="animation-delay:${-i*.7}s"><path d="M${x-2.4} ${y-3}Q${x-2.4} ${y+h} ${x} ${y+h+3.5}Q${x+2.4} ${y+h} ${x+2.4} ${y-3}Z" fill="#8f0f0f" stroke="#2b0000" stroke-width=".9"/><ellipse cx="${f(x-.8)}" cy="${y+h-1}" rx=".7" ry="1.7" fill="#fecaca" opacity=".6"/></g>`}).join('');
+  return`<svg class="frm bld" viewBox="-100 -100 200 200" aria-hidden="true" style="--gc:rgba(255,50,0,.85)"><defs>
+<linearGradient id="fl${u}" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffb21a"/><stop offset=".45" stop-color="#ff5a00"/><stop offset="1" stop-color="#d40a0a"/></linearGradient>
+<linearGradient id="th${u}" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2a0505"/><stop offset=".6" stop-color="#8f0f0f"/><stop offset="1" stop-color="#ff3b30"/></linearGradient>
+<linearGradient id="hn${u}" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#1d0404"/><stop offset=".55" stop-color="#7a0c0c"/><stop offset="1" stop-color="#e83a2a"/></linearGradient>
+<linearGradient id="mt${u}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2c2c36"/><stop offset=".45" stop-color="#9a9aab"/><stop offset="1" stop-color="#26262f"/></linearGradient>
+<radialGradient id="rg${u}" cx=".5" cy=".5" r=".5"><stop offset=".74" stop-color="#150202"/><stop offset=".88" stop-color="#5e0a0a"/><stop offset="1" stop-color="#1c0303"/></radialGradient></defs>
+<g class="wob"><g class="flm">${fl}</g>${th}${[45,135,225,315].map(fork).join('')}${horn(-30,-1)}${horn(30,1)}
+<path d="M0 -55A55 55 0 1 1 -.1 -55ZM0 -43A43 43 0 1 0 .1 -43Z" fill="url(#rg${u})" fill-rule="evenodd" stroke="#0d0000" stroke-width="1.8"/>
+<circle class="emb" r="44.2" fill="none" stroke="#ff2a00" stroke-width="1.6"/><circle r="54.2" fill="none" stroke="#ff6b4a" stroke-opacity=".5" stroke-width=".8"/>
+${[18,95,200,285].map(a=>`<path transform="rotate(${a})" d="M0,-44.5 l2,3.6 -2.4,3 2,3.4" fill="none" stroke="#ff5a2a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="emb"/>`).join('')}${hang}</g>${drops}</svg>`;
 }
 function frameSVG(k){
   const P=PAL[k];if(!P)return'';
