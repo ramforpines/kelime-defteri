@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Kelime Defteri</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://cqlcrwolgxrrrcyyluin.supabase.co wss://cqlcrwolgxrrrcyyluin.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'; worker-src 'self'">
+<meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#2b4eff">
 <meta name="description" content="Kelime Defteri: sözlük, test, tekrar ve liderlik tablosu">
 <link rel="manifest" href="manifest.webmanifest">
@@ -304,7 +306,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.4.0';
+const APP_VERSION='4.5.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -522,6 +524,17 @@ function statsCard(){
   ${s.duel_king?`<div class="small">⚔️ En çok düello kazanan: <b>${esc(s.duel_king.name)}</b> · ${s.duel_king.wins} galibiyet</div>`:''}
   <div class="stack" style="gap:4px"><span class="small muted">Lig dağılımı</span>${bars}</div></div>`;
 }
+async function loadSecLog(){
+  const A=UI.adm;if(!sb||!CLOUD.admin)return;A.secBusy=true;
+  try{const r=await sb.rpc('admin_security_log');if(r.error)throw r.error;A.sec=r.data||[];A.secErr=false}catch(e){A.secErr=true}
+  A.secBusy=false;if(UI.tab==='me')render();
+}
+function adminSecCard(){
+  const A=UI.adm,L=A.sec,lab={puan_sicramasi:'Puan sıçraması',soru_sicramasi:'Soru sıçraması',ogrenme_sicramasi:'Öğrenme sıçraması',ad_taklidi:'Ad taklidi',ilk_kayit_sinir:'İlk kayıt sınırı'};
+  return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Güvenlik kayıtları</b><span class="row"><button class="btn" data-act="adm-sec" ${A.secBusy?'disabled':''}>${A.secBusy?'Yükleniyor…':L?'Yenile':'Yükle'}</button>${L&&L.length?'<button class="btn danger" data-act="adm-sec-clear">Temizle</button>':''}</span></div>
+  ${A.secErr?'<div class="small" style="color:var(--bad)">Alınamadı. supabase-security.sql çalıştırıldı mı?</div>':''}
+  ${L?(L.length?L.map(x=>`<div class="small" style="overflow-wrap:anywhere"><b>${esc(lab[x.kind]||x.kind)}</b> · @${esc(x.username)} · ${esc(x.detail)} <span class="muted">${new Date(x.created_at).toLocaleString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span></div>`).join(''):'<div class="small muted">Şüpheli işlem yok.</div>'):'<div class="small muted">Puanlarda imkânsız sıçrama, yönetici adını taklit eden ad gibi olaylar burada listelenir.</div>'}</div>`;
+}
 function adminStatsCard(){
   const A=UI.adm,s=A.stats;
   const head=`<div class="row" style="justify-content:space-between"><b>İstatistikler</b><button class="btn" data-act="adm-stats" ${A.sbusy?'disabled':''}>${A.sbusy?'Yükleniyor…':s?'Yenile':'Yükle'}</button></div>`;
@@ -705,13 +718,19 @@ async function initAuth(){
   }catch(e){}
   AUTH.ready=true;render();
 }
+function loginLock(){try{const o=JSON.parse(localStorage.getItem('kd-lf')||'{}');return Math.max(0,Math.ceil(((o.until||0)-Date.now())/1000))}catch(e){return 0}}
+function loginFail(ok){try{if(ok){localStorage.removeItem('kd-lf');return}const o=JSON.parse(localStorage.getItem('kd-lf')||'{}');const n=(o.n||0)+1;localStorage.setItem('kd-lf',JSON.stringify({n:n>=5?0:n,until:n>=5?Date.now()+60000:0}))}catch(e){}}
 async function doAuth(){
   const A=UI.auth;
   const u=normUser(document.getElementById('au-user').value),p=document.getElementById('au-pass').value;
   const nm=(document.getElementById('au-name')||{}).value||'';
   A.user=u;A.name=nm;A.msg='';
   if(!validUser(u)){A.msg='Kullanıcı adı 3-20 karakter olmalı. Küçük harf, rakam, nokta, tire ve alt çizgi kullan, Türkçe karakter ve boşluk kullanma.';return render()}
-  if(p.length<6){A.msg='Şifre en az 6 karakter olmalı.';return render()}
+  if(A.mode==='signup'){
+    if(p.length<8){A.msg='Şifre en az 8 karakter olmalı.';return render()}
+    if(p.toLowerCase().includes(u)||/^(.)\1+$/.test(p)||/^(12345678|123456789|1234567890|password|qwertyui|11111111)/i.test(p)){A.msg='Bu şifre tahmin edilmesi kolay. Kullanıcı adını ve basit dizileri içermeyen bir şifre seç.';return render()}
+  }else if(p.length<6){A.msg='Şifre en az 6 karakter olmalı.';return render()}
+  const lk=loginLock();if(A.mode!=='signup'&&lk>0){A.msg='Çok fazla hatalı deneme. '+lk+' saniye sonra tekrar dene.';return render()}
   if(!sb||!navigator.onLine){A.msg='İnternet bağlantısı gerekiyor.';return render()}
   A.busy=true;render();
   try{
@@ -727,13 +746,14 @@ async function doAuth(){
       await onLogin(r.data.session.user);
     }else{
       r=await sb.auth.signInWithPassword({email:userToMail(u),password:p});
-      if(r.error)throw r.error;
+      if(r.error){loginFail(false);throw r.error}
+      loginFail(true);
       A.busy=false;await onLogin(r.data.user);
     }
   }catch(e){
     A.busy=false;
     const m=String((e&&e.message)||'');
-    A.msg=/already|registered/i.test(m)?'Bu kullanıcı adı alınmış. Başka bir ad dene.':/invalid login|credentials/i.test(m)?'Kullanıcı adı veya şifre yanlış.':/rate|too many/i.test(m)?'Çok fazla deneme yapıldı. Biraz bekleyip yeniden dene.':'İşlem tamamlanamadı: '+m;
+    A.msg=/already|registered/i.test(m)?'Bu kullanıcı adı alınmış. Başka bir ad dene.':/database error saving|reserved|signup_limit/i.test(m)?'Bu kullanıcı adı kullanılamıyor ya da şu an çok fazla kayıt var. Başka bir ad dene ya da biraz sonra yeniden dene.':/invalid login|credentials/i.test(m)?'Kullanıcı adı veya şifre yanlış.':/rate|too many/i.test(m)?'Çok fazla deneme yapıldı. Biraz bekleyip yeniden dene.':'İşlem tamamlanamadı: '+m;
     render();
   }
 }
@@ -868,7 +888,7 @@ function vAdmin(){
   const d=s=>s?new Date(s).toLocaleDateString('tr-TR',{day:'numeric',month:'short'}):'–';
   const ad=A.annDraft!=null?A.annDraft:(CLOUD.ann?CLOUD.ann.body:'');
   const btn=(act,u,label,cls)=>`<button class="btn ${cls||''}" data-act="${act}" data-u="${esc(u)}">${label}</button>`;
-  return`${adminStatsCard()}<div class="card stack"><div class="seg"><button class="chip" aria-pressed="${A.filter==='pending'}" data-adf="pending">Bekleyen (${pend})</button><button class="chip" aria-pressed="${A.filter==='ok'}" data-adf="ok">Onaylı (${A.list.length-pend})</button><button class="chip" aria-pressed="${A.filter==='all'}" data-adf="all">Hepsi</button></div>
+  return`${adminStatsCard()}${adminSecCard()}<div class="card stack"><div class="seg"><button class="chip" aria-pressed="${A.filter==='pending'}" data-adf="pending">Bekleyen (${pend})</button><button class="chip" aria-pressed="${A.filter==='ok'}" data-adf="ok">Onaylı (${A.list.length-pend})</button><button class="chip" aria-pressed="${A.filter==='all'}" data-adf="all">Hepsi</button></div>
   <input id="adq" class="nameinp" type="search" placeholder="Kullanıcı ara" value="${esc(A.q)}" autocomplete="off">
   <div class="row"><button class="btn" data-act="adm-load" ${A.busy?'disabled':''}>${A.busy?'Yükleniyor…':'Yenile'}</button>${pend>1&&A.filter!=='ok'?`<button class="btn primary" data-act="adm-approve-all" ${A.busy?'disabled':''}>Bekleyen ${pend} kişiyi onayla</button>`:''}<span class="small muted">${A.list.length} kullanıcı</span></div>
   ${A.err?`<div class="small" style="color:var(--bad)">${esc(A.err)}</div>`:''}</div>
@@ -2180,6 +2200,8 @@ document.addEventListener('click',async e=>{
     case'noop':break;
     case'adm-load':loadUsers();loadAdminStats();break;
     case'adm-stats':loadAdminStats();break;
+    case'adm-sec':loadSecLog();break;
+    case'adm-sec-clear':sb.rpc('admin_clear_security_log').then(()=>{UI.adm.sec=[];render()});break;
     case'adm-approve':admAct('approve',g('data-u'));break;
     case'adm-revoke':admAct('revoke',g('data-u'));break;
     case'adm-del':UI.adm.confirm=g('data-u');UI.adm.rs=null;render();break;
