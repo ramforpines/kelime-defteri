@@ -297,7 +297,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='3.5.0';
+const APP_VERSION='3.6.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -1141,7 +1141,10 @@ function render(){
   else if(UI.tab==='rank')h=vRank();
   else if(UI.tab==='chat')h=vChat();
   else h=vMe();
+  const fa=document.activeElement,fid=fa&&fa.id&&/^(chin|chq)$/.test(fa.id)?fa.id:null,fs=fid?[fa.selectionStart,fa.selectionEnd]:null;
+  const ol=document.getElementById('chatlist');if(ol&&ol.dataset.init){UI.chat.st=ol.scrollTop;UI.chat.nb=ol.scrollHeight-ol.scrollTop-ol.clientHeight<90}
   app.innerHTML=profBar()+h+vCard();
+  if(fid){const n=document.getElementById(fid);if(n){n.focus({preventScroll:true});try{n.setSelectionRange(fs[0],fs[1])}catch(e){}}}
   if(UI.tab==='chat'&&document.getElementById('chatlist'))chatPaint();
 }
 function ring(p){
@@ -1555,7 +1558,7 @@ function say(word,pron){
 }
 
 // ---- Sohbet (genel + özel) ----
-const CHAT={pub:[],dm:[],ready:false,err:'',busy:false};
+const CHAT={pub:[],dm:[],tmp:[],ready:false,err:'',busy:false,dmFull:0,sending:false,nk:''};
 UI.chat={view:'pub',peer:null,draft:'',q:''};
 function chatSeen(){try{return JSON.parse(localStorage.getItem('kd-chat-'+CLOUD.uid)||'{}')}catch(e){return{}}}
 function chatMark(k,id){try{const s=chatSeen();if((s[k]||0)<id){s[k]=id;localStorage.setItem('kd-chat-'+CLOUD.uid,JSON.stringify(s))}}catch(e){}}
@@ -1572,23 +1575,40 @@ function chatPeer(id){
   const m=CHAT.dm.find(x=>x.user_id===id);
   return{id,name:m?m.sname:'Kullanıcı',color:0,av:0,fr:''};
 }
-async function chatLoad(){
-  if(!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine||CHAT.busy)return;
+const CHCOLS='id,user_id,to_user,sname,body,created_at';
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function chatFetchDm(after){
+  const out=[];let last=after||0;
+  for(let k=0;k<50;k++){
+    const r=await sb.from('chat_messages').select(CHCOLS).not('to_user','is',null).gt('id',last).order('id',{ascending:true}).limit(1000);
+    if(r.error)throw r.error;
+    const d=r.data||[];out.push(...d);
+    if(d.length<1000)break;
+    last=d[d.length-1].id;
+  }
+  return out;
+}
+async function chatLoad(wait){
+  if(!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return;
+  if(CHAT.busy){if(!wait)return;while(CHAT.busy)await sleep(60)}
   CHAT.busy=true;
   try{
-    const a=await sb.from('chat_messages').select('id,user_id,to_user,sname,body,created_at').is('to_user',null).order('id',{ascending:false}).limit(80);
-    const b=await sb.from('chat_messages').select('id,user_id,to_user,sname,body,created_at').not('to_user','is',null).order('id',{ascending:false}).limit(300);
-    if(a.error)throw a.error;if(b.error)throw b.error;
-    CHAT.pub=(a.data||[]).slice().reverse();CHAT.dm=(b.data||[]).slice().reverse();CHAT.ready=true;CHAT.err='';
+    const a=await sb.from('chat_messages').select(CHCOLS).is('to_user',null).order('id',{ascending:false}).limit(80);
+    if(a.error)throw a.error;
+    CHAT.pub=(a.data||[]).slice().reverse();
+    const now=Date.now();
+    if(!CHAT.ready||now-(CHAT.dmFull||0)>300000){CHAT.dm=await chatFetchDm(0);CHAT.dmFull=now}
+    else{const add=await chatFetchDm(CHAT.dm.length?CHAT.dm[CHAT.dm.length-1].id:0);if(add.length)CHAT.dm=CHAT.dm.concat(add)}
+    CHAT.ready=true;CHAT.err='';
   }catch(e){CHAT.err=String(e&&e.message||e).indexOf('chat_messages')>-1?'setup':'err'}
   CHAT.busy=false;
   if(UI.tab==='chat')chatPaint();else renderNavOnly();
 }
 function renderNavOnly(){if(CLOUD.uid&&CLOUD.approved!==false)renderNav()}
 function chatMsgs(){
-  const C=UI.chat;
-  if(C.view==='pub')return CHAT.pub;
-  return CHAT.dm.filter(m=>m.user_id===C.peer||m.to_user===C.peer);
+  const C=UI.chat,tmp=(CHAT.tmp||[]);
+  if(C.view==='pub')return CHAT.pub.concat(tmp.filter(m=>!m.to_user));
+  return CHAT.dm.concat(tmp.filter(m=>m.to_user)).filter(m=>m.user_id===C.peer||m.to_user===C.peer);
 }
 function chatMsgHtml(m,prev){
   const me=m.user_id===CLOUD.uid,d=new Date(m.created_at),day=d.toLocaleDateString('sv-SE'),id=m.user_id;
@@ -1604,12 +1624,24 @@ function chatMsgHtml(m,prev){
 function chatPaint(){
   const el=document.getElementById('chatlist');
   if(!el){if(UI.tab==='chat'&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||''))render();return}
-  const ms=chatMsgs(),near=el.scrollHeight-el.scrollTop-el.clientHeight<80;
-  const html=ms.length?ms.map((m,i)=>chatMsgHtml(m,ms[i-1])).join(''):'<div class="empty">Henüz mesaj yok. İlk mesajı sen yaz.</div>';
-  if(el.dataset.h!==html){el.innerHTML=html;el.dataset.h=html;if(near||!el.dataset.init)el.scrollTop=el.scrollHeight;el.dataset.init='1'}
-  const last=ms.length?ms[ms.length-1].id:0;
-  if(UI.chat.view==='pub')chatMark('pub',last);else if(UI.chat.peer)ms.forEach(m=>{if(m.user_id===UI.chat.peer)chatMark('u'+m.user_id,m.id)});
-  renderNavOnly();
+  const ms=chatMsgs(),C=UI.chat;
+  let near;
+  if(!el.dataset.init){near=C.nb!==false}else near=el.scrollHeight-el.scrollTop-el.clientHeight<90;
+  const want=new Set(ms.map(m=>String(m.id)));
+  Array.from(el.children).forEach(c=>{if(!c.dataset.mid||!want.has(c.dataset.mid))c.remove()});
+  let cur=el.firstElementChild,changed=false;
+  ms.forEach((m,i)=>{
+    const id=String(m.id);
+    if(cur&&cur.dataset.mid===id){cur=cur.nextElementSibling;return}
+    const w=document.createElement('div');w.dataset.mid=id;w.style.display='contents';w.innerHTML=chatMsgHtml(m,ms[i-1]);
+    el.insertBefore(w,cur);changed=true;
+  });
+  if(!ms.length&&!el.querySelector('.empty'))el.innerHTML='<div class="empty">Henüz mesaj yok. İlk mesajı sen yaz.</div>';
+  if(!el.dataset.init){el.dataset.init='1';if(near||C.st==null)el.scrollTop=el.scrollHeight;else el.scrollTop=C.st}
+  else if(changed&&near)el.scrollTop=el.scrollHeight;
+  const last=ms.filter(m=>m.id>0).reduce((a,m)=>Math.max(a,m.id),0);
+  if(C.view==='pub')chatMark('pub',last);else if(C.peer)ms.forEach(m=>{if(m.user_id===C.peer&&m.id>0)chatMark('u'+m.user_id,m.id)});
+  const nk=chatUnread()+'|'+(UI.tab);if(CHAT.nk!==nk){CHAT.nk=nk;renderNavOnly()}
 }
 function vChat(){
   const C=UI.chat;
@@ -1637,15 +1669,31 @@ function vChat(){
 async function chatSend(){
   const inp=document.getElementById('chin'),C=UI.chat;
   const v=((inp&&inp.value)||C.draft||'').trim();
-  if(!v||!sb||!CLOUD.uid)return;
+  if(!v||!sb||!CLOUD.uid||CHAT.sending)return;
   if(C.view==='dm'&&!C.peer)return;
-  if(inp)inp.disabled=true;
-  const r=await sb.from('chat_messages').insert({user_id:CLOUD.uid,to_user:C.view==='dm'?C.peer:null,body:v.slice(0,500)});
-  if(inp)inp.disabled=false;
-  if(r.error){toast(/row-level|policy|violat/i.test(r.error.message||'')?'Çok hızlı yazıyorsun ya da mesaj gönderme iznin yok.':'Mesaj gönderilemedi.');return}
-  C.draft='';if(inp){inp.value='';inp.focus()}
-  await chatLoad();
+  const dm=C.view==='dm';
+  if(!dm){
+    const cut=Date.now()-60000;
+    const recent=CHAT.pub.filter(m=>m.user_id===CLOUD.uid&&new Date(m.created_at).getTime()>cut).length+(CHAT.tmp||[]).filter(m=>!m.to_user).length;
+    if(recent>=5){toast('Genel sohbette dakikada en fazla 5 mesaj yazabilirsin.');return}
+  }
+  CHAT.sending=true;
+  const tmp={id:-Date.now(),user_id:CLOUD.uid,to_user:dm?C.peer:null,sname:S.prof.name||CLOUD.defName,body:v.slice(0,500),created_at:new Date().toISOString()};
+  (CHAT.tmp=CHAT.tmp||[]).push(tmp);
+  C.draft='';if(inp){inp.value='';}
+  C.nb=true;chatPaint();const el0=document.getElementById('chatlist');if(el0)el0.scrollTop=el0.scrollHeight;
+  const r=await sb.from('chat_messages').insert({user_id:CLOUD.uid,to_user:tmp.to_user,body:tmp.body});
+  if(r.error){
+    CHAT.tmp=CHAT.tmp.filter(x=>x!==tmp);
+    toast(/row-level|policy|violat/i.test(r.error.message||'')?(dm?'Mesaj gönderilemedi.':'Çok hızlı yazıyorsun ya da mesaj gönderme iznin yok.'):'Mesaj gönderilemedi.');
+    if(!C.draft){C.draft=v;const i2=document.getElementById('chin');if(i2)i2.value=v}
+    chatPaint();CHAT.sending=false;return;
+  }
+  await chatLoad(true);
+  CHAT.tmp=CHAT.tmp.filter(x=>x!==tmp);
+  chatPaint();
   const el=document.getElementById('chatlist');if(el)el.scrollTop=el.scrollHeight;
+  CHAT.sending=false;
 }
 function chatOpen(tab){
   if(tab==='chat'){UI.chat.q='';chatLoad()}
