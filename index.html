@@ -306,7 +306,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.6.0';
+const APP_VERSION='4.7.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -2085,6 +2085,134 @@ function dHudHtml(){
   return`<div class="dhud">${side(me,m,false)}<span class="dvs">VS</span>${side(op,o,true)}</div>
   <div class="dprog"><div class="bar"><i style="width:${Math.round(m.a/n*100)}%"></i></div><div class="bar opp"><i style="width:${Math.round(o.a/n*100)}%"></i></div></div>`;
 }
+/* ---------- düello salonu + teklif (15 sn) ---------- */
+const LOBBY={on:[],duels:[],err:'',sig:'',busy:false,tick:0};
+let INV=null;
+const duelLobbyView=()=>UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby'&&!UI.quiz;
+const peerSet=u=>{if(u&&u.id)CHAT.peers[u.id]=Object.assign(CHAT.peers[u.id]||{},{id:u.id,name:u.name,un:u.un,color:u.color|0,av:u.av|0,fr:u.fr||'',ad:!!u.ad})};
+async function lobbyLoad(){
+  if(!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine||LOBBY.busy)return;LOBBY.busy=true;
+  try{
+    const r=await sb.rpc('duel_lobby');
+    if(r.error||!r.data){LOBBY.err=/duel_lobby|PGRST202|42883|schema cache/i.test(String(r.error&&(r.error.message||r.error.code)||''))?'setup':'err';if(duelLobbyView())render();return}
+    LOBBY.err='';const d=r.data;
+    (d.online||[]).forEach(peerSet);(d.duels||[]).forEach(x=>{peerSet(x.a);peerSet(x.b)});if(d.inbox)peerSet(d.inbox.from);if(d.outbox)peerSet(d.outbox.to);
+    LOBBY.on=d.online||[];LOBBY.duels=d.duels||[];
+    lobbyInvites(d);
+    const sig=JSON.stringify([LOBBY.on.map(x=>[x.id,x.st,x.low]),LOBBY.duels.map(x=>[x.id,x.a1,x.a2])]);
+    if(sig!==LOBBY.sig){LOBBY.sig=sig;if(duelLobbyView()&&!INV)render()}
+  }catch(e){LOBBY.err='err'}finally{LOBBY.busy=false}
+}
+function lobbyInvites(d){
+  const ib=d.inbox,ob=d.outbox;
+  if(INV&&INV.busy)return;
+  if(ib){
+    if(!INV||INV.id!==ib.id){invClose();INV={dir:'in',id:ib.id,who:ib.from,exp:Date.now()+ib.left_ms,tot:Math.max(1000,ib.left_ms)};invShow()}
+    else INV.exp=Date.now()+ib.left_ms;
+    return;
+  }
+  if(INV&&INV.dir==='out'){
+    if(ob&&ob.id===INV.id&&ob.status==='pending'&&ob.left_ms>0){INV.exp=Date.now()+ob.left_ms;return}
+    const nm=INV.who.name,st=ob&&ob.id===INV.id?ob.status:'expired',did=ob&&ob.duel_id;
+    invClose();
+    if(st==='accepted'&&did){duelStart(did);return}
+    toast(st==='declined'?nm+' teklifi reddetti.':st==='cancelled'?'Teklif iptal edildi.':'Teklif kabul edilmedi, süre doldu. Tekrar gönderebilirsin.');
+    if(duelLobbyView())render();
+    return;
+  }
+  if(INV&&INV.dir==='in'){invClose();toast('Düello teklifi sona erdi.');if(duelLobbyView())render()}
+}
+function invCss(){return`
+#dvov{position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(10,12,28,.78);backdrop-filter:blur(4px);animation:adfade .2s ease both}
+#dvov .dvb{width:min(92vw,380px);background:var(--card,#fff);color:var(--ink,#111);border-radius:20px;padding:22px 18px;box-shadow:0 20px 60px rgba(0,0,0,.5);border:2px solid var(--accent,#2b4eff);text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;animation:adbox .35s cubic-bezier(.2,1.3,.4,1) both}
+#dvov .dvt{font-size:1.15rem;font-weight:700}
+#dvov .dvbar{width:100%;height:8px;border-radius:99px;background:rgba(128,128,128,.25);overflow:hidden}
+#dvov .dvbar i{display:block;height:100%;background:var(--accent,#2b4eff);width:100%}
+#dvov .dvr{display:flex;gap:10px;width:100%}#dvov .dvr .btn{flex:1}
+`}
+function invShow(){
+  if(!INV||document.getElementById('dvov'))return;
+  if(!document.getElementById('dvcss')){const s=document.createElement('style');s.id='dvcss';s.textContent=invCss();document.head.appendChild(s)}
+  const o=document.createElement('div');o.id='dvov';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Düello teklifi');
+  const w=INV.who,incoming=INV.dir==='in',low=incoming&&(S.tp||0)<DSTAKE;
+  o.innerHTML=`<div class="dvb">${avatar(w.name,w.color,true,w.av,frameFor(w.id,'auto'))}
+   <div class="dvt">${incoming?`${esc(w.name)} seni düelloya davet ediyor`:`${esc(w.name)} adlı kullanıcıya teklif gönderildi`}</div>
+   <div class="muted small">${incoming?`20 soru, soru başına ${DQ_T} sn. Bahis: ${DSTAKE} puan.`:'Cevap bekleniyor…'}</div>
+   <div class="dvbar"><i id="dvbi"></i></div><div class="mono" style="font-size:1.4rem" id="dvsec"></div>
+   ${incoming?`${low?`<div class="small" style="color:var(--bad)">Düelloya girmek için en az ${DSTAKE} puanın olmalı.</div>`:''}<div class="dvr"><button class="btn primary" data-inv="yes" ${low?'disabled':''}>Kabul et</button><button class="btn danger" data-inv="no">Reddet</button></div>`
+     :`<div class="dvr"><button class="btn" data-inv="cancel">Vazgeç</button></div>`}</div>`;
+  o.addEventListener('click',e=>{const b=e.target.closest('[data-inv]');if(!b)return;const k=b.getAttribute('data-inv');if(k==='yes')invAnswer(true);else if(k==='no')invAnswer(false);else if(k==='cancel')invCancel()});
+  document.body.appendChild(o);
+  ['app','nav'].forEach(t=>{const el=t==='app'?document.getElementById('app'):document.querySelector('nav');if(el)el.inert=true});
+  try{document.activeElement&&document.activeElement.blur()}catch(e){}
+  invTick();
+}
+function invClose(){
+  const o=document.getElementById('dvov');if(o)o.remove();
+  ['app','nav'].forEach(t=>{const el=t==='app'?document.getElementById('app'):document.querySelector('nav');if(el)el.inert=false});
+  INV=null;
+}
+function invTick(){
+  if(!INV)return;
+  const left=Math.max(0,INV.exp-Date.now()),tot=INV.tot||15000;
+  const bi=document.getElementById('dvbi'),sc=document.getElementById('dvsec');
+  if(bi)bi.style.width=Math.min(100,left/tot*100)+'%';if(sc)sc.textContent=Math.ceil(left/1000)+' sn';
+  if(left<=0&&!INV.busy){
+    if(INV.dir==='in'){invClose();toast('Teklif süresi doldu.');if(duelLobbyView())render()}
+    else if(!INV.exp0){INV.exp0=1;lobbyLoad()}
+  }
+}
+setInterval(invTick,200);
+async function invSend(target){
+  if(INV||!sb||!CLOUD.uid)return;
+  if((S.tp||0)<DSTAKE){toast('Teklif için en az '+DSTAKE+' puanın olmalı.');return}
+  const who=LOBBY.on.find(x=>x.id===target);if(!who)return;
+  try{
+    const r=await sb.rpc('duel_invite',{target});
+    if(r.error)throw r.error;
+    INV={dir:'out',id:r.data.id,who,exp:Date.now()+(r.data.left_ms||15000),tot:15000};invShow();
+  }catch(e){
+    const m=String(e&&e.message||'');
+    toast(/low points/i.test(m)?'Teklif için en az '+DSTAKE+' puanın olmalı.':/target low/i.test(m)?'Rakibin puanı düello için yetersiz.':/busy/i.test(m)&&/target/i.test(m)?'Kullanıcı şu an başka bir düelloda.':/invite busy/i.test(m)?'Şu an başka bir teklif işleniyor. Birkaç saniye sonra dene.':/offline/i.test(m)?'Kullanıcı artık düello sekmesinde değil.':/too many/i.test(m)?'Çok fazla teklif gönderdin, biraz bekle.':/duel_invite|PGRST202|42883|schema cache/i.test(m)?'Düello teklifi henüz kurulmadı (supabase-invite.sql).':'Teklif gönderilemedi.');
+    lobbyLoad();
+  }
+}
+async function invAnswer(yes){
+  if(!INV||INV.busy||INV.dir!=='in')return;
+  INV.busy=true;const id=INV.id,nm=INV.who.name;
+  try{
+    const r=await sb.rpc('duel_respond',{inv:id,accept:yes,p_wn:W.length});
+    if(r.error)throw r.error;
+    const st=r.data&&r.data.status;
+    invClose();
+    if(st==='accepted'&&r.data.duel_id){duelStart(r.data.duel_id);return}
+    toast(st==='declined'?'Teklif reddedildi.':st==='expired'?'Teklifin süresi dolmuş.':'Düello başlatılamadı.');
+  }catch(e){invClose();toast('İşlem tamamlanamadı.')}
+  if(duelLobbyView())render();lobbyLoad();
+}
+async function invCancel(){
+  if(!INV||INV.dir!=='out')return;const id=INV.id;invClose();
+  try{await sb.rpc('duel_invite_cancel',{inv:id})}catch(e){}
+  if(duelLobbyView())render();
+}
+setInterval(()=>{
+  if(document.hidden||!CLOUD.uid||CLOUD.approved===false)return;
+  LOBBY.tick++;
+  if(INV||(duelLobbyView()&&LOBBY.tick%2===0))lobbyLoad();
+},1500);
+function lobbyCard(){
+  if(!sb)return'';
+  if(LOBBY.err==='setup')return`<div class="card"><div class="fb bad">Düello salonu henüz kurulmadı. Yönetici <b>supabase-invite.sql</b> dosyasını Supabase SQL Editor'da bir kez çalıştırmalı.</div></div>`;
+  const lab={free:['Boşta','ok'],invite:['Teklif bekliyor',''],duel:['Maçta','warn']};
+  const row=u=>{
+    const can=u.st==='free'&&!u.low&&!INV&&(S.tp||0)>=DSTAKE,l=lab[u.st]||lab.free;
+    return`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="min-width:0;gap:10px">${avatar(u.name,u.color,false,u.av,frameFor(u.id,'auto'))}<div style="min-width:0"><b class="w" style="overflow-wrap:anywhere">${esc(u.name)}</b> <span class="muted small">@${esc(u.un)}</span><br><span class="badge ${l[1]}">${u.low&&u.st==='free'?'Puanı yetersiz':l[0]}</span></div></div>
+    <button class="btn primary" data-act="inv-send" data-u="${esc(u.id)}" ${can?'':'disabled'}>Düello teklifi</button></div></div>`};
+  const dl=x=>`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="gap:6px;min-width:0">${avatar(x.a.name,x.a.color,false,x.a.av,frameFor(x.a.id,'auto'))}<b class="small" style="overflow-wrap:anywhere">${esc(x.a.name)}</b></div><span class="mono muted small">⚔ ${x.a1}/${x.qn} · ${x.a2}/${x.qn}</span><div class="row" style="gap:6px;min-width:0"><b class="small" style="overflow-wrap:anywhere">${esc(x.b.name)}</b>${avatar(x.b.name,x.b.color,false,x.b.av,frameFor(x.b.id,'auto'))}</div></div></div>`;
+  return`<div class="card stack"><h2>Düello salonu</h2>
+   <div class="stack" style="gap:6px"><span class="small muted">Düello sekmesindekiler (${LOBBY.on.length})</span>${LOBBY.on.length?LOBBY.on.map(row).join(''):'<div class="small muted">Şu an düello sekmesinde başka kimse yok.</div>'}</div>
+   <div class="stack" style="gap:6px"><span class="small muted">Şu an oynanan düellolar (${LOBBY.duels.length})</span>${LOBBY.duels.length?LOBBY.duels.map(dl).join(''):'<div class="small muted">Şu an süren düello yok.</div>'}</div></div>`;
+}
 function vDuel(){
   const P=DUEL.phase,d=DUEL.d,n=DQ_N;
   const seg=`<div class="seg"><button class="chip" aria-pressed="false" data-act="qmode" data-v="solo">Normal test</button><button class="chip" aria-pressed="true" data-act="qmode" data-v="duel">⚔ Düello</button></div>`;
@@ -2101,7 +2229,7 @@ function vDuel(){
       ${R?`<div class="kp"><div><b>${R.w}</b><span>galibiyet</span></div><div><b>${R.l}</b><span>mağlubiyet</span></div><div><b>${R.d}</b><span>beraberlik</span></div></div>${R.last.length?`<div class="row" style="gap:6px">${R.last.map(x=>`<span class="badge ${x==='W'?'ok':x==='L'?'warn':''}">${x==='W'?'G':x==='L'?'M':'B'}</span>`).join('')}<span class="muted small">son maçlar</span></div>`:''}`:''}
       ${err}
       <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DSTAKE?'disabled':''}>Rakip bul (${DSTAKE} puan bahis)</button>${(S.tp||0)<DSTAKE?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. En az ${DSTAKE} gerekir.</div>`:''}
-      <button class="btn block" data-act="duel-bot">Botla alıştır</button></div>`;
+      <button class="btn block" data-act="duel-bot">Botla alıştır</button></div>${lobbyCard()}`;
   }else if(P==='search'){
     const lw=DUEL.longWait;
     body=`<div class="card stack" style="text-align:center"><h2>Rakip aranıyor…</h2><div class="mono" style="font-size:2rem"><span id="dsec">0</span> sn</div>
@@ -2166,9 +2294,10 @@ document.addEventListener('click',async e=>{
     case'chat-back':UI.chat.peer=null;render();break;
     case'chat-send':chatSend();break;
     case'chat-del':{const id=+g('data-id');const adm=CHAT.pub.some(m=>m.id===id&&m.user_id!==CLOUD.uid);const r=adm?await sb.rpc('admin_delete_chat',{mid:id}):await sb.from('chat_messages').delete().eq('id',id);if(r.error)toast('Silinemedi.');else{CHAT.pub=CHAT.pub.filter(m=>m.id!==id);CHAT.dm=CHAT.dm.filter(m=>m.id!==id);chatPaint()}break}
-    case'qmode':UI.qmode=g('data-v');if(UI.qmode==='duel'){if(DUEL.phase==='result')dReset();duelRecord();duelSync()}render();break;
+    case'qmode':UI.qmode=g('data-v');if(UI.qmode==='duel'){if(DUEL.phase==='result')dReset();duelRecord();duelSync();lobbyLoad()}render();break;
     case'duel-find':duelFind();break;
     case'duel-cancel':duelCancel();break;
+    case'inv-send':invSend(g('data-u'));break;
     case'duel-bot':if(DUEL.phase==='search'){try{sb.rpc('duel_cancel')}catch(e){}}duelStartBot();break;
     case'duel-opt':duelAnswer(+g('data-v'));break;
     case'duel-exit':dReset();render();break;
