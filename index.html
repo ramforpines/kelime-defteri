@@ -304,7 +304,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.1.1';
+const APP_VERSION='4.1.2';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -1675,11 +1675,11 @@ function vChat(){
     const th={};
     CHAT.dm.forEach(m=>{const o=m.user_id===CLOUD.uid?m.to_user:m.user_id;th[o]=m});
     const list=Object.keys(th).sort((a,b)=>th[b].id-th[a].id);
-    const q=(C.q||'').trim().toLowerCase();
-    const found=q?CLOUD.lb.filter(r=>r.id!==CLOUD.uid&&r.name&&r.name.toLowerCase().includes(q)).slice(0,12):[];
+    const q=(C.q||'').trim().toLowerCase().replace(/^@/,'');
+    const found=q?CLOUD.lb.filter(r=>r.id!==CLOUD.uid&&r.name&&((r.name||'').toLowerCase().includes(q)||(r.un||'').toLowerCase().includes(q))).slice(0,12):[];
     const row=(id,sub,n)=>{const r=chatPeer(id);return`<div class="rk" data-act="chat-open" data-v="${esc(id)}" style="grid-template-columns:54px 1fr auto">${avatar(r.name,r.color,false,r.av,frameFor(id,r.fr))}<div class="nm">${esc(r.name)}<div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(sub)}</div></div>${n?`<span class="badge">${n}</span>`:''}</div>`};
-    body=`<input id="chq" class="nameinp" type="search" placeholder="Yeni mesaj için kullanıcı ara" value="${esc(C.q||'')}" autocomplete="off">`+
-      (q?(found.length?found.map(r=>row(r.id,'Mesaj yaz',0)).join(''):'<div class="empty">Kullanıcı bulunamadı.</div>'):
+    body=`<input id="chq" class="nameinp" type="search" placeholder="Yeni mesaj için ad veya @kullanıcı adı ara" value="${esc(C.q||'')}" autocomplete="off">`+
+      (q?(found.length?found.map(r=>row(r.id,r.un?'@'+r.un:'Mesaj yaz',0)).join(''):'<div class="empty">Kullanıcı bulunamadı.</div>'):
         (list.length?list.map(id=>row(id,(th[id].user_id===CLOUD.uid?'Sen: ':'')+th[id].body,chatUnread(id))).join(''):'<div class="empty">Henüz özel mesajın yok. Yukarıdan birini ara ya da Sıra ekranında bir profile dokunup "Mesaj gönder"i seç.</div>'));
   }else{
     const hd=C.view==='dm'?(()=>{const r=chatPeer(C.peer);return`<div class="row" style="gap:10px"><button class="chip" data-act="chat-back">‹ Geri</button><span class="row" data-pc="${esc(C.peer)}" style="gap:10px;cursor:pointer">${avatar(r.name,r.color,false,r.av,frameFor(C.peer,r.fr))}<b>${esc(r.name)}</b></span></div>`})():'';
