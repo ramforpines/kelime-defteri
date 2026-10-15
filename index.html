@@ -304,7 +304,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.1.2';
+const APP_VERSION='4.2.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -345,7 +345,7 @@ function leagueMap(){
   });
   lgMemo={key,lb:CLOUD.lb,m};return m;
 }
-const isAdm=id=>id===CLOUD.uid?!!CLOUD.admin:!!((CLOUD.lb.find(x=>x.id===id)||{}).ad);
+const isAdm=id=>id===CLOUD.uid?!!CLOUD.admin:!!((CLOUD.lb.find(x=>x.id===id)||(typeof CHAT!=='undefined'&&CHAT.peers[id])||{}).ad);
 const lgAttr=id=>`data-lg="${isAdm(id)?'admin':(leagueMap()[id]|0)}"`;
 const myLeague=()=>leagueMap()[CLOUD.uid]|0;
 const normFrame=f=>(f==='none'||LGIDX.has(f))?f:'auto';
@@ -438,7 +438,7 @@ function myPoints(){
 }
 function myScore(){
   const P=myPoints();
-  return{name:S.prof.name,color:S.prof.color,hide:!S.prof.show,dk:today(),da:P.D.A,dc:P.D.C,dp:r1(P.D.pts),wk:weekKey(),wa:P.W.A,wc:P.W.C,wp:r1(P.W.pts),ans:P.T.A,cor:P.T.C,ap:r1(P.T.pts),lrn:learnedCount(),st:streak(),sd:today(),av:Math.min(99,Math.max(0,S.prof.av|0)),fr:normFrame(S.prof.frame),bd:Object.keys(S.bd||{}).filter(k=>BYBADGE.has(k)).join(',')};
+  return{name:S.prof.name,color:S.prof.color,hide:false,dk:today(),da:P.D.A,dc:P.D.C,dp:r1(P.D.pts),wk:weekKey(),wa:P.W.A,wc:P.W.C,wp:r1(P.W.pts),ans:P.T.A,cor:P.T.C,ap:r1(P.T.pts),lrn:learnedCount(),st:streak(),sd:today(),av:Math.min(99,Math.max(0,S.prof.av|0)),fr:normFrame(S.prof.frame),bd:Object.keys(S.bd||{}).filter(k=>BYBADGE.has(k)).join(',')};
 }
 /* ---------- Supabase: hesap, eşitleme, liderlik tablosu ---------- */
 const SB_URL='https://cqlcrwolgxrrrcyyluin.supabase.co';
@@ -629,7 +629,6 @@ async function admAct(kind,uid,extra){
     if(kind==='approve'){r=await sb.rpc('admin_set_approved',{target:uid,flag:true});msg='Kullanıcı onaylandı.'}
     else if(kind==='revoke'){r=await sb.rpc('admin_set_approved',{target:uid,flag:false});msg='Onay kaldırıldı.'}
     else if(kind==='approve-all'){r=await sb.rpc('admin_set_approved_many',{targets:extra,flag:true});msg=extra.length+' kullanıcı onaylandı.'}
-    else if(kind==='block'||kind==='unblock'){r=await sb.rpc('admin_set_blocked',{target:uid,flag:kind==='block'});msg=kind==='block'?'Tablodan çıkarıldı.':'Tabloya geri alındı.'}
     else if(kind==='reset-progress'){r=await sb.rpc('admin_reset_progress',{target:uid});msg='İlerleme ve puan sıfırlandı.'}
     else if(kind==='reset-pw'){const pw=tempPw();r=await sb.rpc('admin_reset_password',{target:uid,new_password:pw});if(!r.error)A.pw={uid,pw};msg='Geçici şifre verildi.'}
     else{r=await sb.rpc('admin_delete_user',{target:uid});msg='Kullanıcı silindi.'}
@@ -744,13 +743,12 @@ function vAdmin(){
   ${!A.loaded&&!A.err?'<div class="empty">Yükleniyor…</div>':list.length?list.map(u=>{
     const id=u.user_id,acc=u.ans?Math.round(u.cor/u.ans*100):0;
     return`<div class="entry"><div class="row" style="justify-content:space-between;align-items:flex-start">
-    <div style="min-width:0"><span class="w" style="overflow-wrap:anywhere">${esc(u.name||u.username)}</span>${u.is_admin?' <span class="badge">yönetici</span>':''}${u.lb_blocked?' <span class="badge bad">tablodan çıkarıldı</span>':''}<br><span class="muted small">@${esc(u.username)} · kayıt ${d(u.created_at)} · son giriş ${d(u.last_sign_in_at)}</span></div>
+    <div style="min-width:0"><span class="w" style="overflow-wrap:anywhere">${esc(u.name||u.username)}</span>${u.is_admin?' <span class="badge">yönetici</span>':''}<br><span class="muted small">@${esc(u.username)} · kayıt ${d(u.created_at)} · son giriş ${d(u.last_sign_in_at)}</span></div>
     <span class="badge ${u.approved?'ok':'warn'}">${u.approved?'Onaylı':'Bekliyor'}</span></div>
     <div class="muted small" style="margin-top:6px">${u.ans?`${nf(Math.round(u.ap||0))} puan · ${nf(u.ans)} soru · %${acc} doğru · ${nf(u.lrn||0)} öğrenilen · son çalışma ${d(u.active_at)}`:'Henüz çalışma verisi yok'}</div>
     ${A.pw&&A.pw.uid===id?`<div class="card" style="margin-top:8px"><div class="small">Geçici şifre (bir kez gösterilir, kullanıcıya ilet):</div><div class="w" style="font-family:ui-monospace,monospace;letter-spacing:.05em;user-select:all">${esc(A.pw.pw)}</div><div class="small muted">Kullanıcı girdikten sonra Ben &gt; Ayarlar'dan değiştirsin.</div><button class="btn" data-act="adm-pw-copy">Kopyala</button> <button class="btn" data-act="adm-pw-close">Kapat</button></div>`:''}
     ${u.is_admin?'':`<div class="row" style="margin-top:10px;flex-wrap:wrap">${u.approved?btn('adm-revoke',id,'Onayı kaldır'):btn('adm-approve',id,'Onayla','primary')}
     ${btn('adm-pw',id,'Şifre ver')}
-    ${u.lb_blocked?btn('adm-unblock',id,'Tabloya al'):btn('adm-block',id,'Tablodan çıkar')}
     ${A.rs===id?btn('adm-rs-yes',id,'Evet, sıfırla','danger')+'<button class="btn" data-act="adm-rs-no">Vazgeç</button>':btn('adm-rs',id,'Puanı sıfırla')}
     ${A.confirm===id?btn('adm-del-yes',id,'Evet, kalıcı sil','danger')+'<button class="btn" data-act="adm-del-no">Vazgeç</button>':btn('adm-del',id,'Sil','danger')}</div>
     ${A.confirm===id?'<div class="small muted" style="margin-top:6px">Hesap, ilerleme ve puanlar kalıcı olarak silinir.</div>':''}${A.rs===id?'<div class="small muted" style="margin-top:6px">Bu kullanıcının ilerlemesi ve puanı silinir; hesabı kalır.</div>':''}`}</div>`}).join(''):'<div class="empty card">Bu listede kullanıcı yok.</div>'}
@@ -1447,7 +1445,7 @@ function weekTop(){
   rows.forEach((r,i)=>{r._rk=(i>0&&rows[i-1].wp===r.wp)?rows[i-1]._rk:i+1;if(r._rk<=3)m[r.id]=r._rk});
   return m;
 }
-function newDraft(){return{name:S.prof.name||CLOUD.defName,color:S.prof.color,show:S.prof.show,av:S.prof.av|0,frame:normFrame(S.prof.frame)}}
+function newDraft(){return{name:S.prof.name||CLOUD.defName,color:S.prof.color,av:S.prof.av|0,frame:normFrame(S.prof.frame)}}
 function profileForm(){
   const d=UI.draft||(UI.draft=newDraft());
   const t=awardStats(),wt=weekTop();
@@ -1458,7 +1456,6 @@ function profileForm(){
   <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Avatar</div><div class="avgrid"><button data-av="0" aria-pressed="${!d.av}" aria-label="Harf">Aa</button>${AVATARS.map((e,i)=>(i+1===ADMIN_AV&&!CLOUD.admin)?'':`<button data-av="${i+1}" aria-pressed="${d.av===i+1}" aria-label="${esc(e[0])}" title="${esc(e[0])}">${avSvg(i+1)}</button>`).join('')}</div></div>
   <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Renk</div><div class="sw">${COLORS.map((c,i)=>`<button style="background:${c}" data-sw="${i}" aria-pressed="${d.color===i}" aria-label="Renk ${i+1}"></button>`).join('')}</div></div>
   <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Çerçeve</div><div class="stack" style="gap:6px"><button class="frp" data-fr="auto" aria-pressed="${d.frame==='auto'}">${avatar(d.name,d.color,false,d.av,LEAGUES[cur].k)}<span><b>Otomatik</b><br><span class="small muted">Şu anki ligin: ${LEAGUES[cur].n}</span></span></button><button class="frp" data-fr="none" aria-pressed="${d.frame==='none'}"><span class="small"><b>Çerçevesiz</b></span></button>${frames}</div></div>
-  <label class="row" style="gap:8px"><input type="checkbox" id="pshow" ${d.show?'checked':''}> <span>Liderlik tablosunda görün</span></label>
   <button class="btn primary" data-act="save-prof">Profili kaydet</button></div>`;
 }
 function leagueCard(){
@@ -1507,7 +1504,7 @@ function rankData(){
     st:(r.sd&&r.sd>=addDays(td,-1))?(r.st||0):0,me:r.id===CLOUD.uid}));
 }
 function myRankLine(){
-  if(!CLOUD.ready||!CLOUD.lbReady||!S.prof.name||!S.prof.show)return'';
+  if(!CLOUD.ready||!CLOUD.lbReady||!S.prof.name)return'';
   const rows=rankData().filter(r=>r.week.p>0).sort((a,b)=>b.week.p-a.week.p);
   const i=rows.findIndex(r=>r.me);
   if(i<0)return'';
@@ -1547,7 +1544,6 @@ function vRank(){
       <div><b>Altın ve üstü liglerde</b> yanlış cevap, doğru cevap puanının dörtte biri kadar puan düşürür. Günlük puan sıfırın altına inmez.</div>
       <div><b>Günlük asgari hedef:</b> 1150 puanın altında 20 doğru, 1150 puandan itibaren 35, 2000 puandan itibaren 50 doğru. Tutturmayan her gün için toplam puanından sırasıyla %1, %2 ve %2 kesilir.</div></div></details>
     ${!CLOUD.write?'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. Sıraya girmek için sahibinden "Katkıda bulunan" izni iste.</div>':''}
-    ${S.prof.name&&!S.prof.show?'<div class="card small muted">Profilin gizli, tabloda görünmüyorsun. Profil sekmesinden açabilirsin.</div>':''}
     ${CLOUD.lbErr?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':''}`;
   }
   return`<div class="top"><h1>Sıralama</h1></div><div class="stack">${body}</div>`;
@@ -1580,7 +1576,7 @@ function say(word,pron){
 }
 
 // ---- Sohbet (genel + özel) ----
-const CHAT={pub:[],dm:[],tmp:[],ready:false,err:'',busy:false,dmFull:0,sending:false,nk:''};
+const CHAT={peers:{},found:null,fq:'',pub:[],dm:[],tmp:[],ready:false,err:'',busy:false,dmFull:0,sending:false,nk:''};
 UI.chat={view:'pub',peer:null,draft:'',q:''};
 function chatSeen(){try{return JSON.parse(localStorage.getItem('kd-chat-'+CLOUD.uid)||'{}')}catch(e){return{}}}
 function chatMark(k,id){try{const s=chatSeen();if((s[k]||0)<id){s[k]=id;localStorage.setItem('kd-chat-'+CLOUD.uid,JSON.stringify(s))}}catch(e){}}
@@ -1593,12 +1589,28 @@ function chatUnread(peer){
 function chatPeer(id){
   const r=CLOUD.lb.find(x=>x.id===id);
   if(r)return r;
+  if(CHAT.peers&&CHAT.peers[id])return CHAT.peers[id];
   if(id===CLOUD.uid)return{id,name:S.prof.name||CLOUD.defName,un:CLOUD.username,color:S.prof.color,av:S.prof.av,fr:S.prof.frame};
   const m=CHAT.dm.find(x=>x.user_id===id);
   return{id,name:m?m.sname:'Kullanıcı',color:0,av:0,fr:''};
 }
 const CHCOLS='id,user_id,to_user,sname,body,created_at';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let chatFindT=null;
+function chatFind(raw){
+  clearTimeout(chatFindT);
+  const q=String(raw||'').trim().toLowerCase().replace(/^@/,'');
+  if(!q||!sb){CHAT.found=null;return}
+  chatFindT=setTimeout(async()=>{
+    try{
+      const r=await sb.rpc('chat_find_users',{q});
+      if(r.error||!Array.isArray(r.data))return;
+      CHAT.found=r.data.map(x=>({id:x.user_id,name:x.name||x.username,un:x.username,color:x.color|0,av:x.av|0,fr:x.fr||'',ad:!!x.ad}));
+      CHAT.found.forEach(x=>{CHAT.peers[x.id]=x});CHAT.fq=q;
+      if(UI.tab==='chat'&&UI.chat.view==='dm'&&!UI.chat.peer&&(UI.chat.q||'').trim().toLowerCase().replace(/^@/,'')===q){const n=document.getElementById('chq'),pos=n?n.selectionStart:0;render();const n2=document.getElementById('chq');if(n2){n2.focus();n2.setSelectionRange(pos,pos)}}
+    }catch(e){}
+  },250);
+}
 async function chatFetchDm(after){
   const out=[];let last=after||0;
   for(let k=0;k<50;k++){
@@ -1676,7 +1688,7 @@ function vChat(){
     CHAT.dm.forEach(m=>{const o=m.user_id===CLOUD.uid?m.to_user:m.user_id;th[o]=m});
     const list=Object.keys(th).sort((a,b)=>th[b].id-th[a].id);
     const q=(C.q||'').trim().toLowerCase().replace(/^@/,'');
-    const found=q?CLOUD.lb.filter(r=>r.id!==CLOUD.uid&&r.name&&((r.name||'').toLowerCase().includes(q)||(r.un||'').toLowerCase().includes(q))).slice(0,12):[];
+    const found=q&&CHAT.found&&CHAT.fq===q?CHAT.found:q?CLOUD.lb.filter(r=>r.id!==CLOUD.uid&&r.name&&((r.name||'').toLowerCase().includes(q)||(r.un||'').toLowerCase().includes(q))).slice(0,12):[];
     const row=(id,sub,n)=>{const r=chatPeer(id);return`<div class="rk" data-act="chat-open" data-v="${esc(id)}" style="grid-template-columns:54px 1fr auto">${avatar(r.name,r.color,false,r.av,frameFor(id,r.fr))}<div class="nm">${esc(r.name)}<div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(sub)}</div></div>${n?`<span class="badge">${n}</span>`:''}</div>`};
     body=`<input id="chq" class="nameinp" type="search" placeholder="Yeni mesaj için ad veya @kullanıcı adı ara" value="${esc(C.q||'')}" autocomplete="off">`+
       (q?(found.length?found.map(r=>row(r.id,r.un?'@'+r.un:'Mesaj yaz',0)).join(''):'<div class="empty">Kullanıcı bulunamadı.</div>'):
@@ -2043,8 +2055,6 @@ document.addEventListener('click',async e=>{
     case'adm-pw':admAct('reset-pw',g('data-u'));break;
     case'adm-pw-copy':try{navigator.clipboard.writeText(UI.adm.pw.pw).then(()=>toast('Kopyalandı.'),()=>{})}catch(e){}break;
     case'adm-pw-close':UI.adm.pw=null;render();break;
-    case'adm-block':admAct('block',g('data-u'));break;
-    case'adm-unblock':admAct('unblock',g('data-u'));break;
     case'adm-rs':UI.adm.rs=g('data-u');UI.adm.confirm=null;render();break;
     case'adm-rs-no':UI.adm.rs=null;render();break;
     case'adm-rs-yes':admAct('reset-progress',g('data-u'));break;
@@ -2060,7 +2070,7 @@ document.addEventListener('click',async e=>{
     case'save-prof':{
       syncDraft();const d=UI.draft,nm=d.name.replace(/[\u0000-\u001f]/g,'').trim().slice(0,24);
       if(nm.length<2){toast('Ad en az 2 karakter olmalı.');break}
-      S.prof={name:nm,color:d.color,show:d.show,av:d.av|0,frame:(LGIDX.has(d.frame)&&LGIDX.get(d.frame)>myLeague())?'auto':normFrame(d.frame)};UI.draft=null;save();CLOUD.last='';pushNow();render();toast('Profil kaydedildi.');break}
+      S.prof={name:nm,color:d.color,show:true,av:d.av|0,frame:(LGIDX.has(d.frame)&&LGIDX.get(d.frame)>myLeague())?'auto':normFrame(d.frame)};UI.draft=null;save();CLOUD.last='';pushNow();render();toast('Profil kaydedildi.');break}
     case'export':{UI.backup=JSON.stringify(S);render();try{navigator.clipboard.writeText(UI.backup).then(()=>toast('Yedek panoya kopyalandı.'),()=>{})}catch(e){}break}
     case'import':importBackup();break;
     case'reset':UI.confirmReset=true;render();break;
@@ -2071,7 +2081,7 @@ document.addEventListener('click',async e=>{
 document.addEventListener('input',e=>{
   if(e.target.id==='fbq'){UI.fb.draft=e.target.value;return}
   if(e.target.id==='chin'){UI.chat.draft=e.target.value;return}
-  if(e.target.id==='chq'){UI.chat.q=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('chq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
+  if(e.target.id==='chq'){UI.chat.q=e.target.value;chatFind(e.target.value);const pos=e.target.selectionStart;render();const n=document.getElementById('chq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
   if(e.target.dataset&&e.target.dataset.fid){UI.afb.reply[e.target.dataset.fid]=e.target.value;return}
   if(e.target.id==='annq'){UI.adm.annDraft=e.target.value;return}
   if(e.target.id==='adq'){UI.adm.q=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('adq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
@@ -2097,8 +2107,8 @@ document.addEventListener('keydown',e=>{
 function syncDraft(){
   UI.focusName=document.activeElement&&document.activeElement.id==='pname';
   if(!UI.draft)UI.draft=newDraft();
-  const n=document.getElementById('pname'),s=document.getElementById('pshow');
-  if(n)UI.draft.name=n.value;if(s)UI.draft.show=s.checked;
+  const n=document.getElementById('pname');
+  if(n)UI.draft.name=n.value;
 }
 function importBackup(){
   const v=($('#bk')||{}).value||'';
