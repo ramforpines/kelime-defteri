@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kelime Defteri</title>
+<meta name="theme-color" content="#2b4eff">
+<meta name="description" content="Kelime Defteri: sözlük, test, tekrar ve liderlik tablosu">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kelime Defteri">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px)}
+[hidden]{display:none!important}
+img{max-width:100%}
+/* Layout: tek sütunlu, telefon öncelikli kabuk; altta sekme çubuğu, üstte sayfa başlığı, içerik 720px ile sınırlı. */
+:root{
+  --bg:#f2f4f9; --surface:#ffffff; --surface2:#eaeef7; --ink:#141f3a; --muted:#56627f; --line:#d9dfec;
+  --accent:#2b4eff; --accent-ink:#ffffff; --accent-soft:#e3e9ff;
+  --ok:#0f7a58; --ok-bg:#dff4ea; --bad:#be2c47; --bad-bg:#fde6ea; --warn:#9a6a00; --warn-bg:#fff1cf;
+  --l-A1:#3a9d7c; --l-A2:#2f9aa3; --l-B1:#3c86c4; --l-B2:#3b62d6; --l-C1:#6050cc; --l-C2:#8e3cb4;
+  --font-display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --font-body:'Instrument Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  --nav-h:62px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1325; --surface:#151d33; --surface2:#1d2742; --ink:#e7ebf8; --muted:#9ba8c8; --line:#27324f;
+  --accent:#7f95ff; --accent-ink:#0d1325; --accent-soft:#222d57;
+  --ok:#4fd0a0; --ok-bg:#103228; --bad:#ff8097; --bad-bg:#3a1829; --warn:#f0be52; --warn-bg:#392d12;
+  --l-A1:#5fcfa6; --l-A2:#55cdd6; --l-B1:#6aaee6; --l-B2:#7f9bff; --l-C1:#9a8cff; --l-C2:#c78af0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1325; --surface:#151d33; --surface2:#1d2742; --ink:#e7ebf8; --muted:#9ba8c8; --line:#27324f;
+  --accent:#7f95ff; --accent-ink:#0d1325; --accent-soft:#222d57;
+  --ok:#4fd0a0; --ok-bg:#103228; --bad:#ff8097; --bad-bg:#3a1829; --warn:#f0be52; --warn-bg:#392d12;
+  --l-A1:#5fcfa6; --l-A2:#55cdd6; --l-B1:#6aaee6; --l-B2:#7f9bff; --l-C1:#9a8cff; --l-C2:#c78af0; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.45;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+#app{max-width:720px;margin:0 auto;padding-block:16px calc(var(--nav-h) + 28px)}
+h1,h2,h3{font-family:var(--font-display);margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:1.9rem;letter-spacing:-.01em}
+h2{font-size:1.2rem}
+h3{font-size:1rem}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.mono{font-family:var(--font-mono);font-size:.9em}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 14px;font-weight:600;min-height:44px}
+.btn:hover{background:var(--surface2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:.88rem;font-weight:500;min-height:34px}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.lv{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:.78rem;font-weight:500;border:1px solid currentColor;border-radius:6px;padding:1px 7px}
+.lv-A1{color:var(--l-A1)}.lv-A2{color:var(--l-A2)}.lv-B1{color:var(--l-B1)}.lv-B2{color:var(--l-B2)}.lv-C1{color:var(--l-C1)}.lv-C2{color:var(--l-C2)}
+.badge{font-size:.75rem;font-weight:600;border-radius:6px;padding:2px 8px;background:var(--surface2);color:var(--muted)}
+.badge.ok{background:var(--ok-bg);color:var(--ok)}.badge.bad{background:var(--bad-bg);color:var(--bad)}.badge.warn{background:var(--warn-bg);color:var(--warn)}
+/* nav */
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:10;
+  padding:6px max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px))}
+nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
+nav button{border:0;background:none;border-radius:10px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.7rem;padding:0;font-weight:600;color:var(--muted)}
+nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav button[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
+/* today */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.ring{width:104px;height:104px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .n{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-family:var(--font-display);font-weight:700;font-size:1.35rem;line-height:1}
+.ring .n small{display:block;font-family:var(--font-body);font-weight:500;font-size:.7rem;color:var(--muted);margin-top:3px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0}
+.kpi b{display:block;font-family:var(--font-display);font-size:1.5rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{font-size:.8rem;color:var(--muted)}
+.wotd .w{font-family:var(--font-display);font-size:1.7rem;font-weight:700}
+/* bars */
+.bar{height:10px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.lvrow{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:6px 0}
+.lvrow .num{font-variant-numeric:tabular-nums;font-size:.85rem;color:var(--muted);text-align:right}
+.days{display:flex;align-items:flex-end;gap:5px;height:110px;padding-top:6px}
+.days div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%;min-width:0}
+.days i{display:block;width:100%;background:var(--accent);border-radius:5px 5px 2px 2px;min-height:2px}
+.days i.w{background:var(--bad);opacity:.8;border-radius:2px}
+.days small{font-size:.66rem;color:var(--muted)}
+/* dict */
+.search{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;min-height:46px}
+.entry{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.entry .head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;width:100%;border:0;background:none;padding:0;text-align:left}
+.entry .w{font-family:var(--font-display);font-weight:700;font-size:1.15rem}
+.entry .tr{color:var(--muted)}
+.entry dl{margin:12px 0 0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px}
+.entry dt{font-size:.78rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding-top:2px}
+.entry dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.say{border:1px solid var(--line);background:var(--surface2);border-radius:8px;padding:2px 9px;font-size:.8rem;min-height:30px}
+/* quiz */
+.qtop{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.qtop .bar{flex:1}
+.qcard h2{font-size:1.3rem;white-space:pre-line;margin-bottom:16px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:grid;grid-template-columns:30px 1fr;gap:10px;text-align:left;align-items:start;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;min-height:52px;overflow-wrap:anywhere}
+.opt kbd{font-family:var(--font-mono);font-size:.8rem;background:var(--surface2);border-radius:6px;display:grid;place-items:center;height:26px;color:var(--muted)}
+.opt:hover:not([disabled]){border-color:var(--accent)}
+.opt.ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.bad{border-color:var(--bad);background:var(--bad-bg)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:14px;border-radius:12px;padding:12px 14px;background:var(--surface2)}
+.fb.ok{background:var(--ok-bg)}.fb.bad{background:var(--bad-bg)}
+.fb b.t{display:block;margin-bottom:4px}
+.score{font-family:var(--font-display);font-size:3rem;font-weight:700;line-height:1}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+select{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 10px;min-height:44px}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:.85rem;color:var(--muted);font-weight:600}
+textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;font-family:var(--font-mono);font-size:.78rem}
+.empty{text-align:center;padding:28px 12px;color:var(--muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:20;max-width:90vw}
+/* rank */
+.rk{display:grid;grid-template-columns:30px 40px 1fr auto;gap:10px;align-items:center;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0}
+.rk.me{border-color:var(--accent);background:var(--accent-soft)}
+.rk .pos{font-family:var(--font-display);font-weight:700;font-size:1.1rem;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
+.rk.top .pos{color:var(--accent)}
+.rk .nm{min-width:0;overflow-wrap:anywhere;font-weight:600}
+.rk .val{font-family:var(--font-display);font-weight:700;font-size:1.3rem;text-align:right;font-variant-numeric:tabular-nums;line-height:1.1}
+.rk .val small{display:block;font-family:var(--font-body);font-weight:500;font-size:.7rem;color:var(--muted)}
+.av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--font-display);font-weight:700;font-size:1.1rem}
+.av.lg{width:56px;height:56px;font-size:1.5rem}
+.gap{text-align:center;color:var(--muted);letter-spacing:.3em;line-height:1;margin:-2px 0}
+.sw{display:flex;gap:8px;flex-wrap:wrap}
+.sw button{width:36px;height:36px;border-radius:50%;border:3px solid transparent;padding:0}
+.sw button[aria-pressed="true"]{border-color:var(--ink)}
+.nameinp{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;min-height:44px}
+@media (max-width:420px){.hero{grid-template-columns:1fr;justify-items:center;text-align:center}.kpis{gap:8px}.kpi{padding:10px}}
+@media (prefers-reduced-motion: no-preference){.bar>i,.days i{transition:width .4s ease,height .4s ease}.opt{transition:border-color .15s,background .15s}}
+</style>
+</head>
+<body>
+<div id="app" aria-live="polite"></div>
+<nav aria-label="Ana menü"><div class="in" id="nav"></div></nav>
+<div id="toast" class="toast" hidden></div>
+
+<script src="words.js"></script>
+<script src="supabase.js"></script>
+<script>
+const DATA=window.WORDS||[];
+(function(){
+'use strict';
+const LEVELS=['A1','A2','B1','B2','C1','C2'];
+const FEAT=['Türkçe','Tanım','Tür','Örnek','Eş','Zıt','Hal'];
+const REVERSE_RATE=0.4, STREAK_GOAL=3, INTERVALS=[1,3];
+const W=DATA.map((r,i)=>({id:i,word:r[0],def:r[1],tr:r[2],pos:r[3],ex:r[4],syn:r[5],ant:r[6],level:(r[7]||'').toUpperCase(),pron:r[8],v2:r[9],v3:r[10]}));
+const BYWORD=new Map(W.map(w=>[w.word,w]));
+
+/* ---------- yardımcılar ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const str=v=>String(v==null?'':v).trim();
+const has=s=>!!s&&s!=='-';
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const parts=s=>String(s).toLowerCase().split(/[,;]/).map(x=>x.trim()).filter(Boolean);
+const posKey=w=>str(w.pos).toLowerCase().split(/[,\/ (]/)[0];
+const today=()=>new Date().toLocaleDateString('sv-SE');
+const addDays=(d,n)=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return x.toLocaleDateString('sv-SE')};
+const fmt=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'short'})}catch(e){return d}};
+const nf=n=>n.toLocaleString('tr-TR');
+
+/* ---------- durum ---------- */
+const KEY='kelime-defteri-v2';
+const APP_VERSION='1.0.0';
+let mem=null;
+const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
+function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true},lastNotif:'',upd:0}}
+function load(uid){
+  let raw=null;
+  try{raw=localStorage.getItem(KEY+'-'+uid)}catch(e){}
+  let s=fresh();
+  if(raw){try{const p=JSON.parse(raw);s=Object.assign(s,p);s.set=Object.assign(fresh().set,p.set||{});s.prof=Object.assign(fresh().prof,p.prof||{})}catch(e){}}
+  return s;
+}
+let S=fresh();
+function persistLocal(){if(!CLOUD.uid)return;try{localStorage.setItem(KEY+'-'+CLOUD.uid,JSON.stringify(S))}catch(e){}}
+function save(){
+  S.upd=Date.now();
+  const ks=Object.keys(S.days);
+  if(ks.length>150){ks.sort();ks.slice(0,ks.length-120).forEach(k=>{delete S.days[k]})}
+  persistLocal();schedulePush();
+}
+const weekKey=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toLocaleDateString('sv-SE')};
+/* ---------- bulut: profil, ilerleme eşitleme, liderlik tablosu (Claude db/user yeteneği) ---------- */
+const CLOUD={uid:null,username:'',write:true,ready:false,lb:[],lbReady:false,lbErr:'',busy:false,last:'',defName:''};
+const AUTH={ready:false};
+let pushT=null;
+function schedulePush(){if(!CLOUD.uid)return;clearTimeout(pushT);pushT=setTimeout(pushNow,5000)}
+const COEF={A1:1,A2:1.05,B1:1.2,B2:1.35,C1:1.65,C2:1.85};
+const r1=x=>Math.round(x*10)/10;
+function calc(m){
+  let wa=0,A=0,C=0;
+  Object.keys(m).forEach(l=>{const a=m[l][0],c=m[l][1];wa+=(COEF[l]||1)*a;A+=a;C+=c});
+  return{A,C,pts:A?wa*(C/A):0};   // puan = seviye katsayısıyla ağırlıklı soru sayısı x doğruluk oranı
+}
+function periodMap(from,to){
+  const m={};
+  Object.keys(S.days).forEach(d=>{
+    if(d<from||(to&&d>to))return;
+    const x=S.days[d];
+    if(x.l)Object.keys(x.l).forEach(l=>{const v=m[l]||(m[l]=[0,0]);v[0]+=x.l[l][0];v[1]+=x.l[l][1]});
+    else if(x.a){const v=m._||(m._=[0,0]);v[0]+=x.a;v[1]+=x.c||0}
+  });
+  return m;
+}
+function allMap(){const m={};Object.keys(S.lv).forEach(l=>{m[l]=[S.lv[l][0]+S.lv[l][1],S.lv[l][0]]});return m}
+function myPoints(){
+  const t0=today();
+  return{D:calc(periodMap(t0,t0)),W:calc(periodMap(weekKey())),T:calc(allMap())};
+}
+function myScore(){
+  const P=myPoints();
+  return{name:S.prof.name,color:S.prof.color,hide:!S.prof.show,dk:today(),da:P.D.A,dc:P.D.C,dp:r1(P.D.pts),wk:weekKey(),wa:P.W.A,wc:P.W.C,wp:r1(P.W.pts),ans:P.T.A,cor:P.T.C,ap:r1(P.T.pts),lrn:learnedCount(),st:streak(),sd:today()};
+}
+/* ---------- Supabase: hesap, eşitleme, liderlik tablosu ---------- */
+const SB_URL='https://cqlcrwolgxrrrcyyluin.supabase.co';
+const SB_KEY='sb_publishable_UXoJCOF_Su6EjPdrIcpYVA_dYntzppl';
+const MAIL_DOMAIN='@kelimedefteri.example.com';
+let sb=null;
+try{sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})}catch(e){}
+const normUser=u=>String(u||'').trim().toLowerCase();
+const validUser=u=>/^[a-z0-9][a-z0-9_.-]{2,19}$/.test(u);
+const userToMail=u=>normUser(u)+MAIL_DOMAIN;
+async function pushNow(){
+  if(!sb||!CLOUD.uid)return;
+  if(CLOUD.busy){schedulePush();return}
+  if(!navigator.onLine)return;
+  CLOUD.busy=true;
+  try{
+    const now=new Date().toISOString();
+    let r=await sb.from('user_state').upsert({user_id:CLOUD.uid,state:S,updated_at:now});
+    if(r.error)throw r.error;
+    if(S.prof.name){
+      const sc=myScore(),j=JSON.stringify(sc);
+      if(j!==CLOUD.last){
+        r=await sb.from('scores').upsert(Object.assign({user_id:CLOUD.uid,updated_at:now},sc));
+        if(r.error)throw r.error;
+        CLOUD.last=j;refreshBoard();
+      }
+    }
+    CLOUD.err='';
+  }catch(e){CLOUD.err=(e&&e.message)||'error';setTimeout(schedulePush,30000)}
+  finally{CLOUD.busy=false}
+}
+async function pullState(){
+  const r=await sb.from('user_state').select('state').eq('user_id',CLOUD.uid).maybeSingle();
+  if(r.error)throw r.error;
+  const d=r.data;
+  if(d&&d.state&&(d.state.upd||0)>(S.upd||0)){
+    const cl=d.state,loc=S.learned||{};
+    S=Object.assign(fresh(),cl);S.set=Object.assign(fresh().set,cl.set||{});S.prof=Object.assign(fresh().prof,cl.prof||{});
+    Object.keys(loc).forEach(w=>{if(!S.learned[w])S.learned[w]=loc[w]});
+    persistLocal();
+  }else if(!d||S.upd){save()}
+}
+async function refreshBoard(){
+  if(!sb||!CLOUD.uid||!navigator.onLine)return;
+  try{
+    const r=await sb.from('scores').select('*').limit(1000);
+    if(r.error)throw r.error;
+    CLOUD.lb=r.data.map(x=>Object.assign({id:x.user_id},x));CLOUD.lbReady=true;CLOUD.lbErr='';
+  }catch(e){CLOUD.lbErr='err'}
+  if(UI.tab==='rank'||UI.tab==='today'){if(document.getElementById('pname'))syncDraft();if(!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render()}
+}
+async function onLogin(user){
+  CLOUD.uid=user.id;CLOUD.username=(user.email||'').split('@')[0];CLOUD.defName=CLOUD.username;CLOUD.ready=true;
+  S=load(user.id);
+  if(!S.prof.name)S.prof.name=CLOUD.username;
+  render();
+  try{await pullState()}catch(e){}
+  if(!S.prof.name)S.prof.name=CLOUD.username;
+  persistLocal();render();refreshBoard();schedulePush();
+}
+function onLogout(){
+  clearTimeout(pushT);CLOUD.uid=null;CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
+}
+async function initAuth(){
+  try{
+    if(sb){
+      const g=await sb.auth.getSession();
+      if(g&&g.data&&g.data.session&&g.data.session.user)await onLogin(g.data.session.user);
+      sb.auth.onAuthStateChange((ev)=>{if(ev==='SIGNED_OUT'&&CLOUD.uid)onLogout()});
+    }
+  }catch(e){}
+  AUTH.ready=true;render();
+}
+async function doAuth(){
+  const A=UI.auth;
+  const u=normUser(document.getElementById('au-user').value),p=document.getElementById('au-pass').value;
+  const nm=(document.getElementById('au-name')||{}).value||'';
+  A.user=u;A.name=nm;A.msg='';
+  if(!validUser(u)){A.msg='Kullanıcı adı 3-20 karakter olmalı. Küçük harf, rakam, nokta, tire ve alt çizgi kullan, Türkçe karakter ve boşluk kullanma.';return render()}
+  if(p.length<6){A.msg='Şifre en az 6 karakter olmalı.';return render()}
+  if(!sb||!navigator.onLine){A.msg='İnternet bağlantısı gerekiyor.';return render()}
+  A.busy=true;render();
+  try{
+    let r;
+    if(A.mode==='signup'){
+      r=await sb.auth.signUp({email:userToMail(u),password:p});
+      if(r.error)throw r.error;
+      if(!r.data.session){A.msg='Kayıt oluştu ama oturum açılamadı. Supabase ayarlarında "Confirm email" seçeneğinin kapalı olması gerekiyor.';A.busy=false;return render()}
+      const nm2=nm.replace(/[\u0000-\u001f]/g,'').trim().slice(0,24);
+      S=fresh();S.prof.name=nm2.length>=2?nm2:u;
+      CLOUD.uid=r.data.session.user.id;persistLocal();
+      A.busy=false;A.pass='';
+      await onLogin(r.data.session.user);
+    }else{
+      r=await sb.auth.signInWithPassword({email:userToMail(u),password:p});
+      if(r.error)throw r.error;
+      A.busy=false;await onLogin(r.data.user);
+    }
+  }catch(e){
+    A.busy=false;
+    const m=String((e&&e.message)||'');
+    A.msg=/already|registered/i.test(m)?'Bu kullanıcı adı alınmış. Başka bir ad dene.':/invalid login|credentials/i.test(m)?'Kullanıcı adı veya şifre yanlış.':/rate|too many/i.test(m)?'Çok fazla deneme yapıldı. Biraz bekleyip yeniden dene.':'İşlem tamamlanamadı: '+m;
+    render();
+  }
+}
+function vLogin(){
+  const A=UI.auth,su=A.mode==='signup';
+  return`<div class="top" style="margin-top:8vh"><div><h1>Kelime Defteri</h1><div class="muted small">${nf(W.length)} kelime, test, tekrar ve liderlik tablosu</div></div></div>
+  <div class="card stack"><div class="seg"><button class="chip" aria-pressed="${!su}" data-act="auth-mode" data-v="login">Giriş yap</button><button class="chip" aria-pressed="${su}" data-act="auth-mode" data-v="signup">Kayıt ol</button></div>
+  <label class="f">Kullanıcı adı<input id="au-user" class="nameinp" value="${esc(A.user)}" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20"></label>
+  ${su?`<label class="f">Görünen ad (liderlik tablosunda)<input id="au-name" class="nameinp" value="${esc(A.name)}" maxlength="24" autocomplete="nickname" placeholder="Örn. Ayşe"></label>`:''}
+  <label class="f">Şifre<input id="au-pass" class="nameinp" type="password" autocomplete="${su?'new-password':'current-password'}" maxlength="72"></label>
+  ${A.msg?`<div class="small" style="color:var(--bad)" role="alert">${esc(A.msg)}</div>`:''}
+  <button class="btn primary block" data-act="auth-submit" ${A.busy?'disabled':''}>${A.busy?'Bekle…':su?'Hesap oluştur':'Giriş yap'}</button>
+  <div class="small muted">${su?'Şifre sıfırlama yok. Şifreni unutursan yeni hesap açman gerekir.':'Aynı hesapla tüm cihazlarında devam edersin.'}</div></div>`;
+}
+
+function dayStat(d){d=d||today();return S.days[d]||(S.days[d]={a:0,c:0,n:0})}
+
+/* ---------- soru üretimi (Apps Script mantığının aynısı) ---------- */
+function cloze(w){
+  if(!w.ex)return null;
+  const base=w.word.replace(/\s*\([^)]*\)/g,'').replace(/\.+$/,'').split('/')[0].trim();
+  if(!base)return null;
+  const esc2=base.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+');
+  const re=new RegExp('(^|[^A-Za-z])'+esc2+'[A-Za-z]*','i');
+  if(!re.test(w.ex))return null;
+  return w.ex.replace(re,(m,pre)=>pre+'_____');
+}
+function applicable(w){
+  if(w._app)return w._app;
+  const f=[0,1];
+  if(cloze(w))f.push(3);
+  if(has(w.syn))f.push(4);
+  if(has(w.ant))f.push(5);
+  if(w.v2&&w.v3)f.push(6);
+  return w._app=f;
+}
+function pickDistractors(t,textFn,filterFn){
+  const tk=posKey(t);
+  const out=[],used={};
+  // havuzdan rastgele örnekle; aynı türdekiler önce
+  const tries=Math.min(W.length,900);
+  const start=Math.floor(Math.random()*W.length);
+  const same=[],other=[];
+  for(let k=0;k<tries;k++){
+    const r=W[(start+k*7919)%W.length];
+    if(r.word.toLowerCase()===t.word.toLowerCase()||!filterFn(r))continue;
+    (posKey(r)===tk?same:other).push(r);
+  }
+  for(const r of shuffle(same).concat(shuffle(other))){
+    const txt=textFn(r);
+    if(!txt||used[txt.toLowerCase()])continue;
+    used[txt.toLowerCase()]=1;out.push(txt);
+    if(out.length===3)break;
+  }
+  return out;
+}
+function altForms(x){return str(x).split('/').map(s=>s.trim()).filter(Boolean)}
+function regularEd(b){
+  b=b.toLowerCase();
+  if(/e$/.test(b))return b+'d';
+  if(/[^aeiou]y$/.test(b))return b.slice(0,-1)+'ied';
+  if(/^[^aeiou]*[aeiou][^aeiouwxy]$/.test(b)&&b.length<=4)return b+b.slice(-1)+'ed';
+  return b+'ed';
+}
+function verbQuestion(t){
+  const base=t.word.toLowerCase().trim();
+  if(/\s/.test(base))return null;
+  const v2=altForms(t.v2),v3=altForms(t.v3);
+  if(!v2.length||!v3.length)return null;
+  const correct=v2[0]+' - '+v3[0];
+  const ok={};v2.forEach(a=>v3.forEach(b=>{ok[(a+' - '+b).toLowerCase()]=1}));
+  const A=v2[0],B=v3[0],R=regularEd(base);
+  const cands=[B+' - '+A,A+' - '+A,B+' - '+B,base+' - '+B,A+' - '+base,base+' - '+A,B+' - '+base,R+' - '+R,R+' - '+B,A+' - '+R,base+' - '+R,R+' - '+base];
+  const used={},uniq=[];
+  cands.forEach(c=>{const key=c.toLowerCase();if(ok[key]||used[key])return;const p=c.split(' - ');if(p[0].toLowerCase()===base&&p[1].toLowerCase()===base)return;used[key]=1;uniq.push(c)});
+  if(uniq.length<3)return null;
+  const d=shuffle(uniq.slice(0,6)).concat(shuffle(uniq.slice(6))).slice(0,3);
+  return{question:'"'+t.word+'" fiilinin 2. ve 3. halleri (V2 - V3) hangisidir?',correct,distractors:d};
+}
+function buildQuestion(t,k,opts){
+  let q,correct,d;
+  if(k===0){
+    const tp=parts(t.tr);
+    const rev=opts&&opts.reverse!==undefined?opts.reverse:Math.random()<REVERSE_RATE;
+    if(rev){
+      const rd=pickDistractors(t,r=>r.word,r=>r.tr&&!parts(r.tr).some(p=>tp.indexOf(p)!==-1));
+      if(rd.length===3)return{question:'"'+t.tr+'" karşılığı hangi İngilizce kelime/ifadedir?',correct:t.word,distractors:rd};
+    }
+    q='"'+t.word+'" kelimesinin Türkçe karşılığı hangisidir?';correct=t.tr;
+    d=pickDistractors(t,r=>r.tr,r=>r.tr&&!parts(r.tr).some(p=>tp.indexOf(p)!==-1));
+  }else if(k===1){
+    q='"'+t.word+'" kelimesinin İngilizce tanımı hangisidir?';correct=t.def;
+    d=pickDistractors(t,r=>r.def,r=>r.def&&r.def.toLowerCase()!==t.def.toLowerCase());
+  }else if(k===3){
+    const c=cloze(t);if(!c)return null;
+    q='Boşluğa hangi kelime/ifade gelmeli?\n"'+c+'"';correct=t.word;
+    d=pickDistractors(t,r=>r.word,r=>t.syn.toLowerCase().indexOf(r.word.toLowerCase())===-1&&r.syn.toLowerCase().indexOf(t.word.toLowerCase())===-1);
+  }else if(k===4){
+    if(!has(t.syn))return null;
+    q='"'+t.word+'" kelimesinin eş anlamlısı hangisidir?';correct=t.syn;
+    d=pickDistractors(t,r=>r.syn,r=>has(r.syn)&&r.syn.toLowerCase()!==t.syn.toLowerCase()&&r.syn.toLowerCase()!==t.ant.toLowerCase());
+  }else if(k===5){
+    if(!has(t.ant))return null;
+    q='"'+t.word+'" kelimesinin zıt anlamlısı hangisidir?';correct=t.ant;
+    d=pickDistractors(t,r=>r.ant,r=>has(r.ant)&&r.ant.toLowerCase()!==t.ant.toLowerCase()&&r.ant.toLowerCase()!==t.syn.toLowerCase());
+  }else if(k===6){return verbQuestion(t)}
+  else return null;
+  if(!correct||!d||d.length<3)return null;
+  return{question:q,correct,distractors:d};
+}
+
+/* ---------- test akışı ---------- */
+function dueWrong(all){
+  const t=today();
+  return Object.keys(S.wrong).filter(k=>BYWORD.has(k)&&(all||S.wrong[k].due<=t));
+}
+function makeItem(w,f,kind){
+  const b=buildQuestion(w,f);
+  if(!b)return null;
+  return{w,f,kind,question:b.question,correct:b.correct,options:shuffle([b.correct].concat(b.distractors)),chosen:null};
+}
+function newItems(n,level,skip){
+  const pool=shuffle(W.filter(w=>!S.learned[w.word]&&(level==='Hepsi'||w.level===level)&&!skip.has(w.word)));
+  const out=[];
+  for(const w of pool){
+    if(out.length>=n)break;
+    const done=S.prog[w.word]||[];
+    let feats=applicable(w).filter(f=>done.indexOf(f)===-1);
+    if(!feats.length)feats=applicable(w);
+    for(const f of shuffle(feats)){const it=makeItem(w,f,'new');if(it){out.push(it);break}}
+  }
+  return out;
+}
+function reviewItems(n,all){
+  const out=[];
+  for(const k of shuffle(dueWrong(all))){
+    if(out.length>=n)break;
+    const w=BYWORD.get(k),e=S.wrong[k];
+    const order=[0,1].sort((a,b)=>e.t[a]-e.t[b]).filter(f=>e.t[f]<STREAK_GOAL);
+    for(const f of order){const it=makeItem(w,f,'review');if(it){out.push(it);break}}
+  }
+  return out;
+}
+function startQuiz(mode,all){
+  const n=S.set.count;
+  let items=[];
+  if(mode==='review'){items=reviewItems(n,all)}
+  else if(mode==='today'){
+    const rv=reviewItems(Math.ceil(n/3),false);
+    const skip=new Set(rv.map(i=>i.w.word));
+    items=rv.concat(newItems(n-rv.length,S.set.level,skip));
+  }else items=newItems(n,S.set.level,new Set());
+  items=shuffle(items);
+  if(!items.length){toast(mode==='review'?'Tekrar edilecek kelime yok.':'Bu seviyede soru üretilecek kelime kalmadı.');return}
+  UI.quiz={mode,items,i:0,right:0,wrong:[],learnedNow:[],done:false};
+  UI.tab='quiz';render();
+}
+function answer(idx){
+  const qz=UI.quiz,it=qz.items[qz.i];
+  if(it.chosen!==null)return;
+  it.chosen=idx;
+  const ok=it.options[idx]===it.correct;
+  it.ok=ok;
+  const w=it.w,d=dayStat();
+  d.a++;if(ok)d.c++;
+  const lv=S.lv[w.level]||(S.lv[w.level]=[0,0]);
+  lv[ok?0:1]++;
+  const dl=d.l||(d.l={});const dv=dl[w.level]||(dl[w.level]=[0,0]);dv[0]++;if(ok)dv[1]++;
+  const bw=S.wrong[w.word];
+  if(ok){
+    qz.right++;
+    if(it.kind==='new'){
+      const p=S.prog[w.word]||(S.prog[w.word]=[]);
+      if(p.indexOf(it.f)===-1)p.push(it.f);
+      if(applicable(w).every(f=>p.indexOf(f)!==-1)){
+        S.learned[w.word]={d:today(),l:w.level};delete S.prog[w.word];qz.learnedNow.push(w.word);d.n++;
+      }
+    }
+    if(bw&&(it.f===0||it.f===1)){
+      bw.t[it.f]=Math.min(STREAK_GOAL,bw.t[it.f]+1);
+      if(bw.t[0]>=STREAK_GOAL&&bw.t[1]>=STREAK_GOAL){delete S.wrong[w.word];it.cleared=true}
+      else bw.due=addDays(today(),INTERVALS[Math.min(bw.t[it.f],INTERVALS.length)-1]||INTERVALS[INTERVALS.length-1]);
+    }
+  }else{
+    qz.wrong.push(it);
+    if(it.f===0||it.f===1){
+      const e=S.wrong[w.word]||(S.wrong[w.word]={t:[0,0],due:today()});
+      e.t[it.f]=0;e.due=today();
+    }
+  }
+  save();render();
+}
+function next(){
+  const qz=UI.quiz;
+  if(qz.i+1>=qz.items.length){qz.done=true}else qz.i++;
+  render();window.scrollTo(0,0);
+}
+
+/* ---------- istatistik ---------- */
+function streak(){
+  const g=S.set.goal;let d=today();
+  const met=x=>(S.days[x]&&S.days[x].c>=g);
+  if(!met(d))d=addDays(d,-1);
+  let n=0;while(met(d)){n++;d=addDays(d,-1)}
+  return n;
+}
+const learnedCount=()=>Object.keys(S.learned).filter(k=>BYWORD.has(k)).length;
+
+/* ---------- arayüz ---------- */
+const UI={tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'stats',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false}};
+try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz')UI.tab=t}catch(e){}
+const ICON={
+  today:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
+  dict:'<svg viewBox="0 0 24 24"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/></svg>',
+  quiz:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/><path d="M12 17h.01"/></svg>',
+  review:'<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></svg>',
+  rank:'<svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>',
+  me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
+};
+const TABS=[['today','Bugün'],['dict','Sözlük'],['quiz','Test'],['review','Tekrar'],['rank','Sıra'],['me','Ben']];
+function renderNav(){
+  $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${UI.tab===k?'aria-current="page"':''}>${ICON[k]}<span>${l}</span></button>`).join('');
+}
+function lvTag(l){return l?`<span class="lv lv-${esc(l)}">${esc(l)}</span>`:''}
+function render(){
+  const app=$('#app');
+  if(!AUTH.ready){$('nav').hidden=true;app.innerHTML='<div class="empty">Yükleniyor…</div>';return}
+  if(!CLOUD.uid){$('nav').hidden=true;app.innerHTML=vLogin();return}
+  $('nav').hidden=false;
+  renderNav();
+  let h='';
+  if(UI.tab==='today')h=vToday();
+  else if(UI.tab==='dict')h=vDict();
+  else if(UI.tab==='quiz')h=UI.quiz?vQuiz():vQuizSetup();
+  else if(UI.tab==='review')h=vReview();
+  else if(UI.tab==='rank')h=vRank();
+  else h=vMe();
+  app.innerHTML=h;
+}
+function ring(p){
+  const r=44,c=2*Math.PI*r,o=c*(1-Math.min(1,p));
+  return`<svg viewBox="0 0 104 104" aria-hidden="true"><circle cx="52" cy="52" r="${r}" fill="none" stroke="var(--surface2)" stroke-width="10"/><circle cx="52" cy="52" r="${r}" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${o.toFixed(1)}"/></svg>`;
+}
+function vToday(){
+  const d=dayStat(),g=S.set.goal,p=g?d.c/g:0;
+  const due=dueWrong(false).length;
+  const left=Math.max(0,g-d.c);
+  const dn=Math.floor(Date.now()/864e5);
+  const un=W.filter(w=>!S.learned[w.word]);
+  const wd=un.length?un[(dn*7919)%un.length]:null;
+  return`<div class="top"><div><h1>Bugün</h1><div class="muted small">${new Date().toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long'})}</div></div>
+    <span class="badge ${streak()?'warn':''}" title="Günlük hedefi tutturduğun ardışık gün">🔥 ${streak()} gün seri</span></div>
+  <div class="stack">
+  <div class="card hero"><div class="ring">${ring(p)}<div class="n"><div>${d.c}/${g}<small>doğru</small></div></div></div>
+    <div class="stack"><h2>${left?`Hedefe ${left} doğru cevap kaldı`:'Bugünkü hedef tamam'}</h2>
+    <div class="muted small">${due?`${due} kelime tekrar zamanı gelmiş. Bugünün testi bunları öne alır.`:'Tekrar bekleyen kelime yok.'}</div>
+    <button class="btn primary" data-act="start-today">Bugünün testini başlat (${S.set.count} soru)</button></div></div>
+  <div class="kpis"><div class="kpi"><b>${nf(learnedCount())}</b><span>öğrenilen</span></div><div class="kpi"><b>${nf(W.length-learnedCount())}</b><span>kalan</span></div><div class="kpi"><b>${nf(Object.keys(S.wrong).length)}</b><span>tekrar listesinde</span></div></div>
+  ${wd?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimesi</span>${lvTag(wd.level)}</div>
+    <div class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div>
+    <div>${esc(wd.tr)}</div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i></div></div>`:''}
+  ${profilePrompt()}${myRankLine()}
+  ${reminderCard()}
+  </div>`;
+}
+function reminderCard(){
+  if(!S.set.notif)return'';
+  return`<div class="card small muted">Günlük hatırlatma açık: saat ${String(S.set.hour).padStart(2,'0')}:00'dan sonra hedef tamamlanmadıysa bildirim gelir (uygulama sekmesi açıkken).</div>`;
+}
+function posGroup(w){
+  const k=posKey(w);
+  if(k==='phrasal')return'phrasal verb';
+  if(['noun','verb','adjective','adverb','phrase','collocation','idiom','conjunction','preposition'].indexOf(k)!==-1)return k;
+  return'diğer';
+}
+const POSG=['noun','verb','adjective','adverb','phrasal verb','phrase','collocation','idiom','conjunction','preposition','diğer'];
+function dictFiltered(){
+  const D=UI.dict,q=D.q.trim().toLowerCase();
+  return W.filter(w=>{
+    if(D.level!=='Hepsi'&&w.level!==D.level)return false;
+    if(D.pos!=='Hepsi'&&posGroup(w)!==D.pos)return false;
+    if(D.status==='Öğrenilen'&&!S.learned[w.word])return false;
+    if(D.status==='Öğrenilmeyen'&&S.learned[w.word])return false;
+    if(D.status==='Tekrarda'&&!S.wrong[w.word])return false;
+    if(q&&w.word.toLowerCase().indexOf(q)===-1&&w.tr.toLowerCase().indexOf(q)===-1&&w.def.toLowerCase().indexOf(q)===-1)return false;
+    return true;
+  });
+}
+function entryHtml(w){
+  const open=UI.dict.open===w.word;
+  const st=S.learned[w.word]?'<span class="badge ok">Öğrenildi</span>':S.wrong[w.word]?'<span class="badge bad">Tekrarda</span>':'';
+  return`<div class="entry"><button class="head" data-act="toggle" data-w="${esc(w.word)}" aria-expanded="${open}">
+    <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def)}</span></span>
+    <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
+    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i></dd>
+      ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
+      ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
+      <dt></dt><dd><button class="say" data-say="${esc(w.word)}" data-pron="${esc(w.pron)}">Dinle</button></dd></dl>`:''}</div>`;
+}
+function dictList(){
+  const f=dictFiltered(),D=UI.dict;
+  const shown=f.slice(0,D.limit);
+  return`<div class="muted small" style="margin:2px 2px 0">${nf(f.length)} kelime</div>`+
+    (shown.length?shown.map(entryHtml).join(''):'<div class="empty">Bu filtrelerle kelime bulunamadı.</div>')+
+    (f.length>shown.length?`<button class="btn block" data-act="more">Daha fazla göster (${nf(f.length-shown.length)})</button>`:'');
+}
+function chips(name,vals,cur){
+  return`<div class="seg" role="group" aria-label="${name}">${vals.map(v=>`<button class="chip" aria-pressed="${cur===v}" data-f="${name}" data-v="${esc(v)}">${esc(v)}</button>`).join('')}</div>`;
+}
+function vDict(){
+  const D=UI.dict;
+  return`<div class="top"><h1>Sözlük</h1><span class="muted small">${nf(W.length)} kelime</span></div>
+  <div class="stack"><input id="q" class="search" type="search" placeholder="Kelime, Türkçe karşılık veya tanım ara" value="${esc(D.q)}" autocomplete="off">
+  ${chips('level',['Hepsi'].concat(LEVELS),D.level)}
+  ${chips('status',['Hepsi','Öğrenilmeyen','Öğrenilen','Tekrarda'],D.status)}
+  <label class="f">Tür<select id="posf">${['Hepsi'].concat(POSG).map(p=>`<option ${p===D.pos?'selected':''}>${esc(p)}</option>`).join('')}</select></label>
+  <div class="stack" id="dlist">${dictList()}</div></div>`;
+}
+function vQuizSetup(){
+  const s=S.set;
+  const remaining=W.filter(w=>!S.learned[w.word]&&(s.level==='Hepsi'||w.level===s.level)).length;
+  return`<div class="top"><h1>Test</h1></div><div class="card stack">
+    <div><h3>Soru sayısı</h3><div class="seg" style="margin-top:8px">${[10,20,30,40].map(n=>`<button class="chip" aria-pressed="${s.count===n}" data-set="count" data-v="${n}">${n}</button>`).join('')}</div></div>
+    <div><h3>Seviye</h3><div class="seg" style="margin-top:8px">${['Hepsi'].concat(LEVELS).map(n=>`<button class="chip" aria-pressed="${s.level===n}" data-set="level" data-v="${n}">${n}</button>`).join('')}</div></div>
+    <div class="muted small">Her kelimeden bir özellik sorulur: Türkçe karşılık, İngilizce tanım, boşluk doldurma, eş anlam, zıt anlam ve düzensiz fiillerde V2 - V3. Bir kelimenin sorulabilen tüm özellikleri bir kez doğru bilinince kelime Öğrenilenler'e geçer. Bu seçimde ${nf(remaining)} kelime sırada.</div>
+    <button class="btn primary block" data-act="start-new">Testi başlat</button></div>`;
+}
+function vQuiz(){
+  const qz=UI.quiz;
+  if(qz.done)return vResult();
+  const it=qz.items[qz.i],ans=it.chosen!==null;
+  const pct=Math.round((qz.i+(ans?1:0))/qz.items.length*100);
+  const w=it.w;
+  let fb='';
+  if(ans){
+    fb=`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.cleared?' · tekrar listesinden çıktı':''}${qz.learnedNow.indexOf(w.word)!==-1?' · öğrenildi':''}</b>
+      <div><b>${esc(w.word)}</b> <span class="mono muted">${esc(w.pron)}</span> ${lvTag(w.level)}</div>
+      <div>${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i></div>`:''}
+      ${it.ok?'':`<div class="small" style="margin-top:6px">Doğru cevap: <b>${esc(it.correct)}</b></div>`}</div>
+      <button class="btn primary block" style="margin-top:12px" data-act="next" id="nextbtn">${qz.i+1>=qz.items.length?'Sonucu gör':'Sonraki soru'}</button>`;
+  }
+  return`<div class="qtop"><button class="btn" data-act="quit" aria-label="Testten çık">Çık</button><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span class="mono muted">${qz.i+1}/${qz.items.length}</span></div>
+  <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${qz.mode==='review'||it.kind==='review'?'Tekrar':'Yeni'} · ${FEAT[it.f]}</span>${lvTag(w.level)}</div>
+  <h2>${esc(it.question)}</h2>
+  <div class="opts">${it.options.map((o,i)=>{
+    let c='';if(ans){if(o===it.correct)c='ok';else if(i===it.chosen)c='bad'}
+    return`<button class="opt ${c}" data-opt="${i}" ${ans?'disabled':''}><kbd>${i+1}</kbd><span>${esc(o)}</span></button>`}).join('')}</div>${fb}</div>`;
+}
+function vResult(){
+  const qz=UI.quiz,n=qz.items.length,p=Math.round(qz.right/n*100);
+  return`<div class="top"><h1>Sonuç</h1></div><div class="stack"><div class="card stack"><div class="score">${qz.right}/${n}</div>
+    <div class="bar"><i style="width:${p}%"></i></div>
+    <div class="muted">%${p} doğru${qz.learnedNow.length?` · ${qz.learnedNow.length} kelime öğrenildi`:''}</div>
+    ${qz.learnedNow.length?`<div class="row">${qz.learnedNow.map(k=>`<span class="badge ok">${esc(k)}</span>`).join('')}</div>`:''}</div>
+    ${qz.wrong.length?`<div class="card stack"><h3>Yanlışlar</h3>${qz.wrong.map(it=>`<div><b>${esc(it.w.word)}</b> <span class="muted">${esc(FEAT[it.f])}</span><div class="small">Doğru: ${esc(it.correct)}</div></div>`).join('')}</div>`:''}
+    <div class="row"><button class="btn primary" data-act="again">Yeni test</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
+}
+function vReview(){
+  const keys=Object.keys(S.wrong).filter(k=>BYWORD.has(k)),due=dueWrong(false).length;
+  keys.sort((a,b)=>S.wrong[a].due.localeCompare(S.wrong[b].due));
+  return`<div class="top"><h1>Tekrar</h1><span class="muted small">${keys.length} kelime</span></div><div class="stack">
+  <div class="card stack"><div class="muted small">Türkçe karşılığını veya tanımını yanlış bildiğin kelimeler burada toplanır. İkisini de art arda ${STREAK_GOAL} kez doğru bilince listeden çıkar. İlk doğrudan 1 gün, ikinci doğrudan 3 gün sonra yeniden sorulur. Yanlış cevap seriyi sıfırlar.</div>
+  <div class="row"><button class="btn primary" data-act="start-review" ${due?'':'disabled'}>Günü gelenleri çalış (${due})</button>
+  ${keys.length&&!due?'<button class="btn" data-act="start-review-all">Yine de hepsini çalış</button>':''}</div></div>
+  ${keys.length?keys.map(k=>{const w=BYWORD.get(k),e=S.wrong[k],d=e.due<=today();
+    return`<div class="entry"><div class="row" style="justify-content:space-between;align-items:flex-start"><div><span class="w">${esc(w.word)}</span><br><span class="tr">${esc(w.def)}</span></div>
+    <div class="row" style="gap:6px;justify-content:flex-end">${lvTag(w.level)}<span class="badge ${d?'bad':''}">${d?'Bugün':fmt(e.due)}</span></div></div>
+    <div class="small muted" style="margin-top:8px">Türkçe ${e.t[0]}/${STREAK_GOAL} · Tanım ${e.t[1]}/${STREAK_GOAL}</div></div>`}).join(''):'<div class="empty card">Tekrar listesi boş. Testte yanlış yaptığın kelimeler burada görünür.</div>'}
+  </div>`;
+}
+function vMe(){
+  const seg=[['stats','İstatistik'],['learned','Öğrenilenler'],['prof','Profil'],['set','Ayarlar']];
+  let body='';
+  if(UI.me==='stats')body=vStats();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else body=vSettings();
+  return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${body}</div>`;
+}
+function vStats(){
+  const tot={},lrn={};
+  W.forEach(w=>{tot[w.level]=(tot[w.level]||0)+1});
+  Object.keys(S.learned).forEach(k=>{const w=BYWORD.get(k);if(w)lrn[w.level]=(lrn[w.level]||0)+1});
+  const days=[];for(let i=13;i>=0;i--){const d=addDays(today(),-i);days.push([d,S.days[d]||{a:0,c:0}])}
+  const mx=Math.max(5,...days.map(x=>x[1].a));
+  const P=myPoints();
+  return`<div class="kpis"><div class="kpi"><b>${nf(r1(P.D.pts))}</b><span>bugün puan</span></div><div class="kpi"><b>${nf(r1(P.W.pts))}</b><span>bu hafta puan</span></div><div class="kpi"><b>${nf(r1(P.T.pts))}</b><span>toplam puan</span></div></div><div class="card"><h2 style="margin-bottom:8px">Seviyelere göre ilerleme</h2>${LEVELS.map(l=>{
+    const t=tot[l]||0,n=lrn[l]||0,p=t?n/t*100:0,q=S.lv[l]||[0,0],qa=q[0]+q[1];
+    return`<div class="lvrow"><span class="lv lv-${l}">${l}</span><div><div class="bar"><i style="width:${p.toFixed(1)}%;background:var(--l-${l})"></i></div>${qa?`<div class="small muted" style="margin-top:3px">Test başarısı %${Math.round(q[0]/qa*100)} (${q[0]} doğru, ${q[1]} yanlış)</div>`:''}</div><span class="num">${n}/${nf(t)}</span></div>`}).join('')}</div>
+  <div class="card"><h2>Son 14 gün</h2><div class="muted small">Mavi: doğru, kırmızı: yanlış cevap sayısı</div>
+  <div class="days" role="img" aria-label="Son 14 günün cevap grafiği">${days.map(([d,x])=>`<div title="${fmt(d)}: ${x.c} doğru, ${x.a-x.c} yanlış"><i class="w" style="height:${((x.a-x.c)/mx*80).toFixed(1)}%"></i><i style="height:${(x.c/mx*80).toFixed(1)}%"></i><small>${new Date(d+'T12:00:00').getDate()}</small></div>`).join('')}</div></div>`;
+}
+function vLearned(){
+  const keys=Object.keys(S.learned).filter(k=>BYWORD.has(k)).sort((a,b)=>S.learned[b].d.localeCompare(S.learned[a].d));
+  if(!keys.length)return'<div class="empty card">Henüz öğrenilen kelime yok. Bir kelimenin tüm özellikleri testte doğru bilinince buraya gelir.</div>';
+  return`<div class="muted small">${keys.length} kelime</div>`+keys.slice(0,300).map(k=>{const w=BYWORD.get(k);
+    return`<div class="entry"><div class="row" style="justify-content:space-between;align-items:flex-start"><div><span class="w">${esc(w.word)}</span><br><span class="tr">${esc(w.def)}</span></div>
+    <div class="row" style="gap:6px;justify-content:flex-end">${lvTag(w.level)}<span class="badge ok">${fmt(S.learned[k].d)}</span></div></div>
+    <button class="say" style="margin-top:8px" data-act="unlearn" data-w="${esc(k)}">Öğrenilmedi olarak işaretle</button></div>`}).join('')+(keys.length>300?`<div class="muted small">İlk 300 kelime gösteriliyor. Tamamı için Sözlük sekmesinde "Öğrenilen" filtresini kullan.</div>`:'');
+}
+function vSettings(){
+  const s=S.set;
+  const nsup=('Notification' in window);
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent),standalone=window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+  return`<div class="card stack"><h3>Hesap</h3><div>Kullanıcı adı: <b>${esc(CLOUD.username)}</b></div>
+  <div class="small muted">${navigator.onLine?(CLOUD.err?'Eşitleme bekliyor, birazdan yeniden denenecek.':'İlerleme hesabınla eşitleniyor.'):'Çevrimdışısın. İnternet gelince eşitlenir.'} · Sürüm ${APP_VERSION}</div>
+  <label class="f">Yeni şifre<input id="newpw" class="nameinp" type="password" autocomplete="new-password" maxlength="72"></label>
+  <div class="row"><button class="btn" data-act="chpw">Şifreyi değiştir</button><button class="btn" data-act="logout">Çıkış yap</button></div>
+  ${standalone?'':(window.__bip?'<button class="btn primary" data-act="install">Uygulamayı cihaza yükle</button>':ios?'<div class="small muted">iPhone/iPad: Paylaş düğmesi > "Ana Ekrana Ekle".</div>':'<div class="small muted">Tarayıcı menüsünden "Uygulamayı yükle" veya "Ana ekrana ekle" seç.</div>')}</div>
+  <div class="card stack"><h3>Günlük hedef</h3><label class="f">Günde kaç doğru cevap?<select id="goal">${[10,20,30,50,80,100].map(n=>`<option ${n===s.goal?'selected':''}>${n}</option>`).join('')}</select></label>
+  <h3>Hatırlatma</h3>
+  <div class="row"><button class="btn" data-act="notif">${s.notif?'Hatırlatmayı kapat':'Hatırlatmayı aç'}</button>
+  <label class="f" style="flex-direction:row;align-items:center;gap:8px">Saat<select id="hour">${[8,12,15,18,19,20,21,22].map(n=>`<option value="${n}" ${n===s.hour?'selected':''}>${String(n).padStart(2,'0')}:00</option>`).join('')}</select></label></div>
+  <div class="small muted">${nsup?'Bildirim tarayıcı izniyle çalışır ve uygulama sekmesi açıkken gösterilir. Kapalı uygulamaya bildirim göndermek için sunucu gerekir.':'Bu tarayıcı bildirimleri desteklemiyor. Hedef durumu Bugün sekmesinde görünür.'}</div></div>
+  <div class="card stack"><h3>Yedek</h3><div class="small muted">İlerlemen hesabında saklanır. Bu yedek ekstra güvenlik içindir.</div>
+  <div class="row"><button class="btn" data-act="export">Yedeği oluştur</button><button class="btn" data-act="import">Yedekten yükle</button></div>
+  <textarea id="bk" placeholder="Yedek metni burada görünür. Yüklemek için buraya yapıştır." spellcheck="false">${esc(UI.backup)}</textarea></div>
+  <div class="card stack"><h3>İlerlemeyi sıfırla</h3><div class="small muted">Öğrenilenler, tekrar listesi ve istatistikler silinir. Sözlük etkilenmez.</div>
+  ${UI.confirmReset?'<div class="row"><button class="btn danger" data-act="reset-yes">Evet, her şeyi sıfırla</button><button class="btn" data-act="reset-no">Vazgeç</button></div>':'<button class="btn danger" data-act="reset">Sıfırla</button>'}</div>`;
+}
+
+/* ---------- profil ve liderlik tablosu ---------- */
+const avatar=(name,color,lg)=>`<span class="av${lg?' lg':''}" style="background:${COLORS[(color|0)%COLORS.length]}" aria-hidden="true">${esc((name||'?').trim().charAt(0).toUpperCase())}</span>`;
+function profileForm(){
+  const d=UI.draft||(UI.draft={name:S.prof.name||CLOUD.defName,color:S.prof.color,show:S.prof.show});
+  return`<div class="stack"><div class="row">${avatar(d.name,d.color,true)}<div class="muted small" style="flex:1;min-width:140px">Liderlik tablosunda bu ad ve renkle görünürsün.</div></div>
+  <label class="f">Görünen ad<input id="pname" class="nameinp" maxlength="24" value="${esc(d.name)}" autocomplete="off" placeholder="Örn. Ayşe"></label>
+  <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Renk</div><div class="sw">${COLORS.map((c,i)=>`<button style="background:${c}" data-sw="${i}" aria-pressed="${d.color===i}" aria-label="Renk ${i+1}"></button>`).join('')}</div></div>
+  <label class="row" style="gap:8px"><input type="checkbox" id="pshow" ${d.show?'checked':''}> <span>Liderlik tablosunda görün</span></label>
+  <button class="btn primary" data-act="save-prof">Profili kaydet</button></div>`;
+}
+function vProfile(){
+  if(!CLOUD.ready)return`<div class="card muted">Profil ve liderlik tablosu için uygulamayı Claude'da yayınlanan bağlantıyla açıp oturum açman gerekir. İndirilmiş dosyada çalışmaz.</div>`;
+  return`<div class="card">${profileForm()}</div>${CLOUD.write?'':'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. İlerlemen ve skorun kaydedilmez. Katılmak için sahibinden "Katkıda bulunan" izni iste.</div>'}`;
+}
+function profilePrompt(){
+  if(!CLOUD.ready||S.prof.name||!CLOUD.write)return'';
+  return`<div class="card stack"><h2>Profilini oluştur</h2><div class="muted small">Bir ad seç, liderlik tablosuna katıl ve ilerlemen cihazlar arasında eşitlensin.</div>${profileForm()}</div>`;
+}
+function rankData(){
+  const wk=weekKey(),td=today();
+  return CLOUD.lb.filter(r=>r.name&&!r.hide).map(r=>({id:r.id,name:r.name,color:r.color|0,
+    day:r.dk===td?{n:r.da||0,c:r.dc||0,p:r.dp||0}:{n:0,c:0,p:0},
+    week:r.wk===wk?{n:r.wa||0,c:r.wc||0,p:r.wp||0}:{n:0,c:0,p:0},
+    all:{n:r.ans||0,c:r.cor||0,p:r.ap||0},lrn:r.lrn||0,
+    st:(r.sd&&r.sd>=addDays(td,-1))?(r.st||0):0,me:r.id===CLOUD.uid}));
+}
+function myRankLine(){
+  if(!CLOUD.ready||!CLOUD.lbReady||!S.prof.name||!S.prof.show)return'';
+  const rows=rankData().filter(r=>r.week.p>0).sort((a,b)=>b.week.p-a.week.p);
+  const i=rows.findIndex(r=>r.me);
+  if(i<0)return'';
+  let rk=i+1;while(rk>1&&rows[rk-2].week.p===rows[i].week.p)rk--;
+  return`<button class="card" style="text-align:left" data-tab="rank"><span class="muted small" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Bu hafta sıran</span><div><b style="font-family:var(--font-display);font-size:1.5rem">${rk}.</b> <span class="muted">/ ${rows.length} kişi, ${nf(rows[i].week.p)} puan</span></div></button>`;
+}
+function vRank(){
+  const R=UI.rank;
+  let body='';
+  if(!CLOUD.ready){
+    body=`<div class="card muted">Liderlik tablosu için uygulamayı Claude'da yayınlanan bağlantıyla açıp oturum açman gerekir. İndirilmiş dosyada çalışmaz.</div>`;
+  }else if(!S.prof.name&&CLOUD.write){
+    body=`<div class="card stack"><h2>Önce profilini oluştur</h2>${profileForm()}</div>`;
+  }else{
+    const per=R.per;
+    const rows=rankData().map(r=>Object.assign(r,{x:r[per]}));
+    const ranked=rows.filter(r=>r.x.p>0).sort((a,b)=>b.x.p-a.x.p||b.x.n-a.x.n);
+    ranked.forEach((r,i)=>{r.rank=(i>0&&ranked[i-1].x.p===r.x.p)?ranked[i-1].rank:i+1});
+    const acc=r=>r.x.n?Math.round(r.x.c/r.x.n*100):0;
+    const row=r=>`<div class="rk ${r.me?'me':''} ${r.rank&&r.rank<=3?'top':''}"><span class="pos">${r.rank||'–'}</span>${avatar(r.name,r.color)}<div class="nm">${esc(r.name)}${r.me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">${r.x.n} soru · %${acc(r)} doğruluk${r.st?` · 🔥 ${r.st}`:''}</div></div><div class="val">${nf(Math.round(r.x.p*10)/10)}<small>puan</small></div></div>`;
+    const top=ranked.slice(0,10);
+    const me=rows.find(r=>r.me);
+    let mine='';
+    if(me&&!top.some(r=>r.me)){
+      mine=`<div class="gap" aria-hidden="true">···</div>${row(me)}${me.rank?'':'<div class="small muted">Bu dönemde sıraya girmek için soru çöz ve en az bir doğru yap.</div>'}`;
+    }
+    body=`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button></div>
+    <div class="muted small">${per==='day'?'Bugünün puanı. Her gün gece yarısı sıfırlanır.':per==='week'?'Bu haftanın puanı. Hafta pazartesi başlar.':'Bugüne kadarki toplam puan.'} İlk 10 gösterilir${ranked.length?`, ${ranked.length} kişi sırada`:''}.</div>
+    ${!CLOUD.lbReady?'<div class="empty">Tablo yükleniyor…</div>':top.length?top.map(row).join('')+mine:`<div class="empty card">Bu tabloda henüz kimse yok. İlk puanı alan sıraya girer.</div>${mine}`}
+    <details class="card small"><summary style="cursor:pointer;font-weight:600">Puan nasıl hesaplanır?</summary>
+      <div class="stack" style="margin-top:10px"><div>Puan = seviye katsayısıyla ağırlıklandırılmış çözülen soru sayısı × doğruluk oranı.</div>
+      <div class="row">${LEVELS.map(l=>`<span class="lv lv-${l}">${l} × ${COEF[l]}</span>`).join('')}</div>
+      <div class="muted">Örnek: 10 B1 sorusunun 8'i doğruysa, 10 × 1,2 × 0,8 = 9,6 puan. Zor seviyedeki kelimelerde doğru yapmak daha çok puan kazandırır, yanlışlar doğruluğu düşürerek puanı azaltır.</div></div></details>
+    ${!CLOUD.write?'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. Sıraya girmek için sahibinden "Katkıda bulunan" izni iste.</div>':''}
+    ${S.prof.name&&!S.prof.show?'<div class="card small muted">Profilin gizli, tabloda görünmüyorsun. Profil sekmesinden açabilirsin.</div>':''}
+    ${CLOUD.lbErr?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':''}`;
+  }
+  return`<div class="top"><h1>Sıralama</h1></div><div class="stack">${body}</div>`;
+}
+
+/* ---------- olaylar ---------- */
+let toastT;
+function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true},2600)}
+let VOICES=[];
+try{const lv=()=>{VOICES=speechSynthesis.getVoices()};lv();speechSynthesis.addEventListener('voiceschanged',lv)}catch(e){}
+function say(word,pron){
+  try{
+    const clean=String(word).replace(/\s*\([^)]*\)/g,'').split('/')[0];
+    VOICES=speechSynthesis.getVoices()||VOICES;
+    const us=VOICES.filter(v=>/^en[-_]US$/i.test(v.lang));
+    const en=us.length?us:VOICES.filter(v=>/^en([-_]|$)/i.test(v.lang));
+    const pick=en.find(x=>/google|samantha|aaron|alex|jenny|aria|natural/i.test(x.name))||en[0];
+    let u;
+    if(pick){
+      u=new SpeechSynthesisUtterance(clean);u.voice=pick;u.lang=pick.lang||'en-US';u.rate=.9;
+    }else if(pron){
+      // İngilizce ses yoksa Türkçe okunuşu Türkçe sesle seslendir (fever -> fi-vır)
+      u=new SpeechSynthesisUtterance(String(pron).replace(/-/g,'').toLowerCase());u.lang='tr-TR';u.rate=.85;
+      toast('Bu cihazda İngilizce ses yok, Türkçe okunuş okunuyor.');
+    }else{
+      u=new SpeechSynthesisUtterance(clean);u.lang='en-US';u.rate=.9;
+    }
+    speechSynthesis.cancel();speechSynthesis.speak(u);
+  }catch(e){toast('Bu cihazda sesli okuma yok.')}
+}
+function setTab(t){
+  if(t==='quiz'&&UI.quiz&&UI.quiz.done)UI.quiz=null;
+  UI.tab=t;try{sessionStorage.setItem('kd-tab',t)}catch(e){}
+  render();window.scrollTo(0,0);
+  if(t==='rank'||t==='today')refreshBoard();
+}
+document.addEventListener('click',async e=>{
+  const el=e.target.closest('[data-tab],[data-act],[data-opt],[data-f],[data-set],[data-me],[data-say],[data-rb],[data-rp],[data-ra],[data-sw]');
+  if(!el)return;
+  const g=a=>el.getAttribute(a);
+  if(g('data-tab')){setTab(g('data-tab'));return}
+  if(g('data-say')!==null&&el.hasAttribute('data-say')){say(g('data-say'),g('data-pron'));return}
+  if(el.hasAttribute('data-opt')){answer(+g('data-opt'));return}
+  if(el.hasAttribute('data-rb')){UI.rank.board=g('data-rb');render();return}
+  if(el.hasAttribute('data-rp')){UI.rank.per=g('data-rp');render();return}
+  if(el.hasAttribute('data-ra')){UI.rank.ach=g('data-ra');render();return}
+  if(el.hasAttribute('data-sw')){syncDraft();UI.draft.color=+g('data-sw');render();return}
+  if(el.hasAttribute('data-me')){UI.me=g('data-me');UI.confirmReset=false;render();return}
+  if(el.hasAttribute('data-set')){const k=g('data-set'),v=g('data-v');S.set[k]=k==='count'?+v:v;save();render();return}
+  if(el.hasAttribute('data-f')){UI.dict[g('data-f')]=g('data-v');UI.dict.limit=40;render();return}
+  switch(g('data-act')){
+    case'start-today':startQuiz('today');break;
+    case'start-new':startQuiz('new');break;
+    case'start-review':startQuiz('review',false);break;
+    case'start-review-all':startQuiz('review',true);break;
+    case'next':next();break;
+    case'quit':UI.quiz=null;render();break;
+    case'again':UI.quiz=null;render();break;
+    case'home':UI.quiz=null;setTab('today');break;
+    case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=dictList();break}
+    case'more':UI.dict.limit+=40;$('#dlist').innerHTML=dictList();break;
+    case'unlearn':{const w=g('data-w');delete S.learned[w];save();render();toast('Kelime tekrar öğrenilecekler arasına alındı.');break}
+    case'notif':toggleNotif();break;
+    case'auth-mode':UI.auth.mode=g('data-v');UI.auth.msg='';render();break;
+    case'auth-submit':doAuth();break;
+    case'logout':{clearTimeout(pushT);if(sb&&navigator.onLine){try{await pushNow()}catch(e){}}try{await sb.auth.signOut()}catch(e){}onLogout();break}
+    case'chpw':{const v=(document.getElementById('newpw')||{}).value||'';if(v.length<6){toast('Şifre en az 6 karakter olmalı.');break}
+      try{const r=await sb.auth.updateUser({password:v});if(r.error)throw r.error;document.getElementById('newpw').value='';toast('Şifre değiştirildi.')}catch(e){toast('Şifre değiştirilemedi.')}break}
+    case'install':{if(window.__bip){window.__bip.prompt();window.__bip=null;render()}break}
+    case'save-prof':{
+      syncDraft();const d=UI.draft,nm=d.name.replace(/[\u0000-\u001f]/g,'').trim().slice(0,24);
+      if(nm.length<2){toast('Ad en az 2 karakter olmalı.');break}
+      S.prof={name:nm,color:d.color,show:d.show};UI.draft=null;save();CLOUD.last='';pushNow();render();toast('Profil kaydedildi.');break}
+    case'export':{UI.backup=JSON.stringify(S);render();try{navigator.clipboard.writeText(UI.backup).then(()=>toast('Yedek panoya kopyalandı.'),()=>{})}catch(e){}break}
+    case'import':importBackup();break;
+    case'reset':UI.confirmReset=true;render();break;
+    case'reset-no':UI.confirmReset=false;render();break;
+    case'reset-yes':{const set=S.set,prof=S.prof;S=fresh();S.set=set;S.prof=prof;save();UI.confirmReset=false;render();toast('İlerleme sıfırlandı.');break}
+  }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='q'){UI.dict.q=e.target.value;UI.dict.limit=40;UI.dict.open=null;$('#dlist').innerHTML=dictList()}
+});
+document.addEventListener('change',e=>{
+  const id=e.target.id;
+  if(id==='posf'){UI.dict.pos=e.target.value;UI.dict.limit=40;render()}
+  else if(id==='goal'){S.set.goal=+e.target.value;save();toast('Hedef güncellendi.')}
+  else if(id==='hour'){S.set.hour=+e.target.value;save()}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!CLOUD.uid&&/^au-/.test(e.target.id||'')){e.preventDefault();doAuth();return}
+  if(UI.tab!=='quiz'||!UI.quiz||UI.quiz.done)return;
+  if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+  const it=UI.quiz.items[UI.quiz.i];
+  if(e.key>='1'&&e.key<='4'&&it.chosen===null){answer(+e.key-1)}
+  else if((e.key==='Enter'||e.key===' ')&&it.chosen!==null){e.preventDefault();next()}
+});
+function syncDraft(){
+  UI.focusName=document.activeElement&&document.activeElement.id==='pname';
+  if(!UI.draft)UI.draft={name:S.prof.name||CLOUD.defName,color:S.prof.color,show:S.prof.show};
+  const n=document.getElementById('pname'),s=document.getElementById('pshow');
+  if(n)UI.draft.name=n.value;if(s)UI.draft.show=s.checked;
+}
+function importBackup(){
+  const v=($('#bk')||{}).value||'';
+  try{
+    const p=JSON.parse(v);
+    if(!p||typeof p!=='object'||!p.learned||!p.prog)throw 0;
+    S=Object.assign(fresh(),p);S.set=Object.assign(fresh().set,p.set||{});S.prof=Object.assign(fresh().prof,p.prof||{});save();render();toast('Yedek yüklendi.');
+  }catch(e){toast('Yedek metni geçersiz.')}
+}
+function toggleNotif(){
+  if(S.set.notif){S.set.notif=false;save();render();return}
+  if(!('Notification' in window)){toast('Bu tarayıcı bildirimleri desteklemiyor.');return}
+  try{
+    Notification.requestPermission().then(p=>{
+      if(p==='granted'){S.set.notif=true;save();render();toast('Hatırlatma açıldı.')}
+      else toast('Bildirim izni verilmedi.');
+    }).catch(()=>toast('Bildirim izni alınamadı.'));
+  }catch(e){toast('Bildirim izni alınamadı.')}
+}
+function maybeNotify(){
+  try{
+    if(!S.set.notif||!('Notification' in window)||Notification.permission!=='granted')return;
+    if(new Date().getHours()<S.set.hour||S.lastNotif===today())return;
+    const left=S.set.goal-dayStat().c;if(left<=0)return;
+    new Notification('Kelime Defteri',{body:`Bugünkü hedefe ${left} doğru cevap kaldı.`});
+    S.lastNotif=today();save();
+  }catch(e){}
+}
+setInterval(maybeNotify,60000);
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(pushT);pushNow()}else{maybeNotify();if(UI.tab==='today')render()}});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__bip=e;if(UI.tab==='me'&&UI.me==='set')render()});
+window.addEventListener('online',()=>{schedulePush();refreshBoard()});
+setInterval(()=>{if(!document.hidden&&(UI.tab==='rank'||UI.tab==='today'))refreshBoard()},60000);
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
+render();maybeNotify();initAuth();
+})();
+</script>
+</body>
+</html>
