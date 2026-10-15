@@ -228,8 +228,8 @@ const LEAGUES=[
  {k:'altin',n:'Altın',min:450,rng:'450–749'},{k:'platin',n:'Platin',min:750,rng:'750–1149'},{k:'zumrut',n:'Zümrüt',min:1150,rng:'1150–1999'},
  {k:'elmas',n:'Elmas',min:2000,rng:'2000–2999'},
  {k:'ustalik',n:'Ustalık',min:3000,rng:'3000+',need:'3000 puanı geç'},
- {k:'buyukustalik',n:'Büyükustalık',min:5000,rng:'5000+',need:'5000+ puan ve 3000 puanı geçenler arasında ilk 30'},
- {k:'sampiyonluk',n:'Şampiyonluk',min:8000,rng:'8000+',need:'8000+ puan ve 3000 puanı geçenler arasında ilk 10'}];
+ {k:'buyukustalik',n:'Büyükustalık',min:5000,rng:'5000+',need:'5000+ puan ya da 3000 puanı geçenler arasında ilk 30'},
+ {k:'sampiyonluk',n:'Şampiyonluk',min:8000,rng:'8000+',need:'8000+ puan ya da 3000 puanı geçenler arasında ilk 10'}];
 const LGIDX=new Map(LEAGUES.map((l,i)=>[l.k,i]));
 let lgMemo=null;
 function ownPts(){return r1(myPoints().T.pts)}
@@ -243,7 +243,7 @@ function leagueMap(){
   const m={};
   rows.forEach(r=>{
     let k=0;for(let i=0;i<=6;i++)if(r.p>=LEAGUES[i].min)k=i;
-    if(r.p>=3000){k=7;if(CLOUD.lbReady){if(r.p>=8000&&r.rk<=10)k=9;else if(r.p>=5000&&r.rk<=30)k=8}}
+    if(r.p>=3000){k=r.p>=8000?9:r.p>=5000?8:7;if(CLOUD.lbReady){const rt=r.rk<=10?9:r.rk<=30?8:7;if(rt>k)k=rt}}   // puan barajı ve sıra: hangisi daha yüksek ligse o
     m[r.id]=k;
   });
   lgMemo={key,lb:CLOUD.lb,m};return m;
@@ -1000,10 +1000,10 @@ function leagueCard(){
   const cur=myLeague(),p=ownPts(),L=LEAGUES[cur];
   let prog='';
   if(cur<=6){const a=L.min,b=LEAGUES[cur+1].min,pc=Math.max(0,Math.min(100,(p-a)/(b-a)*100));prog=`<div class="bar" aria-hidden="true"><i style="width:${pc}%"></i></div><div class="small muted">${nf(p)} puan · ${LEAGUES[cur+1].n} için ${nf(Math.ceil(b-p))} puan kaldı</div>`}
-  else{const rk=cur===9?'ilk 10':cur===8?'11–30. sıra arası':'ilk 30 dışında';prog=`<div class="small muted">${nf(p)} puan · 3000 puanı geçenler arasında ${rk}.${cur<9?' Üst lig için puan ve sıra birlikte yeterli olmalı.':''}</div>`}
+  else{prog=`<div class="small muted">${nf(p)} puan · ${cur===9?'Şampiyonluk':cur===8?'Büyükustalık':'Ustalık'} ligindesin. ${cur<9?'Üst lig için sıranı yükseltmen ya da '+nf(Math.ceil((cur===8?8000:5000)-p))+' puan daha toplaman gerekir.':''}</div>`}
   return`<div class="card stack"><h2>Ligin</h2><div class="row" style="gap:14px">${avatar(S.prof.name||'?',S.prof.color,true,S.prof.av,L.k)}<div style="flex:1;min-width:0"><div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700">${L.n}</div>${prog}</div></div>
   <details class="small"><summary style="cursor:pointer;font-weight:600">Tüm ligler</summary><div class="stack" style="margin-top:8px;gap:6px">${LEAGUES.map((l,i)=>`<div class="lgrow ${i===cur?'cur':''}"><span class="avw fr-${l.k}"><span class="av" style="background:#94a3b8;width:28px;height:28px"></span></span><span><b>${l.n}</b><br><span class="muted">${l.rng} puan${l.need&&i>7?'<br>'+l.need:''}</span></span></div>`).join('')}
-  <div class="muted">Puan, tüm zamanların toplam puanıdır. Ustalık ve üstü ligler sıralamaya bağlıdır: 3000 puanı geçenlerin en yüksek 10'u Şampiyonluk, sonraki 20'si Büyükustalık, kalanı Ustalık olur. Şampiyonluk için ayrıca 8000, Büyükustalık için 5000 puan gerekir.</div></div></details></div>`;
+  <div class="muted">Puan, tüm zamanların toplam puanıdır. 3000 puanı geçenler arasında en yüksek 10 kişi Şampiyonluk, sonraki 20 kişi (11–30) Büyükustalık, kalanlar Ustalık olur. Bunun yanında 8000 puanı geçen herkes sayıdan bağımsız Şampiyonluk, 5000 puanı geçen herkes en az Büyükustalık olur.</div></div></details></div>`;
 }
 function badgeGrid(){
   const have=S.bd||{};const n=BADGES.filter(b=>have[b.id]).length;
