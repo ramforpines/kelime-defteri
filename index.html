@@ -304,7 +304,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.2.0';
+const APP_VERSION='4.3.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -438,7 +438,7 @@ function myPoints(){
 }
 function myScore(){
   const P=myPoints();
-  return{name:S.prof.name,color:S.prof.color,hide:false,dk:today(),da:P.D.A,dc:P.D.C,dp:r1(P.D.pts),wk:weekKey(),wa:P.W.A,wc:P.W.C,wp:r1(P.W.pts),ans:P.T.A,cor:P.T.C,ap:r1(P.T.pts),lrn:learnedCount(),st:streak(),sd:today(),av:Math.min(99,Math.max(0,S.prof.av|0)),fr:normFrame(S.prof.frame),bd:Object.keys(S.bd||{}).filter(k=>BYBADGE.has(k)).join(',')};
+  return{name:S.prof.name,color:S.prof.color,hide:false,dk:today(),da:P.D.A,dc:P.D.C,dp:r1(P.D.pts),wk:weekKey(),wa:P.W.A,wc:P.W.C,wp:r1(P.W.pts),ans:P.T.A,cor:P.T.C,ap:r1(P.T.pts),lrn:learnedCount(),st:streak(),sd:today(),dn:Math.min(3000,(S.days[today()]||{}).n|0),av:Math.min(99,Math.max(0,S.prof.av|0)),fr:normFrame(S.prof.frame),bd:Object.keys(S.bd||{}).filter(k=>BYBADGE.has(k)).join(',')};
 }
 /* ---------- Supabase: hesap, eşitleme, liderlik tablosu ---------- */
 const SB_URL='https://cqlcrwolgxrrrcyyluin.supabase.co';
@@ -459,12 +459,12 @@ async function pushNow(){
     let r=await sb.from('user_state').upsert({user_id:CLOUD.uid,state:S,updated_at:now});
     if(r.error)throw r.error;
     if(S.prof.name){
-      const sc=myScore();if(CLOUD.noExt){delete sc.av;delete sc.fr;delete sc.bd}
+      const sc=myScore();if(CLOUD.noExt){delete sc.av;delete sc.fr;delete sc.bd;delete sc.dn}
       const j=JSON.stringify(sc);
       if(j!==CLOUD.last){
         r=await sb.from('scores').upsert(Object.assign({user_id:CLOUD.uid,updated_at:now},sc));
-        if(r.error&&!CLOUD.noExt&&/\b(av|fr|bd)\b|schema cache|column/i.test(String(r.error.message||''))){   // avatar sütunları henüz eklenmemiş
-          CLOUD.noExt=true;delete sc.av;delete sc.fr;delete sc.bd;
+        if(r.error&&!CLOUD.noExt&&/\b(av|fr|bd|dn)\b|schema cache|column/i.test(String(r.error.message||''))){   // avatar sütunları henüz eklenmemiş
+          CLOUD.noExt=true;delete sc.av;delete sc.fr;delete sc.bd;delete sc.dn;
           r=await sb.from('scores').upsert(Object.assign({user_id:CLOUD.uid,updated_at:now},sc));
         }
         if(r.error)throw r.error;
@@ -485,6 +485,59 @@ async function pullState(){
     Object.keys(loc).forEach(w=>{if(!S.learned[w])S.learned[w]=loc[w]});
     persistLocal();
   }else if(!d||S.upd){save()}
+}
+
+/* ---------- uygulama geneli istatistikler + çevrimiçi durumu ---------- */
+CLOUD.stats=null;CLOUD.statsErr=false;
+async function appPing(){ if(!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return; try{await sb.rpc('app_ping')}catch(e){} }
+async function loadStats(){
+  if(!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return;
+  try{ const r=await sb.rpc('app_stats'); if(r.error||!r.data){CLOUD.statsErr=true;return}
+    CLOUD.stats=r.data;CLOUD.statsErr=false;
+    if(UI.tab==='today'&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render();
+  }catch(e){CLOUD.statsErr=true}
+}
+async function loadAdminStats(){
+  const A=UI.adm;if(!sb||!CLOUD.admin)return;A.sbusy=true;
+  try{ const r=await sb.rpc('admin_stats'); if(r.error||!r.data)throw 0; A.stats=r.data;A.serr=false }catch(e){A.serr=true}
+  A.sbusy=false; if(UI.tab==='me')render();
+}
+setInterval(()=>{if(!document.hidden)appPing()},60000);
+setInterval(()=>{if(!document.hidden&&UI.tab==='today')loadStats()},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){appPing();loadStats()}});
+function statsCard(){
+  const s=CLOUD.stats;
+  if(!s)return CLOUD.statsErr?'':'';
+  const k=(v,l)=>`<div class="kpi"><b>${nf(Math.round(+v||0))}</b><span>${l}</span></div>`;
+  const acc=s.solved_total?Math.round(s.correct_total/s.solved_total*100):0;
+  const lm=leagueMap(),cnt=LEAGUES.map(()=>0);Object.keys(lm).forEach(u=>{cnt[lm[u]]++});
+  const mx=Math.max(1,...cnt);
+  const bars=LEAGUES.map((l,i)=>`<div class="row" style="gap:8px;font-size:12px"><span style="width:92px">${esc(l.n)}</span><span style="flex:1;background:var(--line,#8883);border-radius:4px;height:8px;overflow:hidden"><span style="display:block;height:100%;width:${Math.round(cnt[i]/mx*100)}%;background:var(--accent)"></span></span><span style="width:26px;text-align:right">${cnt[i]}</span></div>`).join('');
+  return`<div class="card stack" style="margin-top:12px"><b>Uygulama genelinde</b>
+  <div class="kpis">${k(s.online,'şu an çevrimiçi')}${k(s.dau,'bugün aktif')}${k(s.users,'kullanıcı')}</div>
+  <div class="kpis">${k(s.solved_today,'bugün çözülen soru')}${k(s.solved_total,'toplam soru')}${k(acc,'% doğru oranı')}</div>
+  <div class="kpis">${k(s.learned_today,'bugün öğrenilen')}${k(s.learned_total,'toplam öğrenilen')}${k(s.best_streak,'en uzun seri (gün)')}</div>
+  <div class="kpis">${k(s.duels_today,'bugün düello')}${k(s.duels_total,'toplam düello')}${k(s.msgs_today,'bugün sohbet mesajı')}</div>
+  ${s.leader?`<div class="small">🏆 Günün lideri: <b>${esc(s.leader.name)}</b> · ${nf(Math.round(s.leader.pts))} puan</div>`:''}
+  ${s.duel_king?`<div class="small">⚔️ En çok düello kazanan: <b>${esc(s.duel_king.name)}</b> · ${s.duel_king.wins} galibiyet</div>`:''}
+  <div class="stack" style="gap:4px"><span class="small muted">Lig dağılımı</span>${bars}</div></div>`;
+}
+function adminStatsCard(){
+  const A=UI.adm,s=A.stats;
+  const head=`<div class="row" style="justify-content:space-between"><b>İstatistikler</b><button class="btn" data-act="adm-stats" ${A.sbusy?'disabled':''}>${A.sbusy?'Yükleniyor…':s?'Yenile':'Yükle'}</button></div>`;
+  if(!s)return`<div class="card stack">${head}${A.serr?'<div class="small" style="color:var(--bad)">Alınamadı. supabase-stats.sql çalıştırıldı mı?</div>':''}</div>`;
+  const k=(v,l)=>`<div class="kpi"><b>${nf(Math.round((+v||0)*10)/10)}</b><span>${l}</span></div>`;
+  const ser=s.series||[],mx=f=>Math.max(1,...ser.map(x=>x[f]||0));
+  const spark=(f,l)=>{const m=mx(f);return`<div class="stack" style="gap:2px"><span class="small muted">${l} (son 14 gün)</span><div style="display:flex;align-items:flex-end;gap:3px;height:42px">${ser.map(x=>`<span title="${x.d}: ${x[f]}" style="flex:1;background:var(--accent);opacity:.85;border-radius:2px 2px 0 0;height:${Math.max(2,Math.round((x[f]||0)/m*100))}%"></span>`).join('')}</div></div>`};
+  return`<div class="card stack">${head}
+  <div class="kpis">${k(s.online,'çevrimiçi (2 dk)')}${k(s.online15,'son 15 dk')}${k(s.dau,'bugün aktif')}</div>
+  <div class="kpis">${k(s.wau,'7 gün aktif')}${k(s.mau,'30 gün aktif')}${k(s.total,'toplam hesap')}</div>
+  <div class="kpis">${k(s.pending,'onay bekleyen')}${k(s.new_today,'bugün kayıt')}${k(s.new_7d,'7 günde kayıt')}</div>
+  <div class="kpis">${k(s.never,'hiç çalışmayan')}${k(s.fb_open,'yeni geri bildirim')}${k(s.avg_points,'ort. puan')}</div>
+  <div class="kpis">${k(s.duels_done,'biten düello')}${k(s.duels_active,'süren düello')}${k(s.duel_queue,'kuyrukta')}</div>
+  <div class="kpis">${k(s.msgs_total,'genel mesaj')}${k(s.dms_total,'özel mesaj')}${k(s.dms_today,'bugün özel')}</div>
+  ${spark('active','Aktif kullanıcı')}${spark('joined','Yeni kayıt')}${spark('duels','Düello')}${spark('msgs','Genel sohbet mesajı')}
+  ${(s.top_today||[]).length?`<div class="stack" style="gap:2px"><span class="small muted">Bugünün ilk 5'i</span>${s.top_today.map((x,i)=>`<div class="small">${i+1}. <b>${esc(x.name)}</b>${x.un?` <span class="muted">@${esc(x.un)}</span>`:''} · ${nf(Math.round(x.pts))} puan · ${x.cor}/${x.ans} doğru</div>`).join('')}</div>`:''}</div>`;
 }
 async function refreshBoard(){
   if(!sb||!CLOUD.uid||!navigator.onLine)return;
@@ -552,8 +605,8 @@ async function onLogin(user){
   applyReset();
   if(!S.prof.name)S.prof.name=CLOUD.username;
   render();
-  if(CLOUD.admin)loadUsers();
-  loadAnn();loadMyFb();if(CLOUD.admin)loadAdminFb();
+  if(CLOUD.admin){loadUsers();loadAdminStats()}
+  loadAnn();loadMyFb();appPing();loadStats();if(CLOUD.admin)loadAdminFb();
   try{await pullState()}catch(e){}
   if(!S.prof.name)S.prof.name=CLOUD.username;
   applyDecay();evalAwards();persistLocal();render();refreshBoard();schedulePush();
@@ -736,7 +789,7 @@ function vAdmin(){
   const d=s=>s?new Date(s).toLocaleDateString('tr-TR',{day:'numeric',month:'short'}):'–';
   const ad=A.annDraft!=null?A.annDraft:(CLOUD.ann?CLOUD.ann.body:'');
   const btn=(act,u,label,cls)=>`<button class="btn ${cls||''}" data-act="${act}" data-u="${esc(u)}">${label}</button>`;
-  return`<div class="card stack"><div class="seg"><button class="chip" aria-pressed="${A.filter==='pending'}" data-adf="pending">Bekleyen (${pend})</button><button class="chip" aria-pressed="${A.filter==='ok'}" data-adf="ok">Onaylı (${A.list.length-pend})</button><button class="chip" aria-pressed="${A.filter==='all'}" data-adf="all">Hepsi</button></div>
+  return`${adminStatsCard()}<div class="card stack"><div class="seg"><button class="chip" aria-pressed="${A.filter==='pending'}" data-adf="pending">Bekleyen (${pend})</button><button class="chip" aria-pressed="${A.filter==='ok'}" data-adf="ok">Onaylı (${A.list.length-pend})</button><button class="chip" aria-pressed="${A.filter==='all'}" data-adf="all">Hepsi</button></div>
   <input id="adq" class="nameinp" type="search" placeholder="Kullanıcı ara" value="${esc(A.q)}" autocomplete="off">
   <div class="row"><button class="btn" data-act="adm-load" ${A.busy?'disabled':''}>${A.busy?'Yükleniyor…':'Yenile'}</button>${pend>1&&A.filter!=='ok'?`<button class="btn primary" data-act="adm-approve-all" ${A.busy?'disabled':''}>Bekleyen ${pend} kişiyi onayla</button>`:''}<span class="small muted">${A.list.length} kullanıcı</span></div>
   ${A.err?`<div class="small" style="color:var(--bad)">${esc(A.err)}</div>`:''}</div>
@@ -1196,6 +1249,7 @@ function vToday(){
     <div>${esc(wd.tr)}</div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i></div></div>`:''}
   ${reqCard()}${profilePrompt()}${myRankLine()}
   ${reminderCard()}
+  ${statsCard()}
   </div>`;
 }
 function reminderCard(){
@@ -2045,7 +2099,8 @@ document.addEventListener('click',async e=>{
     case'afb-del-yes':afbAct('del',g('data-u'));break;
     case'card-close':UI.card=null;render();break;
     case'noop':break;
-    case'adm-load':loadUsers();break;
+    case'adm-load':loadUsers();loadAdminStats();break;
+    case'adm-stats':loadAdminStats();break;
     case'adm-approve':admAct('approve',g('data-u'));break;
     case'adm-revoke':admAct('revoke',g('data-u'));break;
     case'adm-del':UI.adm.confirm=g('data-u');UI.adm.rs=null;render();break;
