@@ -77,6 +77,8 @@ nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:
   padding:6px max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px))}
 nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
 nav button{position:relative;border:0;background:none;border-radius:10px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.68rem;padding:0;font-weight:600;color:var(--muted)}
+.pbar{display:flex;align-items:center;gap:12px;padding:8px 12px;margin-bottom:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.pbar .pn{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.25}.pbar .pn b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pbar .pr{display:flex;gap:6px}
 nav .nbd{position:absolute;top:2px;right:6px;font-style:normal;background:var(--bad);color:#fff;border-radius:8px;padding:0 5px;font-size:.62rem}
 .chatlist{height:calc(100vh - 330px);min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
 .cm{max-width:84%;align-self:flex-start;background:var(--surface2);border-radius:12px;padding:6px 10px;overflow-wrap:anywhere}
@@ -229,7 +231,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='2.7.2';
+const APP_VERSION='2.8.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -544,7 +546,7 @@ async function admAct(kind,uid,extra){
 }
 async function saveAnn(clear){
   const A=UI.adm,el=document.getElementById('annq');
-  const v=clear?'':(el?el.value:(A.annDraft||'')).trim().slice(0,400);
+  const v=clear?'':(el?el.value:(A.annDraft||'')).trim().slice(0,4000);
   try{
     const r=await sb.rpc('admin_set_announcement',{msg:v});
     if(r.error)throw r.error;
@@ -659,7 +661,7 @@ function vAdmin(){
     ${A.confirm===id?btn('adm-del-yes',id,'Evet, kalıcı sil','danger')+'<button class="btn" data-act="adm-del-no">Vazgeç</button>':btn('adm-del',id,'Sil','danger')}</div>
     ${A.confirm===id?'<div class="small muted" style="margin-top:6px">Hesap, ilerleme ve puanlar kalıcı olarak silinir.</div>':''}${A.rs===id?'<div class="small muted" style="margin-top:6px">Bu kullanıcının ilerlemesi ve puanı silinir; hesabı kalır.</div>':''}`}</div>`}).join(''):'<div class="empty card">Bu listede kullanıcı yok.</div>'}
   <div class="card stack"><b>Duyuru</b><div class="small muted">Onaylı tüm kullanıcıların Bugün ekranında görünür. Boş bırakıp kaldırabilirsin.</div>
-  <textarea id="annq" class="nameinp" rows="3" maxlength="400" placeholder="Örn. Bu hafta 120 yeni kelime eklendi.">${esc(ad)}</textarea>
+  <textarea id="annq" class="nameinp" rows="3" maxlength="4000" placeholder="Örn. Bu hafta 120 yeni kelime eklendi. (En fazla 500 kelime)">${esc(ad)}</textarea>
   <div class="row"><button class="btn primary" data-act="ann-save">Yayınla</button>${CLOUD.ann?'<button class="btn" data-act="ann-clear">Duyuruyu kaldır</button>':''}</div></div>`;
 }
 function vLogin(){
@@ -1044,6 +1046,13 @@ function renderNav(){
   $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${UI.tab===k?'aria-current="page"':''}>${ICON[k]}<span>${l}${k==='chat'&&chatUnread()?` <i class="nbd">${chatUnread()}</i>`:''}</span></button>`).join('');
 }
 function lvTag(l){return l?`<span class="lv lv-${esc(l)}">${esc(l)}</span>`:''}
+function profBar(){
+  const id=CLOUD.uid,r=CLOUD.lb.find(x=>x.id===id),P=S.prof||{};
+  const name=(r&&r.name)||P.name||CLOUD.defName||'Ben',color=r?r.color:P.color,av=r?r.av:P.av,fr=frameFor(id,r?r.fr:P.frame);
+  const st=r&&r.sd&&r.sd>=addDays(today(),-1)?(r.st||0):0;
+  let lg='';try{lg=LEAGUES[leagueMap()[id]|0].n}catch(e){}
+  return`<div class="pbar" data-pc="${esc(id)}" role="button" aria-label="Profil kartım">${avatar(name,color,false,av,fr)}<div class="pn"><b>${esc(name)}</b>${CLOUD.username?`<span class="muted small">@${esc(CLOUD.username)}</span>`:''}</div><div class="pr">${st?`<span class="badge">🔥 ${st}</span>`:''}${lg?`<span class="badge">${esc(lg)}</span>`:''}</div></div>`;
+}
 function render(){
   const app=$('#app');
   if(!AUTH.ready){$('nav').hidden=true;app.innerHTML='<div class="empty">Yükleniyor…</div>';return}
@@ -1059,7 +1068,7 @@ function render(){
   else if(UI.tab==='rank')h=vRank();
   else if(UI.tab==='chat')h=vChat();
   else h=vMe();
-  app.innerHTML=h+vCard();
+  app.innerHTML=profBar()+h+vCard();
   if(UI.tab==='chat'&&document.getElementById('chatlist'))chatPaint();
 }
 function ring(p){
@@ -1071,13 +1080,14 @@ function reqCard(){
   return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Günlük asgari hedef</b><span class="badge ${ok?'ok':'warn'}">${Math.min(c,q.n)}/${q.n} doğru</span></div><div class="bar" aria-hidden="true"><i style="width:${Math.min(100,c/q.n*100)}%"></i></div><div class="small muted">${ok?'Bugünkü asgari hedefi tamamladın, kesinti olmayacak.':'Gün bitmeden '+q.n+' doğru yapmazsan toplam puanının %'+(q.r*100)+'\'i kesilir.'}</div>${pn}</div>`;
 }
 function vToday(){
+  if(CLOUD.ann&&CLOUD.ann.updated_at!==annSeen()){const u=CLOUD.ann.updated_at;setTimeout(()=>{try{localStorage.setItem('kd-ann-'+CLOUD.uid,u)}catch(e){}},4000)}
   const d=dayStat(),g=S.set.goal,p=g?d.c/g:0;
   const due=dueWrong(false).length;
   const left=Math.max(0,g-d.c);
   const dn=Math.floor(Date.now()/864e5);
   const un=W.filter(w=>!S.learned[w.word]);
   const wd=un.length?un[(dn*7919)%un.length]:null;
-  const ann=CLOUD.ann&&CLOUD.ann.updated_at!==annSeen()?`<div class="card" style="border-color:var(--accent);margin-bottom:12px" role="status"><div class="row" style="justify-content:space-between;align-items:flex-start"><div style="overflow-wrap:anywhere">${esc(CLOUD.ann.body)}</div><button class="btn" data-act="ann-dismiss" aria-label="Duyuruyu kapat">Tamam</button></div></div>`:'';
+  const ann=CLOUD.ann?(()=>{const nw=CLOUD.ann.updated_at!==annSeen(),open=UI.annOpen,long=CLOUD.ann.body.length>220;return`<div class="card" style="border-color:var(--accent);margin-bottom:12px" role="status"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b>📢 Duyuru${nw?' <span class="badge ok">yeni</span>':''}</b><span class="muted small">${fmt(String(CLOUD.ann.updated_at).slice(0,10))}</span></div><div style="overflow-wrap:anywhere;white-space:pre-wrap;${long&&!open?'max-height:5.4em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)':''}">${esc(CLOUD.ann.body)}</div>${long?`<button class="btn" style="margin-top:8px" data-act="ann-toggle">${open?'Daralt':'Tamamını göster'}</button>`:''}</div>`})():'';
   return`${ann}<div class="top"><div><h1>Bugün</h1><div class="muted small">${new Date().toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long'})}</div></div>
     <span class="badge ${streak()?'warn':''}" title="Günlük hedefi tutturduğun ardışık gün">🔥 ${streak()} gün seri</span></div>
   <div class="stack">
@@ -1364,7 +1374,7 @@ function badgeGrid(){
 }
 function vCard(){
   const id=UI.card;if(!id)return'';
-  let r=CLOUD.lb.find(x=>x.id===id);const mn=!r;if(mn)r=chatPeer(id);
+  let r=CLOUD.lb.find(x=>x.id===id);const mn=!r;if(mn)r=id===CLOUD.uid?{id,name:S.prof.name||CLOUD.defName,un:CLOUD.username,color:S.prof.color,av:S.prof.av,fr:S.prof.frame}:chatPeer(id);
   const td=today(),wt=weekTop(),rk=wt[id];
   const acc=r.ans?Math.round((r.cor||0)/r.ans*100):0;
   const st=(r.sd&&r.sd>=addDays(td,-1))?(r.st||0):0;
@@ -1640,7 +1650,7 @@ document.addEventListener('click',async e=>{
     case'adm-rs-yes':admAct('reset-progress',g('data-u'));break;
     case'ann-save':saveAnn(false);break;
     case'ann-clear':saveAnn(true);break;
-    case'ann-dismiss':try{localStorage.setItem('kd-ann-'+CLOUD.uid,CLOUD.ann.updated_at)}catch(e){}render();break;
+    case'ann-toggle':UI.annOpen=!UI.annOpen;render();break;
     case'auth-mode':UI.auth.mode=g('data-v');UI.auth.msg='';render();break;
     case'auth-submit':doAuth();break;
     case'logout':{clearTimeout(pushT);if(sb&&navigator.onLine){try{await pushNow()}catch(e){}}try{await sb.auth.signOut()}catch(e){}onLogout();break}
