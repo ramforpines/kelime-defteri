@@ -91,7 +91,8 @@ nav button{position:relative;border:0;background:none;border-radius:10px;min-hei
 [data-lg="7"]{--lc:#a855f7;background:linear-gradient(100deg,rgba(168,85,247,.32),rgba(236,72,153,.1)),var(--surface)!important;box-shadow:0 0 16px rgba(168,85,247,.5)}
 [data-lg="8"]{--lc:#f43f5e;background:linear-gradient(100deg,rgba(244,63,94,.32),rgba(249,115,22,.18)),var(--surface)!important;box-shadow:0 0 18px rgba(244,63,94,.55)}
 [data-lg="9"]{--lc:#fbbf24;background:linear-gradient(100deg,rgba(251,191,36,.38),rgba(244,63,94,.18),rgba(168,85,247,.18)),var(--surface)!important;box-shadow:0 0 22px rgba(251,191,36,.65);border-width:2px}
-[data-lg="6"]::after,[data-lg="7"]::after,[data-lg="8"]::after,[data-lg="9"]::after,[data-lg="admin"]::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%);transform:translateX(-120%);animation:lgshine 4.5s ease-in-out infinite}
+[data-lg="6"]::after,[data-lg="7"]::after,[data-lg="8"]::after,[data-lg="9"]::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%);transform:translateX(-120%);animation:lgshine 4.5s ease-in-out infinite}
+.rk[data-lg="admin"],.pbar[data-lg="admin"]{overflow:visible}
 [data-lg="8"]::after{animation-duration:3.5s}[data-lg="9"]::after{animation-duration:2.6s}
 @keyframes lgshine{0%,55%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
 [data-lg="admin"]{--lc:#d4af37;background:linear-gradient(100deg,#000,#1b1608 60%,#000)!important;border:1.5px solid #d4af37;box-shadow:0 0 14px rgba(212,175,55,.45),inset 0 0 18px rgba(212,175,55,.08);color:#f6e7b0}
@@ -99,6 +100,25 @@ nav button{position:relative;border:0;background:none;border-radius:10px;min-hei
 [data-lg="admin"] .muted,[data-lg="admin"] .val small,[data-lg="admin"] .pos{color:#b9a463!important}
 [data-lg="admin"] .badge{background:#2a2310;color:#e9cf7a}
 @media (prefers-reduced-motion:reduce){[data-lg]::after{animation:none!important;display:none}}
+/* Yönetici: sırma çerçeve, kırmızı isim, kanlı çerçeve, siyah kart */
+[data-lg="admin"]::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:3.5px;pointer-events:none;z-index:1;
+  background:repeating-linear-gradient(135deg,#7a5a0c 0 2px,#f9e08a 2px 4px,#c79a1f 4px 6px,#fff3b8 6px 7px,#8a6510 7px 9px);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.rk[data-lg="admin"].me,.pbar[data-lg="admin"],[data-lg="admin"]{box-shadow:0 0 14px rgba(212,175,55,.5),inset 0 0 18px rgba(212,175,55,.08)}
+[data-lg="admin"] .nm,[data-lg="admin"] .pn b{color:#ff3b3b!important;text-shadow:0 0 8px rgba(255,0,0,.45)}
+.sheet.adm{background:linear-gradient(180deg,#120d06,#000 40%);color:#f3e3b0;position:relative;border-top:4px solid transparent;border-image:repeating-linear-gradient(135deg,#7a5a0c 0 2px,#f9e08a 2px 4px,#c79a1f 4px 6px,#fff3b8 6px 7px,#8a6510 7px 9px) 4;box-shadow:0 -6px 30px rgba(212,175,55,.35)}
+.sheet.adm .avw{margin:14px 16px 18px 10px}
+.sheet.adm h2{color:#ff3b3b;text-shadow:0 0 10px rgba(255,0,0,.5)}
+.sheet.adm .muted,.sheet.adm .kp span{color:#b9a463}
+.sheet.adm .kp div,.sheet.adm .bdg{background:#17110a;border:1px solid #3d3012;color:#f3e3b0}
+.sheet.adm .btn{background:#17110a;border-color:#8a6510;color:#f3e3b0}
+.sheet.adm .badge{background:#2a2310;color:#e9cf7a}
+.frm.bld .wob{animation:bwob 3.2s ease-in-out infinite;transform-origin:0 0}
+.frm.bld .drp{transform-box:fill-box;transform-origin:50% 0;animation:bdrip 3.2s ease-in-out infinite}
+.frm.bld .drp.d1{animation-delay:-.8s}.frm.bld .drp.d2{animation-delay:-1.6s}.frm.bld .drp.d3{animation-delay:-2.2s}
+@keyframes bwob{0%,100%{transform:rotate(-2.5deg) scale(1)}50%{transform:rotate(2.5deg) scale(1.02)}}
+@keyframes bdrip{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.25)}}
+@media (prefers-reduced-motion:reduce){.frm.bld .wob,.frm.bld .drp{animation:none}}
 nav .nbd{position:absolute;top:2px;right:6px;font-style:normal;background:var(--bad);color:#fff;border-radius:8px;padding:0 5px;font-size:.62rem}
 .chatlist{height:calc(100vh - 330px);min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
 .cm{max-width:84%;align-self:flex-start;background:var(--surface2);border-radius:12px;padding:6px 10px;overflow-wrap:anywhere}
@@ -253,7 +273,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='3.1.0';
+const APP_VERSION='3.2.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -299,6 +319,7 @@ const lgAttr=id=>`data-lg="${isAdm(id)?'admin':(leagueMap()[id]|0)}"`;
 const myLeague=()=>leagueMap()[CLOUD.uid]|0;
 const normFrame=f=>(f==='none'||LGIDX.has(f))?f:'auto';
 function frameFor(id,choice){
+  if(isAdm(id))return'kan';
   const m=leagueMap(),act=m[id]|0,c=normFrame(choice);
   if(c==='none')return'';
   if(c==='auto')return LEAGUES[act].k;
@@ -1324,6 +1345,12 @@ const PAL={
  buyukustalik:{d:'#5a0a1d',m:'#e11d48',l:'#ffd3da',g:'#fb7185',c:'#f43f5e'},
  sampiyonluk:{d:'#6b3f04',m:'#f2b01e',l:'#fff6bf',g:'#fde047',c:'#f59e0b'}};
 const GOLD={d:'#6b3f04',m:'#e2a31f',l:'#fff2ad'};
+function bloodFrame(){
+  const u='b'+(++FU),N=22,pts=[];
+  for(let i=0;i<N*4;i++){const a=(i/(N*4))*2*Math.PI,ph=i%4,r=(ph===1||ph===2)?60:52;pts.push((Math.sin(a)*r).toFixed(1)+','+(-Math.cos(a)*r).toFixed(1))}
+  const drips=[[-34,52,9],[8,57,14],[38,46,7],[-8,58,6]].map(([x,y,h],i)=>`<g class="drp d${i}"><path d="M${x-2.6} ${y-4}Q${x-2.6} ${y+h} ${x} ${y+h+4}Q${x+2.6} ${y+h} ${x+2.6} ${y-4}z" fill="#991b1b" stroke="#2b0000" stroke-width="1"/><ellipse cx="${x-.8}" cy="${y+h-1}" rx=".8" ry="1.8" fill="#fecaca" opacity=".7"/></g>`).join('');
+  return`<svg class="frm bld" viewBox="-100 -100 200 200" aria-hidden="true" style="--gc:rgba(120,0,0,.9)"><defs><radialGradient id="r${u}" cx=".5" cy=".5" r=".5"><stop offset=".78" stop-color="#3a0505"/><stop offset=".9" stop-color="#8f1212"/><stop offset="1" stop-color="#4a0606"/></radialGradient><linearGradient id="l${u}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6b6b" stop-opacity=".75"/><stop offset=".5" stop-color="#7f1d1d" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></linearGradient></defs><g class="wob"><path d="M${pts.join('L')}ZM44 0A44 44 0 1 0-44 0A44 44 0 1 0 44 0Z" fill="url(#r${u})" fill-rule="evenodd" stroke="#1a0000" stroke-width="2.4" stroke-linejoin="round"/><path d="M${pts.join('L')}Z" fill="none" stroke="url(#l${u})" stroke-width="2.6" stroke-linejoin="round"/><circle r="45" fill="none" stroke="#1a0000" stroke-width="3"/><circle r="46.6" fill="none" stroke="#ef4444" stroke-opacity=".55" stroke-width="1"/>${drips}</g></svg>`;
+}
 function frameSVG(k){
   const P=PAL[k];if(!P)return'';
   const idx=LGIDX.get(k),u='f'+(++FU),R=Math.PI/180,f1=n=>Math.round(n*10)/10;
@@ -1362,7 +1389,7 @@ const avatar=(name,color,lg,av,fr,crown,xl)=>{
   const e=(av|0)>0&&AVATARS[(av|0)-1];
   const sz=xl?' xl':lg?' lg':'';
   const cr=crown?`<span class="crown" aria-hidden="true">${['🥇','🥈','🥉'][crown-1]}</span>`:'';
-  return`<span class="avw"><span class="av${sz}${e?' em svgav':''}" style="${e?'':'background:'+COLORS[(color|0)%COLORS.length]}" aria-hidden="true">${e?avSvg(av|0):esc((name||'?').trim().charAt(0).toUpperCase())}</span>${fr&&LGIDX.has(fr)?frameSVG(fr):''}${cr}</span>`;
+  return`<span class="avw"><span class="av${sz}${e?' em svgav':''}" style="${e?'':'background:'+COLORS[(color|0)%COLORS.length]}" aria-hidden="true">${e?avSvg(av|0):esc((name||'?').trim().charAt(0).toUpperCase())}</span>${fr==='kan'?bloodFrame():fr&&LGIDX.has(fr)?frameSVG(fr):''}${cr}</span>`;
 };
 function weekTop(){
   const wk=weekKey(),m={};
@@ -1406,8 +1433,8 @@ function vCard(){
   const st=(r.sd&&r.sd>=addDays(td,-1))?(r.st||0):0;
   const ids=String(r.bd||'').split(',').filter(x=>BYBADGE.has(x));
   const lg=LEAGUES[leagueMap()[id]|0],fk=frameFor(id,r.fr);
-  return`<div class="ov" data-act="card-close"><div class="sheet stack" data-act="noop" role="dialog" aria-label="Profil kartı">
-  <div class="row" style="justify-content:space-between;align-items:flex-start"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}${isAdm(id)?'<div class="small" style="font-weight:700">🛡 Yönetici</div>':''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':''}${!mn&&rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında'}${mn?'':' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
+  return`<div class="ov" data-act="card-close"><div class="sheet stack${isAdm(id)?' adm':''}" data-act="noop" role="dialog" aria-label="Profil kartı">
+  <div class="row" style="justify-content:space-between;align-items:flex-start"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}${isAdm(id)?'<div class="small" style="font-weight:700">🛡 Yönetici</div>':''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':(rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında')+' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
   ${id!==CLOUD.uid?`<button class="btn block" data-act="chat-open" data-v="${esc(id)}">Mesaj gönder</button>`:''}
   ${mn?'</div></div>':`<div class="kp"><div><b>${nf(Math.round((r.ap||0)*10)/10)}</b><span>toplam puan</span></div><div><b>${nf(r.lrn||0)}</b><span>öğrenilen kelime</span></div><div><b>${st?'🔥 '+st:'–'}</b><span>günlük seri</span></div><div><b>${nf(r.ans||0)}</b><span>çözülen soru</span></div><div><b>%${acc}</b><span>doğruluk</span></div><div><b>${ids.length}</b><span>rozet</span></div></div>
   ${ids.length?`<div class="bgrid">${ids.map(i=>{const b=BYBADGE.get(i);return`<div class="bdg"><span class="e">${b.e}</span><b>${b.n}</b></div>`}).join('')}</div>`:'<div class="small muted">Henüz rozeti yok.</div>'}</div></div>`}`;
