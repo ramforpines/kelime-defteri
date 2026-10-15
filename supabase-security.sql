@@ -31,11 +31,6 @@ declare un text := split_part(new.email, '@', 1);
 begin
   if un !~ '^[a-z0-9][a-z0-9_.-]{2,19}$' then raise exception 'invalid username'; end if;
   if public.reserved_name(un) then raise exception 'reserved username'; end if;
-  -- toplu sahte kayıt freni: 10 dakikada en fazla 40, onay bekleyen toplam en fazla 300
-  if (select count(*) from public.profiles where created_at > now() - interval '10 minutes') >= 40
-     or (select count(*) from public.profiles where not approved) >= 300 then
-    raise exception 'signup_limit';
-  end if;
   insert into public.profiles(user_id, username, approved) values (new.id, un, false) on conflict do nothing;
   return new;
 end $$;
