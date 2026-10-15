@@ -304,7 +304,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.0.0';
+const APP_VERSION='4.1.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -545,6 +545,7 @@ async function onLogin(user){
   try{await pullState()}catch(e){}
   if(!S.prof.name)S.prof.name=CLOUD.username;
   applyDecay();evalAwards();persistLocal();render();refreshBoard();schedulePush();
+  duelSync();
 }
 function onLogout(){
   try{dReset()}catch(e){}
@@ -1472,6 +1473,7 @@ function vCard(){
   const lg=LEAGUES[leagueMap()[id]|0],fk=frameFor(id,r.fr);
   return`<div class="ov" data-act="card-close"><div class="sheet stack${isAdm(id)?' adm':''}" ${lgAttr(id)} data-act="noop" role="dialog" aria-label="Profil kartı">
   <div class="row" style="justify-content:space-between;align-items:flex-start"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}${isAdm(id)?'<div class="small" style="font-weight:700">🛡 Yönetici</div>':''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':(rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında')+' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
+  ${(()=>{if(mn&&id==='bot')return'';const s=DSTAT[id];if(s===undefined){duelStat(id);return''}if(!s)return'';return s.n?`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>⚔ ${s.n}</b><span>düello maçı</span></div><div><b>%${Math.round(s.w/s.n*100)}</b><span>kazanma oranı</span></div><div><b>${s.w}-${s.l}-${s.d}</b><span>G-M-B</span></div></div>`:'<div class="small muted">⚔ Henüz düello maçı yok.</div>'})()}
   ${id!==CLOUD.uid?`<button class="btn block" data-act="chat-open" data-v="${esc(id)}">Mesaj gönder</button>`:''}
   ${mn?'</div></div>':`<div class="kp"><div><b>${nf(Math.round((r.ap||0)*10)/10)}</b><span>toplam puan</span></div><div><b>${nf(r.lrn||0)}</b><span>öğrenilen kelime</span></div><div><b>${st?'🔥 '+st:'–'}</b><span>günlük seri</span></div><div><b>${nf(r.ans||0)}</b><span>çözülen soru</span></div><div><b>%${acc}</b><span>doğruluk</span></div><div><b>${ids.length}</b><span>rozet</span></div></div>
   ${ids.length?`<div class="bgrid">${ids.map(i=>{const b=BYBADGE.get(i);return`<div class="bdg"><span class="e">${bIcon(b)}</span><b>${b.n}</b></div>`}).join('')}</div>`:'<div class="small muted">Henüz rozeti yok.</div>'}</div></div>`}`;
@@ -1712,6 +1714,38 @@ setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||UI.tab=
 const DQ_N=20,DQ_T=15;
 const DUEL={phase:'lobby',id:null,d:null,off:0,qs:null,idx:0,tq:0,sel:null,bot:null,opp:'',err:'',rec:null,find:0,findT:null,poll:null,tick:null,busy:false,me:{s:0,c:0,t:0}};
 UI.qmode='solo';
+const DSTAKE=20;
+function duelApply(rows){
+  if(!S.dl)S.dl={};
+  let ch=false,msg='';
+  (rows||[]).forEach(d=>{
+    const e=S.dl[d.id]||(S.dl[d.id]={});
+    if(!e.s){e.s=1;const dy=dayStat();S.tp=Math.max(0,(S.tp||0)-DSTAKE);dy.p=Math.max(0,(dy.p||0)-DSTAKE);ch=true}
+    if(d.status==='done'&&!e.p){
+      const mine=d.p1===CLOUD.uid?d.pay1:d.pay2;
+      if(mine!=null){e.p=1;const v=+mine,dy=dayStat();S.tp=(S.tp||0)+v;dy.p=(dy.p||0)+v;ch=true;msg='Düello: '+(v>=DSTAKE?'+':'')+nf(r1(v-DSTAKE))+' puan (net)'}
+    }
+  });
+  const ks=Object.keys(S.dl);if(ks.length>80){ks.slice(0,ks.length-60).forEach(k=>{delete S.dl[k]})}
+  if(ch){save();if(msg)toast(msg);if(UI.tab==='quiz'&&UI.qmode==='duel')render()}
+}
+async function duelSync(){
+  if(!sb||!CLOUD.uid||CLOUD.approved===false)return;
+  try{
+    const r=await sb.from('duels').select('id,p1,p2,status,pay1,pay2,winner,s1,s2,created_at').order('created_at',{ascending:false}).limit(40);
+    if(r.error)return;
+    duelApply((r.data||[]).filter(d=>new Date(d.created_at).getTime()>Date.now()-30*864e5).reverse());
+  }catch(e){}
+}
+const DSTAT={};
+async function duelStat(id){
+  if(!sb||id==='bot'||DSTAT[id]!==undefined)return;
+  DSTAT[id]=null;
+  try{
+    const r=await sb.rpc('duel_stats',{target:id});
+    if(!r.error&&r.data){DSTAT[id]=r.data;if(UI.card===id)render()}else delete DSTAT[id]
+  }catch(e){delete DSTAT[id]}
+}
 function seededQs(seed,n){
   const orig=Math.random;let a=seed>>>0;
   Math.random=()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296};
@@ -1752,6 +1786,7 @@ async function duelRecord(){
 }
 async function duelFind(){
   if(!sb||!CLOUD.uid)return;
+  if((S.tp||0)<DSTAKE){toast('Düelloya girmek için en az '+DSTAKE+' puanın olmalı.');return}
   dReset();DUEL.phase='search';DUEL.find=Date.now();render();
   const step=async()=>{
     if(DUEL.phase!=='search')return;
@@ -1760,7 +1795,7 @@ async function duelFind(){
       if(DUEL.phase!=='search')return;
       if(r.error)throw r.error;
       if(r.data){await duelStart(r.data);return}
-    }catch(e){DUEL.err=/duel_join|PGRST202|schema cache|42883/i.test(String(e&&(e.message||e.code)||''))?'setup':'err';DUEL.phase='lobby';render();return}
+    }catch(e){DUEL.err=/low points/i.test(String(e&&e.message))?'low':/duel_join|PGRST202|schema cache|42883/i.test(String(e&&(e.message||e.code)||''))?'setup':'err';DUEL.phase='lobby';render();return}
     DUEL.findT=setTimeout(step,2000);
   };
   step();
@@ -1785,6 +1820,7 @@ async function duelStart(id){
   const d=DUEL.d;if(!d){DUEL.err='err';DUEL.phase='lobby';render();return}
   if(d.wn!==W.length){DUEL.err='ver';DUEL.phase='lobby';render();return}
   DUEL.qs=seededQs(d.seed,d.qn);
+  duelApply([d]);
   const m=dMine();DUEL.idx=Math.min(m.a,d.qn);DUEL.sel=null;
   DUEL.phase=d.status==='done'?'result':(DUEL.idx>=d.qn?'wait':'count');
   DUEL.tq=0;
@@ -1854,7 +1890,7 @@ async function duelEnd(){
   if(DUEL.bot){
     const d=DUEL.d,o=dOpp();d.s2=o.s;d.c2=o.c;d.a2=o.a;d.status='done';
     d.winner=d.s1>d.s2?CLOUD.uid:d.s2>d.s1?'bot':null;
-  }else{await duelFetch()}
+  }else{await duelFetch();if(DUEL.d&&DUEL.d.status==='done')duelApply([DUEL.d])}
   DUEL.phase='result';dStop();
   if(!DUEL.bot)duelRecord();
   render();
@@ -1873,13 +1909,14 @@ function vDuel(){
     const R=DUEL.rec;
     let err='';
     if(DUEL.err==='setup'||DUEL.recErr==='setup')err=`<div class="fb bad">Düello henüz kurulmadı. Yönetici, <b>supabase-duel.sql</b> dosyasını Supabase SQL Editor'da bir kez çalıştırmalı.</div>`;
+    else if(DUEL.err==='low')err=`<div class="fb bad">Düelloya girmek için en az ${DSTAKE} puanın olmalı.</div>`;
     else if(DUEL.err==='ver')err=`<div class="fb bad">Rakibinle kelime listesi sürümün farklı. Uygulamayı kapatıp yeniden aç.</div>`;
     else if(DUEL.err==='err')err=`<div class="fb bad">Bağlantı sorunu. Biraz sonra tekrar dene.</div>`;
     body=`<div class="card stack"><h2>⚔ 1v1 Düello</h2>
-      <div class="muted small">Eşleştirmeyle bir rakip bulunur, ikiniz de aynı ${n} soruyu çözersiniz. Soru başına ${DQ_T} saniye var. Doğru cevap 100 puan, hızlı cevap en çok 50 puan hız bonusu getirir. En çok puanı toplayan kazanır.</div>
+      <div class="muted small">Eşleştirmeyle bir rakip bulunur, ikiniz de aynı ${n} soruyu çözersiniz. Soru başına ${DQ_T} saniye var. Doğru cevap 100, hızlı cevap en çok 50 puan hız bonusu getirir; en çok maç puanını toplayan kazanır.<br><b>Bahis:</b> herkes kendi puanından ${DSTAKE} puan koyar (havuz ${DSTAKE*2}). 5 puan kesilir, kalan 35'in 25'ini kazanan alır, 10'u maç puanlarına göre paylaşılır (kazanan daha fazla alır). Beraberlikte 35 puan yarı yarıya bölünür.</div>
       ${R?`<div class="kp"><div><b>${R.w}</b><span>galibiyet</span></div><div><b>${R.l}</b><span>mağlubiyet</span></div><div><b>${R.d}</b><span>beraberlik</span></div></div>${R.last.length?`<div class="row" style="gap:6px">${R.last.map(x=>`<span class="badge ${x==='W'?'ok':x==='L'?'warn':''}">${x==='W'?'G':x==='L'?'M':'B'}</span>`).join('')}<span class="muted small">son maçlar</span></div>`:''}`:''}
       ${err}
-      <button class="btn primary block" data-act="duel-find">Rakip bul</button>
+      <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DSTAKE?'disabled':''}>Rakip bul (${DSTAKE} puan bahis)</button>${(S.tp||0)<DSTAKE?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. En az ${DSTAKE} gerekir.</div>`:''}
       <button class="btn block" data-act="duel-bot">Botla alıştır</button></div>`;
   }else if(P==='search'){
     const lw=DUEL.longWait;
@@ -1907,7 +1944,7 @@ function vDuel(){
     body=`<div class="card stack" style="text-align:center"><h1 style="margin:0">${draw?'🤝 Berabere':win?'🏆 Kazandın!':'😤 Kaybettin'}</h1>
       <div id="dhud">${dHudHtml()}</div>
       <div class="kp"><div><b>${m.c}/${n}</b><span>doğru</span></div><div><b>${avg||'–'}</b><span>ort. süre (sn)</span></div><div><b>${o.c}/${n}</b><span>rakip doğru</span></div></div>
-      ${DUEL.bot?'<div class="muted small">Alıştırma maçı kayda geçmez.</div>':''}
+      ${DUEL.bot?'<div class="muted small">Alıştırma maçı kayda geçmez, puan bahsi yoktur.</div>':(()=>{const pay=d.pay1==null?null:(d.p1===CLOUD.uid?d.pay1:d.pay2);return pay==null?'<div class="muted small">Puan dağıtımı hesaplanıyor…</div>':`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>−${DSTAKE}</b><span>bahis</span></div><div><b>+${nf(r1(+pay))}</b><span>kazanç</span></div><div><b>${(+pay-DSTAKE)>=0?'+':'−'}${nf(r1(Math.abs(+pay-DSTAKE)))}</b><span>net puan</span></div></div>`})()}
       <button class="btn primary block" data-act="duel-find">Yeni rakip bul</button>
       <button class="btn block" data-act="duel-exit">Çık</button></div>`;
   }
@@ -1945,7 +1982,7 @@ document.addEventListener('click',async e=>{
     case'chat-back':UI.chat.peer=null;render();break;
     case'chat-send':chatSend();break;
     case'chat-del':{const id=+g('data-id');const adm=CHAT.pub.some(m=>m.id===id&&m.user_id!==CLOUD.uid);const r=adm?await sb.rpc('admin_delete_chat',{mid:id}):await sb.from('chat_messages').delete().eq('id',id);if(r.error)toast('Silinemedi.');else{CHAT.pub=CHAT.pub.filter(m=>m.id!==id);CHAT.dm=CHAT.dm.filter(m=>m.id!==id);chatPaint()}break}
-    case'qmode':UI.qmode=g('data-v');if(UI.qmode==='duel'){if(DUEL.phase==='result')dReset();duelRecord()}render();break;
+    case'qmode':UI.qmode=g('data-v');if(UI.qmode==='duel'){if(DUEL.phase==='result')dReset();duelRecord();duelSync()}render();break;
     case'duel-find':duelFind();break;
     case'duel-cancel':duelCancel();break;
     case'duel-bot':if(DUEL.phase==='search'){try{sb.rpc('duel_cancel')}catch(e){}}duelStartBot();break;
