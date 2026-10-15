@@ -75,8 +75,18 @@ h3{font-size:1rem}
 /* nav */
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:10;
   padding:6px max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px))}
-nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
-nav button{border:0;background:none;border-radius:10px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.7rem;padding:0;font-weight:600;color:var(--muted)}
+nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+nav button{position:relative;border:0;background:none;border-radius:10px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.68rem;padding:0;font-weight:600;color:var(--muted)}
+nav .nbd{position:absolute;top:2px;right:6px;font-style:normal;background:var(--bad);color:#fff;border-radius:8px;padding:0 5px;font-size:.62rem}
+.chatlist{height:calc(100vh - 330px);min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.cm{max-width:84%;align-self:flex-start;background:var(--surface2);border-radius:12px;padding:6px 10px;overflow-wrap:anywhere}
+.cm.me{align-self:flex-end;background:var(--accent-soft)}
+.cm .cn{font-size:.72rem;font-weight:700;color:var(--muted);cursor:pointer}
+.cm .cb{white-space:pre-wrap;font-size:.92rem}
+.cm .ct{font-size:.66rem;color:var(--muted);display:flex;gap:8px;justify-content:flex-end}
+.cm .ct button{border:0;background:none;color:var(--muted);padding:0}
+.cdt{align-self:center;font-size:.68rem;color:var(--muted)}
+.cfm{display:flex;gap:8px;margin-top:8px}.cfm input{flex:1}
 nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 nav button[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
 /* today */
@@ -219,7 +229,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='2.6.0';
+const APP_VERSION='2.7.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -1026,11 +1036,12 @@ const ICON={
   quiz:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/><path d="M12 17h.01"/></svg>',
   review:'<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></svg>',
   rank:'<svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>',
+  chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const TABS=[['today','Bugün'],['dict','Sözlük'],['quiz','Test'],['review','Tekrar'],['rank','Sıra'],['me','Ben']];
+const TABS=[['today','Bugün'],['dict','Sözlük'],['quiz','Test'],['review','Tekrar'],['rank','Sıra'],['chat','Sohbet'],['me','Ben']];
 function renderNav(){
-  $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${UI.tab===k?'aria-current="page"':''}>${ICON[k]}<span>${l}</span></button>`).join('');
+  $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${UI.tab===k?'aria-current="page"':''}>${ICON[k]}<span>${l}${k==='chat'&&chatUnread()?` <i class="nbd">${chatUnread()}</i>`:''}</span></button>`).join('');
 }
 function lvTag(l){return l?`<span class="lv lv-${esc(l)}">${esc(l)}</span>`:''}
 function render(){
@@ -1046,8 +1057,10 @@ function render(){
   else if(UI.tab==='quiz')h=UI.quiz?vQuiz():vQuizSetup();
   else if(UI.tab==='review')h=vReview();
   else if(UI.tab==='rank')h=vRank();
+  else if(UI.tab==='chat')h=vChat();
   else h=vMe();
   app.innerHTML=h+vCard();
+  if(UI.tab==='chat'&&document.getElementById('chatlist'))chatPaint();
 }
 function ring(p){
   const r=44,c=2*Math.PI*r,o=c*(1-Math.min(1,p));
@@ -1359,6 +1372,7 @@ function vCard(){
   const lg=LEAGUES[leagueMap()[id]|0],fk=frameFor(id,r.fr);
   return`<div class="ov" data-act="card-close"><div class="sheet stack" data-act="noop" role="dialog" aria-label="Profil kartı">
   <div class="row" style="justify-content:space-between;align-items:flex-start"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2><div class="small muted">${rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında'} · ${lg.n} ligi</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
+  ${id!==CLOUD.uid?`<button class="btn block" data-act="chat-open" data-v="${esc(id)}">Mesaj gönder</button>`:''}
   <div class="kp"><div><b>${nf(Math.round((r.ap||0)*10)/10)}</b><span>toplam puan</span></div><div><b>${nf(r.lrn||0)}</b><span>öğrenilen kelime</span></div><div><b>${st?'🔥 '+st:'–'}</b><span>günlük seri</span></div><div><b>${nf(r.ans||0)}</b><span>çözülen soru</span></div><div><b>%${acc}</b><span>doğruluk</span></div><div><b>${ids.length}</b><span>rozet</span></div></div>
   ${ids.length?`<div class="bgrid">${ids.map(i=>{const b=BYBADGE.get(i);return`<div class="bdg"><span class="e">${b.e}</span><b>${b.n}</b></div>`}).join('')}</div>`:'<div class="small muted">Henüz rozeti yok.</div>'}</div></div>`;
 }
@@ -1450,11 +1464,107 @@ function say(word,pron){
     speechSynthesis.cancel();speechSynthesis.speak(u);
   }catch(e){toast('Bu cihazda sesli okuma yok.')}
 }
+
+// ---- Sohbet (genel + özel) ----
+const CHAT={pub:[],dm:[],ready:false,err:'',busy:false};
+UI.chat={view:'pub',peer:null,draft:'',q:''};
+function chatSeen(){try{return JSON.parse(localStorage.getItem('kd-chat-'+CLOUD.uid)||'{}')}catch(e){return{}}}
+function chatMark(k,id){try{const s=chatSeen();if((s[k]||0)<id){s[k]=id;localStorage.setItem('kd-chat-'+CLOUD.uid,JSON.stringify(s))}}catch(e){}}
+function chatUnread(peer){
+  if(!CLOUD.uid)return 0;
+  const s=chatSeen();let n=0;
+  CHAT.dm.forEach(m=>{if(m.to_user===CLOUD.uid&&(!peer||m.user_id===peer)&&m.id>(s['u'+m.user_id]||0)&&!(UI.tab==='chat'&&UI.chat.view==='dm'&&UI.chat.peer===m.user_id))n++});
+  return n;
+}
+function chatPeer(id){
+  const r=CLOUD.lb.find(x=>x.id===id);
+  if(r)return r;
+  const m=CHAT.dm.find(x=>x.user_id===id);
+  return{id,name:m?m.sname:'Kullanıcı',color:0,av:0,fr:''};
+}
+async function chatLoad(){
+  if(!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine||CHAT.busy)return;
+  CHAT.busy=true;
+  try{
+    const a=await sb.from('chat_messages').select('id,user_id,to_user,sname,body,created_at').is('to_user',null).order('id',{ascending:false}).limit(80);
+    const b=await sb.from('chat_messages').select('id,user_id,to_user,sname,body,created_at').not('to_user','is',null).order('id',{ascending:false}).limit(300);
+    if(a.error)throw a.error;if(b.error)throw b.error;
+    CHAT.pub=(a.data||[]).slice().reverse();CHAT.dm=(b.data||[]).slice().reverse();CHAT.ready=true;CHAT.err='';
+  }catch(e){CHAT.err=String(e&&e.message||e).indexOf('chat_messages')>-1?'setup':'err'}
+  CHAT.busy=false;
+  if(UI.tab==='chat')chatPaint();else renderNavOnly();
+}
+function renderNavOnly(){if(CLOUD.uid&&CLOUD.approved!==false)renderNav()}
+function chatMsgs(){
+  const C=UI.chat;
+  if(C.view==='pub')return CHAT.pub;
+  return CHAT.dm.filter(m=>m.user_id===C.peer||m.to_user===C.peer);
+}
+function chatMsgHtml(m,prev){
+  const me=m.user_id===CLOUD.uid,d=new Date(m.created_at),day=d.toLocaleDateString('sv-SE');
+  const pd=prev?new Date(prev.created_at).toLocaleDateString('sv-SE'):'';
+  const sep=day!==pd?`<div class="cdt">${day===today()?'Bugün':fmt(day)}</div>`:'';
+  const tm=d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+  const can=me||(CLOUD.admin&&!m.to_user);
+  return sep+`<div class="cm ${me?'me':''}">${!me&&UI.chat.view==='pub'?`<div class="cn" data-pc="${esc(m.user_id)}">${esc(m.sname||'Kullanıcı')}</div>`:''}<div class="cb">${esc(m.body)}</div><div class="ct"><span>${tm}</span>${can?`<button data-act="chat-del" data-id="${m.id}" aria-label="Sil">sil</button>`:''}</div></div>`;
+}
+function chatPaint(){
+  const el=document.getElementById('chatlist');
+  if(!el){if(UI.tab==='chat'&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||''))render();return}
+  const ms=chatMsgs(),near=el.scrollHeight-el.scrollTop-el.clientHeight<80;
+  const html=ms.length?ms.map((m,i)=>chatMsgHtml(m,ms[i-1])).join(''):'<div class="empty">Henüz mesaj yok. İlk mesajı sen yaz.</div>';
+  if(el.dataset.h!==html){el.innerHTML=html;el.dataset.h=html;if(near||!el.dataset.init)el.scrollTop=el.scrollHeight;el.dataset.init='1'}
+  const last=ms.length?ms[ms.length-1].id:0;
+  if(UI.chat.view==='pub')chatMark('pub',last);else if(UI.chat.peer)ms.forEach(m=>{if(m.user_id===UI.chat.peer)chatMark('u'+m.user_id,m.id)});
+  renderNavOnly();
+}
+function vChat(){
+  const C=UI.chat;
+  if(CHAT.err==='setup')return`<div class="top"><h1>Sohbet</h1></div><div class="card">Sohbet henüz kurulmadı. Yönetici, <b>supabase-chat.sql</b> dosyasını Supabase SQL Editor'da bir kez çalıştırmalı.</div>`;
+  const du=chatUnread();
+  const seg=`<div class="seg"><button class="chip" aria-pressed="${C.view==='pub'}" data-act="chat-view" data-v="pub">Genel</button><button class="chip" aria-pressed="${C.view==='dm'}" data-act="chat-view" data-v="dm">Özel${du?' ('+du+')':''}</button></div>`;
+  let body='';
+  if(C.view==='dm'&&!C.peer){
+    const th={};
+    CHAT.dm.forEach(m=>{const o=m.user_id===CLOUD.uid?m.to_user:m.user_id;th[o]=m});
+    const list=Object.keys(th).sort((a,b)=>th[b].id-th[a].id);
+    const q=(C.q||'').trim().toLowerCase();
+    const found=q?CLOUD.lb.filter(r=>r.id!==CLOUD.uid&&r.name&&r.name.toLowerCase().includes(q)).slice(0,12):[];
+    const row=(id,sub,n)=>{const r=chatPeer(id);return`<div class="rk" data-act="chat-open" data-v="${esc(id)}" style="grid-template-columns:54px 1fr auto">${avatar(r.name,r.color,false,r.av,frameFor(id,r.fr))}<div class="nm">${esc(r.name)}<div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(sub)}</div></div>${n?`<span class="badge">${n}</span>`:''}</div>`};
+    body=`<input id="chq" class="nameinp" type="search" placeholder="Yeni mesaj için kullanıcı ara" value="${esc(C.q||'')}" autocomplete="off">`+
+      (q?(found.length?found.map(r=>row(r.id,'Mesaj yaz',0)).join(''):'<div class="empty">Kullanıcı bulunamadı.</div>'):
+        (list.length?list.map(id=>row(id,(th[id].user_id===CLOUD.uid?'Sen: ':'')+th[id].body,chatUnread(id))).join(''):'<div class="empty">Henüz özel mesajın yok. Yukarıdan birini ara ya da Sıra ekranında bir profile dokunup "Mesaj gönder"i seç.</div>'));
+  }else{
+    const hd=C.view==='dm'?(()=>{const r=chatPeer(C.peer);return`<div class="row" style="gap:10px"><button class="chip" data-act="chat-back">‹ Geri</button>${avatar(r.name,r.color,false,r.av,frameFor(C.peer,r.fr))}<b>${esc(r.name)}</b></div>`})():'';
+    body=hd+`<div class="chatlist" id="chatlist" role="log" aria-live="polite">${CHAT.ready?'':'<div class="empty">Yükleniyor…</div>'}</div>
+    <div class="cfm"><input id="chin" class="nameinp" maxlength="500" placeholder="${C.view==='pub'?'Herkese yaz…':'Mesaj yaz…'}" value="${esc(C.draft)}" autocomplete="off" enterkeyhint="send"><button class="btn primary" data-act="chat-send">Gönder</button></div>`;
+  }
+  return`<div class="top"><h1>Sohbet</h1></div><div class="stack">${seg}${body}</div>`;
+}
+async function chatSend(){
+  const inp=document.getElementById('chin'),C=UI.chat;
+  const v=((inp&&inp.value)||C.draft||'').trim();
+  if(!v||!sb||!CLOUD.uid)return;
+  if(C.view==='dm'&&!C.peer)return;
+  if(inp)inp.disabled=true;
+  const r=await sb.from('chat_messages').insert({user_id:CLOUD.uid,to_user:C.view==='dm'?C.peer:null,body:v.slice(0,500)});
+  if(inp)inp.disabled=false;
+  if(r.error){toast(/row-level|policy|violat/i.test(r.error.message||'')?'Çok hızlı yazıyorsun ya da mesaj gönderme iznin yok.':'Mesaj gönderilemedi.');return}
+  C.draft='';if(inp){inp.value='';inp.focus()}
+  await chatLoad();
+  const el=document.getElementById('chatlist');if(el)el.scrollTop=el.scrollHeight;
+}
+function chatOpen(tab){
+  if(tab==='chat'){UI.chat.q='';chatLoad()}
+}
+setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false)return;if(UI.tab==='chat')chatLoad()},4000);
+setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||UI.tab==='chat')return;chatLoad()},45000);
 function setTab(t){
   if(t==='quiz'&&UI.quiz&&UI.quiz.done)UI.quiz=null;
   UI.tab=t;try{sessionStorage.setItem('kd-tab',t)}catch(e){}
   render();window.scrollTo(0,0);
   if(t==='rank'||t==='today')refreshBoard();
+  if(t==='chat')chatOpen(t);
 }
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-tab],[data-act],[data-opt],[data-f],[data-set],[data-me],[data-say],[data-rb],[data-rp],[data-ra],[data-sw],[data-adf],[data-av],[data-fr],[data-pc]');
@@ -1475,6 +1585,11 @@ document.addEventListener('click',async e=>{
   if(el.hasAttribute('data-set')){const k=g('data-set'),v=g('data-v');S.set[k]=k==='count'?+v:v;save();render();return}
   if(el.hasAttribute('data-f')){UI.dict[g('data-f')]=g('data-v');UI.dict.limit=40;render();return}
   switch(g('data-act')){
+    case'chat-view':UI.chat.view=g('data-v');UI.chat.peer=null;UI.chat.q='';UI.chat.draft='';render();chatPaint();break;
+    case'chat-open':UI.card=null;UI.chat.view='dm';UI.chat.peer=g('data-v');UI.chat.draft='';UI.chat.q='';if(UI.tab!=='chat'){setTab('chat')}else{render();chatPaint()}break;
+    case'chat-back':UI.chat.peer=null;render();break;
+    case'chat-send':chatSend();break;
+    case'chat-del':{const id=+g('data-id');const adm=CHAT.pub.some(m=>m.id===id&&m.user_id!==CLOUD.uid);const r=adm?await sb.rpc('admin_delete_chat',{mid:id}):await sb.from('chat_messages').delete().eq('id',id);if(r.error)toast('Silinemedi.');else{CHAT.pub=CHAT.pub.filter(m=>m.id!==id);CHAT.dm=CHAT.dm.filter(m=>m.id!==id);chatPaint()}break}
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
     case'start-review':startQuiz('review',false);break;
@@ -1545,6 +1660,8 @@ document.addEventListener('click',async e=>{
 });
 document.addEventListener('input',e=>{
   if(e.target.id==='fbq'){UI.fb.draft=e.target.value;return}
+  if(e.target.id==='chin'){UI.chat.draft=e.target.value;return}
+  if(e.target.id==='chq'){UI.chat.q=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('chq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
   if(e.target.dataset&&e.target.dataset.fid){UI.afb.reply[e.target.dataset.fid]=e.target.value;return}
   if(e.target.id==='annq'){UI.adm.annDraft=e.target.value;return}
   if(e.target.id==='adq'){UI.adm.q=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('adq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
@@ -1558,6 +1675,7 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&UI.card){UI.card=null;render();return}
+  if(e.key==='Enter'&&e.target.id==='chin'){e.preventDefault();chatSend();return}
   if(e.key==='Enter'&&!CLOUD.uid&&/^au-/.test(e.target.id||'')){e.preventDefault();doAuth();return}
   if(UI.tab!=='quiz'||!UI.quiz||UI.quiz.done)return;
   if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
