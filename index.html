@@ -182,7 +182,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='1.0.0';
+const APP_VERSION='1.1.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true},lastNotif:'',upd:0}}
@@ -203,10 +203,10 @@ function save(){
 }
 const weekKey=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toLocaleDateString('sv-SE')};
 /* ---------- bulut: profil, ilerleme eşitleme, liderlik tablosu (Claude db/user yeteneği) ---------- */
-const CLOUD={uid:null,username:'',write:true,ready:false,lb:[],lbReady:false,lbErr:'',busy:false,last:'',defName:''};
+const CLOUD={uid:null,username:'',approved:null,admin:false,write:true,ready:false,lb:[],lbReady:false,lbErr:'',busy:false,last:'',defName:''};
 const AUTH={ready:false};
 let pushT=null;
-function schedulePush(){if(!CLOUD.uid)return;clearTimeout(pushT);pushT=setTimeout(pushNow,5000)}
+function schedulePush(){if(!CLOUD.uid||CLOUD.approved===false)return;clearTimeout(pushT);pushT=setTimeout(pushNow,5000)}
 const COEF={A1:1,A2:1.05,B1:1.2,B2:1.35,C1:1.65,C2:1.85};
 const r1=x=>Math.round(x*10)/10;
 function calc(m){
@@ -243,7 +243,7 @@ const normUser=u=>String(u||'').trim().toLowerCase();
 const validUser=u=>/^[a-z0-9][a-z0-9_.-]{2,19}$/.test(u);
 const userToMail=u=>normUser(u)+MAIL_DOMAIN;
 async function pushNow(){
-  if(!sb||!CLOUD.uid)return;
+  if(!sb||!CLOUD.uid||CLOUD.approved===false)return;
   if(CLOUD.busy){schedulePush();return}
   if(!navigator.onLine)return;
   CLOUD.busy=true;
@@ -283,17 +283,36 @@ async function refreshBoard(){
   }catch(e){CLOUD.lbErr='err'}
   if(UI.tab==='rank'||UI.tab==='today'){if(document.getElementById('pname'))syncDraft();if(!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render()}
 }
+async function checkAccess(){
+  const ck='kd-access-'+CLOUD.uid;let cache=null;
+  try{cache=JSON.parse(localStorage.getItem(ck)||'null')}catch(e){}
+  try{
+    const r=await sb.from('profiles').select('approved').eq('user_id',CLOUD.uid).maybeSingle();
+    if(r.error)throw r.error;
+    CLOUD.approved=r.data?!!r.data.approved:false;
+    const a=await sb.rpc('is_admin');
+    CLOUD.admin=!!(a&&a.data);
+    try{localStorage.setItem(ck,JSON.stringify({approved:CLOUD.approved,admin:CLOUD.admin}))}catch(e){}
+  }catch(e){
+    const m=String((e&&(e.message||e.code))||'');
+    if(cache){CLOUD.approved=!!cache.approved;CLOUD.admin=!!cache.admin}
+    else CLOUD.approved=/PGRST205|42P01|does not exist|Could not find the table/i.test(m);   // yönetim kurulumu yapılmamışsa kısıtlama yok
+  }
+}
 async function onLogin(user){
   CLOUD.uid=user.id;CLOUD.username=(user.email||'').split('@')[0];CLOUD.defName=CLOUD.username;CLOUD.ready=true;
   S=load(user.id);
+  await checkAccess();
+  if(CLOUD.approved===false){render();return}
   if(!S.prof.name)S.prof.name=CLOUD.username;
   render();
+  if(CLOUD.admin)loadUsers();
   try{await pullState()}catch(e){}
   if(!S.prof.name)S.prof.name=CLOUD.username;
   persistLocal();render();refreshBoard();schedulePush();
 }
 function onLogout(){
-  clearTimeout(pushT);CLOUD.uid=null;CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
+  clearTimeout(pushT);CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
 }
 async function initAuth(){
   try{
@@ -337,6 +356,50 @@ async function doAuth(){
     render();
   }
 }
+function vPending(){
+  return`<div class="top" style="margin-top:8vh"><div><h1>Onay bekleniyor</h1><div class="muted small">Hesabın oluşturuldu: <b>${esc(CLOUD.username)}</b></div></div></div>
+  <div class="card stack"><div>Hesabın yönetici onayından sonra açılacak. Onaylandığında buradan devam edebilirsin.</div>
+  <div class="row"><button class="btn primary" data-act="recheck">Yeniden kontrol et</button><button class="btn" data-act="logout">Çıkış yap</button></div></div>`;
+}
+async function loadUsers(){
+  const A=UI.adm;A.busy=true;A.err='';
+  try{
+    const r=await sb.rpc('admin_list_users');
+    if(r.error)throw r.error;
+    A.list=r.data||[];A.loaded=true;
+  }catch(e){A.err='Kullanıcı listesi alınamadı.'}
+  A.busy=false;
+  if(UI.tab==='me')render();
+}
+async function admAct(kind,uid){
+  const A=UI.adm;A.busy=true;render();
+  try{
+    let r;
+    if(kind==='approve')r=await sb.rpc('admin_set_approved',{target:uid,flag:true});
+    else if(kind==='revoke')r=await sb.rpc('admin_set_approved',{target:uid,flag:false});
+    else r=await sb.rpc('admin_delete_user',{target:uid});
+    if(r.error)throw r.error;
+    toast(kind==='approve'?'Kullanıcı onaylandı.':kind==='revoke'?'Onay kaldırıldı.':'Kullanıcı silindi.');
+  }catch(e){toast('İşlem yapılamadı.')}
+  A.confirm=null;await loadUsers();
+}
+function vAdmin(){
+  const A=UI.adm;
+  const q=A.q.trim().toLowerCase();
+  const list=A.list.filter(u=>(A.filter==='all'||(A.filter==='pending'?!u.approved:u.approved))&&(!q||(u.username||'').toLowerCase().includes(q)||(u.name||'').toLowerCase().includes(q)));
+  const pend=A.list.filter(u=>!u.approved).length;
+  const d=s=>s?new Date(s).toLocaleDateString('tr-TR',{day:'numeric',month:'short'}):'–';
+  return`<div class="card stack"><div class="seg"><button class="chip" aria-pressed="${A.filter==='pending'}" data-adf="pending">Bekleyen (${pend})</button><button class="chip" aria-pressed="${A.filter==='ok'}" data-adf="ok">Onaylı (${A.list.length-pend})</button><button class="chip" aria-pressed="${A.filter==='all'}" data-adf="all">Hepsi</button></div>
+  <input id="adq" class="nameinp" type="search" placeholder="Kullanıcı ara" value="${esc(A.q)}" autocomplete="off">
+  <div class="row"><button class="btn" data-act="adm-load" ${A.busy?'disabled':''}>${A.busy?'Yükleniyor…':'Yenile'}</button><span class="small muted">${A.list.length} kullanıcı</span></div>
+  ${A.err?`<div class="small" style="color:var(--bad)">${esc(A.err)}</div>`:''}</div>
+  ${!A.loaded&&!A.err?'<div class="empty">Yükleniyor…</div>':list.length?list.map(u=>`<div class="entry"><div class="row" style="justify-content:space-between;align-items:flex-start">
+    <div style="min-width:0"><span class="w" style="overflow-wrap:anywhere">${esc(u.name||u.username)}</span>${u.is_admin?' <span class="badge">yönetici</span>':''}<br><span class="muted small">@${esc(u.username)} · kayıt ${d(u.created_at)} · son giriş ${d(u.last_sign_in_at)}</span></div>
+    <span class="badge ${u.approved?'ok':'warn'}">${u.approved?'Onaylı':'Bekliyor'}</span></div>
+    ${u.is_admin?'':`<div class="row" style="margin-top:10px">${u.approved?`<button class="btn" data-act="adm-revoke" data-u="${esc(u.user_id)}">Onayı kaldır</button>`:`<button class="btn primary" data-act="adm-approve" data-u="${esc(u.user_id)}">Onayla</button>`}
+    ${A.confirm===u.user_id?`<button class="btn danger" data-act="adm-del-yes" data-u="${esc(u.user_id)}">Evet, kalıcı sil</button><button class="btn" data-act="adm-del-no">Vazgeç</button>`:`<button class="btn danger" data-act="adm-del" data-u="${esc(u.user_id)}">Sil</button>`}</div>
+    ${A.confirm===u.user_id?'<div class="small muted" style="margin-top:6px">Hesap, ilerleme ve puanlar kalıcı olarak silinir.</div>':''}`}</div>`).join(''):'<div class="empty card">Bu listede kullanıcı yok.</div>'}`;
+}
 function vLogin(){
   const A=UI.auth,su=A.mode==='signup';
   return`<div class="top" style="margin-top:8vh"><div><h1>Kelime Defteri</h1><div class="muted small">${nf(W.length)} kelime, test, tekrar ve liderlik tablosu</div></div></div>
@@ -346,7 +409,7 @@ function vLogin(){
   <label class="f">Şifre<input id="au-pass" class="nameinp" type="password" autocomplete="${su?'new-password':'current-password'}" maxlength="72"></label>
   ${A.msg?`<div class="small" style="color:var(--bad)" role="alert">${esc(A.msg)}</div>`:''}
   <button class="btn primary block" data-act="auth-submit" ${A.busy?'disabled':''}>${A.busy?'Bekle…':su?'Hesap oluştur':'Giriş yap'}</button>
-  <div class="small muted">${su?'Şifre sıfırlama yok. Şifreni unutursan yeni hesap açman gerekir.':'Aynı hesapla tüm cihazlarında devam edersin.'}</div></div>`;
+  <div class="small muted">${su?'Hesabın yönetici onayından sonra açılır. Şifre sıfırlama yok, şifreni unutursan yeni hesap açman gerekir.':'Aynı hesapla tüm cihazlarında devam edersin.'}</div></div>`;
 }
 
 function dayStat(d){d=d||today();return S.days[d]||(S.days[d]={a:0,c:0,n:0})}
@@ -543,7 +606,7 @@ function streak(){
 const learnedCount=()=>Object.keys(S.learned).filter(k=>BYWORD.has(k)).length;
 
 /* ---------- arayüz ---------- */
-const UI={tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'stats',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false}};
+const UI={tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'stats',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:''}};
 try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz')UI.tab=t}catch(e){}
 const ICON={
   today:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
@@ -562,6 +625,7 @@ function render(){
   const app=$('#app');
   if(!AUTH.ready){$('nav').hidden=true;app.innerHTML='<div class="empty">Yükleniyor…</div>';return}
   if(!CLOUD.uid){$('nav').hidden=true;app.innerHTML=vLogin();return}
+  if(CLOUD.approved===false){$('nav').hidden=true;app.innerHTML=vPending();return}
   $('nav').hidden=false;
   renderNav();
   let h='';
@@ -706,8 +770,9 @@ function vReview(){
 }
 function vMe(){
   const seg=[['stats','İstatistik'],['learned','Öğrenilenler'],['prof','Profil'],['set','Ayarlar']];
+  if(CLOUD.admin)seg.push(['adm','Yönetim'+(UI.adm.loaded&&UI.adm.list.some(u=>!u.approved)?' ('+UI.adm.list.filter(u=>!u.approved).length+')':'')]);
   let body='';
-  if(UI.me==='stats')body=vStats();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else body=vSettings();
+  if(UI.me==='stats')body=vStats();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
   return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${body}</div>`;
 }
 function vStats(){
@@ -852,12 +917,13 @@ function setTab(t){
   if(t==='rank'||t==='today')refreshBoard();
 }
 document.addEventListener('click',async e=>{
-  const el=e.target.closest('[data-tab],[data-act],[data-opt],[data-f],[data-set],[data-me],[data-say],[data-rb],[data-rp],[data-ra],[data-sw]');
+  const el=e.target.closest('[data-tab],[data-act],[data-opt],[data-f],[data-set],[data-me],[data-say],[data-rb],[data-rp],[data-ra],[data-sw],[data-adf]');
   if(!el)return;
   const g=a=>el.getAttribute(a);
   if(g('data-tab')){setTab(g('data-tab'));return}
   if(g('data-say')!==null&&el.hasAttribute('data-say')){say(g('data-say'),g('data-pron'));return}
   if(el.hasAttribute('data-opt')){answer(+g('data-opt'));return}
+  if(el.hasAttribute('data-adf')){UI.adm.filter=g('data-adf');render();return}
   if(el.hasAttribute('data-rb')){UI.rank.board=g('data-rb');render();return}
   if(el.hasAttribute('data-rp')){UI.rank.per=g('data-rp');render();return}
   if(el.hasAttribute('data-ra')){UI.rank.ach=g('data-ra');render();return}
@@ -878,6 +944,13 @@ document.addEventListener('click',async e=>{
     case'more':UI.dict.limit+=40;$('#dlist').innerHTML=dictList();break;
     case'unlearn':{const w=g('data-w');delete S.learned[w];save();render();toast('Kelime tekrar öğrenilecekler arasına alındı.');break}
     case'notif':toggleNotif();break;
+    case'recheck':{await checkAccess();if(CLOUD.approved!==false){await onLogin({id:CLOUD.uid,email:CLOUD.username+'@x'})}else{toast('Henüz onaylanmadı.');render()}break}
+    case'adm-load':loadUsers();break;
+    case'adm-approve':admAct('approve',g('data-u'));break;
+    case'adm-revoke':admAct('revoke',g('data-u'));break;
+    case'adm-del':UI.adm.confirm=g('data-u');render();break;
+    case'adm-del-no':UI.adm.confirm=null;render();break;
+    case'adm-del-yes':admAct('delete',g('data-u'));break;
     case'auth-mode':UI.auth.mode=g('data-v');UI.auth.msg='';render();break;
     case'auth-submit':doAuth();break;
     case'logout':{clearTimeout(pushT);if(sb&&navigator.onLine){try{await pushNow()}catch(e){}}try{await sb.auth.signOut()}catch(e){}onLogout();break}
@@ -896,6 +969,7 @@ document.addEventListener('click',async e=>{
   }
 });
 document.addEventListener('input',e=>{
+  if(e.target.id==='adq'){UI.adm.q=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('adq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
   if(e.target.id==='q'){UI.dict.q=e.target.value;UI.dict.limit=40;UI.dict.open=null;$('#dlist').innerHTML=dictList()}
 });
 document.addEventListener('change',e=>{
