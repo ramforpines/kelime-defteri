@@ -229,7 +229,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='2.7.1';
+const APP_VERSION='2.7.2';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -1364,17 +1364,17 @@ function badgeGrid(){
 }
 function vCard(){
   const id=UI.card;if(!id)return'';
-  const r=CLOUD.lb.find(x=>x.id===id);if(!r)return'';
+  let r=CLOUD.lb.find(x=>x.id===id);const mn=!r;if(mn)r=chatPeer(id);
   const td=today(),wt=weekTop(),rk=wt[id];
   const acc=r.ans?Math.round((r.cor||0)/r.ans*100):0;
   const st=(r.sd&&r.sd>=addDays(td,-1))?(r.st||0):0;
   const ids=String(r.bd||'').split(',').filter(x=>BYBADGE.has(x));
   const lg=LEAGUES[leagueMap()[id]|0],fk=frameFor(id,r.fr);
   return`<div class="ov" data-act="card-close"><div class="sheet stack" data-act="noop" role="dialog" aria-label="Profil kartı">
-  <div class="row" style="justify-content:space-between;align-items:flex-start"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}<div class="small muted">${rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında'} · ${lg.n} ligi</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
+  <div class="row" style="justify-content:space-between;align-items:flex-start"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':''}${!mn&&rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında'}${mn?'':' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
   ${id!==CLOUD.uid?`<button class="btn block" data-act="chat-open" data-v="${esc(id)}">Mesaj gönder</button>`:''}
-  <div class="kp"><div><b>${nf(Math.round((r.ap||0)*10)/10)}</b><span>toplam puan</span></div><div><b>${nf(r.lrn||0)}</b><span>öğrenilen kelime</span></div><div><b>${st?'🔥 '+st:'–'}</b><span>günlük seri</span></div><div><b>${nf(r.ans||0)}</b><span>çözülen soru</span></div><div><b>%${acc}</b><span>doğruluk</span></div><div><b>${ids.length}</b><span>rozet</span></div></div>
-  ${ids.length?`<div class="bgrid">${ids.map(i=>{const b=BYBADGE.get(i);return`<div class="bdg"><span class="e">${b.e}</span><b>${b.n}</b></div>`}).join('')}</div>`:'<div class="small muted">Henüz rozeti yok.</div>'}</div></div>`;
+  ${mn?'</div></div>':`<div class="kp"><div><b>${nf(Math.round((r.ap||0)*10)/10)}</b><span>toplam puan</span></div><div><b>${nf(r.lrn||0)}</b><span>öğrenilen kelime</span></div><div><b>${st?'🔥 '+st:'–'}</b><span>günlük seri</span></div><div><b>${nf(r.ans||0)}</b><span>çözülen soru</span></div><div><b>%${acc}</b><span>doğruluk</span></div><div><b>${ids.length}</b><span>rozet</span></div></div>
+  ${ids.length?`<div class="bgrid">${ids.map(i=>{const b=BYBADGE.get(i);return`<div class="bdg"><span class="e">${b.e}</span><b>${b.n}</b></div>`}).join('')}</div>`:'<div class="small muted">Henüz rozeti yok.</div>'}</div></div>`}`;
 }
 function vProfile(){
   if(!CLOUD.ready)return`<div class="card muted">Profil ve liderlik tablosu için uygulamayı Claude'da yayınlanan bağlantıyla açıp oturum açman gerekir. İndirilmiş dosyada çalışmaz.</div>`;
@@ -1506,7 +1506,7 @@ function chatMsgHtml(m,prev){
   const sep=day!==pd?`<div class="cdt">${day===today()?'Bugün':fmt(day)}</div>`:'';
   const tm=d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
   const can=me||(CLOUD.admin&&!m.to_user);
-  return sep+`<div class="cm ${me?'me':''}">${!me&&UI.chat.view==='pub'?`<div class="cn" data-pc="${esc(m.user_id)}">${esc(m.sname||'Kullanıcı')}</div>`:''}<div class="cb">${esc(m.body)}</div><div class="ct"><span>${tm}</span>${can?`<button data-act="chat-del" data-id="${m.id}" aria-label="Sil">sil</button>`:''}</div></div>`;
+  return sep+`<div class="cm ${me?'me':''}">${!me&&UI.chat.view==='pub'?`<div class="cn row" data-pc="${esc(m.user_id)}" style="gap:6px">${(()=>{const r=chatPeer(m.user_id);return avatar(r.name||m.sname,r.color,false,r.av,'')})()}<span>${esc(m.sname||'Kullanıcı')}</span></div>`:''}<div class="cb">${esc(m.body)}</div><div class="ct"><span>${tm}</span>${can?`<button data-act="chat-del" data-id="${m.id}" aria-label="Sil">sil</button>`:''}</div></div>`;
 }
 function chatPaint(){
   const el=document.getElementById('chatlist');
@@ -1535,7 +1535,7 @@ function vChat(){
       (q?(found.length?found.map(r=>row(r.id,'Mesaj yaz',0)).join(''):'<div class="empty">Kullanıcı bulunamadı.</div>'):
         (list.length?list.map(id=>row(id,(th[id].user_id===CLOUD.uid?'Sen: ':'')+th[id].body,chatUnread(id))).join(''):'<div class="empty">Henüz özel mesajın yok. Yukarıdan birini ara ya da Sıra ekranında bir profile dokunup "Mesaj gönder"i seç.</div>'));
   }else{
-    const hd=C.view==='dm'?(()=>{const r=chatPeer(C.peer);return`<div class="row" style="gap:10px"><button class="chip" data-act="chat-back">‹ Geri</button>${avatar(r.name,r.color,false,r.av,frameFor(C.peer,r.fr))}<b>${esc(r.name)}</b></div>`})():'';
+    const hd=C.view==='dm'?(()=>{const r=chatPeer(C.peer);return`<div class="row" style="gap:10px"><button class="chip" data-act="chat-back">‹ Geri</button><span class="row" data-pc="${esc(C.peer)}" style="gap:10px;cursor:pointer">${avatar(r.name,r.color,false,r.av,frameFor(C.peer,r.fr))}<b>${esc(r.name)}</b></span></div>`})():'';
     body=hd+`<div class="chatlist" id="chatlist" role="log" aria-live="polite">${CHAT.ready?'':'<div class="empty">Yükleniyor…</div>'}</div>
     <div class="cfm"><input id="chin" class="nameinp" maxlength="500" placeholder="${C.view==='pub'?'Herkese yaz…':'Mesaj yaz…'}" value="${esc(C.draft)}" autocomplete="off" enterkeyhint="send"><button class="btn primary" data-act="chat-send">Gönder</button></div>`;
   }
