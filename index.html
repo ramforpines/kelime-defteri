@@ -209,10 +209,10 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='1.5.0';
+const APP_VERSION='2.0.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
-function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0}}
+function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[]}}
 function load(uid){
   let raw=null;
   try{raw=localStorage.getItem(KEY+'-'+uid)}catch(e){}
@@ -289,6 +289,7 @@ function evalAwards(){
 }
 function save(){
   S.upd=Date.now();
+  applyDecay();
   const nw=evalAwards();
   if(nw.length)setTimeout(()=>toast(nw.length>2?nw.length+' yeni rozet kazandın!':'Yeni rozet: '+nw.map(b=>b.e+' '+b.n).join(', ')),400);
   const ks=Object.keys(S.days);
@@ -303,25 +304,41 @@ let pushT=null;
 function schedulePush(){if(!CLOUD.uid||CLOUD.approved===false)return;clearTimeout(pushT);pushT=setTimeout(pushNow,5000)}
 const COEF={A1:1,A2:1.05,B1:1.2,B2:1.35,C1:1.65,C2:1.85};
 const r1=x=>Math.round(x*10)/10;
-function calc(m){
-  let wa=0,A=0,C=0;
-  Object.keys(m).forEach(l=>{const a=m[l][0],c=m[l][1];wa+=(COEF[l]||1)*a;A+=a;C+=c});
-  return{A,C,pts:A?wa*(C/A):0};   // puan = seviye katsayısıyla ağırlıklı soru sayısı x doğruluk oranı
+const TYPEC=[1,1.1,1,1.15,1.2,1.2,1.1];   // Türkçe, Tanım, Tür, Örnek, Eş, Zıt, Hal
+const GOAL_MIN=20;
+function reqFor(p){return p>=2000?{n:50,r:.02}:p>=1150?{n:35,r:.02}:{n:GOAL_MIN,r:.01}}
+function addPts(delta,kind){
+  const d=dayStat(),cur=d.p||0,np=Math.max(0,cur+delta),eff=np-cur;
+  d.p=np;S.tp=Math.max(0,(S.tp||0)+eff);
+  const q=UI.quiz;if(q&&q.pts)q.pts[kind]=(q.pts[kind]||0)+eff;
+  return eff;
 }
-function periodMap(from,to){
-  const m={};
-  Object.keys(S.days).forEach(d=>{
-    if(d<from||(to&&d>to))return;
-    const x=S.days[d];
-    if(x.l)Object.keys(x.l).forEach(l=>{const v=m[l]||(m[l]=[0,0]);v[0]+=x.l[l][0];v[1]+=x.l[l][1]});
-    else if(x.a){const v=m._||(m._=[0,0]);v[0]+=x.a;v[1]+=x.c||0}
-  });
-  return m;
+function payFactor(word,n){
+  const dim=n<=150?1:n<=300?.5:.25,t=today();
+  if(!S.wd||S.wd.d!==t)S.wd={d:t,m:{}};
+  const c=S.wd.m[word]=(S.wd.m[word]||0)+1;
+  return c>3?0:dim;
 }
-function allMap(){const m={};Object.keys(S.lv).forEach(l=>{m[l]=[S.lv[l][0]+S.lv[l][1],S.lv[l][0]]});return m}
+function applyDecay(){
+  if(!S.pc)return 0;
+  const t=today();let d=addDays(S.pc,1);
+  const lim=addDays(t,-60);if(d<lim)d=lim;
+  let total=0,n=0;
+  while(d<t){
+    const q=reqFor(S.tp||0),did=(S.days[d]&&S.days[d].c)||0;
+    if(did<q.n&&(S.tp||0)>0){const cut=S.tp*q.r;S.tp-=cut;total+=cut;n++;(S.pen||(S.pen=[])).push({d,amt:r1(cut),need:q.n,did});if(S.pen.length>10)S.pen.shift()}
+    d=addDays(d,1);
+  }
+  S.pc=addDays(t,-1);
+  if(total>0)setTimeout(()=>toast(n+' gün günlük asgari hedefi tutturmadın: −'+nf(r1(total))+' puan kesildi.'),600);
+  return total;
+}
 function myPoints(){
-  const t0=today();
-  return{D:calc(periodMap(t0,t0)),W:calc(periodMap(weekKey())),T:calc(allMap())};
+  const t0=today(),wk=weekKey(),D={A:0,C:0,pts:0},W={A:0,C:0,pts:0};
+  const x=S.days[t0];if(x){D.A=x.a||0;D.C=x.c||0;D.pts=x.p||0}
+  Object.keys(S.days).forEach(k=>{if(k>=wk){const y=S.days[k];W.A+=y.a||0;W.C+=y.c||0;W.pts+=y.p||0}});
+  let A=0,C=0;Object.keys(S.lv).forEach(l=>{C+=S.lv[l][0];A+=S.lv[l][0]+S.lv[l][1]});
+  return{D,W,T:{A,C,pts:Math.max(0,S.tp||0)}};
 }
 function myScore(){
   const P=myPoints();
@@ -431,7 +448,7 @@ async function onLogin(user){
   loadAnn();loadMyFb();if(CLOUD.admin)loadAdminFb();
   try{await pullState()}catch(e){}
   if(!S.prof.name)S.prof.name=CLOUD.username;
-  evalAwards();persistLocal();render();refreshBoard();schedulePush();
+  applyDecay();evalAwards();persistLocal();render();refreshBoard();schedulePush();
 }
 function onLogout(){
   clearTimeout(pushT);CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
@@ -643,7 +660,7 @@ function vLogin(){
   <div class="small muted">${su?'Hesabın yönetici onayından sonra açılır. Şifreni unutursan yöneticiden geçici şifre isteyebilirsin.':'Aynı hesapla tüm cihazlarında devam edersin.'}</div></div>`;
 }
 
-function dayStat(d){d=d||today();return S.days[d]||(S.days[d]={a:0,c:0,n:0})}
+function dayStat(d){d=d||today();return S.days[d]||(S.days[d]={a:0,c:0,n:0,p:0})}
 
 /* ---------- soru üretimi (Apps Script mantığının aynısı) ---------- */
 function cloze(w){
@@ -782,7 +799,7 @@ function startQuiz(mode,all){
   }else items=newItems(n,S.set.level,new Set());
   items=shuffle(items);
   if(!items.length){toast(mode==='review'?'Tekrar edilecek kelime yok.':'Bu seviyede soru üretilecek kelime kalmadı.');return}
-  UI.quiz={mode,items,i:0,right:0,wrong:[],learnedNow:[],done:false};
+  UI.quiz={mode,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};
   UI.tab='quiz';render();
 }
 function answer(idx){
@@ -797,6 +814,10 @@ function answer(idx){
   const lv=S.lv[w.level]||(S.lv[w.level]=[0,0]);
   lv[ok?0:1]++;
   const dl=d.l||(d.l={});const dv=dl[w.level]||(dl[w.level]=[0,0]);dv[0]++;if(ok)dv[1]++;
+  const cf=COEF[w.level]||1,bq=cf*(TYPEC[it.f]||1)*payFactor(w.word,d.a);
+  let pt=0;
+  if(ok){pt+=addPts(bq,'c');const G=Math.max(GOAL_MIN,S.set.goal||GOAL_MIN);if(d.c===G)pt+=addPts(10+Math.min(streak(),10),'b')}
+  else if((S.tp||0)>=450)pt+=addPts(-0.25*bq,'w');
   const bw=S.wrong[w.word];
   if(ok){
     qz.right++;
@@ -804,12 +825,12 @@ function answer(idx){
       const p=S.prog[w.word]||(S.prog[w.word]=[]);
       if(p.indexOf(it.f)===-1)p.push(it.f);
       if(applicable(w).every(f=>p.indexOf(f)!==-1)){
-        S.learned[w.word]={d:today(),l:w.level};delete S.prog[w.word];qz.learnedNow.push(w.word);d.n++;
+        S.learned[w.word]={d:today(),l:w.level};delete S.prog[w.word];qz.learnedNow.push(w.word);d.n++;pt+=addPts(3*cf,'b');
       }
     }
     if(bw&&(it.f===0||it.f===1)){
       bw.t[it.f]=Math.min(STREAK_GOAL,bw.t[it.f]+1);
-      if(bw.t[0]>=STREAK_GOAL&&bw.t[1]>=STREAK_GOAL){delete S.wrong[w.word];it.cleared=true}
+      if(bw.t[0]>=STREAK_GOAL&&bw.t[1]>=STREAK_GOAL){delete S.wrong[w.word];it.cleared=true;pt+=addPts(2,'b')}
       else bw.due=addDays(today(),INTERVALS[Math.min(bw.t[it.f],INTERVALS.length)-1]||INTERVALS[INTERVALS.length-1]);
     }
   }else{
@@ -819,6 +840,7 @@ function answer(idx){
       e.t[it.f]=0;e.due=today();
     }
   }
+  it.pt=pt;
   save();render();
 }
 function next(){
@@ -873,6 +895,10 @@ function ring(p){
   const r=44,c=2*Math.PI*r,o=c*(1-Math.min(1,p));
   return`<svg viewBox="0 0 104 104" aria-hidden="true"><circle cx="52" cy="52" r="${r}" fill="none" stroke="var(--surface2)" stroke-width="10"/><circle cx="52" cy="52" r="${r}" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${o.toFixed(1)}"/></svg>`;
 }
+function reqCard(){
+  const q=reqFor(S.tp||0),c=dayStat().c,ok=c>=q.n,pen=(S.pen||[]).slice(-1)[0],pn=pen&&pen.d>=addDays(today(),-2)?`<div class="small" style="color:var(--bad)">Son kesinti: ${fmt(pen.d)} günü ${pen.did}/${pen.need} doğru, −${nf(pen.amt)} puan.</div>`:'';
+  return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Günlük asgari hedef</b><span class="badge ${ok?'ok':'warn'}">${Math.min(c,q.n)}/${q.n} doğru</span></div><div class="bar" aria-hidden="true"><i style="width:${Math.min(100,c/q.n*100)}%"></i></div><div class="small muted">${ok?'Bugünkü asgari hedefi tamamladın, kesinti olmayacak.':'Gün bitmeden '+q.n+' doğru yapmazsan toplam puanının %'+(q.r*100)+'\'i kesilir.'}</div>${pn}</div>`;
+}
 function vToday(){
   const d=dayStat(),g=S.set.goal,p=g?d.c/g:0;
   const due=dueWrong(false).length;
@@ -892,7 +918,7 @@ function vToday(){
   ${wd?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimesi</span>${lvTag(wd.level)}</div>
     <div class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div>
     <div>${esc(wd.tr)}</div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i></div></div>`:''}
-  ${profilePrompt()}${myRankLine()}
+  ${reqCard()}${profilePrompt()}${myRankLine()}
   ${reminderCard()}
   </div>`;
 }
@@ -966,7 +992,7 @@ function vQuiz(){
   const w=it.w;
   let fb='';
   if(ans){
-    fb=`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.cleared?' · tekrar listesinden çıktı':''}${qz.learnedNow.indexOf(w.word)!==-1?' · öğrenildi':''}</b>
+    fb=`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.cleared?' · tekrar listesinden çıktı':''}${qz.learnedNow.indexOf(w.word)!==-1?' · öğrenildi':''}${it.pt?` · ${it.pt>0?'+':'−'}${nf(Math.round(Math.abs(it.pt)*100)/100)} puan`:''}</b>
       <div><b>${esc(w.word)}</b> <span class="mono muted">${esc(w.pron)}</span> ${lvTag(w.level)}</div>
       <div>${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i></div>`:''}
       ${it.ok?'':`<div class="small" style="margin-top:6px">Doğru cevap: <b>${esc(it.correct)}</b></div>`}</div>
@@ -984,6 +1010,7 @@ function vResult(){
   return`<div class="top"><h1>Sonuç</h1></div><div class="stack"><div class="card stack"><div class="score">${qz.right}/${n}</div>
     <div class="bar"><i style="width:${p}%"></i></div>
     <div class="muted">%${p} doğru${qz.learnedNow.length?` · ${qz.learnedNow.length} kelime öğrenildi`:''}</div>
+    <div class="small"><b>Bu testten ${(qz.pts.c+qz.pts.b+qz.pts.w)>=0?'+':'−'}${nf(r1(Math.abs(qz.pts.c+qz.pts.b+qz.pts.w)))} puan</b><br><span class="muted">Doğru cevaplar +${nf(r1(qz.pts.c))} · bonuslar +${nf(r1(qz.pts.b))}${qz.pts.w?` · yanlış cevaplar −${nf(r1(Math.abs(qz.pts.w)))}`:''}</span></div>
     ${qz.learnedNow.length?`<div class="row">${qz.learnedNow.map(k=>`<span class="badge ok">${esc(k)}</span>`).join('')}</div>`:''}</div>
     ${qz.wrong.length?`<div class="card stack"><h3>Yanlışlar</h3>${qz.wrong.map(it=>`<div><b>${esc(it.w.word)}</b> <span class="muted">${esc(FEAT[it.f])}</span><div class="small">Doğru: ${esc(it.correct)}</div></div>`).join('')}</div>`:''}
     <div class="row"><button class="btn primary" data-act="again">Yeni test</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
@@ -1084,6 +1111,7 @@ function leagueCard(){
   let prog='';
   if(cur<=6){const a=L.min,b=LEAGUES[cur+1].min,pc=Math.max(0,Math.min(100,(p-a)/(b-a)*100));prog=`<div class="bar" aria-hidden="true"><i style="width:${pc}%"></i></div><div class="small muted">${nf(p)} puan · ${LEAGUES[cur+1].n} için ${nf(Math.ceil(b-p))} puan kaldı</div>`}
   else{prog=`<div class="small muted">${nf(p)} puan · ${cur===9?'Şampiyonluk':cur===8?'Büyükustalık':'Ustalık'} ligindesin. ${cur<9?'Üst lig için sıranı yükseltmen ya da '+nf(Math.ceil((cur===8?8000:5000)-p))+' puan daha toplaman gerekir.':''}</div>`}
+  const rq=reqFor(S.tp||0);prog+=`<div class="small muted" style="margin-top:4px">Günlük asgari hedefin: ${rq.n} doğru. Tutturmazsan gün başına toplam puanının %${rq.r*100}'i kesilir.${(S.tp||0)>=450?' Bu ligde yanlış cevaplar puan düşürür.':''}</div>`;
   return`<div class="card stack"><h2>Ligin</h2><div class="row" style="gap:14px">${avatar(S.prof.name||'?',S.prof.color,true,S.prof.av,L.k)}<div style="flex:1;min-width:0"><div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700">${L.n}</div>${prog}</div></div>
   <details class="small"><summary style="cursor:pointer;font-weight:600">Tüm ligler</summary><div class="stack" style="margin-top:8px;gap:6px">${LEAGUES.map((l,i)=>`<div class="lgrow ${i===cur?'cur':''}"><span class="avw fr-${l.k}"><span class="av" style="background:#94a3b8;width:28px;height:28px"></span></span><span><b>${l.n}</b><br><span class="muted">${l.rng} puan${l.need&&i>7?'<br>'+l.need:''}</span></span></div>`).join('')}
   <div class="muted">Puan, tüm zamanların toplam puanıdır. 3000 puanı geçenler arasında en yüksek 10 kişi Şampiyonluk, sonraki 20 kişi (11–30) Büyükustalık, kalanlar Ustalık olur. Bunun yanında 8000 puanı geçen herkes sayıdan bağımsız Şampiyonluk, 5000 puanı geçen herkes en az Büyükustalık olur.</div></div></details></div>`;
@@ -1154,9 +1182,14 @@ function vRank(){
     <div class="muted small">${per==='day'?'Bugünün puanı. Her gün gece yarısı sıfırlanır.':per==='week'?'Bu haftanın puanı. Hafta pazartesi başlar.':'Bugüne kadarki toplam puan.'} İlk 10 gösterilir${ranked.length?`, ${ranked.length} kişi sırada`:''}.</div>
     ${!CLOUD.lbReady?'<div class="empty">Tablo yükleniyor…</div>':top.length?top.map(row).join('')+mine:`<div class="empty card">Bu tabloda henüz kimse yok. İlk puanı alan sıraya girer.</div>${mine}`}
     <details class="card small"><summary style="cursor:pointer;font-weight:600">Puan nasıl hesaplanır?</summary>
-      <div class="stack" style="margin-top:10px"><div>Puan = seviye katsayısıyla ağırlıklandırılmış çözülen soru sayısı × doğruluk oranı.</div>
+      <div class="stack" style="margin-top:10px">
+      <div><b>Doğru cevap</b> = seviye katsayısı × soru türü katsayısı.</div>
       <div class="row">${LEVELS.map(l=>`<span class="lv lv-${l}">${l} × ${COEF[l]}</span>`).join('')}</div>
-      <div class="muted">Örnek: 10 B1 sorusunun 8'i doğruysa, 10 × 1,2 × 0,8 = 9,6 puan. Zor seviyedeki kelimelerde doğru yapmak daha çok puan kazandırır, yanlışlar doğruluğu düşürerek puanı azaltır.</div></div></details>
+      <div class="muted">Soru türü: Türkçe 1, Tür 1, Tanım 1,1, V2/V3 1,1, Örnek 1,15, Eş ve Zıt anlam 1,2.</div>
+      <div><b>Bonuslar:</b> yeni kelimeyi öğrenmek +3 × seviye katsayısı, tekrar listesinden bir kelimeyi çıkarmak +2, günlük hedefi tamamlamak +10 ve seri bonusu (en fazla +10).</div>
+      <div><b>Altın ve üstü liglerde</b> yanlış cevap, doğru cevap puanının dörtte biri kadar puan düşürür. Günlük puan sıfırın altına inmez.</div>
+      <div><b>Günlük asgari hedef:</b> 1150 puanın altında 20 doğru, 1150 puandan itibaren 35, 2000 puandan itibaren 50 doğru. Tutturmayan her gün için toplam puanından sırasıyla %1, %2 ve %2 kesilir.</div>
+      <div><b>Fazla çözümde azalma:</b> günde ilk 150 soru tam puan, 150–300 arası yarım, sonrası çeyrek puan. Aynı kelimeden günde en fazla 3 soru puan getirir.</div></div></details>
     ${!CLOUD.write?'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. Sıraya girmek için sahibinden "Katkıda bulunan" izni iste.</div>':''}
     ${S.prof.name&&!S.prof.show?'<div class="card small muted">Profilin gizli, tabloda görünmüyorsun. Profil sekmesinden açabilirsin.</div>':''}
     ${CLOUD.lbErr?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':''}`;
@@ -1330,7 +1363,7 @@ function maybeNotify(){
   }catch(e){}
 }
 setInterval(maybeNotify,60000);
-document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(pushT);pushNow()}else{maybeNotify();if(UI.tab==='today')render()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(pushT);pushNow()}else{if(CLOUD.uid&&CLOUD.approved!==false&&applyDecay()>0)persistLocal();maybeNotify();if(UI.tab==='today')render()}});
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__bip=e;if(UI.tab==='me'&&UI.me==='set')render()});
 window.addEventListener('online',()=>{schedulePush();refreshBoard()});
 setInterval(()=>{if(!document.hidden&&(UI.tab==='rank'||UI.tab==='today'))refreshBoard()},60000);
