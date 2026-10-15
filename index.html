@@ -297,7 +297,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='3.4.0';
+const APP_VERSION='3.4.1';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -350,20 +350,20 @@ function frameFor(id,choice){
   return LEAGUES[Math.min(LGIDX.get(c),act)].k;
 }
 const BADGES=[
- {id:'first',n:'İlk adım',e:'🌱',need:'İlk soruyu çöz',ok:t=>t.ans>=1},
- {id:'w100',n:'100 kelime',e:'📘',need:'100 kelime öğren',ok:t=>t.lrn>=100},
- {id:'w500',n:'500 kelime',e:'📗',need:'500 kelime öğren',ok:t=>t.lrn>=500},
- {id:'w1000',n:'1000 kelime',e:'📙',need:'1000 kelime öğren',ok:t=>t.lrn>=1000},
- {id:'w3000',n:'3000 kelime',e:'🏅',need:'3000 kelime öğren',ok:t=>t.lrn>=3000},
- {id:'q1000',n:'1000 soru',e:'🎯',need:'1000 soru çöz',ok:t=>t.ans>=1000},
- {id:'acc90',n:'Keskin nişancı',e:'🏹',need:'200+ soruda %90 doğruluk',ok:t=>t.ans>=200&&t.cor/t.ans>=.9},
- {id:'run20',n:'Hatasız seri',e:'✨',need:'Üst üste 20 doğru',ok:t=>t.br>=20},
- {id:'s7',n:'7 gün seri',e:'🔥',need:'7 günlük seri',ok:t=>t.bs>=7},
- {id:'s30',n:'30 gün seri',e:'🌋',need:'30 günlük seri',ok:t=>t.bs>=30},
- {id:'s100',n:'100 gün seri',e:'☄️',need:'100 günlük seri',ok:t=>t.bs>=100},
- {id:'b2',n:'B2 ustası',e:'🧭',need:"B2'nin %50'sini öğren",ok:t=>t.pct.B2>=50},
- {id:'c1',n:'C1 ustası',e:'🦉',need:"C1'in %50'sini öğren",ok:t=>t.pct.C1>=50},
- {id:'c2',n:'C2 ustası',e:'👑',need:"C2'nin %25'ini öğren",ok:t=>t.pct.C2>=25}];
+ {id:'first',n:'Çaylak',e:'🐣',need:'İlk soruyu çöz',ok:t=>t.ans>=1},
+ {id:'w100',n:'Yüzlük Chivas',e:'🥃',need:'100 kelime öğren',ok:t=>t.lrn>=100},
+ {id:'w500',n:'Sözlük Kurdu',e:'🐺',need:'500 kelime öğren',ok:t=>t.lrn>=500},
+ {id:'w1000',n:'Kelime Baronu',e:'🎩',need:'1000 kelime öğren',ok:t=>t.lrn>=1000},
+ {id:'w3000',n:'Kelime Canavarı',e:'🐉',need:'3000 kelime öğren',ok:t=>t.lrn>=3000},
+ {id:'q1000',n:'Soru Makinesi',e:'🤖',need:'1000 soru çöz',ok:t=>t.ans>=1000},
+ {id:'acc90',n:'Keskin Nişancı',e:'🎯',need:'200+ soruda %90 doğruluk',ok:t=>t.ans>=200&&t.cor/t.ans>=.9},
+ {id:'run20',n:'Dokunulmaz',e:'🛡️',need:'Üst üste 20 doğru',ok:t=>t.br>=20},
+ {id:'s7',n:'Alev Aldı',e:'🔥',need:'7 günlük seri',ok:t=>t.bs>=7},
+ {id:'s30',n:'Yanardağ',e:'🌋',need:'30 günlük seri',ok:t=>t.bs>=30},
+ {id:'s100',n:'Durdurulamaz',e:'☄️',need:'100 günlük seri',ok:t=>t.bs>=100},
+ {id:'b2',n:'B2 Fatihi',e:'🧭',need:"B2'nin %50'sini öğren",ok:t=>t.pct.B2>=50},
+ {id:'c1',n:'C1 Bilge Baykuş',e:'🦉',need:"C1'in %50'sini öğren",ok:t=>t.pct.C1>=50},
+ {id:'c2',n:'C2 Hükümdarı',e:'👑',need:"C2'nin %25'ini öğren",ok:t=>t.pct.C2>=25}];
 const BYBADGE=new Map(BADGES.map(b=>[b.id,b]));
 const LVTOTAL={};W.forEach(w=>{LVTOTAL[w.level]=(LVTOTAL[w.level]||0)+1});
 function awardStats(){
