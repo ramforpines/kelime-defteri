@@ -144,14 +144,14 @@ nav button{position:relative;border:0;background:none;border-radius:10px;min-hei
 @keyframes bdrip{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.25)}}
 @media (prefers-reduced-motion:reduce){.frm.bld .wob,.frm.bld .drp{animation:none}}
 nav .nbd{position:absolute;top:2px;right:6px;font-style:normal;background:var(--bad);color:#fff;border-radius:8px;padding:0 5px;font-size:.62rem}
-.chatlist{height:calc(100vh - 330px);min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
-.cm{max-width:84%;align-self:flex-start;background:var(--surface2);border-radius:12px;padding:6px 10px;overflow-wrap:anywhere}
+.chatlist{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;height:calc(100vh - 330px);min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.cm{flex:none;max-width:84%;align-self:flex-start;background:var(--surface2);border-radius:12px;padding:6px 10px;overflow-wrap:anywhere}
 .cm.me{align-self:flex-end;background:var(--accent-soft)}
 .cm .cn{font-size:.72rem;font-weight:700;color:var(--muted);cursor:pointer}
 .cm .cb{white-space:pre-wrap;font-size:.92rem}
 .cm .ct{font-size:.66rem;color:var(--muted);display:flex;gap:8px;justify-content:flex-end}
 .cm .ct button{border:0;background:none;color:var(--muted);padding:0}
-.cdt{align-self:center;font-size:.68rem;color:var(--muted)}
+.cdt{flex:none;align-self:center;font-size:.68rem;color:var(--muted)}
 .cfm{display:flex;gap:8px;margin-top:8px}.cfm input{flex:1}
 nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 nav button[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
@@ -297,7 +297,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='3.6.0';
+const APP_VERSION='3.6.1';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
