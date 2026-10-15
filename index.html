@@ -229,7 +229,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='2.7.0';
+const APP_VERSION='2.7.1';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -1371,7 +1371,7 @@ function vCard(){
   const ids=String(r.bd||'').split(',').filter(x=>BYBADGE.has(x));
   const lg=LEAGUES[leagueMap()[id]|0],fk=frameFor(id,r.fr);
   return`<div class="ov" data-act="card-close"><div class="sheet stack" data-act="noop" role="dialog" aria-label="Profil kartı">
-  <div class="row" style="justify-content:space-between;align-items:flex-start"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2><div class="small muted">${rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında'} · ${lg.n} ligi</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
+  <div class="row" style="justify-content:space-between;align-items:flex-start"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}<div class="small muted">${rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında'} · ${lg.n} ligi</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
   ${id!==CLOUD.uid?`<button class="btn block" data-act="chat-open" data-v="${esc(id)}">Mesaj gönder</button>`:''}
   <div class="kp"><div><b>${nf(Math.round((r.ap||0)*10)/10)}</b><span>toplam puan</span></div><div><b>${nf(r.lrn||0)}</b><span>öğrenilen kelime</span></div><div><b>${st?'🔥 '+st:'–'}</b><span>günlük seri</span></div><div><b>${nf(r.ans||0)}</b><span>çözülen soru</span></div><div><b>%${acc}</b><span>doğruluk</span></div><div><b>${ids.length}</b><span>rozet</span></div></div>
   ${ids.length?`<div class="bgrid">${ids.map(i=>{const b=BYBADGE.get(i);return`<div class="bdg"><span class="e">${b.e}</span><b>${b.n}</b></div>`}).join('')}</div>`:'<div class="small muted">Henüz rozeti yok.</div>'}</div></div>`;
