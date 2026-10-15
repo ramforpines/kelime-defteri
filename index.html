@@ -306,7 +306,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.5.0';
+const APP_VERSION='4.6.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -1215,23 +1215,21 @@ function startQuiz(mode,all){
   UI.quiz={mode,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};
   UI.tab='quiz';render();
 }
-function answer(idx){
-  const qz=UI.quiz,it=qz.items[qz.i];
-  if(it.chosen!==null)return;
-  it.chosen=idx;
-  const ok=it.options[idx]===it.correct;
-  it.ok=ok;
+function applyAnswer(it,ok,ua,qz,gate){
+  const w=it.w,bw0=S.wrong[w.word],p0=S.prog[w.word]||[];
+  const elig=!gate||(it.kind==='new'&&!S.learned[w.word]&&p0.indexOf(it.f)===-1)||(!!bw0&&(it.f===0||it.f===1));
+  const ap=(v,k)=>elig?addPts(v,k):0;
   if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
-  const w=it.w,d=dayStat();
+  const d=dayStat();
   d.a++;if(ok)d.c++;
   const lv=S.lv[w.level]||(S.lv[w.level]=[0,0]);
   lv[ok?0:1]++;
   const dl=d.l||(d.l={});const dv=dl[w.level]||(dl[w.level]=[0,0]);dv[0]++;if(ok)dv[1]++;
   const cf=COEF[w.level]||1,bq=cf*(TYPEC[it.f]||1);
   let pt=0;
-  if(ok){pt+=addPts(bq,'c');const G=Math.max(GOAL_MIN,S.set.goal||GOAL_MIN);if(d.c===G)pt+=addPts(10+Math.min(streak(),10),'b')}
-  else if((S.tp||0)>=450)pt+=addPts(-0.25*bq,'w');
-  if(ok){if(it.kind==='wlog')wlogDel(it.lk||(w.word+'|'+it.f))}else wlogAdd(it,it.options[idx]);
+  if(ok){pt+=ap(bq,'c');const G=Math.max(GOAL_MIN,S.set.goal||GOAL_MIN);if(d.c===G)pt+=ap(10+Math.min(streak(),10),'b')}
+  else if((S.tp||0)>=450)pt+=ap(-0.25*bq,'w');
+  if(ok){if(it.kind==='wlog')wlogDel(it.lk||(w.word+'|'+it.f))}else wlogAdd(it,ua);
   const bw=S.wrong[w.word];
   if(ok){
     qz.right++;
@@ -1239,12 +1237,12 @@ function answer(idx){
       const p=S.prog[w.word]||(S.prog[w.word]=[]);
       if(p.indexOf(it.f)===-1)p.push(it.f);
       if(applicable(w).every(f=>p.indexOf(f)!==-1)){
-        S.learned[w.word]={d:today(),l:w.level};delete S.prog[w.word];qz.learnedNow.push(w.word);d.n++;pt+=addPts(3*cf,'b');
+        S.learned[w.word]={d:today(),l:w.level};delete S.prog[w.word];qz.learnedNow.push(w.word);d.n++;pt+=ap(3*cf,'b');
       }
     }
     if(bw&&(it.f===0||it.f===1)){
       bw.t[it.f]=Math.min(STREAK_GOAL,bw.t[it.f]+1);
-      if(bw.t[0]>=STREAK_GOAL&&bw.t[1]>=STREAK_GOAL){delete S.wrong[w.word];it.cleared=true;pt+=addPts(2,'b')}
+      if(bw.t[0]>=STREAK_GOAL&&bw.t[1]>=STREAK_GOAL){delete S.wrong[w.word];it.cleared=true;pt+=ap(2,'b')}
       else bw.due=addDays(today(),INTERVALS[Math.min(bw.t[it.f],INTERVALS.length)-1]||INTERVALS[INTERVALS.length-1]);
     }
   }else{
@@ -1254,7 +1252,15 @@ function answer(idx){
       e.t[it.f]=0;e.due=today();
     }
   }
-  it.pt=pt;
+  return pt;
+}
+function answer(idx){
+  const qz=UI.quiz,it=qz.items[qz.i];
+  if(it.chosen!==null)return;
+  it.chosen=idx;
+  const ok=it.options[idx]===it.correct;
+  it.ok=ok;
+  it.pt=applyAnswer(it,ok,it.options[idx],qz,false);
   save();render();
 }
 function next(){
@@ -2047,6 +2053,7 @@ function duelAnswer(i){
   const it=DUEL.qs[DUEL.idx],ok=i>=0&&it.options[i]===it.correct;
   const ms=Math.min(DQ_T*1000,Math.max(300,Date.now()-DUEL.tq));
   DUEL.sel=i;DUEL.lastOk=ok;
+  if(i>=0){try{applyAnswer(Object.assign(it,{kind:S.learned[it.w.word]?'dup':'new'}),ok,it.options[i],{right:0,wrong:[],learnedNow:[]},true);save()}catch(e){}}
   const pts=ok?100+Math.round(50*(1-ms/(DQ_T*1000))):0;
   const idx=DUEL.idx;
   if(DUEL.bot){const d=DUEL.d;d.a1++;d.s1+=pts;if(ok)d.c1++;d.t1+=ms}
