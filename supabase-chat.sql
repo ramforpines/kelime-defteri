@@ -31,6 +31,7 @@ drop policy if exists "chat_select" on public.chat_messages;
 create policy "chat_select" on public.chat_messages for select to authenticated
   using (public.is_approved() and (to_user is null or user_id = auth.uid() or to_user = auth.uid()));
 
+-- (Alıcı kontrolü için supabase-chat-limit.sql'deki chat_can_receive fonksiyonu gerekir; o dosyayı da çalıştır.)
 -- Yazma: onaylı, tablodan çıkarılmamış, dakikada en fazla 12 mesaj
 drop policy if exists "chat_insert" on public.chat_messages;
 create policy "chat_insert" on public.chat_messages for insert to authenticated
