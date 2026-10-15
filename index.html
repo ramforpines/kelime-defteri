@@ -219,10 +219,10 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='2.2.1';
+const APP_VERSION='2.3.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
-function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[]}}
+function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
 function load(uid){
   let raw=null;
   try{raw=localStorage.getItem(KEY+'-'+uid)}catch(e){}
@@ -667,8 +667,66 @@ function vLogin(){
 function dayStat(d){d=d||today();return S.days[d]||(S.days[d]={a:0,c:0,n:0,p:0})}
 
 /* ---------- soru üretimi (Apps Script mantığının aynısı) ---------- */
+/* ---------- soru kalitesi: kapalı sınıflar, yazım çeldiricileri, anlamca yakınlık ---------- */
+const CARD_NUM='one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand million billion trillion zero'.split(' ');
+const ORTHO_SETS=['monday tuesday wednesday thursday friday saturday sunday','january february march april june july august september october november december','red blue green yellow black white brown pink purple grey gray','spring summer autumn winter','north south east west northern southern eastern western','mother father brother sister son daughter uncle aunt cousin nephew niece grandmother grandfather husband wife','minute hour week month year decade century'].map(x=>x.split(' '));
+const KNOWN=new Set(DATA.map(r=>String(r[0]).toLowerCase()));
+function closedClass(w){
+  const k=w.word.toLowerCase().trim(),p=posKey(w);
+  if(/^(preposition|conjunction|pronoun|determiner|modal|exclamation|interjection|prefix)/.test(str(w.pos).toLowerCase()))return'func';
+  if(p==='number'&&!/\s/.test(k)&&/^[a-z]+$/.test(k)&&k!=='score'&&k!=='mortality')return'ortho';
+  if(CARD_NUM.indexOf(k)!==-1)return'ortho';
+  if(ORTHO_SETS.some(a=>a.indexOf(k)!==-1))return'ortho';
+  return'';
+}
+const ORD_CARD={first:'one',second:'two',third:'three',fourth:'four',fifth:'five',sixth:'six',seventh:'seven',eighth:'eight',ninth:'nine',tenth:'ten',eleventh:'eleven',twelfth:'twelve'};
+const SPECIAL_MIS={forty:['fourty','fortey','forthy'],ninety:['ninty','ninetey','nintey'],ninth:['nineth','ninnth','ninht'],eighth:['eigth','eightth','eighht'],eighty:['eightty','eigthy','eihgty'],fifth:['fiveth','fith','fifht'],twelfth:['twelveth','twelth','twelvth'],fourth:['forth','fourtth','fouth'],hundred:['hundread','hundered','hunderd'],hundredth:['hundreth','hundredeth','hundrenth'],thousand:['thousend','thousan','thosand'],thousandth:['thousanth','thousandeth','thosandth'],million:['milion','millon','milllion'],millionth:['milionth','millioneth','millionnth'],billion:['bilion','billon','billian'],trillion:['trilion','trillon','trilllion'],thirty:['thirthy','thirdy','thirti'],fifty:['fivty','fifthy','fifti'],sixty:['sixy','sixti','sixtey'],seventy:['seventi','sevanty','sevnty'],third:['thrid','thirt','therd'],february:['febuary','februry','feburary'],wednesday:['wensday','wendsday','wednsday'],thursday:['thurday','thirsday','thursdey'],tuesday:['tusday','tuseday','tuesdey'],saturday:['saterday','satruday','saturdey'],september:['septembar','septmber','sepember'],december:['decembar','desember','decmber'],november:['novembar','novmber','nowember'],october:['octobar','octobre','ocotber']};
+function orthoDistractors(word){
+  const w=word.toLowerCase().replace(/[^a-z]/g,'');if(!w)return[];
+  const cp=[],pr=[],gn=[];
+  const add=(arr,x)=>{x=x.toLowerCase();if(x&&x!==w&&!arr.includes(x)&&!cp.includes(x)&&!pr.includes(x)&&!gn.includes(x)&&!KNOWN.has(x)||(arr===cp&&x&&x!==w&&!cp.includes(x)))arr.push(x)};
+  // karşılık: sıra sayısı <-> sayı (geçerli kelime ama bu cümleye uymaz)
+  if(/ieth$/.test(w)){const st=w.slice(0,-4);add(cp,st+'y');['yeeth','yth','yeth','ith','ieht','iyth'].forEach(x=>add(pr,st+x))}
+  else if(ORD_CARD[w])add(cp,ORD_CARD[w]);
+  else if(/teenth$/.test(w))add(cp,w.slice(0,-2));
+  else if(/th$/.test(w)&&CARD_NUM.indexOf(w.slice(0,-2))!==-1)add(cp,w.slice(0,-2));
+  else if(/ty$/.test(w)&&CARD_NUM.indexOf(w)!==-1)add(cp,w.slice(0,-1)+'ieth');
+  else if(/^(hundred|thousand|million|billion|trillion)$/.test(w))add(cp,w+'th');
+  (SPECIAL_MIS[w]||[]).forEach(x=>add(pr,x));
+  // genel yazım hataları
+  const V='aeiou';
+  for(let i=1;i<w.length;i++){
+    if(i<w.length-1&&w[i]!==w[i+1])add(gn,w.slice(0,i)+w[i+1]+w[i]+w.slice(i+2));          // harf yer değiştirme
+    if(w[i]===w[i-1])add(gn,w.slice(0,i)+w.slice(i+1));                                  // çift harfi tek yazma
+    else if(V.indexOf(w[i])===-1&&i<w.length-1)add(gn,w.slice(0,i)+w[i]+w.slice(i));     // harf ikileme
+    if(V.indexOf(w[i])!==-1){const m={a:'e',e:'a',i:'y',o:'u',u:'o',y:'i'}[w[i]];if(m)add(gn,w.slice(0,i)+m+w.slice(i+1))}
+  }
+  const out=[];
+  if(cp.length)out.push(shuffle(cp)[0]);
+  shuffle(pr).forEach(x=>{if(out.length<3&&!out.includes(x))out.push(x)});
+  shuffle(gn).forEach(x=>{if(out.length<3&&!out.includes(x))out.push(x)});
+  return shuffle(out).slice(0,3);
+}
+const SWORDS=new Set('a an the of to in on at for and or is are was were be been it its this that with as by from'.split(' '));
+const toks=x=>parts(x||'').map(t=>t.replace(/\(.*?\)/g,'').trim()).filter(t=>t&&t!=='-');
+const cont=x=>String(x||'').toLowerCase().replace(/[^a-z0-9ğüşıöç ]/g,' ').split(/\s+/).filter(t=>t.length>2&&!SWORDS.has(t));
+function related(a,b){
+  const aw=a.word.toLowerCase(),bw=b.word.toLowerCase();
+  const as=toks(a.syn),bs=toks(b.syn);
+  if(as.indexOf(bw)!==-1||bs.indexOf(aw)!==-1||toks(a.ant).indexOf(bw)!==-1||toks(b.ant).indexOf(aw)!==-1)return true;
+  return as.some(x=>bs.indexOf(x)!==-1);
+}
+function similarText(x,y){   // iki tanım/metin içerik kelimeleri bakımından çok benziyor mu
+  const A=cont(x),B=cont(y);if(!A.length||!B.length)return false;
+  const sb=new Set(B);let n=0;A.forEach(t=>{if(sb.has(t))n++});
+  return n/Math.min(A.length,B.length)>=0.6;
+}
+function trOverlap(a,b){   // Türkçe karşılıklar aynı ya da aynı kökten mi
+  const A=parts(a||''),B=parts(b||'');
+  return A.some(x=>B.some(y=>x===y||(x.length>=4&&y.length>=4&&(x.startsWith(y)||y.startsWith(x)))));
+}
 function cloze(w){
-  if(!w.ex)return null;
+  if(!w.ex||closedClass(w)==='func')return null;
   const base=w.word.replace(/\s*\([^)]*\)/g,'').replace(/\.+$/,'').split('/')[0].trim();
   if(!base)return null;
   const esc2=base.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+');
@@ -734,26 +792,29 @@ function buildQuestion(t,k,opts){
     const tp=parts(t.tr);
     const rev=opts&&opts.reverse!==undefined?opts.reverse:Math.random()<REVERSE_RATE;
     if(rev){
-      const rd=pickDistractors(t,r=>r.word,r=>r.tr&&!parts(r.tr).some(p=>tp.indexOf(p)!==-1));
+      const rd=pickDistractors(t,r=>r.word,r=>r.tr&&!trOverlap(t.tr,r.tr)&&!related(t,r));
       if(rd.length===3)return{question:'"'+t.tr+'" karşılığı hangi İngilizce kelime/ifadedir?',correct:t.word,distractors:rd};
     }
     q='"'+t.word+'" kelimesinin Türkçe karşılığı hangisidir?';correct=t.tr;
-    d=pickDistractors(t,r=>r.tr,r=>r.tr&&!parts(r.tr).some(p=>tp.indexOf(p)!==-1));
+    d=pickDistractors(t,r=>r.tr,r=>r.tr&&!trOverlap(t.tr,r.tr)&&!related(t,r));
   }else if(k===1){
     q='"'+t.word+'" kelimesinin İngilizce tanımı hangisidir?';correct=t.def;
-    d=pickDistractors(t,r=>r.def,r=>r.def&&r.def.toLowerCase()!==t.def.toLowerCase());
+    d=pickDistractors(t,r=>r.def,r=>r.def&&r.def.toLowerCase()!==t.def.toLowerCase()&&!similarText(t.def,r.def)&&!related(t,r));
   }else if(k===3){
     const c=cloze(t);if(!c)return null;
     q='Boşluğa hangi kelime/ifade gelmeli?\n"'+c+'"';correct=t.word;
-    d=pickDistractors(t,r=>r.word,r=>t.syn.toLowerCase().indexOf(r.word.toLowerCase())===-1&&r.syn.toLowerCase().indexOf(t.word.toLowerCase())===-1);
+    if(closedClass(t)==='ortho')d=orthoDistractors(t.word);
+    else d=pickDistractors(t,r=>r.word,r=>!related(t,r)&&closedClass(r)!=='ortho'&&!(posKey(r)==='number'));
   }else if(k===4){
     if(!has(t.syn))return null;
     q='"'+t.word+'" kelimesinin eş anlamlısı hangisidir?';correct=t.syn;
-    d=pickDistractors(t,r=>r.syn,r=>has(r.syn)&&r.syn.toLowerCase()!==t.syn.toLowerCase()&&r.syn.toLowerCase()!==t.ant.toLowerCase());
+    const ts=toks(t.syn).concat([t.word.toLowerCase()]);
+    d=pickDistractors(t,r=>r.syn,r=>has(r.syn)&&r.syn.toLowerCase()!==t.syn.toLowerCase()&&r.syn.toLowerCase()!==t.ant.toLowerCase()&&!toks(r.syn).some(x=>ts.indexOf(x)!==-1)&&!related(t,r));
   }else if(k===5){
     if(!has(t.ant))return null;
     q='"'+t.word+'" kelimesinin zıt anlamlısı hangisidir?';correct=t.ant;
-    d=pickDistractors(t,r=>r.ant,r=>has(r.ant)&&r.ant.toLowerCase()!==t.ant.toLowerCase()&&r.ant.toLowerCase()!==t.syn.toLowerCase());
+    const ta=toks(t.ant).concat(toks(t.syn));
+    d=pickDistractors(t,r=>r.ant,r=>has(r.ant)&&r.ant.toLowerCase()!==t.ant.toLowerCase()&&r.ant.toLowerCase()!==t.syn.toLowerCase()&&!toks(r.ant).some(x=>ta.indexOf(x)!==-1)&&!toks(r.syn).some(x=>toks(t.ant).indexOf(x)!==-1)&&!related(t,r));
   }else if(k===6){return verbQuestion(t)}
   else return null;
   if(!correct||!d||d.length<3)return null;
@@ -792,17 +853,34 @@ function reviewItems(n,all){
   }
   return out;
 }
+function wlogAdd(it,ua){
+  const w=it.w,k=w.word+'|'+it.f,L=S.wlog||(S.wlog=[]);
+  let e=L.find(x=>x.k===k);
+  if(e){e.n++;e.d=today();e.q=it.question;e.ca=it.correct;e.ua=ua}
+  else{L.push({k,w:w.word,f:it.f,q:it.question,ca:it.correct,ua,d:today(),n:1});if(L.length>600)L.shift()}
+}
+function wlogDel(k){S.wlog=(S.wlog||[]).filter(x=>x.k!==k)}
+function wlogItems(n){
+  const out=[];
+  for(const e of shuffle(S.wlog||[])){
+    if(out.length>=n)break;
+    const w=BYWORD.get(e.w);if(!w)continue;
+    const it=makeItem(w,e.f,'wlog');if(it){it.lk=e.k;out.push(it)}
+  }
+  return out;
+}
 function startQuiz(mode,all){
   const n=S.set.count;
   let items=[];
-  if(mode==='review'){items=reviewItems(n,all)}
+  if(mode==='wlog'){items=wlogItems(all?9999:n)}
+  else if(mode==='review'){items=reviewItems(n,all)}
   else if(mode==='today'){
     const rv=reviewItems(Math.ceil(n/3),false);
     const skip=new Set(rv.map(i=>i.w.word));
     items=rv.concat(newItems(n-rv.length,S.set.level,skip));
   }else items=newItems(n,S.set.level,new Set());
   items=shuffle(items);
-  if(!items.length){toast(mode==='review'?'Tekrar edilecek kelime yok.':'Bu seviyede soru üretilecek kelime kalmadı.');return}
+  if(!items.length){toast(mode==='wlog'?'Yanlış defterin boş.':mode==='review'?'Tekrar edilecek kelime yok.':'Bu seviyede soru üretilecek kelime kalmadı.');return}
   UI.quiz={mode,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};
   UI.tab='quiz';render();
 }
@@ -822,6 +900,7 @@ function answer(idx){
   let pt=0;
   if(ok){pt+=addPts(bq,'c');const G=Math.max(GOAL_MIN,S.set.goal||GOAL_MIN);if(d.c===G)pt+=addPts(10+Math.min(streak(),10),'b')}
   else if((S.tp||0)>=450)pt+=addPts(-0.25*bq,'w');
+  if(ok){if(it.kind==='wlog')wlogDel(it.lk||(w.word+'|'+it.f))}else wlogAdd(it,it.options[idx]);
   const bw=S.wrong[w.word];
   if(ok){
     qz.right++;
@@ -864,7 +943,7 @@ function streak(){
 const learnedCount=()=>Object.keys(S.learned).filter(k=>BYWORD.has(k)).length;
 
 /* ---------- arayüz ---------- */
-const UI={fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'stats',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
+const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'stats',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
 try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz')UI.tab=t}catch(e){}
 const ICON={
   today:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
@@ -1003,7 +1082,7 @@ function vQuiz(){
       <button class="btn primary block" style="margin-top:12px" data-act="next" id="nextbtn">${qz.i+1>=qz.items.length?'Sonucu gör':'Sonraki soru'}</button>`;
   }
   return`<div class="qtop"><button class="btn" data-act="quit" aria-label="Testten çık">Çık</button><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span class="mono muted">${qz.i+1}/${qz.items.length}</span></div>
-  <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${qz.mode==='review'||it.kind==='review'?'Tekrar':'Yeni'} · ${FEAT[it.f]}</span>${lvTag(w.level)}</div>
+  <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${it.kind==='wlog'?'Yanlış defteri':qz.mode==='review'||it.kind==='review'?'Tekrar':'Yeni'} · ${FEAT[it.f]}</span>${lvTag(w.level)}</div>
   <h2>${esc(it.question)}</h2>
   <div class="opts">${it.options.map((o,i)=>{
     let c='';if(ans){if(o===it.correct)c='ok';else if(i===it.chosen)c='bad'}
@@ -1017,13 +1096,27 @@ function vResult(){
     <div class="small"><b>Bu testten ${(qz.pts.c+qz.pts.b+qz.pts.w)>=0?'+':'−'}${nf(r1(Math.abs(qz.pts.c+qz.pts.b+qz.pts.w)))} puan</b><br><span class="muted">Doğru cevaplar +${nf(r1(qz.pts.c))} · bonuslar +${nf(r1(qz.pts.b))}${qz.pts.w?` · yanlış cevaplar −${nf(r1(Math.abs(qz.pts.w)))}`:''}</span></div>
     ${qz.learnedNow.length?`<div class="row">${qz.learnedNow.map(k=>`<span class="badge ok">${esc(k)}</span>`).join('')}</div>`:''}</div>
     ${qz.wrong.length?`<div class="card stack"><h3>Yanlışlar</h3>${qz.wrong.map(it=>`<div><b>${esc(it.w.word)}</b> <span class="muted">${esc(FEAT[it.f])}</span><div class="small">Doğru: ${esc(it.correct)}</div></div>`).join('')}</div>`:''}
+    ${qz.wrong.length?`<button class="btn block" data-act="again-wrong">Yanlışları şimdi tekrar çöz (${qz.wrong.length})</button>`:''}
     <div class="row"><button class="btn primary" data-act="again">Yeni test</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
 }
 function vReview(){
   const keys=Object.keys(S.wrong).filter(k=>BYWORD.has(k)),due=dueWrong(false).length;
   keys.sort((a,b)=>S.wrong[a].due.localeCompare(S.wrong[b].due));
-  return`<div class="top"><h1>Tekrar</h1><span class="muted small">${keys.length} kelime</span></div><div class="stack">
-  <div class="card stack"><div class="muted small">Türkçe karşılığını veya tanımını yanlış bildiğin kelimeler burada toplanır. İkisini de art arda ${STREAK_GOAL} kez doğru bilince listeden çıkar. İlk doğrudan 1 gün, ikinci doğrudan 3 gün sonra yeniden sorulur. Yanlış cevap seriyi sıfırlar.</div>
+  const L=(S.wlog||[]).filter(e=>BYWORD.has(e.w)).slice().sort((a,b)=>b.d.localeCompare(a.d)||b.n-a.n);
+  const tabs=`<div class="seg"><button class="chip" aria-pressed="${UI.rv==='due'}" data-act="rv-tab" data-v="due">Tekrar zamanı (${keys.length})</button><button class="chip" aria-pressed="${UI.rv==='log'}" data-act="rv-tab" data-v="log">Yanlış defteri (${L.length})</button></div>`;
+  if(UI.rv==='log'){
+    return`<div class="top"><h1>Tekrar</h1><span class="muted small">${L.length} soru</span></div><div class="stack">${tabs}
+    <div class="card stack"><div class="muted small">Testte yanlış yaptığın tüm sorular burada saklanır. Burada tekrar çözüp doğru yaparsan soru defterden çıkar. Yanlış yaparsan kalır.</div>
+    <div class="row"><button class="btn primary" data-act="start-wlog" ${L.length?'':'disabled'}>Rastgele ${Math.min(S.set.count,L.length)} soru çöz</button><button class="btn" data-act="start-wlog-all" ${L.length?'':'disabled'}>Hepsini çöz (${L.length})</button>
+    ${L.length?(UI.wlConfirm?'<button class="btn danger" data-act="wl-clear-yes">Evet, defteri temizle</button><button class="btn" data-act="wl-clear-no">Vazgeç</button>':'<button class="btn danger" data-act="wl-clear">Temizle</button>'):''}</div></div>
+    ${L.length?L.map(e=>{const w=BYWORD.get(e.w);return`<div class="entry"><div class="row" style="justify-content:space-between;align-items:flex-start"><div><span class="w">${esc(w.word)}</span> <span class="badge">${esc(FEAT[e.f]||'')}</span></div><div class="row" style="gap:6px">${lvTag(w.level)}<span class="badge bad" title="Yanlış sayısı">${e.n}× yanlış</span></div></div>
+    <div style="margin-top:8px;overflow-wrap:anywhere;white-space:pre-wrap">${esc(e.q||'')}</div>
+    ${e.ua?`<div class="small" style="margin-top:6px;color:var(--bad)">Senin cevabın: ${esc(e.ua)}</div>`:''}<div class="small" style="color:var(--ok)">Doğru cevap: <b>${esc(e.ca||'')}</b></div>
+    <div class="row" style="justify-content:space-between;margin-top:8px"><span class="small muted">${fmt(e.d)}</span><button class="btn" data-act="wl-del" data-k="${esc(e.k)}">Defterden çıkar</button></div></div>`}).join(''):'<div class="empty card">Yanlış defterin boş. Testte yanlış yaptığın sorular burada görünür.</div>'}
+    </div>`;
+  }
+  return`<div class="top"><h1>Tekrar</h1><span class="muted small">${keys.length} kelime</span></div><div class="stack">${tabs}
+  <div class="card stack"><div class="muted small">Türkçe karşılığını veya tanımını yanlış bildiğin kelimeler burada toplanır. İkisini de art arda ${STREAK_GOAL} kez doğru bilince listeden çıkar. İlk doğrudan 1 gün, ikinci doğrudan 3 gün sonra tekrar sorulur.</div>
   <div class="row"><button class="btn primary" data-act="start-review" ${due?'':'disabled'}>Günü gelenleri çalış (${due})</button>
   ${keys.length&&!due?'<button class="btn" data-act="start-review-all">Yine de hepsini çalış</button>':''}</div></div>
   ${keys.length?keys.map(k=>{const w=BYWORD.get(k),e=S.wrong[k],d=e.due<=today();
@@ -1300,6 +1393,14 @@ document.addEventListener('click',async e=>{
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
     case'start-review':startQuiz('review',false);break;
+    case'rv-tab':UI.rv=g('data-v');UI.wlConfirm=false;render();break;
+    case'start-wlog':startQuiz('wlog',false);break;
+    case'start-wlog-all':startQuiz('wlog',true);break;
+    case'wl-del':wlogDel(g('data-k'));save();render();break;
+    case'wl-clear':UI.wlConfirm=true;render();break;
+    case'wl-clear-no':UI.wlConfirm=false;render();break;
+    case'wl-clear-yes':S.wlog=[];UI.wlConfirm=false;save();render();toast('Yanlış defteri temizlendi.');break;
+    case'again-wrong':{const items=UI.quiz.wrong.map(it=>{const n=makeItem(it.w,it.f,'wlog');if(n)n.lk=it.w.word+'|'+it.f;return n}).filter(Boolean);if(!items.length){toast('Soru hazırlanamadı.');break}UI.quiz={mode:'wlog',items:shuffle(items),i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};render();window.scrollTo(0,0);break}
     case'start-review-all':startQuiz('review',true);break;
     case'next':next();break;
     case'quit':UI.quiz=null;render();break;
