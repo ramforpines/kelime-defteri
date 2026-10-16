@@ -326,7 +326,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.17.0';
+const APP_VERSION='4.17.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -791,7 +791,7 @@ async function onLogin(user){
 }
 function onLogout(){
   try{dReset()}catch(e){}
-  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.flags={};CLOUD.flagsErr=false;UI.rep=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{}};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
+  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.flags={};CLOUD.flagsErr=false;UI.rep=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
 }
 async function initAuth(){
   try{
@@ -960,6 +960,12 @@ async function sendRep(){
   }
   render();
 }
+async function arpDelReply(k){
+  const A=UI.arp;A.busy=true;render();
+  try{const r=await sb.rpc('admin_delete_report_reply',{k:k});if(r.error)throw r.error;toast('Yanıt silindi.')}
+  catch(e){toast(/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||''))?'supabase-reports4.sql çalıştırılmalı.':'İşlem yapılamadı.')}
+  A.rdel=null;delete A.edit[k];await loadAdminRep();render();
+}
 async function loadAdminRep(){
   if(!sb||!CLOUD.admin)return;
   const A=UI.arp;A.busy=true;
@@ -984,8 +990,8 @@ async function arpReply(k){
   A.busy=true;render();
   try{
     const r=await sb.rpc('admin_reply_report',{k:k,reply_text:t});if(r.error)throw r.error;
-    delete A.reply[k];toast((r.data|0)+' kullanıcıya yanıt gönderildi.');
-  }catch(e){toast(/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||''))?'Yanıt için supabase-reports3.sql çalıştırılmalı.':'Yanıt gönderilemedi.')}
+    delete A.reply[k];delete A.edit[k];toast((r.data|0)+' kullanıcıya yanıt gönderildi.');
+  }catch(e){toast(/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||''))?'Yanıt için supabase-reports4.sql çalıştırılmalı.':'Yanıt gönderilemedi.')}
   await loadAdminRep();render();
 }
 function repOpen(){return UI.arp.list.filter(x=>x.status==='open').length}
@@ -1004,8 +1010,10 @@ function vReports(){
     <div class="small muted" style="margin-top:6px">${Object.keys(rs).map(k=>(RPR[k]||k)+': '+rs[k]).join(' · ')}</div>
     ${(()=>{const rp=Array.isArray(x.reporters)?x.reporters:null;if(!rp)return notes.length?`<div class="small" style="margin-top:6px;overflow-wrap:anywhere">${notes.slice(0,5).map(n=>'“'+esc(n)+'”').join('<br>')}</div>`:'';
       return`<div class="small" style="margin-top:8px;overflow-wrap:anywhere">${rp.slice(0,8).map(q=>`<div style="margin-bottom:4px"><b>${esc(q.name||q.un||'?')}</b>${q.un?` <span class="muted">@${esc(q.un)}</span>`:''} · ${esc(RPR[q.reason]||q.reason||'')}${q.picked?` · işaretlediği: <i>${esc(q.picked)}</i>`:''}${q.note?`<br>“${esc(q.note)}”`:''}</div>`).join('')}${rp.length>8?`<div class="muted">+${rp.length-8} kişi daha</div>`:''}</div>`})()}
-    <textarea class="nameinp" data-arr="${esc(x.qkey)}" rows="2" maxlength="1000" style="margin-top:10px" placeholder="Raporlayanlara açıklama / bilgi yaz…">${esc(A.reply[x.qkey]||'')}</textarea>
-    <div class="row" style="margin-top:6px;flex-wrap:wrap"><button class="btn primary" data-act="arp-reply" data-k="${esc(x.qkey)}" ${A.busy?'disabled':''}>Raporlayanlara yanıt gönder</button>${x.replied_at?`<span class="small muted">Yanıtlandı · ${fdt(x.replied_at)}</span>`:''}</div>
+    ${x.reply&&!A.edit[x.qkey]?`<div class="card" style="margin-top:10px"><div class="small muted">Gönderdiğin yanıt${x.replied_at?' · '+fdt(x.replied_at):''}</div><div style="overflow-wrap:anywhere;white-space:pre-wrap">${esc(x.reply)}</div>
+    <div class="row" style="margin-top:8px;flex-wrap:wrap"><button class="btn" data-act="arp-edit" data-k="${esc(x.qkey)}">Düzenle</button>${A.rdel===x.qkey?`<button class="btn danger" data-act="arp-rdel-yes" data-k="${esc(x.qkey)}">Evet, yanıtı sil</button><button class="btn" data-act="arp-rdel-no">Vazgeç</button>`:`<button class="btn danger" data-act="arp-rdel" data-k="${esc(x.qkey)}">Yanıtı sil</button>`}</div></div>`
+    :`<textarea class="nameinp" data-arr="${esc(x.qkey)}" rows="2" maxlength="1000" style="margin-top:10px" placeholder="Raporlayanlara açıklama / bilgi yaz…">${esc(A.reply[x.qkey]!=null?A.reply[x.qkey]:(x.reply||''))}</textarea>
+    <div class="row" style="margin-top:6px;flex-wrap:wrap"><button class="btn primary" data-act="arp-reply" data-k="${esc(x.qkey)}" ${A.busy?'disabled':''}>${x.reply?'Yanıtı güncelle':'Raporlayanlara yanıt gönder'}</button>${x.reply?`<button class="btn" data-act="arp-edit-no" data-k="${esc(x.qkey)}">Vazgeç</button>`:''}</div>`}
     <div class="row" style="margin-top:8px;flex-wrap:wrap">${x.status==='open'?`<button class="btn primary" data-act="arp-set" data-k="${esc(x.qkey)}" data-v="fixed">Düzeltildi</button><button class="btn" data-act="arp-set" data-k="${esc(x.qkey)}" data-v="dismissed">Sorun yok</button>`:`<button class="btn" data-act="arp-set" data-k="${esc(x.qkey)}" data-v="open">Yeniden aç</button>`}
     ${A.del===x.qkey?`<button class="btn danger" data-act="arp-del-yes" data-k="${esc(x.qkey)}">Evet, sil</button><button class="btn" data-act="arp-del-no">Vazgeç</button>`:`<button class="btn danger" data-act="arp-del" data-k="${esc(x.qkey)}">Sil</button>`}</div></div>`}).join(''):'<div class="empty card">Bu listede rapor yok.</div>'}`;
 }
@@ -1560,7 +1568,7 @@ function streak(){
 const learnedCount=()=>Object.keys(S.learned).filter(k=>BYWORD.has(k)).length;
 
 /* ---------- arayüz ---------- */
-const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{}},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'stats',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
+const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'stats',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
 try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz')UI.tab=t}catch(e){}
 const ICON={
   today:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
@@ -2635,6 +2643,11 @@ document.addEventListener('click',async e=>{
     case'rep-send':sendRep();break;
     case'arp-filter':UI.arp.filter=g('data-v');render();break;
     case'arp-load':loadAdminRep();break;
+    case'arp-edit':{const k2=g('data-k');UI.arp.edit[k2]=true;const x2=UI.arp.list.find(z=>z.qkey===k2);UI.arp.reply[k2]=x2&&x2.reply||'';render();break}
+    case'arp-edit-no':{const k2=g('data-k');delete UI.arp.edit[k2];delete UI.arp.reply[k2];render();break}
+    case'arp-rdel':UI.arp.rdel=g('data-k');render();break;
+    case'arp-rdel-no':UI.arp.rdel=null;render();break;
+    case'arp-rdel-yes':arpDelReply(g('data-k'));break;
     case'arp-reply':arpReply(g('data-k'));break;
     case'arp-set':arpAct(g('data-k'),g('data-v'));break;
     case'arp-del':UI.arp.del=g('data-k');render();break;
