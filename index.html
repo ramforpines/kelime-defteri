@@ -313,7 +313,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.9.0';
+const APP_VERSION='4.9.1';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -1276,7 +1276,7 @@ function startQuiz(mode,all){
 function applyAnswer(it,ok,ua,qz,gate){
   const w=it.w,bw0=S.wrong[w.word],p0=S.prog[w.word]||[];
   const elig=!gate||(it.kind==='new'&&!S.learned[w.word]&&p0.indexOf(it.f)===-1)||(!!bw0&&(it.f===0||it.f===1));
-  const ap=(v,k)=>elig?addPts(v,k):0;
+  const ap=(v,k)=>elig?addPts(gate?v*0.5:v,k):0;   // düelloda test puanı yarıya iner
   if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
   const d=dayStat();
   d.a++;if(ok)d.c++;
