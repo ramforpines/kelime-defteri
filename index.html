@@ -326,7 +326,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.15.1';
+const APP_VERSION='4.16.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1311,10 +1311,22 @@ function prepQ(t){
   const d=shuffle(PREPS.filter(p=>p!==b.prep)).slice(0,3);
   return{question:'Doğru edatı seç ('+parts(t.tr)[0]+'):\n"'+b.sentence+'"',correct:b.prep,distractors:d};
 }
+let AFFSET=null;
+function affSet(){if(AFFSET)return AFFSET;AFFSET=new Set();for(const r of W){AFFSET.add(String(r.word).toLowerCase().replace(/[^a-z]/g,''));if(r.ex)(r.ex.toLowerCase().match(/[a-z]+(?:-[a-z]+)*/g)||[]).forEach(x=>AFFSET.add(x.replace(/-/g,'')))}return AFFSET}
 function affixQ(t){
   const a=affixTok(t);if(!a)return null;
   const others=W.filter(r=>r!==t&&posGroup(r)==='prefix/suffix'&&String(r.word).trim()[0]==='-'===a.suf&&!(a.suf?a.tok.replace(/-/g,'').endsWith(String(r.word).replace(/-/g,'').toLowerCase()):a.tok.replace(/-/g,'').startsWith(String(r.word).replace(/-/g,'').toLowerCase()))).map(r=>r.word);
-  const d=shuffle(others).slice(0,3);if(d.length<3)return null;
+  const stem0=a.suf?a.tok.slice(0,a.tok.length-a.a.length):a.tok.slice(a.a.length),AS=affSet();
+  const okd=r=>{const x=String(r.word).toLowerCase().replace(/[^a-z]/g,''),c=(a.suf?stem0+x:x+stem0).replace(/-/g,'');return!AS.has(c)};
+  const d=shuffle(others.filter(okd)).slice(0,3);if(d.length<3)return null;
+  const tk=a.tok,la=a.a.length;let stem=null;
+  if(a.suf&&tk.toLowerCase().endsWith(a.a))stem=tk.slice(0,tk.length-la);
+  else if(!a.suf&&tk.toLowerCase().startsWith(a.a))stem=tk.slice(la);
+  if(stem&&stem.replace(/-/g,'').length>=2){
+    const blank=a.suf?stem+'_____':'_____'+stem;
+    const sent=t.ex.replace(new RegExp('\\b'+tk.replace(/[^a-z-]/gi,'')+'\\b','i'),m=>(a.suf&&m[0]!==m[0].toLowerCase())?blank[0].toUpperCase()+blank.slice(1):blank);
+    return{question:'Boşluğa hangi '+(a.suf?'sonek':'önek')+' gelir?\n"'+sent+'"',correct:t.word,distractors:d};
+  }
   return{question:'"'+a.tok+'" kelimesi hangi '+(a.suf?'sonekle':'önekle')+' türetilmiştir?',correct:t.word,distractors:d};
 }
 function phraseDefQ(t){
