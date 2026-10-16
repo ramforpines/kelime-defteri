@@ -341,7 +341,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.25.0';
+const APP_VERSION='4.26.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1892,14 +1892,14 @@ function vReview(){
 function vMe(){
   const fu=fbUnread();
   const seg=[['prof','Profil'],['stats','İstatistik'],['learned','Öğrenilenler'],['fb','Geri bildirim'+(fu?' ('+fu+')':'')],['set','Ayarlar']];
-  if(CLOUD.admin)seg.push(['msg','Mesajlar'+(fbNew()?' ('+fbNew()+')':'')]);
-  if(CLOUD.admin)seg.push(['live','Anlık duyuru']);
-  if(CLOUD.admin)seg.push(['fla','Flamalar']);
-  if(CLOUD.admin)seg.push(['rep','Raporlar'+(repOpen()?' ('+repOpen()+')':'')]);
-  if(CLOUD.admin)seg.push(['adm','Yönetim'+(UI.adm.loaded&&UI.adm.list.some(u=>!u.approved)?' ('+UI.adm.list.filter(u=>!u.approved).length+')':'')]);
+  const nM=fbNew(),nR=repOpen(),nU=UI.adm.loaded?UI.adm.list.filter(u=>!u.approved).length:0;
+  const subs=[['msg','Mesajlar'+(nM?' ('+nM+')':'')],['live','Anlık duyuru'],['fla','Flamalar'],['rep','Raporlar'+(nR?' ('+nR+')':'')],['adm','Yönetim'+(nU?' ('+nU+')':'')]];
+  const inAdm=CLOUD.admin&&subs.some(x=>x[0]===UI.me);
+  if(inAdm)UI.admSub=UI.me;
+  if(CLOUD.admin){const t=nM+nR+nU;seg.push(['admin','🛡 Yönetici'+(t?' ('+t+')':'')])}
   let body='';
   if(UI.me==='stats')body=vStats();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='fb')body=vFeedback();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
-  return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${body}</div>`;
+  return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${k==='admin'?inAdm:UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${inAdm?`<div class="seg">${subs.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>`:''}${body}</div>`;
 }
 function vStats(){
   const tot={},lrn={};
@@ -2725,7 +2725,7 @@ document.addEventListener('click',async e=>{
   if(el.hasAttribute('data-fr')){syncDraft();UI.draft.frame=g('data-fr');render();return}
   if(el.hasAttribute('data-pc')){UI.card=g('data-pc');render();return}
   if(el.hasAttribute('data-sw')){syncDraft();UI.draft.color=+g('data-sw');render();return}
-  if(el.hasAttribute('data-me')){UI.me=g('data-me');UI.confirmReset=false;render();return}
+  if(el.hasAttribute('data-me')){UI.me=g('data-me');if(UI.me==='admin')UI.me=UI.admSub||'adm';UI.confirmReset=false;render();return}
   if(el.hasAttribute('data-set')){const k=g('data-set'),v=g('data-v');S.set[k]=k==='count'?+v:v;save();render();return}
   if(el.hasAttribute('data-f')){UI.dict[g('data-f')]=g('data-v');UI.dict.limit=40;render();return}
   switch(g('data-act')){
