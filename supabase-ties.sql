@@ -81,3 +81,5 @@ begin
   ) into r;
   return r;
 end $$;
+revoke all on function public.app_stats() from public, anon;
+grant execute on function public.app_stats() to authenticated;
