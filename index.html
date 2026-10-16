@@ -313,7 +313,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.8.0';
+const APP_VERSION='4.9.0';
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -462,11 +462,14 @@ async function pushNow(){
   if(!sb||!CLOUD.uid||CLOUD.approved===false)return;
   if(CLOUD.busy){schedulePush();return}
   if(!navigator.onLine)return;
+  if(!CLOUD.pulled){syncPull(true);return}   // ilk çekme bitmeden buluttaki ilerlemenin üstüne yazma
+  if(!(S.rs&&S.rs>CLOUD.pullAt)&&CLOUD.known>30&&stAns(S)<CLOUD.known*0.5){CLOUD.pulled=false;syncPull(true);return}   // ilerleme aniden yarıdan fazla düştüyse yazma, önce buluttan birleştir
   CLOUD.busy=true;
   try{
     const now=new Date().toISOString();
     let r=await sb.from('user_state').upsert({user_id:CLOUD.uid,state:S,updated_at:now});
     if(r.error)throw r.error;
+    CLOUD.known=stAns(S);
     if(S.prof.name){
       const sc=myScore();if(CLOUD.noExt){delete sc.av;delete sc.fr;delete sc.bd;delete sc.dn}
       const j=JSON.stringify(sc);
@@ -484,17 +487,62 @@ async function pushNow(){
   }catch(e){CLOUD.err=(e&&e.message)||'error';setTimeout(schedulePush,30000)}
   finally{CLOUD.busy=false}
 }
+const stAns=s=>{let n=0;Object.values((s&&s.lv)||{}).forEach(x=>{n+=(x[0]|0)+(x[1]|0)});return n};
+const stEmpty=s=>!s||(stAns(s)===0&&!Object.keys(s.learned||{}).length&&!Object.keys(s.wrong||{}).length&&!Object.keys(s.days||{}).length&&!((s.tp||0)>0));
+const stSig=s=>{const c=Object.assign({},s);delete c.upd;delete c.rs;return JSON.stringify(c)};
+function normState(x){const s=Object.assign(fresh(),x);s.set=Object.assign(fresh().set,x.set||{});s.prof=Object.assign(fresh().prof,x.prof||{});return s}
+/* iki cihazın durumunu birleştirir: hiçbir cihazın ilerlemesi kaybolmaz */
+function mergeStates(a,b){
+  if(b.rs&&b.rs>(a.upd||0)&&b.rs>(a.rs||0))return normState(b);   // buluttaki açık sıfırlama, yerel son değişiklikten yeni
+  if(a.rs&&a.rs>(b.upd||0)&&a.rs>(b.rs||0))return normState(a);
+  const aa=stAns(a),bb=stAns(b);
+  const base=aa>bb||(aa===bb&&(a.upd||0)>=(b.upd||0))?a:b,oth=base===a?b:a;
+  const m=normState(JSON.parse(JSON.stringify(base)));
+  const ot=JSON.parse(JSON.stringify(oth));
+  Object.keys(ot.learned||{}).forEach(w=>{if(!m.learned[w])m.learned[w]=ot.learned[w]});
+  Object.keys(ot.prog||{}).forEach(w=>{if(m.learned[w])return;const x=m.prog[w]||(m.prog[w]=[]);(ot.prog[w]||[]).forEach(f=>{if(x.indexOf(f)===-1)x.push(f)})});
+  Object.keys(m.learned).forEach(w=>{delete m.prog[w]});
+  const bd=Object.assign({},ot.bd||{}),mb=m.bd||{};Object.keys(mb).forEach(k=>{bd[k]=bd[k]&&bd[k]<mb[k]?bd[k]:mb[k]});m.bd=bd;
+  m.bs=Math.max(m.bs||0,ot.bs||0);m.br=Math.max(m.br||0,ot.br||0);
+  Object.keys(ot.days||{}).forEach(k=>{const x=m.days[k],y=ot.days[k];if(!x||(y.a|0)>(x.a|0))m.days[k]=y});
+  Object.keys(ot.lv||{}).forEach(k=>{const x=m.lv[k],y=ot.lv[k];m.lv[k]=x?[Math.max(x[0]|0,y[0]|0),Math.max(x[1]|0,y[1]|0)]:y});
+  m.dl=Object.assign({},ot.dl||{},m.dl||{});Object.keys(ot.dl||{}).forEach(k=>{const x=m.dl[k],y=ot.dl[k];if(x&&y){x.s=x.s||y.s;x.p=x.p||y.p}});
+  m.upd=Date.now();
+  return m;
+}
+CLOUD.pulled=false;CLOUD.known=0;CLOUD.pullAt=0;CLOUD.pulling=false;
+let pullT=null;
+function schedulePull(ms){clearTimeout(pullT);pullT=setTimeout(()=>{syncPull(true)},ms||10000)}
 async function pullState(){
   const r=await sb.from('user_state').select('state').eq('user_id',CLOUD.uid).maybeSingle();
   if(r.error)throw r.error;
-  const d=r.data;
-  if(d&&d.state&&(d.state.upd||0)>(S.upd||0)){
-    const cl=d.state,loc=S.learned||{},lbd=S.bd||{},lbs=S.bs||0,lbr=S.br||0;
-    S=Object.assign(fresh(),cl);S.bd=Object.assign({},lbd,cl.bd||{});S.bs=Math.max(lbs,cl.bs||0);S.br=Math.max(lbr,cl.br||0);S.set=Object.assign(fresh().set,cl.set||{});S.prof=Object.assign(fresh().prof,cl.prof||{});
-    Object.keys(loc).forEach(w=>{if(!S.learned[w])S.learned[w]=loc[w]});
-    persistLocal();
-  }else if(!d||S.upd){save()}
+  const d=r.data,cl=d&&d.state;
+  CLOUD.pullAt=Date.now();
+  const rst=!!(cl&&cl.rs&&cl.rs>(S.upd||0)&&cl.rs>(S.rs||0));   // bulutta, bu cihazdaki son değişiklikten yeni bir açık sıfırlama var
+  if(!rst&&(!cl||stEmpty(cl))){
+    CLOUD.known=0;CLOUD.pulled=true;
+    if(!stEmpty(S)||!d)save();
+    return false;
+  }
+  const before=stSig(S);
+  const m=rst||stEmpty(S)?normState(cl):mergeStates(S,normState(cl));
+  const changed=stSig(m)!==before;
+  if(changed){S=m;S.upd=Date.now();persistLocal()}
+  CLOUD.known=stAns(S);CLOUD.pulled=true;
+  if(stSig(S)!==stSig(normState(cl))||(S.rs||0)>(cl.rs||0))schedulePush();   // bulutta olmayan yerel ilerleme varsa yukarı gönder
+  return changed;
 }
+async function syncPull(retry){
+  if(!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine||CLOUD.pulling){if(retry&&!CLOUD.pulled)schedulePull(15000);return}
+  CLOUD.pulling=true;
+  try{
+    const ch=await pullState();
+    if(ch){applyDecay();evalAwards();persistLocal();if(!UI.quiz&&!DUEL.bot&&['play','count','search','wait'].indexOf(DUEL.phase)===-1&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render()}
+  }catch(e){if(!CLOUD.pulled)schedulePull(15000)}
+  finally{CLOUD.pulling=false}
+}
+setInterval(()=>{if(!document.hidden&&CLOUD.uid&&CLOUD.pulled)syncPull()},90000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&CLOUD.uid)syncPull()});
 
 /* ---------- uygulama geneli istatistikler + çevrimiçi durumu ---------- */
 CLOUD.stats=null;CLOUD.statsErr=false;
@@ -593,6 +641,7 @@ function applyReset(){
   const t=new Date(CLOUD.resetAt).getTime();
   if(seen&&+seen>=t)return;
   if(!seen&&(S.upd||0)>t)return;   // sıfırlamadan sonra oluşmuş yerel veri
+  if(!seen&&!(S.upd||0)){try{localStorage.setItem(rk,String(Date.now()))}catch(e){}return}   // bu cihazda hiç veri yok (yeni cihaz): silinecek bir şey yok, buluttaki ilerleme çekilecek
   const set=S.set,prof=S.prof;S=fresh();S.set=set;S.prof=prof;S.upd=Date.now();persistLocal();
   try{localStorage.setItem(rk,String(Date.now()))}catch(e){}
 }
@@ -703,17 +752,19 @@ async function onLogin(user){
   if(CLOUD.approved===false){render();return}
   applyReset();
   if(!S.prof.name)S.prof.name=CLOUD.username;
+  CLOUD.pulled=false;CLOUD.known=0;
+  try{await Promise.race([pullState(),new Promise((_,rj)=>setTimeout(rj,8000))])}catch(e){schedulePull(8000)}
+  if(!S.prof.name)S.prof.name=CLOUD.username;
   render();adShow();
   if(CLOUD.admin){loadUsers();loadAdminStats()}
   loadAnn();loadMyFb();appPing();loadStats();if(CLOUD.admin)loadAdminFb();
-  try{await pullState()}catch(e){}
   if(!S.prof.name)S.prof.name=CLOUD.username;
   applyDecay();evalAwards();persistLocal();render();refreshBoard();schedulePush();
   duelSync();
 }
 function onLogout(){
   try{dReset()}catch(e){}
-  clearTimeout(pushT);CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
+  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
 }
 async function initAuth(){
   try{
@@ -2396,7 +2447,7 @@ document.addEventListener('click',async e=>{
     case'import':importBackup();break;
     case'reset':UI.confirmReset=true;render();break;
     case'reset-no':UI.confirmReset=false;render();break;
-    case'reset-yes':{const set=S.set,prof=S.prof;S=fresh();S.set=set;S.prof=prof;save();UI.confirmReset=false;render();toast('İlerleme sıfırlandı.');break}
+    case'reset-yes':{const set=S.set,prof=S.prof;S=fresh();S.set=set;S.prof=prof;S.rs=Date.now();save();UI.confirmReset=false;render();toast('İlerleme sıfırlandı.');break}
   }
 });
 document.addEventListener('input',e=>{
@@ -2436,7 +2487,7 @@ function importBackup(){
   try{
     const p=JSON.parse(v);
     if(!p||typeof p!=='object'||!p.learned||!p.prog)throw 0;
-    S=Object.assign(fresh(),p);S.set=Object.assign(fresh().set,p.set||{});S.prof=Object.assign(fresh().prof,p.prof||{});save();render();toast('Yedek yüklendi.');
+    S=Object.assign(fresh(),p);S.set=Object.assign(fresh().set,p.set||{});S.prof=Object.assign(fresh().prof,p.prof||{});S.rs=Date.now();save();render();toast('Yedek yüklendi.');
   }catch(e){toast('Yedek metni geçersiz.')}
 }
 function toggleNotif(){
