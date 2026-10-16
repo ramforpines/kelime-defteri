@@ -341,7 +341,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.23.0';
+const APP_VERSION='4.24.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -451,7 +451,7 @@ function save(){
 }
 const weekKey=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toLocaleDateString('sv-SE')};
 /* ---------- bulut: profil, ilerleme eşitleme, liderlik tablosu (Claude db/user yeteneği) ---------- */
-const CLOUD={flags:{},flagsErr:false,uid:null,username:'',approved:null,admin:false,resetAt:null,ann:null,write:true,ready:false,lb:[],lbReady:false,lbErr:'',lc:{},ld:null,busy:false,last:'',defName:''};
+const CLOUD={flags:{},flagsErr:false,uid:null,username:'',approved:null,admin:false,resetAt:null,ann:null,write:true,ready:false,lb:[],lbReady:false,lbErr:'',lc:{},ld:null,live:null,liveErr:false,busy:false,last:'',defName:''};
 const AUTH={ready:false};
 let pushT=null;
 function schedulePush(){if(!CLOUD.uid||CLOUD.approved===false)return;clearTimeout(pushT);pushT=setTimeout(pushNow,5000)}
@@ -716,19 +716,30 @@ async function loadAnn(){
     CLOUD.ann=r.data&&r.data.body&&r.data.body.trim()?r.data:null;
   }catch(e){}
   if(UI.tab==='today'&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render();
-  annPop();
 }
-setInterval(()=>{if(!document.hidden&&sb&&CLOUD.uid&&navigator.onLine)loadAnn()},20000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&sb&&CLOUD.uid)loadAnn()});
+async function loadLive(){
+  if(!sb||!CLOUD.uid)return;
+  try{
+    const r=await sb.from('live_announcement').select('body,updated_at').eq('id',1).maybeSingle();
+    if(r.error)throw r.error;
+    CLOUD.live=r.data&&r.data.body&&r.data.body.trim()?r.data:null;CLOUD.liveErr=false;
+  }catch(e){CLOUD.liveErr=true}
+  annPop();
+  if(UI.tab==='me'&&UI.me==='live'&&CLOUD.admin&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render();
+}
+setInterval(()=>{if(!document.hidden&&sb&&CLOUD.uid&&navigator.onLine)loadLive()},20000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&sb&&CLOUD.uid)loadLive()});
 /* ---------- duyuru penceresi: her ekranda, herkese, görülene kadar ---------- */
 const ANNP={t:0};
 function annPopSeen(){try{return localStorage.getItem('kd-annpop-'+CLOUD.uid)||''}catch(e){return ''}}
 function annPopClose(){const o=document.getElementById('annov');if(o)o.remove();clearInterval(ANNP.t);document.removeEventListener('keydown',annPopKey)}
 function annPopKey(e){if(e.key==='Escape'&&ANNP.ready)annPopDone()}
-function annPopDone(){const u=ANNP.u;try{localStorage.setItem('kd-annpop-'+CLOUD.uid,u)}catch(e){}annPopClose()}
-function annPop(){
-  const A=CLOUD.ann;
-  if(!A||!CLOUD.uid||CLOUD.approved===false||!A.updated_at||A.updated_at===annPopSeen())return;
+function annPopDone(){const u=ANNP.u;if(u!=='preview'){try{localStorage.setItem('kd-annpop-'+CLOUD.uid,u)}catch(e){}}annPopClose()}
+function annPop(pv){
+  const prev=pv&&pv.preview;
+  const A=prev?{body:prev,updated_at:'preview'}:CLOUD.live;
+  if(!A||!CLOUD.uid||CLOUD.approved===false||!A.updated_at)return;
+  if(!prev&&A.updated_at===annPopSeen())return;
   const cur=document.getElementById('annov');
   if(cur&&ANNP.u===A.updated_at)return;
   if(cur)annPopClose();
@@ -837,14 +848,14 @@ async function onLogin(user){
   if(!S.prof.name)S.prof.name=CLOUD.username;
   render();adShow();
   if(CLOUD.admin){loadUsers();loadAdminStats()}
-  loadAnn();loadMyFb();appPing();loadStats();loadFlags();if(CLOUD.admin){loadAdminFb();loadAdminRep()}
+  loadAnn();loadLive();loadMyFb();appPing();loadStats();loadFlags();if(CLOUD.admin){loadAdminFb();loadAdminRep()}
   if(!S.prof.name)S.prof.name=CLOUD.username;
   applyDecay();evalAwards();persistLocal();render();refreshBoard();schedulePush();
   duelSync();
 }
 function onLogout(){
   try{dReset()}catch(e){}
-  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;annPopClose();UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.flags={};CLOUD.flagsErr=false;UI.rep=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.lc={};CLOUD.ld=null;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
+  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;CLOUD.live=null;annPopClose();UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.flags={};CLOUD.flagsErr=false;UI.rep=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.lc={};CLOUD.ld=null;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
 }
 async function initAuth(){
   try{
@@ -936,6 +947,30 @@ async function saveAnn(clear){
     A.annDraft=null;toast(v?'Duyuru yayınlandı.':'Duyuru kaldırıldı.');
     await loadAnn();render();
   }catch(e){toast('Duyuru kaydedilemedi.')}
+}
+async function saveLive(clear){
+  const A=UI.adm,el=document.getElementById('liveq');
+  const v=clear?'':(el?el.value:(A.liveDraft||'')).trim().slice(0,1500);
+  if(!clear&&v.length<2){toast('Önce duyuru metnini yaz.');return}
+  A.liveBusy=true;render();
+  try{
+    const r=await sb.rpc('admin_set_live_announcement',{msg:v});
+    if(r.error)throw r.error;
+    A.liveDraft=null;toast(v?'Anlık duyuru yayınlandı.':'Anlık duyuru kaldırıldı.');
+  }catch(e){toast(/PGRST202|PGRST205|42883|42P01|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||''))?'supabase-live.sql çalıştırılmalı.':'Duyuru yayınlanamadı.')}
+  A.liveBusy=false;
+  try{localStorage.removeItem('kd-annpop-'+CLOUD.uid)}catch(e){}
+  await loadLive();render();
+}
+function vLive(){
+  const A=UI.adm,L=CLOUD.live,dr=A.liveDraft!=null?A.liveDraft:(L?L.body:'');
+  return`<div class="card stack"><h3>Anlık duyuru</h3>
+  <div class="small muted">Yayınladığın anda, uygulama açık olan herkesin ekranında hangi sekmede olursa olsun bir pencere olarak açılır (en geç 20 saniye içinde). Uygulaması kapalı olanlar açtığında önce bunu görür. İlk 3 saniye kapatılamaz, sonra düğmeyle ya da boş yere dokunarak kapanır. Aynı metni yeniden yayınlarsan herkese tekrar açılır.</div>
+  <textarea id="liveq" class="nameinp" rows="5" maxlength="1500" placeholder="Örn. Günlük soru puanı sınırı 700 oldu, düello puanları sınırsız.">${esc(dr)}</textarea>
+  <div class="small muted">${dr.length}/1500 karakter</div>
+  <div class="row" style="flex-wrap:wrap"><button class="btn primary" data-act="live-save" ${A.liveBusy?'disabled':''}>${L?'Yeniden yayınla (herkese tekrar aç)':'Şimdi yayınla'}</button>${L?'<button class="btn" data-act="live-clear">Kaldır</button>':''}<button class="btn" data-act="live-preview">Önizle</button></div>
+  ${L?`<div class="small muted">Yayında: ${fdt(L.updated_at)}</div>`:'<div class="small muted">Şu an yayında anlık duyuru yok.</div>'}
+  ${CLOUD.liveErr?'<div class="small" style="color:var(--bad)">Okunamadı. supabase-live.sql çalıştırılmış mı?</div>':''}</div>`;
 }
 /* ---------- geri bildirim ---------- */
 const FBK={oneri:'Öneri',hata:'Hata',soru:'Soru',diger:'Diğer'};
@@ -1846,11 +1881,12 @@ function vMe(){
   const fu=fbUnread();
   const seg=[['stats','İstatistik'],['help','Nasıl kullanılır?'],['learned','Öğrenilenler'],['prof','Profil'],['fb','Geri bildirim'+(fu?' ('+fu+')':'')],['set','Ayarlar']];
   if(CLOUD.admin)seg.push(['msg','Mesajlar'+(fbNew()?' ('+fbNew()+')':'')]);
+  if(CLOUD.admin)seg.push(['live','Anlık duyuru']);
   if(CLOUD.admin)seg.push(['fla','Flamalar']);
   if(CLOUD.admin)seg.push(['rep','Raporlar'+(repOpen()?' ('+repOpen()+')':'')]);
   if(CLOUD.admin)seg.push(['adm','Yönetim'+(UI.adm.loaded&&UI.adm.list.some(u=>!u.approved)?' ('+UI.adm.list.filter(u=>!u.approved).length+')':'')]);
   let body='';
-  if(UI.me==='stats')body=vStats();else if(UI.me==='help')body=vHelp();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='fb')body=vFeedback();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
+  if(UI.me==='stats')body=vStats();else if(UI.me==='help')body=vHelp();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='fb')body=vFeedback();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
   return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${body}</div>`;
 }
 function vStats(){
@@ -2759,6 +2795,9 @@ document.addEventListener('click',async e=>{
     case'adm-rs':UI.adm.rs=g('data-u');UI.adm.confirm=null;render();break;
     case'adm-rs-no':UI.adm.rs=null;render();break;
     case'adm-rs-yes':admAct('reset-progress',g('data-u'));break;
+    case'live-save':saveLive(false);break;
+    case'live-clear':saveLive(true);break;
+    case'live-preview':{const el=document.getElementById('liveq'),t=((el?el.value:'')||'').trim();if(t.length<2){toast('Önce metni yaz.');break}annPop({preview:t});break}
     case'ann-save':saveAnn(false);break;
     case'ann-clear':saveAnn(true);break;
     case'ann-toggle':UI.annOpen=!UI.annOpen;render();break;
@@ -2785,6 +2824,7 @@ document.addEventListener('input',e=>{
   if(e.target.id==='chq'){UI.chat.q=e.target.value;chatFind(e.target.value);const pos=e.target.selectionStart;render();const n=document.getElementById('chq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
   if(e.target.dataset&&e.target.dataset.fid){UI.afb.reply[e.target.dataset.fid]=e.target.value;return}
   if(e.target.id==='annq'){UI.adm.annDraft=e.target.value;return}
+  if(e.target.id==='liveq'){UI.adm.liveDraft=e.target.value;return}
   if(e.target.hasAttribute&&e.target.hasAttribute('data-arr')){UI.arp.reply[e.target.getAttribute('data-arr')]=e.target.value;return}
   if(e.target.id==='fq'){UI.adm.fq=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('fq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
   if(e.target.id==='adq'){UI.adm.q=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('adq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
