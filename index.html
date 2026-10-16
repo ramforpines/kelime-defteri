@@ -326,7 +326,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.15.0';
+const APP_VERSION='4.15.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -990,7 +990,8 @@ function vReports(){
     <div style="margin-top:8px;overflow-wrap:anywhere;white-space:pre-wrap">${esc(x.question)}</div>
     <div class="small" style="margin-top:6px">${opts.map(o=>o===x.correct?`<b style="color:var(--ok)">✓ ${esc(o)}</b>`:esc(o)).join(' · ')}</div>
     <div class="small muted" style="margin-top:6px">${Object.keys(rs).map(k=>(RPR[k]||k)+': '+rs[k]).join(' · ')}</div>
-    ${notes.length?`<div class="small" style="margin-top:6px;overflow-wrap:anywhere">${notes.slice(0,5).map(n=>'“'+esc(n)+'”').join('<br>')}</div>`:''}
+    ${(()=>{const rp=Array.isArray(x.reporters)?x.reporters:null;if(!rp)return notes.length?`<div class="small" style="margin-top:6px;overflow-wrap:anywhere">${notes.slice(0,5).map(n=>'“'+esc(n)+'”').join('<br>')}</div>`:'';
+      return`<div class="small" style="margin-top:8px;overflow-wrap:anywhere">${rp.slice(0,8).map(q=>`<div style="margin-bottom:4px"><b>${esc(q.name||q.un||'?')}</b>${q.un?` <span class="muted">@${esc(q.un)}</span>`:''} · ${esc(RPR[q.reason]||q.reason||'')}${q.picked?` · işaretlediği: <i>${esc(q.picked)}</i>`:''}${q.note?`<br>“${esc(q.note)}”`:''}</div>`).join('')}${rp.length>8?`<div class="muted">+${rp.length-8} kişi daha</div>`:''}</div>`})()}
     <div class="row" style="margin-top:8px;flex-wrap:wrap">${x.status==='open'?`<button class="btn primary" data-act="arp-set" data-k="${esc(x.qkey)}" data-v="fixed">Düzeltildi</button><button class="btn" data-act="arp-set" data-k="${esc(x.qkey)}" data-v="dismissed">Sorun yok</button>`:`<button class="btn" data-act="arp-set" data-k="${esc(x.qkey)}" data-v="open">Yeniden aç</button>`}
     ${A.del===x.qkey?`<button class="btn danger" data-act="arp-del-yes" data-k="${esc(x.qkey)}">Evet, sil</button><button class="btn" data-act="arp-del-no">Vazgeç</button>`:`<button class="btn danger" data-act="arp-del" data-k="${esc(x.qkey)}">Sil</button>`}</div></div>`}).join(''):'<div class="empty card">Bu listede rapor yok.</div>'}`;
 }
