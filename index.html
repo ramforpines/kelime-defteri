@@ -341,7 +341,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.19.0';
+const APP_VERSION='4.20.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -975,11 +975,24 @@ async function sendRep(){
   }
   render();
 }
-async function arpDelReply(k){
-  const A=UI.arp;A.busy=true;render();
-  try{const r=await sb.rpc('admin_delete_report_reply',{k:k});if(r.error)throw r.error;toast('Yanıt silindi.')}
-  catch(e){toast(/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||''))?'supabase-reports4.sql çalıştırılmalı.':'İşlem yapılamadı.')}
-  A.rdel=null;delete A.edit[k];await loadAdminRep();render();
+const RSEP='\u241F';
+const RPERR=e=>/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||''))?'supabase-reports5.sql çalıştırılmalı.':'İşlem yapılamadı.';
+function arpTa(id){return Array.from(document.querySelectorAll('textarea[data-arr]')).find(x=>x.getAttribute('data-arr')===id)||null}
+async function arpDelReply(k,i){
+  const A=UI.arp,x=A.list.find(z=>z.qkey===k),a=x&&x.answers&&x.answers[i];if(!a)return;
+  A.busy=true;render();
+  try{const r=await sb.rpc('admin_delete_report_reply',{k:k,old_reply:a.reply});if(r.error)throw r.error;toast('Yanıt silindi.')}
+  catch(e){toast(RPERR(e))}
+  A.rdel=null;await loadAdminRep();render();
+}
+async function arpEditSave(k,i){
+  const A=UI.arp,x=A.list.find(z=>z.qkey===k),a=x&&x.answers&&x.answers[i];if(!a)return;
+  const id=k+RSEP+i,el=arpTa(id),t=((el?el.value:(A.reply[id]||''))||'').trim();
+  if(t.length<2){toast('Önce bir yanıt yaz.');return}
+  A.busy=true;render();
+  try{const r=await sb.rpc('admin_edit_report_reply',{k:k,old_reply:a.reply,new_reply:t});if(r.error)throw r.error;delete A.edit[id];delete A.reply[id];toast('Yanıt güncellendi.')}
+  catch(e){toast(RPERR(e))}
+  await loadAdminRep();render();
 }
 async function loadAdminRep(){
   if(!sb||!CLOUD.admin)return;
@@ -998,15 +1011,13 @@ async function arpAct(k,st){
   A.del=null;await loadAdminRep();render();
 }
 async function arpReply(k){
-  const A=UI.arp;
-  const el=document.querySelector('textarea[data-arr="'+k.replace(/["\\]/g,'\\$&')+'"]');
-  const t=((el?el.value:(A.reply[k]||''))||'').trim();
+  const A=UI.arp,el=arpTa(k),t=((el?el.value:(A.reply[k]||''))||'').trim();
   if(t.length<2){toast('Önce bir yanıt yaz.');return}
   A.busy=true;render();
   try{
     const r=await sb.rpc('admin_reply_report',{k:k,reply_text:t});if(r.error)throw r.error;
-    delete A.reply[k];delete A.edit[k];toast((r.data|0)+' kullanıcıya yanıt gönderildi.');
-  }catch(e){toast(/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||''))?'Yanıt için supabase-reports4.sql çalıştırılmalı.':'Yanıt gönderilemedi.')}
+    delete A.reply[k];toast((r.data|0)+' kullanıcıya yanıt gönderildi.');
+  }catch(e){toast(RPERR(e))}
   await loadAdminRep();render();
 }
 function repOpen(){return UI.arp.list.filter(x=>x.status==='open').length}
@@ -1024,11 +1035,13 @@ function vReports(){
     <div class="small" style="margin-top:6px">${opts.map(o=>o===x.correct?`<b style="color:var(--ok)">✓ ${esc(o)}</b>`:esc(o)).join(' · ')}</div>
     <div class="small muted" style="margin-top:6px">${Object.keys(rs).map(k=>(RPR[k]||k)+': '+rs[k]).join(' · ')}</div>
     ${(()=>{const rp=Array.isArray(x.reporters)?x.reporters:null;if(!rp)return notes.length?`<div class="small" style="margin-top:6px;overflow-wrap:anywhere">${notes.slice(0,5).map(n=>'“'+esc(n)+'”').join('<br>')}</div>`:'';
-      return`<div class="small" style="margin-top:8px;overflow-wrap:anywhere">${rp.slice(0,8).map(q=>`<div style="margin-bottom:4px"><b>${esc(q.name||q.un||'?')}</b>${q.un?` <span class="muted">@${esc(q.un)}</span>`:''} · ${esc(RPR[q.reason]||q.reason||'')}${q.picked?` · işaretlediği: <i>${esc(q.picked)}</i>`:''}${q.note?`<br>“${esc(q.note)}”`:''}</div>`).join('')}${rp.length>8?`<div class="muted">+${rp.length-8} kişi daha</div>`:''}</div>`})()}
-    ${x.reply&&!A.edit[x.qkey]?`<div class="card" style="margin-top:10px"><div class="small muted">Gönderdiğin yanıt${x.replied_at?' · '+fdt(x.replied_at):''}</div><div style="overflow-wrap:anywhere;white-space:pre-wrap">${esc(x.reply)}</div>
-    <div class="row" style="margin-top:8px;flex-wrap:wrap"><button class="btn" data-act="arp-edit" data-k="${esc(x.qkey)}">Düzenle</button>${A.rdel===x.qkey?`<button class="btn danger" data-act="arp-rdel-yes" data-k="${esc(x.qkey)}">Evet, yanıtı sil</button><button class="btn" data-act="arp-rdel-no">Vazgeç</button>`:`<button class="btn danger" data-act="arp-rdel" data-k="${esc(x.qkey)}">Yanıtı sil</button>`}</div></div>`
-    :`<textarea class="nameinp" data-arr="${esc(x.qkey)}" rows="2" maxlength="1000" style="margin-top:10px" placeholder="Raporlayanlara açıklama / bilgi yaz…">${esc(A.reply[x.qkey]!=null?A.reply[x.qkey]:(x.reply||''))}</textarea>
-    <div class="row" style="margin-top:6px;flex-wrap:wrap"><button class="btn primary" data-act="arp-reply" data-k="${esc(x.qkey)}" ${A.busy?'disabled':''}>${x.reply?'Yanıtı güncelle':'Raporlayanlara yanıt gönder'}</button>${x.reply?`<button class="btn" data-act="arp-edit-no" data-k="${esc(x.qkey)}">Vazgeç</button>`:''}</div>`}
+      return`<div class="small" style="margin-top:8px;overflow-wrap:anywhere">${rp.slice(0,8).map(q=>`<div style="margin-bottom:4px"><b>${esc(q.name||q.un||'?')}</b>${q.un?` <span class="muted">@${esc(q.un)}</span>`:''} · ${esc(RPR[q.reason]||q.reason||'')}${q.replied?' · <span class="muted">✓ yanıtlandı</span>':' · <span class="badge bad">yeni</span>'}${q.picked?` · işaretlediği: <i>${esc(q.picked)}</i>`:''}${q.note?`<br>“${esc(q.note)}”`:''}</div>`).join('')}${rp.length>8?`<div class="muted">+${rp.length-8} kişi daha</div>`:''}</div>`})()}
+    ${(x.answers||[]).map((a,ai)=>{const id=x.qkey+RSEP+ai;return A.edit[id]?`<div class="card" style="margin-top:10px"><div class="small muted">Yanıtı düzenle · ${a.n} kişiye gitmişti</div><textarea class="nameinp" data-arr="${esc(id)}" rows="2" maxlength="1000" style="margin-top:6px">${esc(A.reply[id]!=null?A.reply[id]:a.reply)}</textarea>
+      <div class="row" style="margin-top:6px;flex-wrap:wrap"><button class="btn primary" data-act="arp-edit-save" data-k="${esc(x.qkey)}" data-i="${ai}" ${A.busy?'disabled':''}>Yanıtı güncelle</button><button class="btn" data-act="arp-edit-no" data-k="${esc(x.qkey)}" data-i="${ai}">Vazgeç</button></div></div>`
+      :`<div class="card" style="margin-top:10px"><div class="small muted">Gönderdiğin yanıt · ${a.n} kişi · ${fdt(a.at)}</div><div style="overflow-wrap:anywhere;white-space:pre-wrap">${esc(a.reply)}</div>
+      <div class="row" style="margin-top:8px;flex-wrap:wrap"><button class="btn" data-act="arp-edit" data-k="${esc(x.qkey)}" data-i="${ai}">Düzenle</button>${A.rdel===id?`<button class="btn danger" data-act="arp-rdel-yes" data-k="${esc(x.qkey)}" data-i="${ai}">Evet, yanıtı sil</button><button class="btn" data-act="arp-rdel-no">Vazgeç</button>`:`<button class="btn danger" data-act="arp-rdel" data-k="${esc(x.qkey)}" data-i="${ai}">Yanıtı sil</button>`}</div></div>`}).join('')}
+    ${x.pending>0?`<textarea class="nameinp" data-arr="${esc(x.qkey)}" rows="2" maxlength="1000" style="margin-top:10px" placeholder="${x.answers&&x.answers.length?'Yeni raporlayanlara (öncekilere gitmez) açıklama yaz…':'Raporlayanlara açıklama / bilgi yaz…'}">${esc(A.reply[x.qkey]||'')}</textarea>
+    <div class="row" style="margin-top:6px;flex-wrap:wrap"><button class="btn primary" data-act="arp-reply" data-k="${esc(x.qkey)}" ${A.busy?'disabled':''}>Yanıt gönder (${x.pending} yeni rapor)</button></div>`:''}
     <div class="row" style="margin-top:8px;flex-wrap:wrap">${x.status==='open'?`<button class="btn primary" data-act="arp-set" data-k="${esc(x.qkey)}" data-v="fixed">Düzeltildi</button><button class="btn" data-act="arp-set" data-k="${esc(x.qkey)}" data-v="dismissed">Sorun yok</button>`:`<button class="btn" data-act="arp-set" data-k="${esc(x.qkey)}" data-v="open">Yeniden aç</button>`}
     ${A.del===x.qkey?`<button class="btn danger" data-act="arp-del-yes" data-k="${esc(x.qkey)}">Evet, sil</button><button class="btn" data-act="arp-del-no">Vazgeç</button>`:`<button class="btn danger" data-act="arp-del" data-k="${esc(x.qkey)}">Sil</button>`}</div></div>`}).join(''):'<div class="empty card">Bu listede rapor yok.</div>'}`;
 }
@@ -2658,11 +2671,12 @@ document.addEventListener('click',async e=>{
     case'rep-send':sendRep();break;
     case'arp-filter':UI.arp.filter=g('data-v');render();break;
     case'arp-load':loadAdminRep();break;
-    case'arp-edit':{const k2=g('data-k');UI.arp.edit[k2]=true;const x2=UI.arp.list.find(z=>z.qkey===k2);UI.arp.reply[k2]=x2&&x2.reply||'';render();break}
-    case'arp-edit-no':{const k2=g('data-k');delete UI.arp.edit[k2];delete UI.arp.reply[k2];render();break}
-    case'arp-rdel':UI.arp.rdel=g('data-k');render();break;
+    case'arp-edit':{const id=g('data-k')+RSEP+g('data-i');UI.arp.edit[id]=true;render();break}
+    case'arp-edit-no':{const id=g('data-k')+RSEP+g('data-i');delete UI.arp.edit[id];delete UI.arp.reply[id];render();break}
+    case'arp-edit-save':arpEditSave(g('data-k'),+g('data-i'));break;
+    case'arp-rdel':UI.arp.rdel=g('data-k')+RSEP+g('data-i');render();break;
     case'arp-rdel-no':UI.arp.rdel=null;render();break;
-    case'arp-rdel-yes':arpDelReply(g('data-k'));break;
+    case'arp-rdel-yes':arpDelReply(g('data-k'),+g('data-i'));break;
     case'arp-reply':arpReply(g('data-k'));break;
     case'arp-set':arpAct(g('data-k'),g('data-v'));break;
     case'arp-del':UI.arp.del=g('data-k');render();break;
