@@ -341,7 +341,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.26.1';
+const APP_VERSION='4.27.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1233,7 +1233,7 @@ function vHelp(){
   ${sec('🔔 Hatırlatma ve ayarlar',li([
     'Ayarlar\'dan günlük hedefini ve hatırlatma saatini seçebilirsin. Hatırlatma tarayıcı izniyle çalışır ve uygulama açıkken gösterilir.',
     'Şifreni Ayarlar\'dan değiştirebilirsin. Şifreni unutursan yöneticiden sıfırlamasını iste.',
-    '"İlerlemeyi sıfırla" öğrendiğin kelimeleri, tekrar listesini ve istatistiklerini siler; geri alınamaz. Sözlük etkilenmez.']))}
+    'İlerlemeyi kendi başına sıfırlama seçeneği yoktur; gerekirse yöneticiden iste.']))}
   ${sec('🛡 Kurallar ve güvenlik',li([
     'Her kişi tek hesap kullanmalıdır. Aynı kişinin birden fazla hesap açması yasaktır.',
     'Puanı haksız yollarla artırmaya çalışmak (sahte kayıt, otomatik cevaplama, veri değiştirme) yasaktır. Olağan dışı puan artışları otomatik olarak kayıt altına alınır ve yönetici tarafından incelenir.',
@@ -1951,9 +1951,7 @@ function vSettings(){
   <div class="small muted">${nsup?'Bildirim tarayıcı izniyle çalışır ve uygulama sekmesi açıkken gösterilir. Kapalı uygulamaya bildirim göndermek için sunucu gerekir.':'Bu tarayıcı bildirimleri desteklemiyor. Hedef durumu Bugün sekmesinde görünür.'}</div></div>
   <div class="card stack"><h3>Yedek</h3><div class="small muted">İlerlemen hesabında saklanır. Bu yedek ekstra güvenlik içindir.</div>
   <div class="row"><button class="btn" data-act="export">Yedeği oluştur</button><button class="btn" data-act="import">Yedekten yükle</button></div>
-  <textarea id="bk" placeholder="Yedek metni burada görünür. Yüklemek için buraya yapıştır." spellcheck="false">${esc(UI.backup)}</textarea></div>
-  <div class="card stack"><h3>İlerlemeyi sıfırla</h3><div class="small muted">Öğrenilenler, tekrar listesi ve istatistikler silinir. Sözlük etkilenmez.</div>
-  ${UI.confirmReset?'<div class="row"><button class="btn danger" data-act="reset-yes">Evet, her şeyi sıfırla</button><button class="btn" data-act="reset-no">Vazgeç</button></div>':'<button class="btn danger" data-act="reset">Sıfırla</button>'}</div>`;
+  <textarea id="bk" placeholder="Yedek metni burada görünür. Yüklemek için buraya yapıştır." spellcheck="false">${esc(UI.backup)}</textarea></div>`;
 }
 
 /* ---------- profil ve liderlik tablosu ---------- */
@@ -2839,9 +2837,6 @@ document.addEventListener('click',async e=>{
       S.prof={name:nm,color:d.color,show:true,av:d.av|0,frame:(LGIDX.has(d.frame)&&LGIDX.get(d.frame)>myLeague())?'auto':normFrame(d.frame)};UI.draft=null;save();CLOUD.last='';pushNow();render();toast('Profil kaydedildi.');break}
     case'export':{UI.backup=JSON.stringify(S);render();try{navigator.clipboard.writeText(UI.backup).then(()=>toast('Yedek panoya kopyalandı.'),()=>{})}catch(e){}break}
     case'import':importBackup();break;
-    case'reset':UI.confirmReset=true;render();break;
-    case'reset-no':UI.confirmReset=false;render();break;
-    case'reset-yes':{const set=S.set,prof=S.prof;S=fresh();S.set=set;S.prof=prof;S.rs=Date.now();save();UI.confirmReset=false;render();toast('İlerleme sıfırlandı.');break}
   }
 });
 document.addEventListener('input',e=>{
