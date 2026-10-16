@@ -326,7 +326,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.13.3';
+const APP_VERSION='4.14.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1403,7 +1403,7 @@ function applyAnswer(it,ok,ua,qz,gate){
   const cf=COEF[w.level]||1,bq=cf*(TYPEC[it.f]||1);
   let pt=0;
   if(ok){pt+=ap(bq,'c');const G=Math.max(GOAL_MIN,S.set.goal||GOAL_MIN);if(d.c===G)pt+=ap(10+Math.min(streak(),10),'b')}
-  else if((S.tp||0)>=450)pt+=ap(-0.25*bq,'w');
+  else if((S.tp||0)>=450)pt+=ap(-(((S.tp||0)>=2000)?1:0.25)*bq,'w');   // Altın–Zümrüt: ¼, Elmas ve üstü: doğru cevap puanının tamamı
   if(ok){if(it.kind==='wlog')wlogDel(it.lk||(w.word+'|'+it.f))}else wlogAdd(it,ua);
   const bw=S.wrong[w.word];
   if(ok){
@@ -1821,7 +1821,7 @@ function leagueCard(){
   let prog='';
   if(cur<=6){const a=L.min,b=LEAGUES[cur+1].min,pc=Math.max(0,Math.min(100,(p-a)/(b-a)*100));prog=`<div class="bar" aria-hidden="true"><i style="width:${pc}%"></i></div><div class="small muted">${nf(p)} puan · ${LEAGUES[cur+1].n} için ${nf(Math.ceil(b-p))} puan kaldı</div>`}
   else{prog=`<div class="small muted">${nf(p)} puan · ${cur===9?'Şampiyonluk':cur===8?'Büyükustalık':'Ustalık'} ligindesin. ${cur<9?'Üst lig için sıranı yükseltmen ya da '+nf(Math.ceil((cur===8?8000:5000)-p))+' puan daha toplaman gerekir.':''}</div>`}
-  const rq=reqFor(S.tp||0);prog+=`<div class="small muted" style="margin-top:4px">Günlük asgari hedefin: ${rq.n} doğru. Tutturmazsan gün başına toplam puanının %${rq.r*100}'i kesilir.${(S.tp||0)>=450?' Bu ligde yanlış cevaplar puan düşürür.':''}</div>`;
+  const rq=reqFor(S.tp||0);prog+=`<div class="small muted" style="margin-top:4px">Günlük asgari hedefin: ${rq.n} doğru. Tutturmazsan gün başına toplam puanının %${rq.r*100}'i kesilir.${(S.tp||0)>=2000?' Bu ligde yanlış cevap, doğru cevabın puanı kadar puan düşürür.':(S.tp||0)>=450?' Bu ligde yanlış cevaplar puan düşürür.':''}</div>`;
   return`<div class="card stack"><h2>Ligin</h2><div class="row" style="gap:14px">${avatar(S.prof.name||'?',S.prof.color,true,S.prof.av,L.k)}<div style="flex:1;min-width:0"><div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700">${L.n}</div>${prog}</div></div>
   <details class="small"><summary style="cursor:pointer;font-weight:600">Tüm ligler</summary><div class="stack" style="margin-top:8px;gap:6px">${LEAGUES.map((l,i)=>`<div class="lgrow ${i===cur?'cur':''}"><span class="avw"><span class="av sm" style="background:#94a3b8"></span>${frameSVG(l.k)}</span><span><b>${l.n}</b><br><span class="muted">${l.rng} puan${l.need&&i>7?'<br>'+l.need:''}</span></span></div>`).join('')}
   <div class="muted">Puan, tüm zamanların toplam puanıdır. 3000 puanı geçenler arasında en yüksek 10 kişi Şampiyonluk, sonraki 20 kişi (11–30) Büyükustalık, kalanlar Ustalık olur. Bunun yanında 8000 puanı geçen herkes sayıdan bağımsız Şampiyonluk, 5000 puanı geçen herkes en az Büyükustalık olur.</div></div></details></div>`;
@@ -1899,7 +1899,7 @@ function vRank(){
       <div class="row">${LEVELS.map(l=>`<span class="lv lv-${l}">${l} × ${COEF[l]}</span>`).join('')}</div>
       <div class="muted">Soru türü: Türkçe 1, Tür 1, Tanım 1,1, V2/V3 1,1, Örnek 1,15, Eş ve Zıt anlam 1,2.</div>
       <div><b>Bonuslar:</b> yeni kelimeyi öğrenmek +3 × seviye katsayısı, tekrar listesinden bir kelimeyi çıkarmak +2, günlük hedefi tamamlamak +10 ve seri bonusu (en fazla +10).</div>
-      <div><b>Altın ve üstü liglerde</b> yanlış cevap, doğru cevap puanının dörtte biri kadar puan düşürür. Günlük puan sıfırın altına inmez.</div>
+      <div><b>Altın, Platin ve Zümrüt liglerinde</b> yanlış cevap, doğru cevap puanının dörtte biri kadar puan düşürür. <b>Elmas ve üstü liglerde</b> yanlış cevap, doğru bilseydin alacağın puanın tamamını (seviye × soru türü katsayısı) düşürür. Günlük puan sıfırın altına inmez.</div>
       <div><b>Günlük asgari hedef:</b> 1150 puanın altında 20 doğru, 1150 puandan itibaren 35, 2000 puandan itibaren 50 doğru. Tutturmayan her gün için toplam puanından sırasıyla %1, %2 ve %2 kesilir.</div></div></details>
     ${!CLOUD.write?'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. Sıraya girmek için sahibinden "Katkıda bulunan" izni iste.</div>':''}
     ${CLOUD.lbErr?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':''}`;
