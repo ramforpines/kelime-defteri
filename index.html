@@ -326,7 +326,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.14.0';
+const APP_VERSION='4.15.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1032,6 +1032,84 @@ function vFlags(){
     return`<div class="entry" style="position:relative"><div style="min-width:0;padding-right:${cur?50:0}px"><span class="w" style="overflow-wrap:anywhere">${esc(u.name||u.username)}</span>${u.is_admin?' <span class="badge">yönetici</span>':''}<br><span class="muted small">@${esc(u.username)}${cur&&BYFLAG.has(cur)?' · '+esc(BYFLAG.get(cur).n):''}</span></div>
     <div class="row" style="margin-top:10px;flex-wrap:wrap">${FLAGS.map(f=>`<button class="btn ${cur===f.id?'primary':''}" data-act="flag-set" data-u="${esc(id)}" data-fl="${f.id}" ${A.fbusy===id?'disabled':''}>${esc(f.n)}</button>`).join('')}${cur?`<button class="btn danger" data-act="flag-set" data-u="${esc(id)}" data-fl="" ${A.fbusy===id?'disabled':''}>Kaldır</button>`:''}</div></div>`}).join(''):'<div class="empty card">Kullanıcı bulunamadı.</div>'}`;
 }
+function vHelp(){
+  const sec=(t,b,open)=>`<details class="card small" ${open?'open':''}><summary style="cursor:pointer;font-weight:700;font-size:1rem">${t}</summary><div class="stack" style="margin-top:10px;line-height:1.5">${b}</div></details>`;
+  const li=a=>'<ul style="margin:0;padding-left:20px">'+a.map(x=>'<li style="margin-bottom:4px">'+x+'</li>').join('')+'</ul>';
+  return`<div class="card stack"><h2>Nasıl kullanılır?</h2><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
+  ${sec('🚀 Hızlı başlangıç',li([
+    '<b>Bugün</b> sekmesinde günün hedefini ve "Bugünün testini başlat" düğmesini görürsün. Her gün birkaç test çözmen yeter.',
+    '<b>Test</b> sekmesinden soru sayısını (10–40), seviyeyi (A1–C2) ve kelime türünü seçip istediğin zaman test çözebilirsin.',
+    '<b>Sözlük</b> sekmesinde 7.700\'den fazla kelimeyi arayabilir, Türkçesini, tanımını ve örnek cümlesini (altında Türkçe çevirisiyle) görebilirsin.',
+    'Hesabını ilk açtığında yönetici onayı gerekebilir. Onaylanınca sıralamaya girer, sohbete ve düelloya katılırsın.',
+    'İlerlemen hesabına kaydedilir. Telefonda, tabletde ve bilgisayarda aynı kullanıcı adı ve şifreyle girince kaldığın yerden devam edersin.']),true)}
+  ${sec('📝 Testler ve soru türleri',li([
+    '<b>Bugünün testi</b>: tekrar zamanı gelen kelimeler ile yeni kelimelerden karışık hazırlanır.',
+    '<b>Yeni test</b>: seçtiğin seviye ve türden henüz öğrenmediğin kelimeler gelir.',
+    'Bir kelimeden farklı özellikler sorulur: Türkçe karşılık (bazen ters yönde, yani Türkçeden İngilizceye), İngilizce tanım, kelime türü, boşluk doldurma, eş anlam, zıt anlam, V2/V3 (düzensiz fiiller), atasözü, edat kalıbı, ek ve ifade soruları.',
+    'Her sorunun altında doğru cevap, kelimenin okunuşu, Türkçesi, tanımı ve örnek cümlesi gösterilir.',
+    'Klavyede 1–4 tuşlarıyla şık seçebilir, Enter veya boşlukla sonraki soruya geçebilirsin.',
+    '<b>⚑ Bildir</b>: Sorunun şıklarından birden fazlası uygunsa ya da doğru cevap hatalıysa soru kartının sağ üstündeki Bildir düğmesine bas, nedeni seç. Raporlar yöneticiye ulaşır ve sorular düzeltilir. Günde en fazla 40 rapor gönderebilirsin.']))}
+  ${sec('🎓 Kelime nasıl "öğrenildi" olur?',li([
+    'Bir kelimenin sorulabilen tüm özelliklerini (Türkçe, tanım, örnek vb.) farklı sorularda en az bir kez doğru bildiğinde kelime <b>Öğrenildi</b> sayılır ve +3 × seviye katsayısı bonus puan alırsın.',
+    'Öğrenilen kelimeler Ben → Öğrenilenler bölümünde listelenir; istersen birini "Öğrenilmedi" olarak işaretleyebilirsin.']))}
+  ${sec('🔁 Tekrar ve yanlış defteri',li([
+    'Türkçe karşılığını veya tanımını yanlış bildiğin kelime <b>Tekrar</b> listesine girer.',
+    'Listeden çıkması için Türkçe ve Tanım sorularını art arda <b>3 kez</b> doğru bilmen gerekir. İlk doğrudan <b>1 gün</b>, ikinci doğrudan <b>3 gün</b> sonra yeniden sorulur. Yanlış yaparsan sayaç düşer.',
+    'Listeden bir kelimeyi tamamen çıkarmak +2 puan verir.',
+    '<b>Yanlış defteri</b>: testte yanlış yaptığın tüm sorular tek tek saklanır. Orada tekrar çözüp doğru yaparsan soru defterden çıkar. İstersen "Defterden çıkar" ile elle silebilirsin.']))}
+  ${sec('⭐ Puan sistemi',li([
+    '<b>Doğru cevap</b> = seviye katsayısı × soru türü katsayısı. Seviye katsayıları: '+LEVELS.map(l=>l+' × '+COEF[l]).join(', ')+'. Örnek cümle, eş/zıt anlam gibi türlerin katsayısı biraz daha yüksektir.',
+    '<b>Bonuslar</b>: yeni kelimeyi öğrenmek (+3 × seviye katsayısı), tekrar listesinden kelime çıkarmak (+2), günlük hedefini tamamlamak (+10 ve seri bonusu, en fazla +10).',
+    '<b>Günlük hedef</b>: Ayarlar\'dan seçtiğin doğru cevap sayısıdır (10–100). Tamamladığın her gün serini (🔥) bir artırır; bir gün boş geçersen seri sıfırlanır.',
+    '<b>Günlük asgari hedef</b>: toplam puanın 1150\'nin altındaysa günde 20 doğru, 1150 ve üstünde 35, 2000 ve üstünde 50 doğru çözmen gerekir. Çözmediğin her gün için toplam puanından sırasıyla %1, %2 ve %2 kesilir.',
+    '<b>Yanlış cevap cezası</b>: Altın, Platin ve Zümrüt liglerinde yanlış cevap, doğru cevap puanının dörtte birini düşürür. Elmas ve üstünde, doğru bilseydin alacağın puanın tamamını düşürür. Günlük puan sıfırın altına inmez.',
+    'Daha ayrıntılı hesap için Sıra sekmesindeki "Puan nasıl hesaplanır?" kutusuna bak.']))}
+  ${sec('🏆 Ligler ve sıralama',li([
+    'Toplam puanına göre lig belirlenir: '+LEAGUES.map(l=>'<b>'+l.n+'</b> ('+l.rng+')').join(', ')+'. Büyükustalık ve Şampiyonluk için puan yanında sıralamadaki yer de aranır.',
+    '<b>Sıra</b> sekmesinde Günlük, Haftalık ve Tüm zamanlar tablolarını görürsün. Günlük puan her gün gece yarısı sıfırlanır.',
+    'Her ligin kendine ait profil çerçevesi vardır. Ben → Profil\'den adını, avatarını ve çerçevenin görünümünü seçebilirsin. Seçtiğin çerçeve ulaştığın ligi geçemez.',
+    'Bir kullanıcıya dokunarak profil kartını açar; puanını, serisini, rozetlerini ve düello istatistiğini görür, ona mesaj gönderebilirsin.']))}
+  ${sec('🏅 Rozetler',li([
+    'Belirli hedefleri tamamlayınca (ör. 500 kelime öğrenmek, seri yapmak) rozet kazanırsın. Kazandığın ve henüz kazanamadığın rozetler Ben → Profil bölümünde, nasıl kazanılacağıyla birlikte görünür.',
+    'Rozetlerin profil kartında herkese görünür.']))}
+  ${sec('⚔ Düello',li([
+    'Test → <b>Düello</b> sekmesinden girersin. Başlamak için en az <b>'+DSTAKE+' puanın</b> olmalı.',
+    '<b>Eşleştirme</b>: Rakip ara dersen aynı anda arayan biriyle eşleşirsin. Kimse yoksa botla alıştırma yapabilirsin (bot maçı puanı etkilemez).',
+    '<b>Düello sekmesindeki kullanıcılar</b> listede görünür. Yanındaki düello teklifi düğmesiyle teklif gönderebilirsin. Teklif <b>15 saniye</b> geçerlidir; kabul edilmezse tekrar gönderebilirsin. Teklifi yapan da alan da yalnızca düello kutusunu görür, kabul ya da red edilmeden başka işlem yapılamaz.',
+    'İki oyuncu da aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Doğru cevap 100, hızlı cevap en fazla 50 puan hız bonusu getirir.',
+    '<b>Bahis</b>: herkes '+DSTAKE+' puan koyar (havuz '+DSTAKE*2+'). 5 puan kesilir, kalan 35 puanın 25\'ini kazanan alır, 10\'u maç puanlarına göre paylaşılır. Beraberlikte 35 puan yarı yarıya bölünür.',
+    'Düellodaki sorular normal test gibi sayılır: bilinenler bilinenlere, yanlışlar yanlışlara gider. Bu sorulardan gelen test puanı yarıya iner.',
+    'Düello bitince sonuç ekranında doğru sayını ve süreni görürsün. Profil kartında düello sayın, kazanma oranın ve G-M-B (galibiyet-mağlubiyet-beraberlik) istatistiğin yer alır.']))}
+  ${sec('💬 Sohbet',li([
+    '<b>Genel sohbet</b>: herkesin gördüğü ortak odadır. Dakikada en fazla 5 mesaj gönderebilirsin; mesaj en çok 500 karakterdir.',
+    '<b>Özel mesaj</b>: birine yazmak için kullanıcı adını ya da adını ara, ya da profil kartından "Mesaj gönder"e bas. Okunmamış mesajlar bildirim sayısıyla görünür.',
+    'Kendi mesajını silebilirsin. Hakaret, spam ve rahatsız edici içerik yasaktır; yönetici gerekli gördüğünde mesajları silebilir ve hesabı kısıtlayabilir.']))}
+  ${sec('✉ Geri bildirim',li([
+    'Ben → <b>Geri bildirim</b> bölümünden yöneticiye öneri, hata ya da soru yazabilirsin. Günde en fazla 5 mesaj gönderilebilir.',
+    'Yönetici yanıt yazarsa aynı yerde görürsün; yeni yanıt olduğunda sekme adında sayı çıkar.',
+    'Tek bir sorunun hatalı olduğunu bildirmek için mesaj yazmak yerine soru kartındaki ⚑ Bildir düğmesini kullan.']))}
+  ${sec('📱 Uygulamayı yükleme ve çevrimdışı kullanım',li([
+    'Uygulama tarayıcıda çalışır. Telefon, tablet ve bilgisayarda aynı adresten açılır. Ayarlar\'daki "Uygulamayı cihaza yükle" düğmesiyle ana ekrana eklenir (iPhone/iPad\'te Paylaş → "Ana Ekrana Ekle").',
+    'Kelime listesi cihazına kaydedilir, internet olmasa da test çözebilirsin. İnternet gelince ilerlemen hesabınla eşitlenir. Sıralama, sohbet ve düello için internet gerekir.',
+    'Farklı cihazda giriş yapınca ilerlemen silinmez; en güncel ilerleme korunarak birleştirilir.',
+    'Ayarlar → Yedek bölümünden ilerlemenin bir kopyasını metin olarak alabilir, gerektiğinde geri yükleyebilirsin.']))}
+  ${sec('🔔 Hatırlatma ve ayarlar',li([
+    'Ayarlar\'dan günlük hedefini ve hatırlatma saatini seçebilirsin. Hatırlatma tarayıcı izniyle çalışır ve uygulama açıkken gösterilir.',
+    'Şifreni Ayarlar\'dan değiştirebilirsin. Şifreni unutursan yöneticiden sıfırlamasını iste.',
+    '"İlerlemeyi sıfırla" öğrendiğin kelimeleri, tekrar listesini ve istatistiklerini siler; geri alınamaz. Sözlük etkilenmez.']))}
+  ${sec('🛡 Kurallar ve güvenlik',li([
+    'Her kişi tek hesap kullanmalıdır. Aynı kişinin birden fazla hesap açması yasaktır.',
+    'Puanı haksız yollarla artırmaya çalışmak (sahte kayıt, otomatik cevaplama, veri değiştirme) yasaktır. Olağan dışı puan artışları otomatik olarak kayıt altına alınır ve yönetici tarafından incelenir.',
+    'Kullanıcı adı ve görünen ad uygunsuz olmamalıdır. Diğer kullanıcılara saygılı davran.',
+    'Yönetici kuralları ihlal eden hesapları sıralamadan çıkarabilir, kısıtlayabilir ya da silebilir.']))}
+  ${sec('❓ Sık sorulanlar',li([
+    '<b>Puanım neden düştü?</b> Yüksek liglerde yanlış cevap puan düşürür, günlük asgari hedefi tutturmadığın günlerde puan kesintisi olur, düelloya girince bahis puanı düşer.',
+    '<b>Kelime listesi neden güncellendi?</b> Yeni kelimeler eklenir ve hatalar düzeltilir. İlerlemen korunur.',
+    '<b>Sorudaki şıklardan ikisi doğru görünüyor.</b> Soru kartındaki ⚑ Bildir düğmesiyle bildir, düzeltelim.',
+    '<b>Sıralamada görünmüyorum.</b> Hesabının onaylanmış olması ve bugün en az bir doğru cevap vermiş olman gerekir.',
+    '<b>Uygulama eski görünüyor.</b> Sayfayı bir kez kapatıp aç ya da yenile; yeni sürüm yüklenir. Güncel sürümü Ayarlar\'ın altında görürsün.']))}
+  `;
+}
 function vFeedback(){
   const F=UI.fb;
   try{localStorage.setItem(fbSeenKey(),new Date().toISOString())}catch(e){}
@@ -1664,13 +1742,13 @@ function vReview(){
 }
 function vMe(){
   const fu=fbUnread();
-  const seg=[['stats','İstatistik'],['learned','Öğrenilenler'],['prof','Profil'],['fb','Geri bildirim'+(fu?' ('+fu+')':'')],['set','Ayarlar']];
+  const seg=[['stats','İstatistik'],['help','Nasıl kullanılır?'],['learned','Öğrenilenler'],['prof','Profil'],['fb','Geri bildirim'+(fu?' ('+fu+')':'')],['set','Ayarlar']];
   if(CLOUD.admin)seg.push(['msg','Mesajlar'+(fbNew()?' ('+fbNew()+')':'')]);
   if(CLOUD.admin)seg.push(['fla','Flamalar']);
   if(CLOUD.admin)seg.push(['rep','Raporlar'+(repOpen()?' ('+repOpen()+')':'')]);
   if(CLOUD.admin)seg.push(['adm','Yönetim'+(UI.adm.loaded&&UI.adm.list.some(u=>!u.approved)?' ('+UI.adm.list.filter(u=>!u.approved).length+')':'')]);
   let body='';
-  if(UI.me==='stats')body=vStats();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='fb')body=vFeedback();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
+  if(UI.me==='stats')body=vStats();else if(UI.me==='help')body=vHelp();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='fb')body=vFeedback();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
   return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${body}</div>`;
 }
 function vStats(){
