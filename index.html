@@ -326,7 +326,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.17.1';
+const APP_VERSION='4.18.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1420,12 +1420,12 @@ function buildQuestion(t,k,opts){
     else d=pickDistractors(t,r=>r.word,r=>!related(t,r)&&closedClass(r)!=='ortho'&&!(posKey(r)==='number'));
   }else if(k===4){
     if(!has(t.syn))return null;
-    q='"'+t.word+'" kelimesinin eş anlamlısı hangisidir?';correct=t.syn;
+    q='"'+t.word+'" kelimesinin eş anlamlısı hangisidir?'+(parts(t.tr)[0]?'\n(Anlamı: '+parts(t.tr)[0]+')':'');correct=t.syn;
     const ts=toks(t.syn).concat([t.word.toLowerCase()]);
     d=pickDistractors(t,r=>r.syn,r=>has(r.syn)&&r.syn.toLowerCase()!==t.syn.toLowerCase()&&r.syn.toLowerCase()!==t.ant.toLowerCase()&&!toks(r.syn).some(x=>ts.indexOf(x)!==-1)&&!related(t,r));
   }else if(k===5){
     if(!has(t.ant))return null;
-    q='"'+t.word+'" kelimesinin zıt anlamlısı hangisidir?';correct=t.ant;
+    q='"'+t.word+'" kelimesinin zıt anlamlısı hangisidir?'+(parts(t.tr)[0]?'\n(Anlamı: '+parts(t.tr)[0]+')':'');correct=t.ant;
     const ta=toks(t.ant).concat(toks(t.syn));
     d=pickDistractors(t,r=>r.ant,r=>has(r.ant)&&r.ant.toLowerCase()!==t.ant.toLowerCase()&&r.ant.toLowerCase()!==t.syn.toLowerCase()&&!toks(r.ant).some(x=>ta.indexOf(x)!==-1)&&!toks(r.syn).some(x=>toks(t.ant).indexOf(x)!==-1)&&!related(t,r));
   }else if(k===6){return verbQuestion(t)}
