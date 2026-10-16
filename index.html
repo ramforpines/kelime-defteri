@@ -77,7 +77,7 @@ h3{font-size:1rem}
 /* nav */
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:10;
   padding:6px max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px))}
-nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:1px}
 nav button{position:relative;border:0;background:none;border-radius:10px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.68rem;padding:0;font-weight:600;color:var(--muted)}
 .pbar{display:flex;align-items:center;gap:12px;padding:8px 12px;margin-bottom:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;cursor:pointer}
 .pbar .pn{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.25}.pbar .pn b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pbar .pr{display:flex;gap:6px}
@@ -341,7 +341,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.24.0';
+const APP_VERSION='4.25.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1159,7 +1159,7 @@ function vFlags(){
 function vHelp(){
   const sec=(t,b,open)=>`<details class="card small" ${open?'open':''}><summary style="cursor:pointer;font-weight:700;font-size:1rem">${t}</summary><div class="stack" style="margin-top:10px;line-height:1.5">${b}</div></details>`;
   const li=a=>'<ul style="margin:0;padding-left:20px">'+a.map(x=>'<li style="margin-bottom:4px">'+x+'</li>').join('')+'</ul>';
-  return`<div class="card stack"><h2>Nasıl kullanılır?</h2><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
+  return`<div class="card stack"><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
   ${sec('🚀 Hızlı başlangıç',li([
     '<b>Bugün</b> sekmesinde günün hedefini ve "Bugünün testini başlat" düğmesini görürsün. Her gün birkaç test çözmen yeter.',
     '<b>Test</b> sekmesinden soru sayısını (10–40), seviyeyi (A1–C2) ve kelime türünü seçip istediğin zaman test çözebilirsin.',
@@ -1670,20 +1670,30 @@ function streak(){
 const learnedCount=()=>Object.keys(S.learned).filter(k=>BYWORD.has(k)).length;
 
 /* ---------- arayüz ---------- */
-const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'stats',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
+const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'prof',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
 try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz')UI.tab=t}catch(e){}
 const ICON={
   today:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
   dict:'<svg viewBox="0 0 24 24"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/></svg>',
   quiz:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/><path d="M12 17h.01"/></svg>',
+  study:'<svg viewBox="0 0 24 24"><path d="M3 8l9-4 9 4-9 4z"/><path d="M7 10.5V15c0 1.5 2.3 3 5 3s5-1.5 5-3v-4.5"/><path d="M21 8v6"/></svg>',
+  help:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>',
   review:'<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></svg>',
   rank:'<svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>',
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const TABS=[['today','Bugün'],['dict','Sözlük'],['quiz','Test'],['review','Tekrar'],['rank','Sıra'],['chat','Sohbet'],['me','Ben']];
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['review','Tekrar']];
+const isStudy=t=>t==='dict'||t==='quiz'||t==='review';
+let lastStudy='quiz';
+const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıra'],['chat','Sohbet'],['help','Kullanım'],['me','Ben']];
+function studySeg(){
+  if(UI.quiz)return'';
+  if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
+  return`<div class="seg" style="margin-bottom:12px">${STUDY.map(([k,l])=>`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}">${l}</button>`).join('')}</div>`;
+}
 function renderNav(){
-  $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${UI.tab===k?'aria-current="page"':''}>${ICON[k]}<span>${l}${k==='chat'&&chatUnread()?` <i class="nbd">${chatUnread()}</i>`:''}</span></button>`).join('');
+  $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}${k==='chat'&&chatUnread()?` <i class="nbd">${chatUnread()}</i>`:''}</span></button>`).join('');
 }
 function lvTag(l){return l?`<span class="lv lv-${esc(l)}">${esc(l)}</span>`:''}
 function profBar(){
@@ -1707,7 +1717,9 @@ function render(){
   else if(UI.tab==='review')h=vReview();
   else if(UI.tab==='rank')h=vRank();
   else if(UI.tab==='chat')h=vChat();
+  else if(UI.tab==='help')h=`<div class="top"><h1>Nasıl kullanılır?</h1></div><div class="stack">${vHelp()}</div>`;
   else h=vMe();
+  if(isStudy(UI.tab)){lastStudy=UI.tab;h=studySeg()+h}
   const fa=document.activeElement,fid=fa&&fa.id&&/^(chin|chq)$/.test(fa.id)?fa.id:null,fs=fid?[fa.selectionStart,fa.selectionEnd]:null;
   const ol=document.getElementById('chatlist');if(ol&&ol.dataset.init){UI.chat.st=ol.scrollTop;UI.chat.nb=ol.scrollHeight-ol.scrollTop-ol.clientHeight<90}
   app.innerHTML=profBar()+h+vCard();
@@ -1879,14 +1891,14 @@ function vReview(){
 }
 function vMe(){
   const fu=fbUnread();
-  const seg=[['stats','İstatistik'],['help','Nasıl kullanılır?'],['learned','Öğrenilenler'],['prof','Profil'],['fb','Geri bildirim'+(fu?' ('+fu+')':'')],['set','Ayarlar']];
+  const seg=[['prof','Profil'],['stats','İstatistik'],['learned','Öğrenilenler'],['fb','Geri bildirim'+(fu?' ('+fu+')':'')],['set','Ayarlar']];
   if(CLOUD.admin)seg.push(['msg','Mesajlar'+(fbNew()?' ('+fbNew()+')':'')]);
   if(CLOUD.admin)seg.push(['live','Anlık duyuru']);
   if(CLOUD.admin)seg.push(['fla','Flamalar']);
   if(CLOUD.admin)seg.push(['rep','Raporlar'+(repOpen()?' ('+repOpen()+')':'')]);
   if(CLOUD.admin)seg.push(['adm','Yönetim'+(UI.adm.loaded&&UI.adm.list.some(u=>!u.approved)?' ('+UI.adm.list.filter(u=>!u.approved).length+')':'')]);
   let body='';
-  if(UI.me==='stats')body=vStats();else if(UI.me==='help')body=vHelp();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='fb')body=vFeedback();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
+  if(UI.me==='stats')body=vStats();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='fb')body=vFeedback();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
   return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${body}</div>`;
 }
 function vStats(){
@@ -2691,6 +2703,7 @@ function vDuel(){
   return`<div class="top"><h1>Düello</h1></div><div class="stack">${inGame?'':seg}${body}</div>`;
 }
 function setTab(t){
+  if(t==='study')t=lastStudy;
   if(t==='quiz'&&UI.quiz&&UI.quiz.done)UI.quiz=null;
   UI.tab=t;try{sessionStorage.setItem('kd-tab',t)}catch(e){}
   render();window.scrollTo(0,0);
