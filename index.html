@@ -227,6 +227,17 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .rk{cursor:pointer;display:grid;grid-template-columns:30px 54px 1fr auto;gap:10px;column-gap:20px;align-items:center;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0}
 .rk .avw{justify-self:center}
 .rk.me{border-color:var(--accent);background:var(--accent-soft)}
+.flg{position:absolute;top:-1px;right:12px;width:34px;height:78px;z-index:6;pointer-events:none;transform-origin:50% 0;animation:flgsw 3.6s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
+.flg::before{content:"";position:absolute;inset:0;background:#111;clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%)}
+.flg::after{content:"";position:absolute;inset:2px;background:linear-gradient(90deg,#ffd000,#ffe34d 45%,#f2b800);clip-path:polygon(0 0,100% 0,100% 100%,50% 83%,0 100%)}
+.flg b{position:absolute;z-index:2;top:9px;left:0;right:0;height:56px;display:flex;justify-content:center;writing-mode:vertical-rl;font-size:8.2px;line-height:1.25;letter-spacing:.06em;font-weight:900;color:#111;text-align:center;white-space:nowrap;font-family:var(--font-body);transform:translateX(-2px)}
+.flg i{position:absolute;z-index:3;top:0;left:-2px;right:-2px;height:5px;border-radius:2px;background:repeating-linear-gradient(135deg,#ffd000 0 4px,#111 4px 8px);border:1px solid #111}
+.hasfl{padding-right:56px!important}
+.sheet .flg{right:22px;top:0;width:36px;height:86px}
+.sheet .flg b{font-size:9px;top:10px;height:62px}
+@keyframes flgsw{0%,100%{transform:rotate(-4deg) skewX(2deg)}50%{transform:rotate(4deg) skewX(-3deg)}}
+@media (prefers-reduced-motion:reduce){.flg{animation:none}}
+.sheet{position:relative}
 .rk .pos{font-family:var(--font-display);font-weight:700;font-size:1.1rem;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
 .rk.top .pos{color:var(--accent)}
 .rk .nm{min-width:0;overflow-wrap:anywhere;font-weight:600}
@@ -315,7 +326,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.11.0';
+const APP_VERSION='4.12.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -360,6 +371,10 @@ function leagueMap(){
   lgMemo={key,lb:CLOUD.lb,m};return m;
 }
 const isAdm=id=>id===CLOUD.uid?!!CLOUD.admin:!!((CLOUD.lb.find(x=>x.id===id)||(typeof CHAT!=='undefined'&&CHAT.peers[id])||{}).ad);
+const FLAGS=[{id:'maker',l:['TEST EDEN','YAPIMCI'],who:id=>isAdm(id)}];
+const flagOf=id=>FLAGS.find(f=>f.who(id))||null;
+const flagHtml=id=>{const f=flagOf(id);return f?`<span class="flg ${f.id}" role="img" aria-label="${esc(f.l.join(' '))}"><i></i><b>${f.l.map(esc).join('<br>')}</b></span>`:''};
+const flCls=id=>flagOf(id)?' hasfl':'';
 const lgAttr=id=>`data-lg="${isAdm(id)?'admin':(leagueMap()[id]|0)}"`;
 const myLeague=()=>leagueMap()[CLOUD.uid]|0;
 const normFrame=f=>(f==='none'||LGIDX.has(f))?f:'auto';
@@ -1423,7 +1438,7 @@ function profBar(){
   const name=(r&&r.name)||P.name||CLOUD.defName||'Ben',color=r?r.color:P.color,av=r?r.av:P.av,fr=frameFor(id,r?r.fr:P.frame);
   const st=r&&r.sd&&r.sd>=addDays(today(),-1)?(r.st||0):0;
   let lg='';try{lg=LEAGUES[leagueMap()[id]|0].n}catch(e){}
-  return`<div class="pbar" ${lgAttr(id)} data-pc="${esc(id)}" role="button" aria-label="Profil kartım">${avatar(name,color,false,av,fr)}<div class="pn"><b>${esc(name)}</b>${CLOUD.username?`<span class="muted small">@${esc(CLOUD.username)}</span>`:''}</div><div class="pr">${st?`<span class="badge">🔥 ${st}</span>`:''}${lg?`<span class="badge">${esc(lg)}</span>`:''}</div></div>`;
+  return`<div class="pbar${flCls(id)}" ${lgAttr(id)} data-pc="${esc(id)}" role="button" aria-label="Profil kartım">${avatar(name,color,false,av,fr)}<div class="pn"><b>${esc(name)}</b>${CLOUD.username?`<span class="muted small">@${esc(CLOUD.username)}</span>`:''}</div><div class="pr">${st?`<span class="badge">🔥 ${st}</span>`:''}${lg?`<span class="badge">${esc(lg)}</span>`:''}</div>${flagHtml(id)}</div>`;
 }
 function render(){
   const app=$('#app');
@@ -1784,8 +1799,8 @@ function vCard(){
   const st=(r.sd&&r.sd>=addDays(td,-1))?(r.st||0):0;
   const ids=String(r.bd||'').split(',').filter(x=>BYBADGE.has(x));
   const lg=LEAGUES[leagueMap()[id]|0],fk=frameFor(id,r.fr);
-  return`<div class="ov" data-act="card-close"><div class="sheet stack${isAdm(id)?' adm':''}" ${lgAttr(id)} data-act="noop" role="dialog" aria-label="Profil kartı">
-  <div class="row" style="justify-content:space-between;align-items:flex-start"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}${isAdm(id)?'<div class="small" style="font-weight:700">🛡 Yönetici</div>':''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':(rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında')+' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
+  return`<div class="ov" data-act="card-close"><div class="sheet stack${isAdm(id)?' adm':''}" ${lgAttr(id)} data-act="noop" role="dialog" aria-label="Profil kartı">${flagHtml(id)}
+  <div class="row" style="justify-content:space-between;align-items:flex-start${flagOf(id)?';padding-right:46px':''}"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}${isAdm(id)?'<div class="small" style="font-weight:700">🛡 Yönetici</div>':''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':(rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında')+' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
   ${(()=>{if(mn&&id==='bot')return'';const s=DSTAT[id];if(s===undefined){duelStat(id);return''}if(!s)return'';return s.n?`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>⚔ ${s.n}</b><span>düello maçı</span></div><div><b>%${Math.round(s.w/s.n*100)}</b><span>kazanma oranı</span></div><div><b>${s.w}-${s.l}-${s.d}</b><span>G-M-B</span></div></div>`:'<div class="small muted">⚔ Henüz düello maçı yok.</div>'})()}
   ${id!==CLOUD.uid?`<button class="btn block" data-act="chat-open" data-v="${esc(id)}">Mesaj gönder</button>`:''}
   ${mn?'</div></div>':`<div class="kp"><div><b>${nf(Math.round((r.ap||0)*10)/10)}</b><span>toplam puan</span></div><div><b>${nf(r.lrn||0)}</b><span>öğrenilen kelime</span></div><div><b>${st?'🔥 '+st:'–'}</b><span>günlük seri</span></div><div><b>${nf(r.ans||0)}</b><span>çözülen soru</span></div><div><b>%${acc}</b><span>doğruluk</span></div><div><b>${ids.length}</b><span>rozet</span></div></div>
@@ -1829,7 +1844,7 @@ function vRank(){
     ranked.forEach((r,i)=>{r.rank=(i>0&&ranked[i-1].x.p===r.x.p)?ranked[i-1].rank:i+1});
     const acc=r=>r.x.n?Math.round(r.x.c/r.x.n*100):0;
     const wt=weekTop();
-    const row=r=>`<div class="rk ${r.me?'me':''} ${r.rank&&r.rank<=3?'top':''}" ${lgAttr(r.id)} data-pc="${esc(r.id)}"><span class="pos">${r.rank||'–'}</span>${avatar(r.name,r.color,false,r.av,frameFor(r.id,r.fr),wt[r.id])}<div class="nm">${esc(r.name)}${r.me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">${r.x.n} soru · %${acc(r)} doğruluk${r.st?` · 🔥 ${r.st}`:''}</div></div><div class="val">${nf(Math.round(r.x.p*10)/10)}<small>puan</small></div></div>`;
+    const row=r=>`<div class="rk ${r.me?'me':''} ${r.rank&&r.rank<=3?'top':''}${flCls(r.id)}" ${lgAttr(r.id)} data-pc="${esc(r.id)}"><span class="pos">${r.rank||'–'}</span>${avatar(r.name,r.color,false,r.av,frameFor(r.id,r.fr),wt[r.id])}<div class="nm">${esc(r.name)}${r.me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">${r.x.n} soru · %${acc(r)} doğruluk${r.st?` · 🔥 ${r.st}`:''}</div></div><div class="val">${nf(Math.round(r.x.p*10)/10)}<small>puan</small></div>${flagHtml(r.id)}</div>`;
     const top=ranked.slice(0,10);
     const me=rows.find(r=>r.me);
     let mine='';
