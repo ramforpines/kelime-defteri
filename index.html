@@ -341,7 +341,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.20.0';
+const APP_VERSION='4.21.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -451,7 +451,7 @@ function save(){
 }
 const weekKey=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toLocaleDateString('sv-SE')};
 /* ---------- bulut: profil, ilerleme eşitleme, liderlik tablosu (Claude db/user yeteneği) ---------- */
-const CLOUD={flags:{},flagsErr:false,uid:null,username:'',approved:null,admin:false,resetAt:null,ann:null,write:true,ready:false,lb:[],lbReady:false,lbErr:'',busy:false,last:'',defName:''};
+const CLOUD={flags:{},flagsErr:false,uid:null,username:'',approved:null,admin:false,resetAt:null,ann:null,write:true,ready:false,lb:[],lbReady:false,lbErr:'',lc:{},ld:null,busy:false,last:'',defName:''};
 const AUTH={ready:false};
 let pushT=null;
 function schedulePush(){if(!CLOUD.uid||CLOUD.approved===false)return;clearTimeout(pushT);pushT=setTimeout(pushNow,5000)}
@@ -657,6 +657,11 @@ async function refreshBoard(){
     CLOUD.lb=r.data.map(x=>Object.assign({id:x.user_id},x));CLOUD.lbReady=true;CLOUD.lbErr='';
     try{const c=myLeague(),k='kd-lig-'+CLOUD.uid,o=localStorage.getItem(k);if(o!==null&&c>+o)toast('Yeni lig: '+LEAGUES[c].n+'!');localStorage.setItem(k,String(c))}catch(e){}
   }catch(e){CLOUD.lbErr='err'}
+  try{
+    const [a,b]=await Promise.all([sb.rpc('leaders_info'),sb.rpc('leader_counts')]);
+    if(!a.error&&a.data)CLOUD.ld=a.data;
+    if(!b.error&&Array.isArray(b.data)){const m={};b.data.forEach(x=>{m[x.user_id]={d:x.d|0,w:x.w|0}});CLOUD.lc=m}
+  }catch(e){}
   loadAnn();
   if(UI.tab==='rank'||UI.tab==='today'){if(document.getElementById('pname'))syncDraft();if(!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render()}
 }
@@ -806,7 +811,7 @@ async function onLogin(user){
 }
 function onLogout(){
   try{dReset()}catch(e){}
-  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.flags={};CLOUD.flagsErr=false;UI.rep=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
+  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.flags={};CLOUD.flagsErr=false;UI.rep=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.lc={};CLOUD.ld=null;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
 }
 async function initAuth(){
   try{
@@ -1668,7 +1673,7 @@ function vToday(){
   ${wd?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimesi</span>${lvTag(wd.level)}</div>
     <div class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div>
     <div>${esc(wd.tr)}</div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i>${exTr(wd)}</div></div>`:''}
-  ${reqCard()}${profilePrompt()}${myRankLine()}
+  ${reqCard()}${profilePrompt()}${myRankLine()}${leadersCard()}
   ${reminderCard()}
   ${statsCard()}
   </div>`;
@@ -1982,6 +1987,7 @@ function vCard(){
   return`<div class="ov" data-act="card-close"><div class="sheet stack${isAdm(id)?' adm':''}" ${lgAttr(id)} data-act="noop" role="dialog" aria-label="Profil kartı">${flagHtml(id)}
   <div class="row" style="justify-content:space-between;align-items:flex-start${flagOf(id)?';padding-right:34px':''}"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}${isAdm(id)?'<div class="small" style="font-weight:700">🛡 Yönetici</div>':''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':(rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında')+' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
   ${(()=>{if(mn&&id==='bot')return'';const s=DSTAT[id];if(s===undefined){duelStat(id);return''}if(!s)return'';return s.n?`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>⚔ ${s.n}</b><span>düello maçı</span></div><div><b>%${Math.round(s.w/s.n*100)}</b><span>kazanma oranı</span></div><div><b>${s.w}-${s.l}-${s.d}</b><span>G-M-B</span></div></div>`:'<div class="small muted">⚔ Henüz düello maçı yok.</div>'})()}
+  ${leadTxt(id)?`<div class="row" style="flex-wrap:wrap;gap:6px">${leadTxt(id)}</div>`:''}
   ${id!==CLOUD.uid?`<button class="btn block" data-act="chat-open" data-v="${esc(id)}">Mesaj gönder</button>`:''}
   ${mn?'</div></div>':`<div class="kp"><div><b>${nf(Math.round((r.ap||0)*10)/10)}</b><span>toplam puan</span></div><div><b>${nf(r.lrn||0)}</b><span>öğrenilen kelime</span></div><div><b>${st?'🔥 '+st:'–'}</b><span>günlük seri</span></div><div><b>${nf(r.ans||0)}</b><span>çözülen soru</span></div><div><b>%${acc}</b><span>doğruluk</span></div><div><b>${ids.length}</b><span>rozet</span></div></div>
   ${ids.length?`<div class="bgrid">${ids.map(i=>{const b=BYBADGE.get(i);return`<div class="bdg"><span class="e">${bIcon(b)}</span><b>${b.n}</b></div>`}).join('')}</div>`:'<div class="small muted">Henüz rozeti yok.</div>'}</div></div>`}`;
@@ -2001,6 +2007,16 @@ function rankData(){
     week:r.wk===wk?{n:r.wa||0,c:r.wc||0,p:r.wp||0}:{n:0,c:0,p:0},
     all:{n:r.ans||0,c:r.cor||0,p:r.ap||0},lrn:r.lrn||0,
     st:(r.sd&&r.sd>=addDays(td,-1))?(r.st||0):0,me:r.id===CLOUD.uid}));
+}
+function leadTxt(id){
+  const c=CLOUD.lc[id];if(!c||(!c.d&&!c.w))return'';
+  return[c.d?`<span class="badge warn">🏆 ${c.d} x Gün Lideri</span>`:'',c.w?`<span class="badge warn">👑 ${c.w} x Hafta Lideri</span>`:''].join(' ');
+}
+function leadersCard(){
+  const L=CLOUD.ld;if(!CLOUD.ready||!L||(!L.day&&!L.week))return'';
+  const one=(t,x,ic)=>{if(!x)return'';const acc=x.ans?Math.round((x.cor||0)/x.ans*100):0;
+    return`<button class="card" style="text-align:left;display:flex;gap:12px;align-items:center" data-pc="${esc(x.id)}"><span style="flex:none">${avatar(x.name,x.color|0,false,x.av|0,frameFor(x.id,x.fr))}</span><span style="min-width:0;overflow-wrap:anywhere"><span class="muted small" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">${ic} ${t}</span><br><b>${esc(x.name)}</b>${x.un?` <span class="muted small">@${esc(x.un)}</span>`:''}<br><span class="small">${nf(Math.round(x.pts*10)/10)} puan · ${x.cor}/${x.ans} doğru · %${acc}</span></span></button>`};
+  return`<div class="stack">${one('Dünün lideri',L.day,'🏆')}${one('Geçen haftanın lideri',L.week,'👑')}</div>`;
 }
 function myRankLine(){
   if(!CLOUD.ready||!CLOUD.lbReady||!S.prof.name)return'';
