@@ -341,7 +341,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.29.1';
+const APP_VERSION='4.30.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1181,16 +1181,16 @@ function vHelp(){
     'Klavyede 1–4 tuşlarıyla şık seçebilir, Enter veya boşlukla sonraki soruya geçebilirsin.',
     '<b>⚑ Bildir</b>: Sorunun şıklarından birden fazlası uygunsa ya da doğru cevap hatalıysa soru kartının sağ üstündeki Bildir düğmesine bas, nedeni seç. Raporlar yöneticiye ulaşır ve sorular düzeltilir. Günde en fazla 40 rapor gönderebilirsin.']))}
   ${sec('🎓 Kelime nasıl "öğrenildi" olur?',li([
-    'Bir kelimenin sorulabilen tüm özelliklerini (Türkçe, tanım, örnek vb.) farklı sorularda en az bir kez doğru bildiğinde kelime <b>Öğrenildi</b> sayılır ve +3 × seviye katsayısı bonus puan alırsın.',
+    'Bir kelimenin sorulabilen tüm özelliklerini (Türkçe, tanım, örnek vb.) farklı sorularda en az bir kez doğru bildiğinde kelime <b>Öğrenildi</b> sayılır ve +2 × seviye katsayısı bonus puan alırsın.',
     'Öğrenilen kelimeler Ben → Öğrenilenler bölümünde listelenir; istersen birini "Öğrenilmedi" olarak işaretleyebilirsin.']))}
   ${sec('🔁 Tekrar ve yanlış defteri',li([
     'Türkçe karşılığını veya tanımını yanlış bildiğin kelime <b>Tekrar</b> listesine girer.',
     'Listeden çıkması için Türkçe ve Tanım sorularını art arda <b>3 kez</b> doğru bilmen gerekir. İlk doğrudan <b>1 gün</b>, ikinci doğrudan <b>3 gün</b> sonra yeniden sorulur. Yanlış yaparsan sayaç düşer.',
-    'Listeden bir kelimeyi tamamen çıkarmak +2 puan verir.',
+    'Listeden bir kelimeyi tamamen çıkarmak +1 × seviye katsayısı puan verir.',
     '<b>Yanlış defteri</b>: testte yanlış yaptığın tüm sorular tek tek saklanır. Orada tekrar çözüp doğru yaparsan soru defterden çıkar. İstersen "Defterden çıkar" ile elle silebilirsin.']))}
   ${sec('⭐ Puan sistemi',li([
     '<b>Doğru cevap</b> = seviye katsayısı × soru türü katsayısı. Seviye katsayıları: '+LEVELS.map(l=>l+' × '+COEF[l]).join(', ')+'. Örnek cümle, eş/zıt anlam gibi türlerin katsayısı biraz daha yüksektir.',
-    '<b>Bonuslar</b>: yeni kelimeyi öğrenmek (+3 × seviye katsayısı), tekrar listesinden kelime çıkarmak (+2), günlük hedefini tamamlamak (+10 ve seri bonusu, en fazla +10).',
+    '<b>Bonuslar</b>: yeni kelimeyi öğrenmek (+2 × seviye katsayısı), tekrar listesinden kelime çıkarmak (+1 × seviye katsayısı), günlük hedefini tamamlamak (+10 ve seri bonusu, en fazla +10).',
     '<b>Günlük hedef</b>: Ayarlar\'dan seçtiğin doğru cevap sayısıdır (10–100). Tamamladığın her gün serini (🔥) bir artırır; bir gün boş geçersen seri sıfırlanır.',
     '<b>Günlük asgari hedef</b>: toplam puanın 3500\'ün altındaysa (Zümrüt\'ün altı) günde 20 doğru, 3500 ve üstünde 35, 6000 (Elmas) ve üstünde 50 doğru çözmen gerekir. Çözmediğin her gün için toplam puanından, hangi ligde olursan ol, %5 kesilir.',
     '<b>Yanlış cevap cezası</b>: Altın (1000 puan), Platin ve Zümrüt liglerinde yanlış cevap, doğru cevap puanının dörtte birini düşürür. Elmas ve üstünde, doğru bilseydin alacağın puanın tamamını düşürür. Günlük puan sıfırın altına inmez.',
@@ -1641,12 +1641,12 @@ function applyAnswer(it,ok,ua,qz,gate){
       const p=S.prog[w.word]||(S.prog[w.word]=[]);
       if(p.indexOf(it.f)===-1)p.push(it.f);
       if(applicable(w).every(f=>p.indexOf(f)!==-1)){
-        S.learned[w.word]={d:today(),l:w.level};delete S.prog[w.word];qz.learnedNow.push(w.word);d.n++;pt+=ap(3*cf,'b');
+        S.learned[w.word]={d:today(),l:w.level};delete S.prog[w.word];qz.learnedNow.push(w.word);d.n++;pt+=ap(2*cf,'b');
       }
     }
     if(bw&&(it.f===0||it.f===1)){
       bw.t[it.f]=Math.min(STREAK_GOAL,bw.t[it.f]+1);
-      if(bw.t[0]>=STREAK_GOAL&&bw.t[1]>=STREAK_GOAL){delete S.wrong[w.word];it.cleared=true;pt+=ap(2,'b')}
+      if(bw.t[0]>=STREAK_GOAL&&bw.t[1]>=STREAK_GOAL){delete S.wrong[w.word];it.cleared=true;pt+=ap(cf,'b')}
       else bw.due=addDays(today(),INTERVALS[Math.min(bw.t[it.f],INTERVALS.length)-1]||INTERVALS[INTERVALS.length-1]);
     }
   }else{
@@ -2150,7 +2150,7 @@ function vRank(){
       <div><b>Doğru cevap</b> = seviye katsayısı × soru türü katsayısı.</div>
       <div class="row">${LEVELS.map(l=>`<span class="lv lv-${l}">${l} × ${COEF[l]}</span>`).join('')}</div>
       <div class="muted">Soru türü: Türkçe 1, Tür 1, Tanım 1,1, V2/V3 1,1, Örnek 1,15, Eş ve Zıt anlam 1,2.</div>
-      <div><b>Bonuslar:</b> yeni kelimeyi öğrenmek +3 × seviye katsayısı, tekrar listesinden bir kelimeyi çıkarmak +2, günlük hedefi tamamlamak +10 ve seri bonusu (en fazla +10).</div>
+      <div><b>Bonuslar:</b> yeni kelimeyi öğrenmek +2 × seviye katsayısı, tekrar listesinden bir kelimeyi çıkarmak +1 × seviye katsayısı, günlük hedefi tamamlamak +10 ve seri bonusu (en fazla +10).</div>
       <div><b>Altın (1000 puan), Platin ve Zümrüt liglerinde</b> yanlış cevap, doğru cevap puanının dörtte biri kadar puan düşürür. <b>Elmas ve üstü liglerde</b> yanlış cevap, doğru bilseydin alacağın puanın tamamını (seviye × soru türü katsayısı) düşürür. Günlük puan sıfırın altına inmez.</div>
       <div><b>Günlük sınır:</b> Sorulardan ve bonuslardan bir günde en fazla ${QCAP} puan kazanılır. Düello puanları sınırsız eklenir.</div>
       <div><b>Günlük asgari hedef:</b> 3500 puanın altında 20 doğru, 3500 puandan (Zümrüt) itibaren 35, 6000 puandan (Elmas) itibaren 50 doğru. Tutturmayan her gün için toplam puanından, hangi ligde olursan ol, %5 kesilir.</div></div></details>
