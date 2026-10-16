@@ -1,3 +1,4 @@
+-- Dosya: supabase-duel.sql
 -- Kelime Defteri: 1v1 düello (eşleştirme + aynı 20 soru + süre). SQL Editor'da bir kez çalıştır.
 -- (Önce supabase-admin.sql çalıştırılmış olmalı.)
 create table if not exists public.duels (

@@ -1,3 +1,4 @@
+-- Dosya: supabase-username.sql
 -- Kelime Defteri: profil kartında kullanıcı adı görünsün. SQL Editor'da bir kez çalıştır.
 alter table public.scores add column if not exists un text not null default '';
 

@@ -1,3 +1,4 @@
+-- Dosya: supabase-flags.sql
 -- Kelime Defteri: şerit flamalar (yöneticinin kullanıcılara verdiği ünvan flamaları). SQL Editor'da bir kez çalıştır.
 -- (Önce supabase-admin.sql çalıştırılmış olmalı.)
 create table if not exists public.user_flags (

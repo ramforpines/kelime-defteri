@@ -1,3 +1,4 @@
+-- Dosya: supabase-stats.sql
 -- Kelime Defteri: uygulama geneli istatistikler + çevrimiçi durumu. SQL Editor'da bir kez çalıştır.
 -- (Önce supabase-admin.sql, supabase-chat.sql ve supabase-duel.sql çalıştırılmış olmalı.)
 

@@ -1,3 +1,4 @@
+-- Dosya: supabase-security.sql
 -- Kelime Defteri: güvenlik sertleştirmesi. SQL Editor'da bir kez çalıştır (tekrar çalıştırmak zararsızdır).
 -- (supabase-admin.sql, supabase-chat.sql, supabase-theme.sql ve supabase-duel.sql çalıştırılmış olmalı.)
 

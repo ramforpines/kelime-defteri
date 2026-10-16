@@ -1,3 +1,4 @@
+-- Dosya: supabase-sync.sql
 -- Kelime Defteri: ilerleme eşitleme güvenliği. SQL Editor'da bir kez çalıştır.
 -- user_state tablosu üzerine yazılırken, daha büyük (daha çok ilerleme içeren) önceki durum "prev" sütununda saklanır.
 -- Böylece bir cihaz yanlışlıkla boş/eski veri gönderse bile son iyi durum kurtarılabilir.

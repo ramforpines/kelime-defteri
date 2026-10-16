@@ -1,3 +1,4 @@
+-- Dosya: supabase-reports.sql
 -- Kelime Defteri: soru raporlama (hatalı / birden fazla uygun şıklı sorular). SQL Editor'da bir kez çalıştır.
 -- (Önce supabase-admin.sql çalıştırılmış olmalı.)
 create table if not exists public.question_reports (

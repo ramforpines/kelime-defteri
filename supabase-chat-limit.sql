@@ -1,3 +1,4 @@
+-- Dosya: supabase-chat-limit.sql
 -- Kelime Defteri: sohbet hız sınırı + özel mesajda yöneticiye ve diğer kullanıcılara gönderme düzeltmesi. Genel sohbet: dakikada en fazla 5 mesaj. Özel mesajlarda sınır yok.
 -- (supabase-chat.sql çalıştırılmış olmalı.) SQL Editor'da bir kez çalıştır.
 -- Alıcı onaylı kullanıcı ya da yönetici mi? (profiles tablosu RLS ile gizli olduğu için güvenli fonksiyonla bakılır)

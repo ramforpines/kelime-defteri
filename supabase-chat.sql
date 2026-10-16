@@ -1,3 +1,4 @@
+-- Dosya: supabase-chat.sql
 -- Kelime Defteri: genel sohbet + özel mesajlar. SQL Editor'da bir kez çalıştır.
 -- (Önce supabase-admin.sql çalıştırılmış olmalı.)
 create table if not exists public.chat_messages (

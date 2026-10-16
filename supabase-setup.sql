@@ -1,3 +1,4 @@
+-- Dosya: supabase-setup.sql
 -- Kelime Defteri: Supabase kurulum betiği. SQL Editor'da bir kez çalıştır.
 
 -- 1) Kullanıcının kendi ilerlemesi (yalnızca kendisi okur/yazar)

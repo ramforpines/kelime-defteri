@@ -1,3 +1,4 @@
+-- Dosya: supabase-open.sql
 -- Kelime Defteri: "liderlik tablosundan çıkarma" özelliği tamamen kaldırıldı + sohbette kullanıcı adıyla arama.
 -- SQL Editor'a yapıştırıp bir kez çalıştır. (supabase-admin.sql, supabase-chat.sql ve supabase-theme.sql çalıştırılmış olmalı.)
 

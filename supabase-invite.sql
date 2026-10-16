@@ -1,3 +1,4 @@
+-- Dosya: supabase-invite.sql
 -- Kelime Defteri: düello salonu (çevrimiçi liste, aktif düellolar) + düello teklifi (15 sn). SQL Editor'da bir kez çalıştır.
 -- (supabase-admin.sql, supabase-theme.sql ve supabase-duel.sql çalıştırılmış olmalı.)
 

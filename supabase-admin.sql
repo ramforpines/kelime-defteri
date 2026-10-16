@@ -1,3 +1,4 @@
+-- Dosya: supabase-admin.sql
 -- Kelime Defteri: yönetici onayı ve kullanıcı silme. SQL Editor'da bir kez çalıştır.
 -- (Önce supabase-setup.sql çalıştırılmış olmalı.)
 

@@ -1,3 +1,4 @@
+-- Dosya: supabase-duel2.sql
 -- Kelime Defteri: düelloya puan bahsi (20+20, 5 kesinti, 25 kazanan, 10 paylaşım) ve profil kartı istatistiği.
 -- supabase-duel.sql'i daha önce çalıştırdıysan SADECE bu dosyayı çalıştır. (İlk kez kuruyorsan supabase-duel.sql yeterli, bunu çalıştırma.)
 alter table public.duels add column if not exists pay1 numeric(6,1);

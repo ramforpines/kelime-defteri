@@ -1,3 +1,4 @@
+-- Dosya: supabase-signup-open.sql
 -- Kelime Defteri: toplu kayıt sınırını kapatır (10 dakikada 40 / bekleyen 300). SQL Editor'da bir kez çalıştır.
 -- Kullanıcı adı biçimi ve ayrılmış ad denetimi kalır.
 create or replace function public.handle_new_user() returns trigger

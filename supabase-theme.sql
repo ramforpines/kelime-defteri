@@ -1,3 +1,4 @@
+-- Dosya: supabase-theme.sql
 -- Kelime Defteri: kullanıcı adı ve yönetici işareti (liderlik/profil satırı temaları için). SQL Editor'da bir kez çalıştır.
 -- supabase-username.sql'in yerini alır; onu çalıştırdıysan bunu da çalıştırman sorun olmaz.
 alter table public.scores add column if not exists un text not null default '';

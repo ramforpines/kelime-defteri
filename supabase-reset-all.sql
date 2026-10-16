@@ -1,3 +1,4 @@
+-- Dosya: supabase-reset-all.sql
 -- Kelime Defteri: TÜM KULLANICILAR İÇİN İLERLEMEYİ SIFIRLA. GERİ ALINAMAZ.
 -- Silinenler: öğrenilen kelimeler, tekrar/yanlış listeleri, puanlar ve ligler, rozetler, seriler, istatistikler,
 --             liderlik tablosu satırları, tüm düello kayıtları, eşleşme kuyruğu ve tüm sohbet mesajları (genel + özel).
