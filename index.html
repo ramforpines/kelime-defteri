@@ -227,15 +227,13 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .rk{cursor:pointer;display:grid;grid-template-columns:30px 54px 1fr auto;gap:10px;column-gap:20px;align-items:center;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0}
 .rk .avw{justify-self:center}
 .rk.me{border-color:var(--accent);background:var(--accent-soft)}
-.flg{position:absolute;top:-1px;right:12px;width:34px;height:78px;z-index:6;pointer-events:none;transform-origin:50% 0;animation:flgsw 3.6s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
-.flg::before{content:"";position:absolute;inset:0;background:#111;clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%)}
-.flg::after{content:"";position:absolute;inset:2px;background:linear-gradient(90deg,#ffd000,#ffe34d 45%,#f2b800);clip-path:polygon(0 0,100% 0,100% 100%,50% 83%,0 100%)}
-.flg b{position:absolute;z-index:2;top:9px;left:0;right:0;height:56px;display:flex;justify-content:center;writing-mode:vertical-rl;font-size:8.2px;line-height:1.25;letter-spacing:.06em;font-weight:900;color:#111;text-align:center;white-space:nowrap;font-family:var(--font-body);transform:translateX(-2px)}
-.flg i{position:absolute;z-index:3;top:0;left:-2px;right:-2px;height:5px;border-radius:2px;background:repeating-linear-gradient(135deg,#ffd000 0 4px,#111 4px 8px);border:1px solid #111}
-.hasfl{padding-right:56px!important}
-.sheet .flg{right:22px;top:0;width:36px;height:86px}
-.sheet .flg b{font-size:9px;top:10px;height:62px}
-@keyframes flgsw{0%,100%{transform:rotate(-4deg) skewX(2deg)}50%{transform:rotate(4deg) skewX(-3deg)}}
+.flg{position:absolute;top:-1px;right:12px;width:36px;height:106px;z-index:6;pointer-events:none;transform-origin:50% 0;animation:flgsw 4.2s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
+.flg svg{display:block;width:100%;height:100%;overflow:visible}
+.hasfl{padding-right:58px!important;min-height:96px}
+.pbar.hasfl{margin-bottom:44px}
+.rk.hasfl{margin-bottom:12px}
+.sheet .flg{right:20px;top:0;width:42px;height:124px}
+@keyframes flgsw{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(3deg)}}
 @media (prefers-reduced-motion:reduce){.flg{animation:none}}
 .sheet{position:relative}
 .rk .pos{font-family:var(--font-display);font-weight:700;font-size:1.1rem;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -326,7 +324,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.12.0';
+const APP_VERSION='4.13.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -371,9 +369,16 @@ function leagueMap(){
   lgMemo={key,lb:CLOUD.lb,m};return m;
 }
 const isAdm=id=>id===CLOUD.uid?!!CLOUD.admin:!!((CLOUD.lb.find(x=>x.id===id)||(typeof CHAT!=='undefined'&&CHAT.peers[id])||{}).ad);
-const FLAGS=[{id:'maker',l:['TEST EDEN','YAPIMCI'],who:id=>isAdm(id)}];
-const flagOf=id=>FLAGS.find(f=>f.who(id))||null;
-const flagHtml=id=>{const f=flagOf(id);return f?`<span class="flg ${f.id}" role="img" aria-label="${esc(f.l.join(' '))}"><i></i><b>${f.l.map(esc).join('<br>')}</b></span>`:''};
+const FLAGS=[{id:'maker',n:'Test eden yapımcı',l:['TEST EDEN','YAPIMCI']}];
+const BYFLAG=new Map(FLAGS.map(f=>[f.id,f]));
+const flagOf=id=>{const m=CLOUD.flags||{};const k=m[id];if(k&&BYFLAG.has(k))return BYFLAG.get(k);if(CLOUD.flagsErr&&isAdm(id))return BYFLAG.get('maker');return null};
+const flagPath=ph=>{const R=[],L=[];for(let y=0;y<=84;y+=6){const a=.4+y/84*2.6,w=Math.sin(y/13-ph);R.push((32+a*w).toFixed(1)+','+y);L.unshift((2+a*Math.sin(y/13-ph+.35)).toFixed(1)+','+y)}
+  const sw=Math.sin(84/13-ph)*3,xr=32+sw,xl=2+Math.sin(84/13-ph+.35)*3;
+  return'M'+R.join(' L')+' L'+xr.toFixed(1)+',100 L17,'+(86+sw*.6).toFixed(1)+' L'+xl.toFixed(1)+',100 L'+L.join(' L')+' Z'};
+const FLAGD=(()=>{const a=[];for(let k=0;k<=8;k++)a.push(flagPath(k/8*Math.PI*2));return a.join(';')})();
+const REDM=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+const flagHtml=id=>{const f=flagOf(id);if(!f)return'';const d0=flagPath(0);
+  return`<span class="flg ${f.id}" role="img" aria-label="${esc(f.l.join(' '))}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><pattern id="flgp" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="6" fill="#ffd000"/><rect y="6" width="12" height="6" fill="#111"/></pattern></defs><path d="${d0}" fill="url(#flgp)" stroke="#111" stroke-width="1.6" stroke-linejoin="round">${REDM?'':`<animate attributeName="d" dur="3.4s" repeatCount="indefinite" values="${FLAGD}"/>`}</path><rect x="7" y="17" width="20" height="58" rx="3" fill="#fff3b0" stroke="#111" stroke-width="1.2"/><text transform="translate(14.6 46) rotate(90)" text-anchor="middle" font-size="7.4" font-weight="900" fill="#111" font-family="Inter,system-ui,sans-serif" dominant-baseline="middle">${esc(f.l[1])}</text><text transform="translate(23 46) rotate(90)" text-anchor="middle" font-size="7.4" font-weight="900" fill="#111" font-family="Inter,system-ui,sans-serif" dominant-baseline="middle">${esc(f.l[0])}</text></svg></span>`};
 const flCls=id=>flagOf(id)?' hasfl':'';
 const lgAttr=id=>`data-lg="${isAdm(id)?'admin':(leagueMap()[id]|0)}"`;
 const myLeague=()=>leagueMap()[CLOUD.uid]|0;
@@ -429,7 +434,7 @@ function save(){
 }
 const weekKey=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toLocaleDateString('sv-SE')};
 /* ---------- bulut: profil, ilerleme eşitleme, liderlik tablosu (Claude db/user yeteneği) ---------- */
-const CLOUD={uid:null,username:'',approved:null,admin:false,resetAt:null,ann:null,write:true,ready:false,lb:[],lbReady:false,lbErr:'',busy:false,last:'',defName:''};
+const CLOUD={flags:{},flagsErr:false,uid:null,username:'',approved:null,admin:false,resetAt:null,ann:null,write:true,ready:false,lb:[],lbReady:false,lbErr:'',busy:false,last:'',defName:''};
 const AUTH={ready:false};
 let pushT=null;
 function schedulePush(){if(!CLOUD.uid||CLOUD.approved===false)return;clearTimeout(pushT);pushT=setTimeout(pushNow,5000)}
@@ -777,14 +782,14 @@ async function onLogin(user){
   if(!S.prof.name)S.prof.name=CLOUD.username;
   render();adShow();
   if(CLOUD.admin){loadUsers();loadAdminStats()}
-  loadAnn();loadMyFb();appPing();loadStats();if(CLOUD.admin){loadAdminFb();loadAdminRep()}
+  loadAnn();loadMyFb();appPing();loadStats();loadFlags();if(CLOUD.admin){loadAdminFb();loadAdminRep()}
   if(!S.prof.name)S.prof.name=CLOUD.username;
   applyDecay();evalAwards();persistLocal();render();refreshBoard();schedulePush();
   duelSync();
 }
 function onLogout(){
   try{dReset()}catch(e){}
-  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};UI.rep=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
+  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.flags={};CLOUD.flagsErr=false;UI.rep=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
 }
 async function initAuth(){
   try{
@@ -993,6 +998,37 @@ function repForm(it){
   <div class="seg" style="flex-wrap:wrap">${Object.keys(RPR).map(k=>`<button class="chip" aria-pressed="${R.reason===k}" data-act="rep-reason" data-v="${k}">${RPR[k]}</button>`).join('')}</div>
   <input id="repn" class="nameinp" maxlength="300" placeholder="İstersen kısa not ekle (örn. hangi şık da uygun)" value="${esc(R.note||'')}" autocomplete="off">
   <div class="row"><button class="btn primary" data-act="rep-send" ${R.busy?'disabled':''}>${R.busy?'Gönderiliyor…':'Raporu gönder'}</button><button class="btn" data-act="rep-close">Vazgeç</button></div></div>`;
+}
+async function loadFlags(){
+  if(!sb||!CLOUD.uid)return;
+  try{
+    const r=await sb.rpc('all_flags');if(r.error)throw r.error;
+    const m={};(r.data||[]).forEach(x=>{m[x.user_id]=x.flag});
+    const ch=JSON.stringify(m)!==JSON.stringify(CLOUD.flags)||CLOUD.flagsErr;
+    CLOUD.flags=m;CLOUD.flagsErr=false;if(ch)quietRender2();
+  }catch(e){if(!CLOUD.flagsErr){CLOUD.flagsErr=true;quietRender2()}}
+}
+function quietRender2(){if(!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render()}
+async function setFlag(uid,fid){
+  const A=UI.adm;A.fbusy=uid;render();
+  try{const r=await sb.rpc('admin_set_flag',{target:uid,flag_id:fid||null});if(r.error)throw r.error;
+    if(fid)CLOUD.flags[uid]=fid;else delete CLOUD.flags[uid];CLOUD.flagsErr=false;
+    toast(fid?'Flama verildi.':'Flama kaldırıldı.')}
+  catch(e){toast(/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||''))?'Flama özelliği için supabase-flags.sql çalıştırılmalı.':'İşlem yapılamadı.')}
+  A.fbusy=null;render();
+}
+function vFlags(){
+  const A=UI.adm;if(!A.loaded&&!A.busy&&!A.err)loadUsers();
+  const q=(A.fq||'').trim().toLowerCase();
+  const list=A.list.filter(u=>!q||(u.username||'').toLowerCase().includes(q)||(u.name||'').toLowerCase().includes(q));
+  const withF=A.list.filter(u=>CLOUD.flags[u.user_id]&&BYFLAG.has(CLOUD.flags[u.user_id])).length;
+  return`<div class="card stack"><h3>Flamalar</h3><div class="small muted">Kullanıcılara ünvan flaması ver. Flama profil satırında ve kartında görünür. Şu an ${withF} kişide flama var.</div>
+  ${CLOUD.flagsErr?'<div class="small" style="color:var(--bad)">Flama verisi okunamadı: supabase-flags.sql henüz çalıştırılmamış olabilir.</div>':''}
+  <input id="fq" class="nameinp" type="search" placeholder="Kullanıcı ara" value="${esc(A.fq||'')}" autocomplete="off">
+  <div class="row"><button class="btn" data-act="adm-load" ${A.busy?'disabled':''}>${A.busy?'Yükleniyor…':'Yenile'}</button><span class="small muted">${A.list.length} kullanıcı</span></div></div>
+  ${!A.loaded&&!A.err?'<div class="empty">Yükleniyor…</div>':A.err?`<div class="small" style="color:var(--bad)">${esc(A.err)}</div>`:list.length?list.map(u=>{const id=u.user_id,cur=CLOUD.flags[id];
+    return`<div class="entry" style="position:relative"><div style="min-width:0;padding-right:${cur?50:0}px"><span class="w" style="overflow-wrap:anywhere">${esc(u.name||u.username)}</span>${u.is_admin?' <span class="badge">yönetici</span>':''}<br><span class="muted small">@${esc(u.username)}${cur&&BYFLAG.has(cur)?' · '+esc(BYFLAG.get(cur).n):''}</span></div>
+    <div class="row" style="margin-top:10px;flex-wrap:wrap">${FLAGS.map(f=>`<button class="btn ${cur===f.id?'primary':''}" data-act="flag-set" data-u="${esc(id)}" data-fl="${f.id}" ${A.fbusy===id?'disabled':''}>${esc(f.n)}</button>`).join('')}${cur?`<button class="btn danger" data-act="flag-set" data-u="${esc(id)}" data-fl="" ${A.fbusy===id?'disabled':''}>Kaldır</button>`:''}</div></div>`}).join(''):'<div class="empty card">Kullanıcı bulunamadı.</div>'}`;
 }
 function vFeedback(){
   const F=UI.fb;
@@ -1628,10 +1664,11 @@ function vMe(){
   const fu=fbUnread();
   const seg=[['stats','İstatistik'],['learned','Öğrenilenler'],['prof','Profil'],['fb','Geri bildirim'+(fu?' ('+fu+')':'')],['set','Ayarlar']];
   if(CLOUD.admin)seg.push(['msg','Mesajlar'+(fbNew()?' ('+fbNew()+')':'')]);
+  if(CLOUD.admin)seg.push(['fla','Flamalar']);
   if(CLOUD.admin)seg.push(['rep','Raporlar'+(repOpen()?' ('+repOpen()+')':'')]);
   if(CLOUD.admin)seg.push(['adm','Yönetim'+(UI.adm.loaded&&UI.adm.list.some(u=>!u.approved)?' ('+UI.adm.list.filter(u=>!u.approved).length+')':'')]);
   let body='';
-  if(UI.me==='stats')body=vStats();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='fb')body=vFeedback();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
+  if(UI.me==='stats')body=vStats();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='fb')body=vFeedback();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
   return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${body}</div>`;
 }
 function vStats(){
@@ -2484,6 +2521,7 @@ document.addEventListener('click',async e=>{
     case'recheck':{await checkAccess();if(CLOUD.approved!==false){await onLogin({id:CLOUD.uid,email:CLOUD.username+'@x'})}else{toast('Henüz onaylanmadı.');render()}break}
     case'fb-kind':{const el2=document.getElementById('fbq');if(el2)UI.fb.draft=el2.value;UI.fb.kind=g('data-v');render();break}
     case'fb-send':sendFb();break;
+    case'flag-set':setFlag(g('data-u'),g('data-fl'));break;
     case'rep-open':{const q2=UI.quiz;if(q2){UI.rep={it:q2.items[q2.i],reason:'multi',note:'',busy:false};render()}break}
     case'rep-close':UI.rep=null;render();break;
     case'rep-reason':if(UI.rep){const e2=document.getElementById('repn');if(e2)UI.rep.note=e2.value;UI.rep.reason=g('data-v');render()}break;
@@ -2546,6 +2584,7 @@ document.addEventListener('input',e=>{
   if(e.target.id==='chq'){UI.chat.q=e.target.value;chatFind(e.target.value);const pos=e.target.selectionStart;render();const n=document.getElementById('chq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
   if(e.target.dataset&&e.target.dataset.fid){UI.afb.reply[e.target.dataset.fid]=e.target.value;return}
   if(e.target.id==='annq'){UI.adm.annDraft=e.target.value;return}
+  if(e.target.id==='fq'){UI.adm.fq=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('fq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
   if(e.target.id==='adq'){UI.adm.q=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('adq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
   if(e.target.id==='q'){UI.dict.q=e.target.value;UI.dict.limit=40;UI.dict.open=null;$('#dlist').innerHTML=dictList()}
 });
@@ -2604,7 +2643,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeo
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__bip=e;if(UI.tab==='me'&&UI.me==='set')render()});
 window.addEventListener('online',()=>{schedulePush();refreshBoard()});
 setInterval(()=>{if(!document.hidden&&(UI.tab==='rank'||UI.tab==='today'))refreshBoard()},60000);
-setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return;loadMyFb();if(CLOUD.admin)loadAdminFb()},120000);
+setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return;loadMyFb();loadFlags();if(CLOUD.admin)loadAdminFb()},120000);
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
 render();maybeNotify();initAuth();
 })();
