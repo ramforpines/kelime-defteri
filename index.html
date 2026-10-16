@@ -279,6 +279,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .nameinp{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;min-height:44px}
 @media (max-width:420px){.hero{grid-template-columns:1fr;justify-items:center;text-align:center}.kpis{gap:8px}.kpi{padding:10px}}
 @media (prefers-reduced-motion: no-preference){.bar>i,.days i{transition:width .4s ease,height .4s ease}.opt{transition:border-color .15s,background .15s}}
+.extr{color:var(--muted,#8a8f98);font-size:.92em}
 </style>
 </head>
 <body>
@@ -287,6 +288,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <div id="toast" class="toast" hidden></div>
 
 <script src="words.js"></script>
+<script src="extr.js"></script>
 <script src="supabase.js"></script>
 <script>
 const DATA=window.WORDS||[];
@@ -313,7 +315,10 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.9.1';
+const APP_VERSION='4.10.0';
+const EXTR=window.EXTR||{};
+function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
+function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
@@ -1409,7 +1414,7 @@ function vToday(){
   <div class="kpis"><div class="kpi"><b>${nf(learnedCount())}</b><span>öğrenilen</span></div><div class="kpi"><b>${nf(W.length-learnedCount())}</b><span>kalan</span></div><div class="kpi"><b>${nf(Object.keys(S.wrong).length)}</b><span>tekrar listesinde</span></div></div>
   ${wd?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimesi</span>${lvTag(wd.level)}</div>
     <div class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div>
-    <div>${esc(wd.tr)}</div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i></div></div>`:''}
+    <div>${esc(wd.tr)}</div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i>${exTr(wd)}</div></div>`:''}
   ${reqCard()}${profilePrompt()}${myRankLine()}
   ${reminderCard()}
   ${statsCard()}
@@ -1452,7 +1457,7 @@ function entryHtml(w){
   return`<div class="entry"><button class="head" data-act="toggle" data-w="${esc(w.word)}" aria-expanded="${open}">
     <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def)}</span></span>
     <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
-    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i></dd>
+    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${exTr(w)}</dd>
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
       ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
       <dt></dt><dd><button class="say" data-say="${esc(w.word)}" data-pron="${esc(w.pron)}">Dinle</button></dd></dl>`:''}</div>`;
@@ -1497,7 +1502,7 @@ function vQuiz(){
   if(ans){
     fb=`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.cleared?' · tekrar listesinden çıktı':''}${qz.learnedNow.indexOf(w.word)!==-1?' · öğrenildi':''}${it.pt?` · ${it.pt>0?'+':'−'}${nf(Math.round(Math.abs(it.pt)*100)/100)} puan`:''}</b>
       <div><b>${esc(w.word)}</b> <span class="mono muted">${esc(w.pron)}</span> ${lvTag(w.level)}</div>
-      <div>${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i></div>`:''}
+      <div>${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i>${exTr(w)}</div>`:''}
       ${it.ok?'':`<div class="small" style="margin-top:6px">Doğru cevap: <b>${esc(it.correct)}</b></div>`}</div>
       <button class="btn primary block" style="margin-top:12px" data-act="next" id="nextbtn">${qz.i+1>=qz.items.length?'Sonucu gör':'Sonraki soru'}</button>`;
   }
