@@ -227,14 +227,14 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .rk{cursor:pointer;display:grid;grid-template-columns:30px 54px 1fr auto;gap:10px;column-gap:20px;align-items:center;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0}
 .rk .avw{justify-self:center}
 .rk.me{border-color:var(--accent);background:var(--accent-soft)}
-.flg{position:absolute;top:-1px;right:12px;width:36px;height:106px;z-index:6;pointer-events:auto;cursor:default;outline:none;transform-origin:50% 0;animation:flgsw 4.2s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
+.flg{position:absolute;top:-1px;right:12px;width:26px;height:76px;z-index:6;pointer-events:auto;cursor:default;outline:none;transform-origin:50% 0;animation:flgsw 4.2s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
 .flg::after{content:attr(data-tip);position:absolute;right:calc(100% + 6px);top:14px;white-space:nowrap;background:#111;color:#ffd000;border:1px solid #ffd000;border-radius:6px;padding:3px 8px;font:800 .72rem var(--font-body);opacity:0;transform:translateX(4px);transition:opacity .15s,transform .15s;pointer-events:none}
 .flg:hover::after,.flg:focus::after{opacity:1;transform:none}
 .flg svg{display:block;width:100%;height:100%;overflow:visible}
-.hasfl{padding-right:58px!important;min-height:96px}
-.pbar.hasfl{margin-bottom:44px}
+.hasfl{padding-right:46px!important;min-height:70px}
+.pbar.hasfl{margin-bottom:28px}
 .rk.hasfl{margin-bottom:12px}
-.sheet .flg{right:20px;top:0;width:42px;height:124px}
+.sheet .flg{right:20px;top:0;width:30px;height:88px}
 @keyframes flgsw{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(3deg)}}
 @media (prefers-reduced-motion:reduce){.flg{animation:none}}
 .sheet{position:relative}
@@ -326,7 +326,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.13.1';
+const APP_VERSION='4.13.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1839,7 +1839,7 @@ function vCard(){
   const ids=String(r.bd||'').split(',').filter(x=>BYBADGE.has(x));
   const lg=LEAGUES[leagueMap()[id]|0],fk=frameFor(id,r.fr);
   return`<div class="ov" data-act="card-close"><div class="sheet stack${isAdm(id)?' adm':''}" ${lgAttr(id)} data-act="noop" role="dialog" aria-label="Profil kartı">${flagHtml(id)}
-  <div class="row" style="justify-content:space-between;align-items:flex-start${flagOf(id)?';padding-right:46px':''}"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}${isAdm(id)?'<div class="small" style="font-weight:700">🛡 Yönetici</div>':''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':(rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında')+' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
+  <div class="row" style="justify-content:space-between;align-items:flex-start${flagOf(id)?';padding-right:40px':''}"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}${isAdm(id)?'<div class="small" style="font-weight:700">🛡 Yönetici</div>':''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':(rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında')+' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
   ${(()=>{if(mn&&id==='bot')return'';const s=DSTAT[id];if(s===undefined){duelStat(id);return''}if(!s)return'';return s.n?`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>⚔ ${s.n}</b><span>düello maçı</span></div><div><b>%${Math.round(s.w/s.n*100)}</b><span>kazanma oranı</span></div><div><b>${s.w}-${s.l}-${s.d}</b><span>G-M-B</span></div></div>`:'<div class="small muted">⚔ Henüz düello maçı yok.</div>'})()}
   ${id!==CLOUD.uid?`<button class="btn block" data-act="chat-open" data-v="${esc(id)}">Mesaj gönder</button>`:''}
   ${mn?'</div></div>':`<div class="kp"><div><b>${nf(Math.round((r.ap||0)*10)/10)}</b><span>toplam puan</span></div><div><b>${nf(r.lrn||0)}</b><span>öğrenilen kelime</span></div><div><b>${st?'🔥 '+st:'–'}</b><span>günlük seri</span></div><div><b>${nf(r.ans||0)}</b><span>çözülen soru</span></div><div><b>%${acc}</b><span>doğruluk</span></div><div><b>${ids.length}</b><span>rozet</span></div></div>
