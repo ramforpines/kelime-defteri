@@ -341,7 +341,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.27.2';
+const APP_VERSION='4.27.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2107,9 +2107,10 @@ function leadTxt(id){
 }
 function leadersCard(){
   const L=CLOUD.ld;if(!CLOUD.ready||!L||(!L.day&&!L.week))return'';
-  const one=(t,x,ic)=>{if(!x)return'';const acc=x.ans?Math.round((x.cor||0)/x.ans*100):0;
+  const one=(t,xs,ic)=>{if(!xs)return'';if(!Array.isArray(xs))xs=[xs];return xs.map(x=>one1(t,x,ic)).join('')};
+  const one1=(t,x,ic)=>{if(!x)return'';const acc=x.ans?Math.round((x.cor||0)/x.ans*100):0;
     return`<button class="card" style="text-align:left;display:flex;gap:12px;align-items:center" data-pc="${esc(x.id)}"><span style="flex:none">${avatar(x.name,x.color|0,false,x.av|0,frameFor(x.id,x.fr))}</span><span style="min-width:0;overflow-wrap:anywhere"><span class="muted small" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">${ic} ${t}</span><br><b>${esc(x.name)}</b>${x.un?` <span class="muted small">@${esc(x.un)}</span>`:''}<br><span class="small">${nf(Math.round(x.pts*10)/10)} puan · ${x.cor}/${x.ans} doğru · %${acc}</span></span></button>`};
-  return`<div class="stack">${one('Dünün lideri',L.day,'🏆')}${one('Geçen haftanın lideri',L.week,'👑')}</div>`;
+  return`<div class="stack">${one('Dünün lideri'+(Array.isArray(L.day)&&L.day.length>1?' (eşit)':''),L.day,'🏆')}${one('Geçen haftanın lideri'+(Array.isArray(L.week)&&L.week.length>1?' (eşit)':''),L.week,'👑')}</div>`;
 }
 function myRankLine(){
   if(!CLOUD.ready||!CLOUD.lbReady||!S.prof.name)return'';
