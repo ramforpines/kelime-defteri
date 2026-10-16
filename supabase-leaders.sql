@@ -51,10 +51,8 @@ language sql security definer stable set search_path = public as $$
     select h.user_id, h.kind, h.pk, h.pts, h.ans, h.cor from public.score_history h where h.pts > 0
   ), ok as (
     select c.* from cand c
-      join public.scores s on s.user_id = c.user_id
       join public.profiles p on p.user_id = c.user_id
-    where not s.hide and not p.lb_blocked
-      and (p.approved or exists (select 1 from public.admins a where a.user_id = c.user_id))
+    where p.approved or exists (select 1 from public.admins a where a.user_id = c.user_id)
   )
   select distinct on (o.kind, o.pk) o.kind, o.pk, o.user_id, o.pts, o.ans, o.cor
   from ok o, t
