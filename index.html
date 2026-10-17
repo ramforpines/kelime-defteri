@@ -345,7 +345,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.42.2';
+const APP_VERSION='4.42.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1451,6 +1451,8 @@ function cloze(w){
   const esc2=base.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+');
   const re=new RegExp('(^|[^A-Za-z])'+esc2+'[A-Za-z]*','i');
   if(!re.test(w.ex))return null;
+  // kısa cümlede sıfat/zarf boşluğuna birçok kelime uyar ("The man was ___."): bağlam yetersizse boşluk sorusu sorulmaz
+  if(/adjective|adverb/i.test(w.pos||'')&&String(w.ex).trim().split(/\s+/).length<8)return null;
   return w.ex.replace(re,(m,pre)=>pre+'_____');
 }
 /* ---------- yeni türlere özel soru biçimleri ---------- */
