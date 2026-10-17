@@ -346,7 +346,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.50.3';
+const APP_VERSION='4.50.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2950,8 +2950,7 @@ function vDuel(){
       <div class="kp"><div><b>${nf(r1(S.tp||0))}</b><span>puanın</span></div><div><b>${dLgN(S.tp||0)}</b><span>ligin</span></div><div><b>${(S.tp||0)>=DRK_MIN?nf(r1(dRisk(S.tp||0))):'–'}</b><span>riskin${(S.tp||0)>=DRK_MIN?' (%'+nf(Math.round(dRate(S.tp||0)*1000)/10)+')':''}</span></div></div>
       ${DUEL.recR?`<div class="kp"><div><b>${DUEL.recR.w}</b><span>galibiyet</span></div><div><b>${DUEL.recR.l}</b><span>mağlubiyet</span></div><div><b>${DUEL.recR.d}</b><span>beraberlik</span></div></div><div style="width:100%;box-sizing:border-box;text-align:center;padding:14px 10px;border-radius:14px;background:var(--surface2)"><div style="font-size:2.2rem;font-weight:800;line-height:1.1;color:${DUEL.recR.net>0?'var(--ok)':DUEL.recR.net<0?'var(--bad)':'inherit'}">${DUEL.recR.net>0?'+':DUEL.recR.net<0?'−':''}${nf(r1(Math.abs(DUEL.recR.net)))}</div><div class="muted small" style="margin-top:2px">Dereceli puanı</div></div>`:''}
       ${err}
-      <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DRK_MIN?'disabled':''}>Dereceli rakip bul</button>${(S.tp||0)<DRK_MIN?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. Dereceli düello Bronz ligden (${DRK_MIN} puan) başlar.</div>`:''}
-      <button class="btn block" data-act="duel-bot">Botla alıştır</button></div>${lobbyCard()}${duelHist()}`:`<div class="card stack"><h2>⚔ Klasik düello</h2>
+      <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DRK_MIN?'disabled':''}>Dereceli rakip bul</button>${(S.tp||0)<DRK_MIN?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. Dereceli düello Bronz ligden (${DRK_MIN} puan) başlar.</div>`:''}</div>${lobbyCard()}${duelHist()}`:`<div class="card stack"><h2>⚔ Klasik düello</h2>
       <div class="muted small">Eşleştirmeyle bir rakip bulunur, ikiniz de aynı ${n} soruyu çözersiniz. Soru başına ${DQ_T} saniye var. Doğru cevap 100 puan × seviye çarpanı (A1 1,00 … C2 1,85) × hız çarpanı (ilk 3 saniye 1,50, sonra 7. saniyeye kadar 1,00'a düşer) getirir. Yanlış cevap 75 × seviye çarpanı, süre dolması bunun yarısı kadar düşürür; yarıda bırakılan sorular 100 puan düşürür. En çok maç puanını toplayan kazanır. Puan ödemesinde negatif maç puanı 0 sayılır.<br><b>Bahis:</b> herkes kendi puanından ${DSTAKE} puan koyar (havuz ${DSTAKE*2}). 5 puan kesilir, kalan 35'in 25'ini kazanan alır, 10'u maç puanlarına göre paylaşılır (kazanan daha fazla alır). Beraberlikte 35 puan yarı yarıya bölünür.</div>
       ${R?`<div class="kp"><div><b>${R.w}</b><span>galibiyet</span></div><div><b>${R.l}</b><span>mağlubiyet</span></div><div><b>${R.d}</b><span>beraberlik</span></div></div>${R.last.length?`<div class="row" style="gap:6px">${R.last.map(x=>`<span class="badge ${x==='W'?'ok':x==='L'?'warn':''}">${x==='W'?'G':x==='L'?'M':'B'}</span>`).join('')}<span class="muted small">son maçlar</span></div>`:''}`:''}
       ${err}
@@ -2960,8 +2959,8 @@ function vDuel(){
   }else if(P==='search'){
     const lw=DUEL.longWait;
     body=`<div class="card stack" style="text-align:center"><h2>Rakip aranıyor…</h2><div class="mono" style="font-size:2rem"><span id="dsec">0</span> sn</div>
-      <div class="muted small">${lw?'Şu an kuyrukta başka biri yok. Beklemeye devam edebilir ya da botla alıştırabilirsin.':'Aynı anda aranan biri olunca eşleşirsiniz.'}</div>
-      ${lw?'<button class="btn block" data-act="duel-bot">Botla alıştır</button>':''}
+      <div class="muted small">${lw?'Şu an kuyrukta başka biri yok. Beklemeye devam edebilir'+(DUEL.sub==='ranked'?'.':' ya da botla alıştırabilirsin.')+'':'Aynı anda aranan biri olunca eşleşirsiniz.'}</div>
+      ${lw&&DUEL.sub!=='ranked'?'<button class="btn block" data-act="duel-bot">Botla alıştır</button>':''}
       <button class="btn block" data-act="duel-cancel">İptal</button></div>`;
   }else if(P==='count'){
     const left=Math.max(1,Math.ceil((new Date(d.start_at).getTime()-dNow())/1000));
