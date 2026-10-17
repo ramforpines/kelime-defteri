@@ -345,7 +345,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.38.2';
+const APP_VERSION='4.38.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -489,7 +489,7 @@ function addPts(delta,kind){
   const q1=Math.min(QCAP,Math.max(0,d.q+delta));
   if(delta>0&&q1<d.q+delta&&!d.qc){d.qc=1;setTimeout(()=>toast('Günlük soru puanı sınırına ('+QCAP+') ulaştın. Düello puanları sınırsız eklenmeye devam eder.'),400)}
   const np=Math.max(0,cur+(q1-d.q)),eff=np-cur;
-  d.q=q1;d.p=np;S.tp=Math.max(0,(S.tp||0)+eff);
+  d.q=q1;d.p=np;const tp0=S.tp||0,tp1=Math.max(0,tp0+eff);S.tp=tp1;if(tp1-tp0!==eff)d.p=Math.max(0,d.p+(tp1-tp0-eff));   // toplam sıfırda kırpılırsa günlük puan da aynı kadar kırpılır
   const q=UI.quiz;if(q&&q.pts)q.pts[kind]=(q.pts[kind]||0)+eff;
   return eff;
 }
