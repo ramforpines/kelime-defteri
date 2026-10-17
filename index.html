@@ -346,7 +346,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.50.0';
+const APP_VERSION='4.50.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1813,7 +1813,7 @@ function streak(){
 const learnedCount=()=>Object.keys(S.learned).filter(k=>BYWORD.has(k)).length;
 
 /* ---------- arayüz ---------- */
-const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'prof',backup:'',confirmReset:false,rank:{per:'day',mode:'gen'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
+const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'prof',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
 try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz')UI.tab=t}catch(e){}
 const ICON={
   today:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
@@ -2320,6 +2320,7 @@ function vRank(){
     body=`<div class="card stack"><h2>Önce profilini oluştur</h2>${profileForm()}</div>`;
   }else{
     const per=R.per;
+    if(per==='ranked'){body=rankedBoardHtml('all')}else{
     const rows=rankData().map(r=>Object.assign(r,{x:r[per]}));
     const ranked=rows.filter(r=>r.x.p>0).sort((a,b)=>b.x.p-a.x.p||b.x.n-a.x.n);
     ranked.forEach((r,i)=>{r.rank=(i>0&&ranked[i-1].x.p===r.x.p)?ranked[i-1].rank:i+1});
@@ -2332,8 +2333,7 @@ function vRank(){
     if(me&&!top.some(r=>r.me)){
       mine=`<div class="gap" aria-hidden="true">···</div>${row(me)}${me.rank?'':'<div class="small muted">Bu dönemde sıraya girmek için soru çöz ve en az bir doğru yap.</div>'}`;
     }
-    if((R.mode||'gen')==='ranked'){body=rankedBoardHtml(per)}else
-    body=`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button></div>
+    body=`${rkSeg(per)}
     <div class="muted small">${per==='day'?'Bugünün puanı. Her gün gece yarısı sıfırlanır.':per==='week'?'Bu haftanın puanı. Hafta pazartesi başlar.':'Bugüne kadarki toplam puan.'} İlk ${TOPN} gösterilir${ranked.length?`, ${ranked.length} kişi sırada`:''}.</div>
     ${!CLOUD.lbReady?'<div class="empty">Tablo yükleniyor…</div>':top.length?top.map(row).join('')+mine:`<div class="empty card">Bu tabloda henüz kimse yok. İlk puanı alan sıraya girer.</div>${mine}`}
     <details class="card small"><summary style="cursor:pointer;font-weight:600">Puan nasıl hesaplanır?</summary>
@@ -2347,10 +2347,10 @@ function vRank(){
       <div><b>Günlük asgari hedef:</b> 3500 puanın altında 20 doğru, 3500 puandan (Zümrüt) itibaren 35, 6000 puandan (Elmas) itibaren 50 doğru. Tutturmayan her gün için toplam puanından, hangi ligde olursan ol, %5 kesilir.</div></div></details>
     ${!CLOUD.write?'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. Sıraya girmek için sahibinden "Katkıda bulunan" izni iste.</div>':''}
     ${CLOUD.lbErr?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':''}`;
-  }
-  const rmode=CLOUD.ready&&(S.prof.name||!CLOUD.write)?`<div class="seg"><button class="chip" aria-pressed="${(R.mode||'gen')!=='ranked'}" data-rm="gen">Genel puan</button><button class="chip" aria-pressed="${R.mode==='ranked'}" data-rm="ranked">🏅 Dereceli düello</button></div>`:'';
-  return`<div class="top"><h1>Sıralama</h1></div><div class="stack">${rmode}${body}</div>`;
+  }}
+  return`<div class="top"><h1>Sıralama</h1></div><div class="stack">${body}</div>`;
 }
+const rkSeg=per=>`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button><button class="chip" aria-pressed="${per==='ranked'}" data-rp="ranked">🏅 Dereceli düello</button></div>`;
 const RKB={per:{},busy:false};
 async function rkbLoad(per,force){
   if(!sb||!CLOUD.uid||RKB.busy)return;
@@ -2370,7 +2370,7 @@ function rankedBoardHtml(per){
     return`<div class="rk ${me?'me':''} ${r.rank<=3?'top':''}${flCls(r.user_id)}" ${lgAttr(r.user_id)} data-pc="${esc(r.user_id)}"><span class="pos">${r.rank}</span>${avatar(u,r.color|0,false,r.av|0,frameFor(r.user_id,r.fr||''),wt[r.user_id])}<div class="nm">${esc(u)}${me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">G ${r.w} · B ${r.d} · M ${r.l} · %${acc} doğru · ${avg} sn</div></div><div class="val" style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(Math.round(Math.abs(v)*10)/10)}<small>puan</small></div>${flagHtml(r.user_id)}</div>`};
   const mine=rows.find(r=>r.user_id===CLOUD.uid);
   const extra=mine&&!top.includes(mine)?`<div class="gap" aria-hidden="true">···</div>${row(mine)}`:'';
-  return`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button></div>
+  return`${rkSeg('ranked')}
   <div class="muted small">Yalnızca dereceli düellolardan kazanılan ve kaybedilen puanların toplamı. Bu puanlar genel günlük, haftalık ve toplam puana da işlenir. G: galibiyet, B: beraberlik, M: mağlubiyet. İlk ${TOPN} gösterilir.</div>
   ${!c?'<div class="empty">Tablo yükleniyor…</div>':c.err==='setup'?'<div class="card"><div class="fb bad">Dereceli sıralama henüz kurulmadı. Yönetici <b>supabase-duel-ranked.sql</b> dosyasını Supabase SQL Editor\'da çalıştırmalı.</div></div>':c.err?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':top.length?top.map(row).join('')+extra:'<div class="empty card">Bu dönemde henüz dereceli maç yok.</div>'}`;
 }
