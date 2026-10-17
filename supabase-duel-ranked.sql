@@ -7,7 +7,7 @@
 --  * Skorlar eşitse beraberlik: kimse puan almaz/kaybetmez. Negatif maç puanı payda 0 sayılır.
 --  * Düello salonu listeleri modlara göre ayrıdır (klasik sekmesindekiler / dereceli sekmesindekiler).
 --  * Profil kartı düello istatistiği iki mod için ayrıdır; dereceli için ayrı sıralama tablosu (duel_rank) vardır.
---  * Rastgele eşleştirme aynı veya komşu ligde yapılır. Aynı iki kişi arasında 24 saatte en çok 3 dereceli maç oynanabilir.
+--  * Lig şartı: Platin 10, Zümrüt 20, Elmas 50, Ustalık 100 dereceli galibiyet (rakip +-2 lig içindeyse sayılır). Rastgele eşleştirme etkin ligde aynı veya komşu ligde yapılır. Aynı iki kişi arasında 24 saatte en çok 3 dereceli maç oynanabilir.
 -- Supabase SQL Editor'da bir kez çalıştır.
 
 alter table public.duels add column if not exists mode text not null default 'classic';
@@ -38,6 +38,33 @@ create or replace function public.duel_lg(p numeric) returns int language sql im
               when p >= 1000 then 3 when p >= 500 then 2 when p >= 200 then 1 else 0 end
 $$;
 revoke all on function public.duel_rate(numeric), public.duel_risk(numeric), public.duel_lg(numeric) from public, anon, authenticated;
+
+-- Dereceli galibiyet sayısı (lig şartı): yalnızca rakibin puan ligi, kazananın puan ligiyle en çok 2 lig farklıysa sayılır (maç başındaki puanlara göre).
+-- Platin için 10, Zümrüt için 20, Elmas için 50, Ustalık ve üstü için 100 galibiyet gerekir; bundan önceki ligler için şart yoktur.
+create or replace function public.duel_wincount(u uuid) returns int language sql stable security definer set search_path = public as $$
+  select count(*)::int from public.duels d
+  where d.mode = 'ranked' and d.status = 'done' and d.winner = u
+    and abs(public.duel_lg(case when d.winner = d.p1 then d.rp1 else d.rp2 end) - public.duel_lg(case when d.winner = d.p1 then d.rp2 else d.rp1 end)) <= 2
+$$;
+create or replace function public.duel_wcap(w int) returns int language sql immutable as $$
+  select case when w >= 100 then 9 when w >= 50 then 6 when w >= 20 then 5 when w >= 10 then 4 else 3 end
+$$;
+-- etkin lig: puan ligi ile galibiyet şartının düşüğü (eşleştirmede kullanılır)
+create or replace function public.duel_elg(u uuid) returns int language sql stable security definer set search_path = public as $$
+  select least(public.duel_lg(coalesce((select ap from public.scores where user_id = u), 0)), public.duel_wcap(public.duel_wincount(u)))
+$$;
+revoke all on function public.duel_wincount(uuid), public.duel_wcap(int), public.duel_elg(uuid) from public, anon, authenticated;
+
+-- Herkesin dereceli galibiyet sayısı (uygulama lig hesabında kullanır)
+create or replace function public.duel_wins() returns table(user_id uuid, w int)
+language sql stable security definer set search_path = public as $$
+  select d.winner, count(*)::int from public.duels d
+  where auth.uid() is not null and d.mode = 'ranked' and d.status = 'done' and d.winner is not null
+    and abs(public.duel_lg(case when d.winner = d.p1 then d.rp1 else d.rp2 end) - public.duel_lg(case when d.winner = d.p1 then d.rp2 else d.rp1 end)) <= 2
+  group by d.winner
+$$;
+revoke all on function public.duel_wins() from public, anon;
+grant execute on function public.duel_wins() to authenticated;
 
 -- iç: aynı iki kişi son 24 saatte 3'ten az dereceli maç yaptı mı?
 create or replace function public.duel_pair_ok(a uuid, b uuid) returns boolean language sql stable security definer set search_path = public as $$
@@ -137,7 +164,7 @@ begin
   select q.user_id into opp from public.duel_queue q
     where q.user_id <> uid and q.wn = p_wn and q.mode = m
       and (m = 'classic' or (
-            abs(public.duel_lg(coalesce((select ap from public.scores where user_id = q.user_id), 0)) - public.duel_lg(mp)) <= 1
+            abs(public.duel_elg(q.user_id) - public.duel_elg(uid)) <= 1
             and coalesce((select ap from public.scores where user_id = q.user_id), 0) >= 200
             and public.duel_pair_ok(uid, q.user_id)))
     order by q.joined_at limit 1 for update skip locked;
