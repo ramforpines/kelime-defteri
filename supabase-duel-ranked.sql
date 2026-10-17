@@ -239,8 +239,9 @@ end $$;
 revoke all on function public.duel_invite(uuid, text) from public, anon;
 grant execute on function public.duel_invite(uuid, text) to authenticated;
 
--- Teklife cevap
-create or replace function public.duel_respond(inv uuid, accept boolean, p_wn int) returns jsonb
+-- Teklife cevap (dereceli teklifi yalnızca güncel uygulama kabul edebilir: p_rk = true)
+drop function if exists public.duel_respond(uuid, boolean, int);
+create or replace function public.duel_respond(inv uuid, accept boolean, p_wn int, p_rk boolean default false) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare uid uuid := auth.uid(); i public.duel_invites; did uuid; need numeric;
 begin
@@ -250,6 +251,10 @@ begin
   if not accept then
     update public.duel_invites set status = 'declined' where id = inv;
     return jsonb_build_object('status', 'declined');
+  end if;
+  if i.mode = 'ranked' and not coalesce(p_rk, false) then
+    update public.duel_invites set status = 'cancelled' where id = inv;
+    return jsonb_build_object('status', 'old');
   end if;
   need := case when i.mode = 'ranked' then 200 else 20 end;
   perform public.duel_settle(id) from public.duels where status = 'active' and (p1 in (uid, i.from_user) or p2 in (uid, i.from_user));
@@ -272,9 +277,9 @@ begin
   return jsonb_build_object('status', 'accepted', 'duel_id', did);
 end $$;
 revoke all on function public.duel_lobby(text) from public, anon;
-revoke all on function public.duel_respond(uuid, boolean, int) from public, anon;
+revoke all on function public.duel_respond(uuid, boolean, int, boolean) from public, anon;
 grant execute on function public.duel_lobby(text) to authenticated;
-grant execute on function public.duel_respond(uuid, boolean, int) to authenticated;
+grant execute on function public.duel_respond(uuid, boolean, int, boolean) to authenticated;
 
 -- Herkese açık maç geçmişi (mode ve puan değişimiyle)
 drop function if exists public.duel_history(int);
