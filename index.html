@@ -343,7 +343,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.32.0';
+const APP_VERSION='4.32.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1035,7 +1035,7 @@ async function afbAct(kind,id){
 }
 const RPR={multi:'Birden fazla şık uygun',wrong:'İşaretli doğru cevap yanlış',typo:'Soruda / şıkta hata var',other:'Diğer'};
 async function sendRep(){
-  const qz=UI.quiz,R=UI.rep;if(!qz||!R)return;const it=R.it;
+  const qz=UI.quiz,R=UI.rep;if(!R||(!qz&&!R.it.rd))return;const it=R.it;
   if(!sb||!CLOUD.uid||CLOUD.approved===false){toast('Rapor göndermek için giriş yapmış ve onaylı olmalısın.');return}
   if(!navigator.onLine){toast('Rapor göndermek için internet gerekir.');return}
   const el=document.getElementById('repn');if(el)R.note=el.value;
@@ -1856,6 +1856,13 @@ function vRead(){
   ${list.map(x=>{const r=rd[x.id];return`<button class="card" style="text-align:left;display:block;width:100%" data-act="rd-open" data-v="${esc(x.id)}"><div class="row" style="justify-content:space-between;gap:8px"><b>${esc(x.t)}</b>${lvTag(x.lv)}</div><div class="small muted" style="margin-top:4px">${x.q.length} soru${r?` · en iyi: ${r.b}/${r.n}`:' · henüz çözülmedi'}</div></button>`}).join('')||'<div class="card muted">Bu seviyede parça yok.</div>'}
   </div>`;
 }
+function rdItem(P,R,qi){
+  const q=P.q[qi],ord=(R.ord&&R.ord[qi])||q.o.map((o,i)=>i),R2=R.rits||(R.rits={});
+  const it=R2[qi]||(R2[qi]={rd:true,rp:0});
+  it.w={word:'Okuma: '+P.t};it.f='Okuma';it.question=q.q;it.options=ord.map(i=>q.o[i]);it.correct=q.o[q.a];
+  const pk=R.pick[qi];it.chosen=pk==null?null:ord.indexOf(pk);
+  return it;
+}
 function vReadOne(P,R){
   const done=R.done,rd=(S.rd||{})[P.id];
   const right=done?P.q.filter((q,i)=>R.pick[i]===q.a).length:0;
@@ -1864,10 +1871,10 @@ function vReadOne(P,R){
   <div class="row"><button class="btn" data-act="rd-close">← Listeye dön</button>${lvTag(P.lv)}</div>
   <div class="card stack" lang="en">${P.p.map(t=>`<p style="margin:0;line-height:1.65">${esc(t)}</p>`).join('')}</div>
   ${P.g&&P.g.length?`<details class="card small"><summary style="cursor:pointer;font-weight:600">Yardımcı kelimeler</summary><div class="stack" style="margin-top:8px;gap:4px">${P.g.map(g=>`<div><b>${esc(g[0])}</b> <span class="muted">${esc(g[1])}</span></div>`).join('')}</div></details>`:''}
-  ${P.q.map((q,qi)=>`<div class="card qcard"><div class="small muted">Soru ${qi+1}/${P.q.length}</div><h2 lang="en">${esc(q.q)}</h2>
+  ${P.q.map((q,qi)=>{const ri=rdItem(P,R,qi);return`<div class="card qcard"><div class="row" style="margin-bottom:6px"><span class="small muted">Soru ${qi+1}/${P.q.length}</span>${ri.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rd-rep" data-v="${qi}" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}</div><h2 lang="en">${esc(q.q)}</h2>
     <div class="opts">${(R.ord&&R.ord[qi]||q.o.map((o,i)=>i)).map((oi,di)=>{const o=q.o[oi];let k='';if(done){if(oi===q.a)k='ok';else if(oi===R.pick[qi])k='bad'}else if(R.pick[qi]===oi)k='sel';
       return`<button class="opt ${k}" ${done?'disabled':`data-act="rd-pick" data-v="${qi}:${oi}" aria-pressed="${R.pick[qi]===oi}"`} lang="en"><kbd>${'ABCD'[di]}</kbd><span>${esc(o)}</span></button>`}).join('')}</div>
-    ${done&&q.e?`<div class="fb ${R.pick[qi]===q.a?'ok':'bad'}"><b class="t">${R.pick[qi]===q.a?'Doğru':'Yanlış'}</b><div class="small">${esc(q.e)}</div></div>`:''}</div>`).join('')}
+    ${done&&q.e?`<div class="fb ${R.pick[qi]===q.a?'ok':'bad'}"><b class="t">${R.pick[qi]===q.a?'Doğru':'Yanlış'}</b><div class="small">${esc(q.e)}</div></div>`:''}${repForm(ri)}</div>`}).join('')}
   ${done?`<div class="card stack"><h2>Sonuç: ${right}/${P.q.length}</h2><div class="muted small">${R.gain>0?`+${nf(Math.round(R.gain*100)/100)} puan kazandın.`:'Bu sonuç önceki en iyi sonucunu geçmediği için puan eklenmedi.'}${rd?` En iyi sonucun: ${rd.b}/${rd.n}.`:''}</div>
     <div class="row"><button class="btn primary" data-act="rd-retry">Yeniden dene</button><button class="btn" data-act="rd-close">Listeye dön</button></div></div>`
   :`<button class="btn primary block" data-act="rd-check" ${answered<P.q.length?'disabled':''}>Cevapları kontrol et (${answered}/${P.q.length})</button>`}
@@ -2817,12 +2824,13 @@ document.addEventListener('click',async e=>{
     case'start-review-all':startQuiz('review',true);break;
     case'next':next();break;
     case'quit':UI.quiz=null;render();break;
+    case'rd-rep':{const R0=UI.rd,P0=R0&&(window.READINGS||[]).find(x=>x.id===R0.id);if(P0){UI.rep={it:rdItem(P0,R0,+g('data-v')),reason:'multi',note:'',busy:false};const y=window.scrollY;render();window.scrollTo(0,y)}break}
     case'rd-lv':(UI.rd||(UI.rd={id:null,pick:{},done:false,lv:'Hepsi'})).lv=g('data-v');render();break;
-    case'rd-open':{const P0=(window.READINGS||[]).find(x=>x.id===g('data-v'));UI.rd=Object.assign(UI.rd||{lv:'Hepsi'},{id:g('data-v'),pick:{},done:false,gain:0,ord:P0?P0.q.map(q=>shuffle(q.o.map((o,i)=>i))):null});}render();window.scrollTo(0,0);break;
-    case'rd-close':if(UI.rd){UI.rd.id=null;UI.rd.pick={};UI.rd.done=false}render();window.scrollTo(0,0);break;
+    case'rd-open':{const P0=(window.READINGS||[]).find(x=>x.id===g('data-v'));UI.rd=Object.assign(UI.rd||{lv:'Hepsi'},{id:g('data-v'),pick:{},done:false,gain:0,rits:{},ord:P0?P0.q.map(q=>shuffle(q.o.map((o,i)=>i))):null});}render();window.scrollTo(0,0);break;
+    case'rd-close':UI.rep=null;if(UI.rd){UI.rd.id=null;UI.rd.pick={};UI.rd.done=false}render();window.scrollTo(0,0);break;
     case'rd-pick':{const v=g('data-v').split(':');if(UI.rd&&!UI.rd.done){UI.rd.pick[+v[0]]=+v[1];const y=window.scrollY;render();window.scrollTo(0,y)}break}
     case'rd-check':rdCheck();window.scrollTo(0,0);break;
-    case'rd-retry':if(UI.rd){UI.rd.pick={};UI.rd.done=false;UI.rd.gain=0;const P1=(window.READINGS||[]).find(x=>x.id===UI.rd.id);if(P1)UI.rd.ord=P1.q.map(q=>shuffle(q.o.map((o,i)=>i)))}render();window.scrollTo(0,0);break;
+    case'rd-retry':if(UI.rd){UI.rd.pick={};UI.rd.done=false;UI.rd.gain=0;UI.rd.rits={};const P1=(window.READINGS||[]).find(x=>x.id===UI.rd.id);if(P1)UI.rd.ord=P1.q.map(q=>shuffle(q.o.map((o,i)=>i)))}render();window.scrollTo(0,0);break;
     case'again':UI.quiz=null;render();break;
     case'home':UI.quiz=null;setTab('today');break;
     case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=dictList();break}
