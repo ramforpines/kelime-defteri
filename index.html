@@ -346,7 +346,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.51.0';
+const APP_VERSION='4.51.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2268,7 +2268,7 @@ function leagueCard(){
   {const pre=(lgMemo&&lgMemo.pre&&lgMemo.pre[CLOUD.uid])|0,w=(CLOUD.rw||{})[CLOUD.uid]|0;if(CLOUD.rwOk&&pre>cur){const nx=Math.min(pre,cur+1),need=winsReq(nx);prog+=`<div class="small" style="margin-top:4px">Puanın <b>${LEAGUES[pre].n}</b> için yeterli. ${LEAGUES[nx].n} ligine geçmek için <b>${need} dereceli düello galibiyeti</b> gerekiyor: ${w}/${need}.</div>`}}
   const rq=reqFor();prog+=`<div class="small muted" style="margin-top:4px">Günlük asgari hedefin: ${rq.n} doğru. Tutturmazsan gün başına toplam puanının %${Math.round(rq.r*100)}'i kesilir; haftada ${restQuota()} izin günün var.${cur>=6?' Bu ligde yanlış cevap, doğru cevabın puanı kadar puan düşürür.':cur>=3?' Bu ligde yanlış cevaplar puan düşürür.':''}</div>`;
   return`<div class="card stack"><h2>Ligin</h2><div class="row" style="gap:14px">${avatar(S.prof.name||'?',S.prof.color,true,S.prof.av,L.k)}<div style="flex:1;min-width:0"><div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700">${L.n}</div>${prog}</div></div>
-  <details class="small"><summary style="cursor:pointer;font-weight:600">Tüm ligler</summary><div class="stack" style="margin-top:8px;gap:6px">${LEAGUES.map((l,i)=>`<div class="lgrow ${i===cur?'cur':''}"><span class="avw"><span class="av sm" style="background:#94a3b8"></span>${frameSVG(l.k)}</span><span><b>${l.n}</b><br><span class="muted">${l.rng} puan${l.need&&i>7?'<br>'+l.need:''}</span></span></div>`).join('')}
+  <details class="small"><summary style="cursor:pointer;font-weight:600">Tüm ligler</summary><div class="stack" style="margin-top:8px;gap:6px">${LEAGUES.map((l,i)=>`<div class="lgrow ${i===cur?'cur':''}"><span class="avw"><span class="av sm" style="background:#94a3b8"></span>${frameSVG(l.k)}</span><span><b>${l.n}</b><br><span class="muted">${l.rng} puan${l.need&&i>7?'<br>'+l.need:''}${winsReq(i)?'<br>'+winsReq(i)+' dereceli düello galibiyeti':''}</span></span></div>`).join('')}
   <div class="muted">Puan, tüm zamanların toplam puanıdır. 10000 puanı geçenler arasında en yüksek 10 kişi Şampiyonluk, sonraki 20 kişi (11–30) Büyükustalık, kalanlar Ustalık olur. Bunun yanında 25000 puanı geçen herkes sayıdan bağımsız Şampiyonluk, 16000 puanı geçen herkes en az Büyükustalık olur.</div></div></details></div>`;
 }
 function badgeGrid(){
