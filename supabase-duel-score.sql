@@ -1,5 +1,5 @@
 -- Dosya: supabase-duel-score.sql
--- Kelime Defteri: düello puanı = 100 x seviye çarpanı (1,00-1,85) x hız çarpanı (ilk 6 sn'de 1,85'ten 1,00'a). Yanlış cevap 0.
+-- Kelime Defteri: düello puanı = 100 x seviye çarpanı (1,00-1,85) x hız çarpanı (ilk 3 sn tam 1,85, 3-7 sn arası 1,00'a). Yanlış cevap 0.
 -- Supabase SQL Editor'da bir kez çalıştır. Eski uygulama sürümü seviye göndermez, çarpan 1,00 sayılır.
 drop function if exists public.duel_report(uuid, int, boolean, int);
 create or replace function public.duel_report(did uuid, idx int, ok boolean, ms int, lv numeric default 1) returns void
@@ -13,7 +13,7 @@ begin
   if idx <> mine or idx >= d.qn then return; end if;
   m := least(greatest(coalesce(ms, 0), 300), d.per_q * 1000);
   l := least(greatest(coalesce(lv, 1), 1), 1.85);
-  pts := case when ok then round(100 * l * (1 + 0.85 * (1 - least(m, 6000)::numeric / 6000)))::int else 0 end;
+  pts := case when ok then round(100 * l * (1 + 0.85 * (1 - (least(greatest(m, 3000), 7000) - 3000)::numeric / 4000)))::int else 0 end;
   if uid = d.p1 then
     update public.duels set a1 = a1 + 1, s1 = s1 + pts, c1 = c1 + (case when ok then 1 else 0 end), t1 = t1 + m where id = did;
   else

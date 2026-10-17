@@ -346,7 +346,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.46.0';
+const APP_VERSION='4.47.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1272,7 +1272,7 @@ function vHelp(){
     'Çalışma → <b>⚔ Düello</b> bölümünden girersin. Başlamak için en az <b>'+DSTAKE+' puanın</b> olmalı.',
     '<b>Eşleştirme</b>: Rakip ara dersen aynı anda arayan biriyle eşleşirsin. Kimse yoksa botla alıştırma yapabilirsin (bot maçı puanı etkilemez).',
     '<b>Düello sekmesindeki kullanıcılar</b> listede görünür. Yanındaki düello teklifi düğmesiyle teklif gönderebilirsin. Teklif <b>15 saniye</b> geçerlidir; kabul edilmezse tekrar gönderebilirsin. Teklifi yapan da alan da yalnızca düello kutusunu görür, kabul ya da red edilmeden başka işlem yapılamaz.',
-    'İki oyuncu da aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Doğru cevap puanı <b>100 × seviye çarpanı × hız çarpanı</b>dır: seviye çarpanı A1 için 1,00, C2 için 1,85; hız çarpanı sorunun ilk 6 saniyesinde 1,85\'ten 1,00\'a düşer, 6 saniyeden sonra 1,00\'dır. Yanlış cevap 0 puandır.',
+    'İki oyuncu da aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Doğru cevap puanı <b>100 × seviye çarpanı × hız çarpanı</b>dır: seviye çarpanı A1 için 1,00, C2 için 1,85; hız çarpanı sorunun ilk 3 saniyesinde sabit 1,85\'tir (soruyu okuma süresi), 3. saniyeden 7. saniyeye kadar 1,00\'a düşer, 7 saniyeden sonra 1,00\'dır. Yanlış cevap 0 puandır.',
     '<b>Bahis</b>: herkes '+DSTAKE+' puan koyar (havuz '+DSTAKE*2+'). 5 puan kesilir, kalan 35 puanın 25\'ini kazanan alır, 10\'u maç puanlarına göre paylaşılır. Beraberlikte 35 puan yarı yarıya bölünür.',
     'Düellodaki sorular normal test gibi sayılır: bilinenler bilinenlere, yanlışlar yanlışlara gider. Bu sorulardan gelen test puanı yarıya iner. Düello kazancı günlük soru puanı sınırına girmez.',
     'Düello bitince sonuç ekranında doğru sayını ve süreni görürsün. Profil kartında düello sayın, kazanma oranın ve G-M-B (galibiyet-mağlubiyet-beraberlik) istatistiğin yer alır.']))}
@@ -2539,8 +2539,8 @@ const DQ_N=20,DQ_T=15;
 const DUEL={phase:'lobby',id:null,d:null,off:0,qs:null,idx:0,tq:0,sel:null,bot:null,opp:'',err:'',rec:null,find:0,findT:null,poll:null,tick:null,busy:false,me:{s:0,c:0,t:0}};
 UI.qmode='solo';
 const DSTAKE=20;
-const DBONUS_T=6000;   // hız çarpanı ilk 6 saniyede etkilidir: 6 sn ve sonrası ×1,00, 0 sn ×1,85
-const dPts=(lv,ms)=>Math.round(100*(COEF[lv]||1)*(1+0.85*(1-Math.min(Math.max(ms,0),DBONUS_T)/DBONUS_T)));   // seviye çarpanı × hız çarpanı × 100
+const DBONUS_FULL=3000,DBONUS_T=7000;   // hız çarpanı: ilk 3 sn tam (×1,85), 3. saniyeden 7. saniyeye doğrusal düşer, 7 sn ve sonrası ×1,00 (soruyu okuma süresi)
+const dPts=(lv,ms)=>Math.round(100*(COEF[lv]||1)*(1+0.85*(1-(Math.min(Math.max(ms,DBONUS_FULL),DBONUS_T)-DBONUS_FULL)/(DBONUS_T-DBONUS_FULL))));   // seviye çarpanı × hız çarpanı × 100
 function duelApply(rows){
   if(!S.dl)S.dl={};
   let ch=false,msg='';
@@ -2880,7 +2880,7 @@ function vDuel(){
     else if(DUEL.err==='ver')err=`<div class="fb bad">Rakibinle kelime listesi sürümün farklı. Uygulamayı kapatıp yeniden aç.</div>`;
     else if(DUEL.err==='err')err=`<div class="fb bad">Bağlantı sorunu. Biraz sonra tekrar dene.</div>`;
     body=`<div class="card stack"><h2>⚔ 1v1 Düello</h2>
-      <div class="muted small">Eşleştirmeyle bir rakip bulunur, ikiniz de aynı ${n} soruyu çözersiniz. Soru başına ${DQ_T} saniye var. Doğru cevap 100 puan × seviye çarpanı (A1 1,00 … C2 1,85) × hız çarpanı (ilk 6 saniyede 1,85'ten 1,00'a düşer) getirir; en çok maç puanını toplayan kazanır.<br><b>Bahis:</b> herkes kendi puanından ${DSTAKE} puan koyar (havuz ${DSTAKE*2}). 5 puan kesilir, kalan 35'in 25'ini kazanan alır, 10'u maç puanlarına göre paylaşılır (kazanan daha fazla alır). Beraberlikte 35 puan yarı yarıya bölünür.</div>
+      <div class="muted small">Eşleştirmeyle bir rakip bulunur, ikiniz de aynı ${n} soruyu çözersiniz. Soru başına ${DQ_T} saniye var. Doğru cevap 100 puan × seviye çarpanı (A1 1,00 … C2 1,85) × hız çarpanı (ilk 3 saniye 1,85, sonra 7. saniyeye kadar 1,00'a düşer) getirir; en çok maç puanını toplayan kazanır.<br><b>Bahis:</b> herkes kendi puanından ${DSTAKE} puan koyar (havuz ${DSTAKE*2}). 5 puan kesilir, kalan 35'in 25'ini kazanan alır, 10'u maç puanlarına göre paylaşılır (kazanan daha fazla alır). Beraberlikte 35 puan yarı yarıya bölünür.</div>
       ${R?`<div class="kp"><div><b>${R.w}</b><span>galibiyet</span></div><div><b>${R.l}</b><span>mağlubiyet</span></div><div><b>${R.d}</b><span>beraberlik</span></div></div>${R.last.length?`<div class="row" style="gap:6px">${R.last.map(x=>`<span class="badge ${x==='W'?'ok':x==='L'?'warn':''}">${x==='W'?'G':x==='L'?'M':'B'}</span>`).join('')}<span class="muted small">son maçlar</span></div>`:''}`:''}
       ${err}
       <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DSTAKE?'disabled':''}>Rakip bul (${DSTAKE} puan bahis)</button>${(S.tp||0)<DSTAKE?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. En az ${DSTAKE} gerekir.</div>`:''}
