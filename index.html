@@ -345,7 +345,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.42.7';
+const APP_VERSION='4.43.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2319,14 +2319,14 @@ function vRank(){
     const acc=r=>r.x.n?Math.round(r.x.c/r.x.n*100):0;
     const wt=weekTop();
     const row=r=>`<div class="rk ${r.me?'me':''} ${r.rank&&r.rank<=3?'top':''}${flCls(r.id)}" ${lgAttr(r.id)} data-pc="${esc(r.id)}"><span class="pos">${r.rank||'–'}</span>${avatar(r.name,r.color,false,r.av,frameFor(r.id,r.fr),wt[r.id])}<div class="nm">${esc(r.name)}${r.me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">${r.x.n} soru · %${acc(r)} doğruluk${r.st?` · 🔥 ${r.st}`:''}</div></div><div class="val">${nf(Math.round(r.x.p*10)/10)}<small>puan</small></div>${flagHtml(r.id)}</div>`;
-    const top=ranked.slice(0,10);
+    const TOPN={day:10,week:20,all:30}[per]||10,top=ranked.slice(0,TOPN);
     const me=rows.find(r=>r.me);
     let mine='';
     if(me&&!top.some(r=>r.me)){
       mine=`<div class="gap" aria-hidden="true">···</div>${row(me)}${me.rank?'':'<div class="small muted">Bu dönemde sıraya girmek için soru çöz ve en az bir doğru yap.</div>'}`;
     }
     body=`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button></div>
-    <div class="muted small">${per==='day'?'Bugünün puanı. Her gün gece yarısı sıfırlanır.':per==='week'?'Bu haftanın puanı. Hafta pazartesi başlar.':'Bugüne kadarki toplam puan.'} İlk 10 gösterilir${ranked.length?`, ${ranked.length} kişi sırada`:''}.</div>
+    <div class="muted small">${per==='day'?'Bugünün puanı. Her gün gece yarısı sıfırlanır.':per==='week'?'Bu haftanın puanı. Hafta pazartesi başlar.':'Bugüne kadarki toplam puan.'} İlk ${TOPN} gösterilir${ranked.length?`, ${ranked.length} kişi sırada`:''}.</div>
     ${!CLOUD.lbReady?'<div class="empty">Tablo yükleniyor…</div>':top.length?top.map(row).join('')+mine:`<div class="empty card">Bu tabloda henüz kimse yok. İlk puanı alan sıraya girer.</div>${mine}`}
     <details class="card small"><summary style="cursor:pointer;font-weight:600">Puan nasıl hesaplanır?</summary>
       <div class="stack" style="margin-top:10px">
