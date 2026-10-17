@@ -345,7 +345,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.42.5';
+const APP_VERSION='4.42.6';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1444,6 +1444,7 @@ function trOverlap(a,b){   // Türkçe karşılıklar aynı ya da aynı kökten 
   const A=parts(a||''),B=parts(b||'');
   return A.some(x=>B.some(y=>x===y||(x.length>=4&&y.length>=4&&(x.startsWith(y)||y.startsWith(x)))));
 }
+const CLOZE_PRE=new Set('the a an his her their my our your its this that these those of in on at to for with by from some any no many much every each i you he she it we they will would can could must should may might did does do not and or but who which was were is are be been being am has have had'.split(' '));
 function cloze(w){
   if(!w.ex||closedClass(w)==='func')return null;
   const base=w.word.replace(/\s*\([^)]*\)/g,'').replace(/\.+$/,'').split('/')[0].trim();
@@ -1451,6 +1452,9 @@ function cloze(w){
   const esc2=base.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+');
   const re=new RegExp('(^|[^A-Za-z])'+esc2+'[A-Za-z]*','i');
   if(!re.test(w.ex))return null;
+  // boşluktan önceki kelime belirleyici/edat/zamir/yardımcı fiil değilse (ör. "The rock ___ is"), isim tamlaması olduğu için birden fazla şık uyar
+  {const m=w.ex.match(re),bf=w.ex.slice(0,m.index+m[1].length).trim().split(/\s+/).pop().toLowerCase().replace(/[^a-z]/g,'');
+   if(bf&&!CLOZE_PRE.has(bf))return null}
   // sıfat/zarf boşluğuna çoğu zaman birden fazla kelime uyar ("The project was ___ from the start."): bu türlerde boşluk sorusu sorulmaz
   if(/adjective|adverb/i.test(w.pos||''))return null;
   // çok kısa cümlede bağlam yetmez ("She loves ___." photography/tv ikisi de uyar): en az 6 kelime
