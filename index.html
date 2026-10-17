@@ -344,7 +344,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.35.2';
+const APP_VERSION='4.36.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1166,7 +1166,7 @@ function vHelp(){
   return`<div class="card stack"><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün kelimesi, bu haftaki sıran, dünün ve geçen haftanın lideri.',
-    '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b> (düello dahil) ve <b>Tekrar</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
+    '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b> ve <b>Tekrar</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
     '<b>Sıra</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: genel sohbet ve özel mesajlar. <b>Kullanım</b>: bu sayfa.',
     '<b>Ben</b>: Profil, İstatistik, Öğrenilenler, Geri bildirim ve Ayarlar. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
   ${sec('🚀 Hızlı başlangıç',li([
@@ -1214,7 +1214,7 @@ function vHelp(){
     'Belirli hedefleri tamamlayınca (ör. 500 kelime öğrenmek, seri yapmak) rozet kazanırsın. Kazandığın ve henüz kazanamadığın rozetler Ben → Profil bölümünde, nasıl kazanılacağıyla birlikte görünür.',
     'Rozetlerin profil kartında herkese görünür.']))}
   ${sec('⚔ Düello',li([
-    'Çalışma → Test → <b>Düello</b> bölümünden girersin. Başlamak için en az <b>'+DSTAKE+' puanın</b> olmalı.',
+    'Çalışma → <b>⚔ Düello</b> bölümünden girersin. Başlamak için en az <b>'+DSTAKE+' puanın</b> olmalı.',
     '<b>Eşleştirme</b>: Rakip ara dersen aynı anda arayan biriyle eşleşirsin. Kimse yoksa botla alıştırma yapabilirsin (bot maçı puanı etkilemez).',
     '<b>Düello sekmesindeki kullanıcılar</b> listede görünür. Yanındaki düello teklifi düğmesiyle teklif gönderebilirsin. Teklif <b>15 saniye</b> geçerlidir; kabul edilmezse tekrar gönderebilirsin. Teklifi yapan da alan da yalnızca düello kutusunu görür, kabul ya da red edilmeden başka işlem yapılamaz.',
     'İki oyuncu da aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Doğru cevap 100, hızlı cevap en fazla 50 puan hız bonusu getirir.',
@@ -1719,14 +1719,14 @@ const ICON={
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar']];
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['duel','⚔ Düello'],['read','Okuma'],['review','Tekrar']];
 const isStudy=t=>t==='dict'||t==='quiz'||t==='review'||t==='read';
 let lastStudy='quiz';
 const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıra'],['chat','Sohbet'],['help','Kullanım'],['me','Ben']];
 function studySeg(){
   if(UI.quiz)return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
-  return`<div class="seg" style="margin-bottom:12px">${STUDY.map(([k,l])=>`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}">${l}</button>`).join('')}</div>`;
+  return`<div class="seg" style="margin-bottom:12px">${STUDY.map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}">${l}</button>`).join('')}</div>`;
 }
 function renderNav(){
   $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}${k==='chat'&&chatUnread()?` <i class="nbd">${chatUnread()}</i>`:''}</span></button>`).join('');
@@ -1920,7 +1920,7 @@ function vQuizSetup(){
   const s=S.set;
   const remaining=W.filter(w=>!S.learned[w.word]&&(s.level==='Hepsi'||w.level===s.level)&&typeOK(w)).length;
   const tc=W.reduce((m,w)=>{if(!S.learned[w.word]&&(s.level==='Hepsi'||w.level===s.level)){const g=posGroup(w);m[g]=(m[g]||0)+1}return m},{});
-  return`<div class="top"><h1>Test</h1></div><div class="seg" style="margin-bottom:12px"><button class="chip" aria-pressed="true" data-act="qmode" data-v="solo">Normal test</button><button class="chip" aria-pressed="false" data-act="qmode" data-v="duel">⚔ Düello</button></div><div class="card stack">
+  return`<div class="top"><h1>Test</h1></div><div class="card stack">
     <div><h3>Soru sayısı</h3><div class="seg" style="margin-top:8px">${[10,20,30,40].map(n=>`<button class="chip" aria-pressed="${s.count===n}" data-set="count" data-v="${n}">${n}</button>`).join('')}</div></div>
     <div><h3>Seviye</h3><div class="seg" style="margin-top:8px">${['Hepsi'].concat(LEVELS).map(n=>`<button class="chip" aria-pressed="${s.level===n}" data-set="level" data-v="${n}">${n}</button>`).join('')}</div></div>
     <div><h3>Tür</h3><div class="seg" style="margin-top:8px"><button class="chip" aria-pressed="${(s.type||'Hepsi')==='Hepsi'}" data-set="type" data-v="Hepsi">Hepsi</button>${POSG.filter(g=>tc[g]).map(g=>`<button class="chip" aria-pressed="${s.type===g}" data-set="type" data-v="${esc(g)}">${esc(trType(g))} (${nf(tc[g])})</button>`).join('')}</div></div>
@@ -2749,7 +2749,7 @@ function lobbyCard(){
 }
 function vDuel(){
   const P=DUEL.phase,d=DUEL.d,n=DQ_N;
-  const seg=`<div class="seg"><button class="chip" aria-pressed="false" data-act="qmode" data-v="solo">Normal test</button><button class="chip" aria-pressed="true" data-act="qmode" data-v="duel">⚔ Düello</button></div>`;
+  const seg='';
   let body='';
   if(P==='lobby'){
     const R=DUEL.rec;
@@ -2829,7 +2829,7 @@ document.addEventListener('click',async e=>{
     case'chat-back':UI.chat.peer=null;render();break;
     case'chat-send':chatSend();break;
     case'chat-del':{const id=+g('data-id');const adm=CHAT.pub.some(m=>m.id===id&&m.user_id!==CLOUD.uid);const r=adm?await sb.rpc('admin_delete_chat',{mid:id}):await sb.from('chat_messages').delete().eq('id',id);if(r.error)toast('Silinemedi.');else{CHAT.pub=CHAT.pub.filter(m=>m.id!==id);CHAT.dm=CHAT.dm.filter(m=>m.id!==id);chatPaint()}break}
-    case'qmode':UI.qmode=g('data-v');if(UI.qmode==='duel'){if(DUEL.phase==='result')dReset();duelRecord();duelSync();lobbyLoad()}render();break;
+    case'qmode':UI.qmode=g('data-v');if(UI.quiz&&UI.quiz.done)UI.quiz=null;UI.tab='quiz';lastStudy='quiz';try{sessionStorage.setItem('kd-tab','quiz')}catch(e){}window.scrollTo(0,0);if(UI.qmode==='duel'){if(DUEL.phase==='result')dReset();duelRecord();duelSync();lobbyLoad()}render();break;
     case'duel-find':duelFind();break;
     case'duel-cancel':duelCancel();break;
     case'inv-send':invSend(g('data-u'));break;
