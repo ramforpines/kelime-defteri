@@ -226,6 +226,19 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:20000;max-width:90vw}
 /* rank */
 .rk{cursor:pointer;display:grid;grid-template-columns:30px 54px 1fr auto;gap:10px;column-gap:20px;align-items:center;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0}
+.vlv{margin:0 -4px;padding:14px 12px 16px;border-radius:16px;color:#f6e3dc;border:1px solid #5a1020;box-shadow:inset 0 0 70px rgba(0,0,0,.55),0 4px 18px rgba(60,0,10,.35);background:radial-gradient(120% 90% at 50% 0%,#8a1830 0%,#5e0f22 45%,#3a0814 100%),#4a0a18}
+.vlv .muted,.vlv .small{color:#d9aeb0}
+.vlv .rk{background:rgba(30,4,10,.55);border-color:rgba(214,170,90,.28);color:#f6e3dc;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.vlv .rk.me{border-color:#d6aa5a;background:rgba(120,20,40,.6)}
+.vlv .rk .pos,.vlv .rk .val small{color:#d9aeb0}
+.vlv .rk.top .pos{color:#e8c26e}
+.vlv .rk .nm{color:#f6e3dc}
+.vlv .rk .val{--ok:#7ee0a0;--bad:#ff8a8a}
+.vlv .chip{background:rgba(30,4,10,.55);color:#f0d9d0;border-color:rgba(214,170,90,.35)}
+.vlv .chip[aria-pressed="true"]{background:#d6aa5a;color:#3a0814;border-color:#d6aa5a}
+.vlv .badge{background:#d6aa5a;color:#3a0814}
+.vlv .gap{color:#d9aeb0}
+.vlv .card{background:rgba(30,4,10,.55);border-color:rgba(214,170,90,.28);color:#f6e3dc}
 .rk .avw{justify-self:center}
 .rk.me{border-color:var(--accent);background:var(--accent-soft)}
 .flg{position:absolute;top:-1px;right:14px;width:19px;height:56px;z-index:6;pointer-events:auto;cursor:default;outline:none;transform-origin:50% 0;animation:flgsw 4.2s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
@@ -347,7 +360,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.53.5';
+const APP_VERSION='4.53.6';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2401,9 +2414,9 @@ function rankedBoardHtml(per){
     return`<div class="rk ${me?'me':''} ${r.rank<=3?'top':''}${flCls(r.user_id)}" ${lgAttr(r.user_id)} data-pc="${esc(r.user_id)}"><span class="pos">${r.rank}</span>${avatar(u,r.color|0,false,r.av|0,frameFor(r.user_id,r.fr||''),wt[r.user_id])}<div class="nm">${esc(u)}${me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">G ${r.w} · B ${r.d} · M ${r.l} · %${acc} doğru · ${avg} sn</div></div><div class="val" style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(Math.round(Math.abs(v)*10)/10)}<small>puan</small></div>${flagHtml(r.user_id)}</div>`};
   const mine=rows.find(r=>r.user_id===CLOUD.uid);
   const extra=mine&&!top.includes(mine)?`<div class="gap" aria-hidden="true">···</div>${row(mine)}`:'';
-  return`${rkSeg('ranked')}
+  return`<div class="vlv">${rkSeg('ranked')}
   <div class="muted small">Yalnızca dereceli düellolardan kazanılan ve kaybedilen puanların toplamı. Bu puanlar genel günlük, haftalık ve toplam puana da işlenir. G: galibiyet, B: beraberlik, M: mağlubiyet. İlk ${TOPN} gösterilir.</div>
-  ${!c?'<div class="empty">Tablo yükleniyor…</div>':c.err==='setup'?'<div class="card"><div class="fb bad">Dereceli sıralama henüz kurulmadı. Yönetici <b>supabase-duel-ranked.sql</b> dosyasını Supabase SQL Editor\'da çalıştırmalı.</div></div>':c.err?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':top.length?top.map(row).join('')+extra:'<div class="empty card">Bu dönemde henüz dereceli maç yok.</div>'}`;
+  ${!c?'<div class="empty">Tablo yükleniyor…</div>':c.err==='setup'?'<div class="card"><div class="fb bad">Dereceli sıralama henüz kurulmadı. Yönetici <b>supabase-duel-ranked.sql</b> dosyasını Supabase SQL Editor\'da çalıştırmalı.</div></div>':c.err?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':top.length?top.map(row).join('')+extra:'<div class="empty card">Bu dönemde henüz dereceli maç yok.</div>'}</div>`;
 }
 
 /* ---------- olaylar ---------- */
