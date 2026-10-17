@@ -346,7 +346,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.50.1';
+const APP_VERSION='4.50.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2319,8 +2319,8 @@ function vRank(){
   }else if(!S.prof.name&&CLOUD.write){
     body=`<div class="card stack"><h2>Önce profilini oluştur</h2>${profileForm()}</div>`;
   }else{
-    const per=R.per;
-    if(per==='ranked'){body=rankedBoardHtml('all')}else{
+    const per=R.per==='ranked'&&drkLocked()?'day':R.per;
+    if(per==='ranked'&&!drkLocked()){body=rankedBoardHtml('all')}else{
     const rows=rankData().map(r=>Object.assign(r,{x:r[per]}));
     const ranked=rows.filter(r=>r.x.p>0).sort((a,b)=>b.x.p-a.x.p||b.x.n-a.x.n);
     ranked.forEach((r,i)=>{r.rank=(i>0&&ranked[i-1].x.p===r.x.p)?ranked[i-1].rank:i+1});
@@ -2350,7 +2350,7 @@ function vRank(){
   }}
   return`<div class="top"><h1>Sıralama</h1></div><div class="stack">${body}</div>`;
 }
-const rkSeg=per=>`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button><button class="chip" aria-pressed="${per==='ranked'}" data-rp="ranked">🏅 Dereceli düello</button></div>`;
+const rkSeg=per=>`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button>${drkLocked()?'':`<button class="chip" aria-pressed="${per==='ranked'}" data-rp="ranked">🏅 Dereceli düello</button>`}</div>`;
 const RKB={per:{},busy:false};
 async function rkbLoad(per,force){
   if(!sb||!CLOUD.uid||RKB.busy)return;
@@ -2567,7 +2567,7 @@ UI.qmode='solo';
 const DSTAKE=20;
 const DBONUS_FULL=3000,DBONUS_T=7000;   // hız çarpanı: ilk 3 sn tam (×1,50), 3. saniyeden 7. saniyeye doğrusal düşer, 7 sn ve sonrası ×1,00 (soruyu okuma süresi)
 const dPts=(lv,ms)=>Math.round(100*(COEF[lv]||1)*(1+0.5*(1-(Math.min(Math.max(ms,DBONUS_FULL),DBONUS_T)-DBONUS_FULL)/(DBONUS_T-DBONUS_FULL))));   // seviye çarpanı × hız çarpanı (1,00–1,50) × 100
-const DRK_LOCK=true;   // dereceli düello geçici olarak kilitli
+const drkLocked=()=>!CLOUD.admin;   // dereceli düello şimdilik yalnızca yöneticiye açık
 const DRK_MIN=200;   // dereceli düello: Bronz ligden (200 puan) itibaren
 const dRate=p=>{const B=[[200,.10],[500,.09],[1000,.08],[2000,.07],[3500,.06],[6000,.05],[10000,.04]];if(p>=10000)return .04;for(let i=0;i<B.length-1;i++)if(p<B[i+1][0]){const a=B[i],b=B[i+1];return a[1]+(b[1]-a[1])*(Math.max(p,200)-a[0])/(b[0]-a[0])}return .10};
 const dRisk=p=>Math.round(p*dRate(p)*10)/10;   // kaybedenin riski = puan × lig oranı
@@ -2670,7 +2670,7 @@ async function duelRecord(){
 }
 async function duelFind(){
   if(!sb||!CLOUD.uid)return;
-  if(DRK_LOCK&&DUEL.sub==='ranked'){DUEL.sub='classic';render();return}
+  if(drkLocked()&&DUEL.sub==='ranked'){DUEL.sub='classic';render();return}
   const need=DUEL.sub==='ranked'?DRK_MIN:DSTAKE;
   if((S.tp||0)<need){toast('Düelloya girmek için en az '+need+' puanın olmalı.');return}
   dReset();DUEL.phase='search';DUEL.find=Date.now();render();
@@ -2705,7 +2705,7 @@ async function duelStart(id){
   await duelFetch();
   const d=DUEL.d;if(!d){DUEL.err='err';DUEL.phase='lobby';render();return}
   if(d.wn!==W.length){DUEL.err='ver';DUEL.phase='lobby';render();return}
-  DUEL.sub=d.mode==='ranked'&&!DRK_LOCK?'ranked':'classic';
+  DUEL.sub=d.mode==='ranked'&&!drkLocked()?'ranked':'classic';
   DUEL.qs=seededQs(d.seed,d.qn);
   duelApply([d]);
   const m=dMine();DUEL.idx=Math.min(m.a,d.qn);DUEL.sel=null;
@@ -2810,7 +2810,7 @@ async function lobbyLoad(){
 function lobbyInvites(d){
   const ib=d.inbox,ob=d.outbox;
   if(INV&&INV.busy)return;
-  if(ib&&DRK_LOCK&&ib.mode==='ranked'){sb.rpc('duel_respond',{inv:ib.id,accept:false,p_wn:W.length}).catch(()=>{});return}
+  if(ib&&drkLocked()&&ib.mode==='ranked'){sb.rpc('duel_respond',{inv:ib.id,accept:false,p_wn:W.length}).catch(()=>{});return}
   if(ib){
     if(!INV||INV.id!==ib.id){invClose();INV={dir:'in',id:ib.id,who:ib.from,mode:ib.mode==='ranked'?'ranked':'classic',exp:Date.now()+ib.left_ms,tot:Math.max(1000,ib.left_ms)};invShow()}
     else INV.exp=Date.now()+ib.left_ms;
@@ -2870,7 +2870,7 @@ function invTick(){
 setInterval(invTick,200);
 async function invSend(target){
   if(INV||!sb||!CLOUD.uid)return;
-  if(DRK_LOCK&&DUEL.sub==='ranked'){DUEL.sub='classic';render();return}
+  if(drkLocked()&&DUEL.sub==='ranked'){DUEL.sub='classic';render();return}
   const rkm=DUEL.sub==='ranked',need=rkm?DRK_MIN:DSTAKE;
   if((S.tp||0)<need){toast('Teklif için en az '+need+' puanın olmalı.');return}
   const who=LOBBY.on.find(x=>x.id===target);if(!who)return;
@@ -2933,7 +2933,7 @@ function duelHist(){
 }
 function vDuel(){
   const P=DUEL.phase,d=DUEL.d,n=DQ_N;
-  const seg=`<div class="seg"><button class="chip" aria-pressed="${DUEL.sub!=='ranked'}" data-act="duel-sub" data-v="classic">Klasik düello</button><button class="chip" aria-pressed="${DUEL.sub==='ranked'}" data-act="duel-sub" data-v="ranked" ${DRK_LOCK?'disabled title="Şimdilik kilitli"':''}>${DRK_LOCK?'🔒 ':''}Dereceli düello</button></div>`;
+  const seg=`<div class="seg"><button class="chip" aria-pressed="${DUEL.sub!=='ranked'}" data-act="duel-sub" data-v="classic">Klasik düello</button><button class="chip" aria-pressed="${DUEL.sub==='ranked'}" data-act="duel-sub" data-v="ranked" ${drkLocked()?'disabled title="Şimdilik kilitli"':''}>${drkLocked()?'🔒 ':''}Dereceli düello</button></div>`;
   let body='';
   if(P==='lobby'){
     const R=DUEL.rec;
@@ -3024,7 +3024,7 @@ document.addEventListener('click',async e=>{
     case'chat-send':chatSend();break;
     case'chat-del':{const id=+g('data-id');const adm=CHAT.pub.some(m=>m.id===id&&m.user_id!==CLOUD.uid);const r=adm?await sb.rpc('admin_delete_chat',{mid:id}):await sb.from('chat_messages').delete().eq('id',id);if(r.error)toast('Silinemedi.');else{CHAT.pub=CHAT.pub.filter(m=>m.id!==id);CHAT.dm=CHAT.dm.filter(m=>m.id!==id);chatPaint()}break}
     case'qmode':UI.qmode=g('data-v');if(UI.quiz&&UI.quiz.done)UI.quiz=null;UI.tab='quiz';lastStudy='quiz';try{sessionStorage.setItem('kd-tab','quiz')}catch(e){}window.scrollTo(0,0);if(UI.qmode==='duel'){if(DUEL.phase==='result')dReset();duelRecord();duelSync();lobbyLoad()}render();break;
-    case'duel-sub':{const nv=g('data-v')==='ranked'&&!DRK_LOCK?'ranked':'classic';if(g('data-v')==='ranked'&&DRK_LOCK)toast('Dereceli düello şimdilik kilitli.');if(nv!==DUEL.sub){DUEL.sub=nv;LOBBY.on=[];LOBBY.duels=[];LOBBY.sig='';LOBBY.busy=false;lobbyLoad()}render();break}
+    case'duel-sub':{const nv=g('data-v')==='ranked'&&!drkLocked()?'ranked':'classic';if(g('data-v')==='ranked'&&drkLocked())toast('Dereceli düello şimdilik kilitli.');if(nv!==DUEL.sub){DUEL.sub=nv;LOBBY.on=[];LOBBY.duels=[];LOBBY.sig='';LOBBY.busy=false;lobbyLoad()}render();break}
     case'duel-find':duelFind();break;
     case'duel-cancel':duelCancel();break;
     case'inv-send':invSend(g('data-u'));break;
