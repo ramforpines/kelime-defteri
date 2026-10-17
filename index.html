@@ -346,7 +346,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.49.1';
+const APP_VERSION='4.50.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1813,7 +1813,7 @@ function streak(){
 const learnedCount=()=>Object.keys(S.learned).filter(k=>BYWORD.has(k)).length;
 
 /* ---------- arayüz ---------- */
-const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'prof',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
+const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'prof',backup:'',confirmReset:false,rank:{per:'day',mode:'gen'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
 try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz')UI.tab=t}catch(e){}
 const ICON={
   today:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
@@ -2270,7 +2270,7 @@ function vCard(){
   const lg=LEAGUES[leagueMap()[id]|0],fk=frameFor(id,r.fr);
   return`<div class="ov" data-act="card-close"><div class="sheet stack${isAdm(id)?' adm':''}" ${lgAttr(id)} data-act="noop" role="dialog" aria-label="Profil kartı">${flagHtml(id)}
   <div class="row" style="justify-content:space-between;align-items:flex-start${flagOf(id)?';padding-right:34px':''}"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}${isAdm(id)?'<div class="small" style="font-weight:700">🛡 Yönetici</div>':''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':(rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında')+' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
-  ${(()=>{if(mn&&id==='bot')return'';const s=DSTAT[id];if(s===undefined){duelStat(id);return''}if(!s)return'';return s.n?`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>⚔ ${s.n}</b><span>düello maçı</span></div><div><b>%${Math.round(s.w/s.n*100)}</b><span>kazanma oranı</span></div><div><b>${s.w}-${s.l}-${s.d}</b><span>G-M-B</span></div></div>`:'<div class="small muted">⚔ Henüz düello maçı yok.</div>'})()}
+  ${(()=>{if(mn&&id==='bot')return'';const s=DSTAT[id];if(s===undefined){duelStat(id);return''}if(!s)return'';return duelBox(s)})()}
   ${leadTxt(id)?`<div class="row" style="flex-wrap:wrap;gap:6px">${leadTxt(id)}</div>`:''}
   ${id!==CLOUD.uid?`<button class="btn block" data-act="chat-open" data-v="${esc(id)}">Mesaj gönder</button>`:''}
   ${mn?'</div></div>':`<div class="kp"><div><b>${nf(Math.round((r.ap||0)*10)/10)}</b><span>toplam puan</span></div><div><b>${nf(r.lrn||0)}</b><span>öğrenilen kelime</span></div><div><b>${st?'🔥 '+st:'–'}</b><span>günlük seri</span></div><div><b>${nf(r.ans||0)}</b><span>çözülen soru</span></div><div><b>%${acc}</b><span>doğruluk</span></div><div><b>${ids.length}</b><span>rozet</span></div></div>
@@ -2332,6 +2332,7 @@ function vRank(){
     if(me&&!top.some(r=>r.me)){
       mine=`<div class="gap" aria-hidden="true">···</div>${row(me)}${me.rank?'':'<div class="small muted">Bu dönemde sıraya girmek için soru çöz ve en az bir doğru yap.</div>'}`;
     }
+    if((R.mode||'gen')==='ranked'){body=rankedBoardHtml(per)}else
     body=`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button></div>
     <div class="muted small">${per==='day'?'Bugünün puanı. Her gün gece yarısı sıfırlanır.':per==='week'?'Bu haftanın puanı. Hafta pazartesi başlar.':'Bugüne kadarki toplam puan.'} İlk ${TOPN} gösterilir${ranked.length?`, ${ranked.length} kişi sırada`:''}.</div>
     ${!CLOUD.lbReady?'<div class="empty">Tablo yükleniyor…</div>':top.length?top.map(row).join('')+mine:`<div class="empty card">Bu tabloda henüz kimse yok. İlk puanı alan sıraya girer.</div>${mine}`}
@@ -2347,7 +2348,31 @@ function vRank(){
     ${!CLOUD.write?'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. Sıraya girmek için sahibinden "Katkıda bulunan" izni iste.</div>':''}
     ${CLOUD.lbErr?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':''}`;
   }
-  return`<div class="top"><h1>Sıralama</h1></div><div class="stack">${body}</div>`;
+  const rmode=CLOUD.ready&&(S.prof.name||!CLOUD.write)?`<div class="seg"><button class="chip" aria-pressed="${(R.mode||'gen')!=='ranked'}" data-rm="gen">Genel puan</button><button class="chip" aria-pressed="${R.mode==='ranked'}" data-rm="ranked">🏅 Dereceli düello</button></div>`:'';
+  return`<div class="top"><h1>Sıralama</h1></div><div class="stack">${rmode}${body}</div>`;
+}
+const RKB={per:{},busy:false};
+async function rkbLoad(per,force){
+  if(!sb||!CLOUD.uid||RKB.busy)return;
+  const c=RKB.per[per];if(c&&!force&&Date.now()-c.t<30000)return;
+  RKB.busy=true;
+  try{const r=await sb.rpc('duel_rank',{p_per:per});if(r.error)throw r.error;RKB.per[per]={t:Date.now(),rows:r.data||[]}}
+  catch(e){RKB.per[per]={t:Date.now(),rows:[],err:/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||''))?'setup':'err'}}
+  finally{RKB.busy=false}
+  if(UI.tab==='rank'&&UI.rank.mode==='ranked')render();
+}
+function rankedBoardHtml(per){
+  const c=RKB.per[per];if(!c)rkbLoad(per);
+  const rows=(c&&c.rows||[]).slice();
+  rows.forEach((r,i)=>{r.rank=(i>0&&+rows[i-1].net===+r.net)?rows[i-1].rank:i+1});
+  const wt=weekTop(),TOPN={day:10,week:20,all:30}[per]||10,top=rows.slice(0,TOPN);
+  const row=r=>{const acc=r.a?Math.round(r.c/r.a*100):0,avg=r.a?(Math.round(r.t/r.a/100)/10).toFixed(1):'–',v=+r.net||0,me=r.user_id===CLOUD.uid,u=r.name||'Oyuncu';
+    return`<div class="rk ${me?'me':''} ${r.rank<=3?'top':''}${flCls(r.user_id)}" ${lgAttr(r.user_id)} data-pc="${esc(r.user_id)}"><span class="pos">${r.rank}</span>${avatar(u,r.color|0,false,r.av|0,frameFor(r.user_id,r.fr||''),wt[r.user_id])}<div class="nm">${esc(u)}${me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">G ${r.w} · B ${r.d} · M ${r.l} · %${acc} doğru · ${avg} sn</div></div><div class="val" style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(Math.round(Math.abs(v)*10)/10)}<small>puan</small></div>${flagHtml(r.user_id)}</div>`};
+  const mine=rows.find(r=>r.user_id===CLOUD.uid);
+  const extra=mine&&!top.includes(mine)?`<div class="gap" aria-hidden="true">···</div>${row(mine)}`:'';
+  return`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button></div>
+  <div class="muted small">Yalnızca dereceli düellolardan kazanılan ve kaybedilen puanların toplamı. Bu puanlar genel günlük, haftalık ve toplam puana da işlenir. G: galibiyet, B: beraberlik, M: mağlubiyet. İlk ${TOPN} gösterilir.</div>
+  ${!c?'<div class="empty">Tablo yükleniyor…</div>':c.err==='setup'?'<div class="card"><div class="fb bad">Dereceli sıralama henüz kurulmadı. Yönetici <b>supabase-duel-ranked.sql</b> dosyasını Supabase SQL Editor\'da çalıştırmalı.</div></div>':c.err?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':top.length?top.map(row).join('')+extra:'<div class="empty card">Bu dönemde henüz dereceli maç yok.</div>'}`;
 }
 
 /* ---------- olaylar ---------- */
@@ -2583,6 +2608,15 @@ async function duelSync(){
   }catch(e){}
 }
 const DSTAT={};
+function duelBox(s){
+  const k=s.k||s,r=s.r;
+  const sec=(t,x,rk)=>{
+    if(!x||!x.n)return`<div class="small muted"><b>${t}</b>: henüz maç yok.</div>`;
+    const acc=x.a?Math.round(x.c/x.a*100):0,avg=x.a?(Math.round(x.t/x.a/100)/10).toFixed(1):'–';
+    const net=rk?`<div><b style="color:${x.net>0?'var(--ok)':x.net<0?'var(--bad)':'inherit'}">${x.net>0?'+':x.net<0?'−':'±'}${nf(r1(Math.abs(+x.net||0)))}</b><span>net puan</span></div>`:`<div><b>%${Math.round(x.w/x.n*100)}</b><span>kazanma</span></div>`;
+    return`<div class="stack" style="gap:6px"><b class="small">${t}</b><div class="kp" style="grid-template-columns:repeat(4,1fr)"><div><b>${x.n}</b><span>maç</span></div><div><b>${x.w}-${x.d}-${x.l}</b><span>G-B-M</span></div><div><b>%${acc}</b><span>doğru</span></div>${net}</div><div class="muted small">Ortalama cevap süresi: ${avg} sn</div></div>`};
+  return`<div class="card stack" style="gap:10px;padding:12px"><b>⚔ Düello</b>${sec('Klasik düello',k,false)}${sec('🏅 Dereceli düello',r,true)}</div>`;
+}
 async function duelStat(id){
   if(!sb||id==='bot'||DSTAT[id]!==undefined)return;
   DSTAT[id]=null;
@@ -2763,7 +2797,7 @@ const peerSet=u=>{if(u&&u.id)CHAT.peers[u.id]=Object.assign(CHAT.peers[u.id]||{}
 async function lobbyLoad(){
   if(!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine||LOBBY.busy)return;LOBBY.busy=true;
   try{
-    const r=await sb.rpc('duel_lobby');
+    const r=await sb.rpc('duel_lobby',DUEL.sub==='ranked'?{p_mode:'ranked'}:undefined);
     if(r.error||!r.data){LOBBY.err=/duel_lobby|PGRST202|42883|schema cache/i.test(String(r.error&&(r.error.message||r.error.code)||''))?'setup':'err';if(duelLobbyView())render();return}
     LOBBY.err='';const d=r.data;
     (d.online||[]).forEach(peerSet);(d.duels||[]).forEach(x=>{peerSet(x.a);peerSet(x.b)});if(d.inbox)peerSet(d.inbox.from);if(d.outbox)peerSet(d.outbox.to);
@@ -2965,7 +2999,7 @@ function setTab(t){
   if(t==='chat')chatOpen(t);
 }
 document.addEventListener('click',async e=>{
-  const el=e.target.closest('[data-tab],[data-act],[data-opt],[data-f],[data-set],[data-me],[data-say],[data-rb],[data-rp],[data-ra],[data-sw],[data-adf],[data-av],[data-fr],[data-pc]');
+  const el=e.target.closest('[data-tab],[data-act],[data-opt],[data-f],[data-set],[data-me],[data-say],[data-rb],[data-rp],[data-rm],[data-ra],[data-sw],[data-adf],[data-av],[data-fr],[data-pc]');
   if(!el)return;
   const g=a=>el.getAttribute(a);
   if(g('data-tab')){setTab(g('data-tab'));return}
@@ -2974,6 +3008,7 @@ document.addEventListener('click',async e=>{
   if(el.hasAttribute('data-adf')){UI.adm.filter=g('data-adf');render();return}
   if(el.hasAttribute('data-rb')){UI.rank.board=g('data-rb');render();return}
   if(el.hasAttribute('data-rp')){UI.rank.per=g('data-rp');render();return}
+  if(el.hasAttribute('data-rm')){UI.rank.mode=g('data-rm');render();return}
   if(el.hasAttribute('data-ra')){UI.rank.ach=g('data-ra');render();return}
   if(el.hasAttribute('data-av')){syncDraft();UI.draft.av=+g('data-av');render();return}
   if(el.hasAttribute('data-fr')){syncDraft();UI.draft.frame=g('data-fr');render();return}
@@ -2989,7 +3024,7 @@ document.addEventListener('click',async e=>{
     case'chat-send':chatSend();break;
     case'chat-del':{const id=+g('data-id');const adm=CHAT.pub.some(m=>m.id===id&&m.user_id!==CLOUD.uid);const r=adm?await sb.rpc('admin_delete_chat',{mid:id}):await sb.from('chat_messages').delete().eq('id',id);if(r.error)toast('Silinemedi.');else{CHAT.pub=CHAT.pub.filter(m=>m.id!==id);CHAT.dm=CHAT.dm.filter(m=>m.id!==id);chatPaint()}break}
     case'qmode':UI.qmode=g('data-v');if(UI.quiz&&UI.quiz.done)UI.quiz=null;UI.tab='quiz';lastStudy='quiz';try{sessionStorage.setItem('kd-tab','quiz')}catch(e){}window.scrollTo(0,0);if(UI.qmode==='duel'){if(DUEL.phase==='result')dReset();duelRecord();duelSync();lobbyLoad()}render();break;
-    case'duel-sub':DUEL.sub=g('data-v')==='ranked'&&!DRK_LOCK?'ranked':'classic';if(g('data-v')==='ranked'&&DRK_LOCK)toast('Dereceli düello şimdilik kilitli.');render();break;
+    case'duel-sub':{const nv=g('data-v')==='ranked'&&!DRK_LOCK?'ranked':'classic';if(g('data-v')==='ranked'&&DRK_LOCK)toast('Dereceli düello şimdilik kilitli.');if(nv!==DUEL.sub){DUEL.sub=nv;LOBBY.on=[];LOBBY.duels=[];LOBBY.sig='';LOBBY.busy=false;lobbyLoad()}render();break}
     case'duel-find':duelFind();break;
     case'duel-cancel':duelCancel();break;
     case'inv-send':invSend(g('data-u'));break;

@@ -5,6 +5,8 @@
 --  * Kaybedenin riski = puanı x lig oranı (bronz %10 -> 9, gümüş 9 -> 8, altın 8 -> 7, platin 7 -> 6, zümrüt 6 -> 5, elmas 5 -> 4, ustalık ve üstü %4; ligin içinde doğrusal).
 --  * Kazanan, riskin kendi maç skor payı kadarını alır; kendi riskinin 4 katından fazlasını alamaz. Kazanandan max(1, %5) kesilir.
 --  * Skorlar eşitse beraberlik: kimse puan almaz/kaybetmez. Negatif maç puanı payda 0 sayılır.
+--  * Düello salonu listeleri modlara göre ayrıdır (klasik sekmesindekiler / dereceli sekmesindekiler).
+--  * Profil kartı düello istatistiği iki mod için ayrıdır; dereceli için ayrı sıralama tablosu (duel_rank) vardır.
 --  * Rastgele eşleştirme aynı veya komşu ligde yapılır. Aynı iki kişi arasında 24 saatte en çok 3 dereceli maç oynanabilir.
 -- Supabase SQL Editor'da bir kez çalıştır.
 
@@ -12,6 +14,7 @@ alter table public.duels add column if not exists mode text not null default 'cl
 alter table public.duels add column if not exists rp1 numeric; alter table public.duels add column if not exists rp2 numeric;
 alter table public.duels add column if not exists rk1 numeric; alter table public.duels add column if not exists rk2 numeric;
 alter table public.duels add column if not exists dl1 numeric(9,1); alter table public.duels add column if not exists dl2 numeric(9,1);
+alter table public.profiles add column if not exists duel_mode text not null default 'classic';
 alter table public.duel_queue add column if not exists mode text not null default 'classic';
 alter table public.duel_invites add column if not exists mode text not null default 'classic';
 create index if not exists duels_mode_idx on public.duels(mode, created_at desc);
@@ -150,12 +153,13 @@ revoke all on function public.duel_join(int, text) from public, anon;
 grant execute on function public.duel_join(int, text) to authenticated;
 
 -- Salon: kişi başına ap (puan), lowr = dereceli için yetersiz; teklif ve düello satırlarında mode
-create or replace function public.duel_lobby() returns jsonb
+drop function if exists public.duel_lobby();
+create or replace function public.duel_lobby(p_mode text default 'classic') returns jsonb
 language plpgsql security definer set search_path = public as $$
-declare uid uuid := auth.uid(); r jsonb;
+declare uid uuid := auth.uid(); r jsonb; m text := case when p_mode = 'ranked' then 'ranked' else 'classic' end;
 begin
   if uid is null or not public.is_approved() then raise exception 'not allowed'; end if;
-  update public.profiles set duel_seen = now() where user_id = uid;
+  update public.profiles set duel_seen = now(), duel_mode = m where user_id = uid;
   select jsonb_build_object(
     'online', coalesce((select jsonb_agg(public.duel_person(p.user_id) || jsonb_build_object(
           'low', coalesce(s.ap, 0) < 20, 'lowr', coalesce(s.ap, 0) < 200, 'ap', coalesce(s.ap, 0),
@@ -163,11 +167,11 @@ begin
                      when exists(select 1 from public.duel_invites i where i.status = 'pending' and i.expires_at > now() and p.user_id in (i.from_user, i.to_user)) then 'invite'
                      else 'free' end) order by coalesce(s.name, p.username))
         from public.profiles p left join public.scores s on s.user_id = p.user_id
-        where p.user_id <> uid and p.duel_seen > now() - interval '12 seconds'
+        where p.user_id <> uid and p.duel_seen > now() - interval '12 seconds' and p.duel_mode = m
           and (p.approved or exists(select 1 from public.admins a where a.user_id = p.user_id))), '[]'::jsonb),
     'duels', coalesce((select jsonb_agg(jsonb_build_object('id', t.id, 'a', public.duel_person(t.p1), 'b', public.duel_person(t.p2),
           'a1', t.a1, 'a2', t.a2, 'qn', t.qn, 's1', t.s1, 's2', t.s2, 'mode', t.mode) order by t.created_at desc)
-        from (select * from public.duels d where d.status = 'active' and now() < d.start_at + make_interval(secs => d.qn * d.per_q + 15)
+        from (select * from public.duels d where d.status = 'active' and d.mode = m and now() < d.start_at + make_interval(secs => d.qn * d.per_q + 15)
               order by d.created_at desc limit 10) t), '[]'::jsonb),
     'inbox', (select jsonb_build_object('id', i.id, 'mode', i.mode, 'from', public.duel_person(i.from_user) || jsonb_build_object('ap', coalesce((select ap from public.scores where user_id = i.from_user), 0)),
                 'left_ms', greatest(0, floor(extract(epoch from (i.expires_at - now())) * 1000))::int)
@@ -197,7 +201,7 @@ begin
   if m = 'ranked' and not public.duel_pair_ok(uid, target) then raise exception 'pair limit'; end if;
   if public.duel_busy(uid) then raise exception 'me busy'; end if;
   if public.duel_busy(target) then raise exception 'target busy'; end if;
-  if not exists(select 1 from public.profiles where user_id = target and duel_seen > now() - interval '15 seconds') then raise exception 'offline'; end if;
+  if not exists(select 1 from public.profiles where user_id = target and duel_seen > now() - interval '15 seconds' and duel_mode = m) then raise exception 'offline'; end if;
   if exists(select 1 from public.duel_invites i where i.status = 'pending' and i.expires_at > now()
             and (i.from_user in (uid, target) or i.to_user in (uid, target))) then raise exception 'invite busy'; end if;
   if (select count(*) from public.duel_invites where from_user = uid and created_at > now() - interval '1 minute') >= 8 then raise exception 'too many'; end if;
@@ -240,9 +244,9 @@ begin
   update public.duel_invites set status = 'accepted', duel_id = did where id = inv;
   return jsonb_build_object('status', 'accepted', 'duel_id', did);
 end $$;
-revoke all on function public.duel_lobby() from public, anon;
+revoke all on function public.duel_lobby(text) from public, anon;
 revoke all on function public.duel_respond(uuid, boolean, int) from public, anon;
-grant execute on function public.duel_lobby() to authenticated;
+grant execute on function public.duel_lobby(text) to authenticated;
 grant execute on function public.duel_respond(uuid, boolean, int) to authenticated;
 
 -- Herkese açık maç geçmişi (mode ve puan değişimiyle)
@@ -257,3 +261,54 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.duel_history(int) from public, anon;
 grant execute on function public.duel_history(int) to authenticated;
+
+-- Profil kartı istatistiği: klasik (k) ve dereceli (r) ayrı. Üst düzeydeki n/w/l/d eski sürümler için klasik toplamıdır.
+create or replace function public.duel_stats(target uuid) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare k jsonb; r jsonb;
+begin
+  if not public.is_approved() then raise exception 'not allowed'; end if;
+  select jsonb_build_object('n', count(*), 'w', count(*) filter (where winner = target),
+         'l', count(*) filter (where winner is not null and winner <> target), 'd', count(*) filter (where winner is null),
+         'c', coalesce(sum(case when p1 = target then c1 else c2 end), 0), 'a', coalesce(sum(case when p1 = target then a1 else a2 end), 0),
+         't', coalesce(sum(case when p1 = target then t1 else t2 end), 0)) into k
+  from public.duels where status = 'done' and mode <> 'ranked' and target in (p1, p2);
+  select jsonb_build_object('n', count(*), 'w', count(*) filter (where winner = target),
+         'l', count(*) filter (where winner is not null and winner <> target), 'd', count(*) filter (where winner is null),
+         'c', coalesce(sum(case when p1 = target then c1 else c2 end), 0), 'a', coalesce(sum(case when p1 = target then a1 else a2 end), 0),
+         't', coalesce(sum(case when p1 = target then t1 else t2 end), 0),
+         'net', coalesce(sum(case when p1 = target then dl1 else dl2 end), 0)) into r
+  from public.duels where status = 'done' and mode = 'ranked' and target in (p1, p2);
+  return k || jsonb_build_object('k', k, 'r', r);
+end $$;
+revoke all on function public.duel_stats(uuid) from public, anon;
+grant execute on function public.duel_stats(uuid) to authenticated;
+
+-- Dereceli sıralama: yalnızca dereceli maçlardan gelen puan değişimlerinin toplamı (kazanç ve kayıp). p_per: day | week | all
+drop function if exists public.duel_rank(text);
+create or replace function public.duel_rank(p_per text default 'all')
+returns table(user_id uuid, name text, color int, av int, fr text, n int, w int, l int, d int, net numeric, c int, a int, t numeric)
+language sql stable security definer set search_path = public as $$
+  with lim as (
+    select case p_per
+      when 'day' then date_trunc('day', now() at time zone 'Europe/Istanbul') at time zone 'Europe/Istanbul'
+      when 'week' then date_trunc('week', now() at time zone 'Europe/Istanbul') at time zone 'Europe/Istanbul'
+      else '-infinity'::timestamptz end as since
+  ), x as (
+    select q.p1 as u, coalesce(q.winner = q.p1, false) as win, q.winner is null as dr, q.dl1 as dl, q.c1 as cc, q.a1 as aa, q.t1 as tt
+      from public.duels q, lim where q.mode = 'ranked' and q.status = 'done' and q.done_at >= lim.since
+    union all
+    select q.p2, coalesce(q.winner = q.p2, false), q.winner is null, q.dl2, q.c2, q.a2, q.t2
+      from public.duels q, lim where q.mode = 'ranked' and q.status = 'done' and q.done_at >= lim.since
+  )
+  select x.u, coalesce(s.name, p.username), coalesce(s.color, 0), coalesce(s.av, 0), coalesce(s.fr, ''),
+         count(*)::int, (count(*) filter (where x.win))::int, (count(*) filter (where not x.win and not x.dr))::int, (count(*) filter (where x.dr))::int,
+         coalesce(sum(x.dl), 0), coalesce(sum(x.cc), 0)::int, coalesce(sum(x.aa), 0)::int, coalesce(sum(x.tt), 0)::numeric
+  from x left join public.scores s on s.user_id = x.u left join public.profiles p on p.user_id = x.u
+  where auth.uid() is not null and public.is_approved()
+  group by x.u, s.name, s.color, s.av, s.fr, p.username
+  order by coalesce(sum(x.dl), 0) desc, count(*) desc
+  limit 60
+$$;
+revoke all on function public.duel_rank(text) from public, anon;
+grant execute on function public.duel_rank(text) to authenticated;
