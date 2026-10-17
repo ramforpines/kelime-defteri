@@ -345,7 +345,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.42.0';
+const APP_VERSION='4.42.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1543,9 +1543,21 @@ function phraseDefQ(t){
   const d=shuffle(pool).slice(0,3).map(r=>r.word);if(d.length<3)return null;
   return{question:'Hangi ifade şu anlama gelir?\n"'+t.def+'"',correct:t.word,distractors:d};
 }
-function pickDistractors(t,textFn,filterFn){
+/* kapalı kümeler: yön, gün, ay, mevsim, renk, aile: bu kelimelerde şıklar aynı kümeden seçilir (ör. güney → north / east / west) */
+const CLOSED_SETS=['north south east west'.split(' '),'monday tuesday wednesday thursday friday saturday sunday'.split(' '),'january february april june july august september october november december'.split(' '),'spring summer autumn winter'.split(' '),'red blue green yellow black white brown pink purple orange gray'.split(' '),'mother father sister brother grandmother grandfather aunt uncle cousin'.split(' ')];
+let CLOSED_IDX=null;
+function closedMates(t){
+  if(!CLOSED_IDX){CLOSED_IDX={};W.forEach(r=>{CLOSED_IDX[String(r.word).toLowerCase().trim()]=r})}
+  const k=String(t.word).toLowerCase().trim(),set=CLOSED_SETS.find(x=>x.indexOf(k)!==-1);
+  if(!set)return[];
+  return set.filter(x=>x!==k).map(x=>CLOSED_IDX[x]).filter(r=>r&&String(r.tr||'').toLowerCase()!==String(t.tr||'').toLowerCase());
+}
+function pickDistractors(t,textFn,filterFn,closed){
   const tk=posKey(t);
   const out=[],used={};
+  if(closed){
+    for(const r of shuffle(closedMates(t))){const txt=textFn(r);if(!txt||used[txt.toLowerCase()])continue;used[txt.toLowerCase()]=1;out.push(txt);if(out.length===3)return out}
+  }
   // havuzdan rastgele örnekle; aynı türdekiler önce
   const tries=Math.min(W.length,900);
   const start=Math.floor(Math.random()*W.length);
@@ -1592,11 +1604,11 @@ function buildQuestion(t,k,opts){
     const tp=parts(t.tr);
     const rev=opts&&opts.reverse!==undefined?opts.reverse:Math.random()<REVERSE_RATE;
     if(rev){
-      const rd=pickDistractors(t,r=>r.word,r=>r.tr&&!trOverlap(t.tr,r.tr)&&!related(t,r));
+      const rd=pickDistractors(t,r=>r.word,r=>r.tr&&!trOverlap(t.tr,r.tr)&&!related(t,r),true);
       if(rd.length===3)return{question:'"'+t.tr+'" karşılığı hangi İngilizce kelime/ifadedir?',correct:t.word,distractors:rd};
     }
     q='"'+t.word+'" kelimesinin Türkçe karşılığı hangisidir?';correct=t.tr;
-    d=pickDistractors(t,r=>r.tr,r=>r.tr&&!trOverlap(t.tr,r.tr)&&!related(t,r));
+    d=pickDistractors(t,r=>r.tr,r=>r.tr&&!trOverlap(t.tr,r.tr)&&!related(t,r),true);
   }else if(k===1){
     q='"'+t.word+'" kelimesinin İngilizce tanımı hangisidir?';correct=t.def;
     d=pickDistractors(t,r=>r.def,r=>r.def&&r.def.toLowerCase()!==t.def.toLowerCase()&&!similarText(t.def,r.def)&&!related(t,r));
