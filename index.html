@@ -345,7 +345,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.40.0';
+const APP_VERSION='4.40.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2832,10 +2832,13 @@ function lobbyCard(){
 function duelHist(){
   const H=DUEL.hist;if(!H)return'';
   const dt=x=>{try{const d=new Date(x);return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}catch(e){return''}};
-  const side=(id,sc,win)=>{const u=dPeer(id)||{};return`<div style="flex:1;min-width:0;text-align:center"><div class="row" style="justify-content:center;gap:6px">${avatar(u.name||'?',u.color,false,u.av,frameFor(id,'auto'))}</div><div class="small" style="overflow-wrap:anywhere;font-weight:${win?700:400}">${esc(u.name||'Oyuncu')}</div><b class="mono">${nf(sc||0)}</b></div>`};
-  const rows=H.map(x=>{const mine=x.p1===CLOUD.uid||x.p2===CLOUD.uid,w=x.winner,res=!w?'D':!mine?'N':w===CLOUD.uid?'W':'L',lab={W:'Galibiyet',L:'Mağlubiyet',D:'Beraberlik',N:'Maç'}[res],cls={W:'ok',L:'bad',D:'',N:''}[res];
-    return`<div class="entry" style="padding:10px 0"><div class="row" style="justify-content:space-between"><span class="badge ${cls}">${lab}</span><span class="small muted">${dt(x.created_at)}</span></div><div class="row" style="gap:8px;margin-top:6px;align-items:flex-start">${side(x.p1,x.s1,w===x.p1)}<div class="muted" style="align-self:center">vs</div>${side(x.p2,x.s2,w===x.p2)}</div></div>`}).join('');
-  return`<div class="card stack"><h2>Maç geçmişi</h2>${H.length?`<div style="max-height:380px;overflow-y:auto;overscroll-behavior:contain">${rows}</div><div class="small muted">Son ${H.length} maç${DUEL.allOk?' (tüm oyuncular)':' (yalnızca senin maçların; tüm maçlar için supabase-duel-history.sql çalıştırılmalı)'} · her maçta toplanan maç puanı gösterilir.</div>`:'<div class="small muted">Henüz tamamlanmış düellon yok.</div>'}</div>`;
+  const side=(id,sc,st,right)=>{const u=dPeer(id)||{},bg=st==='w'?'background:rgba(59,130,246,.22)':st==='l'?'background:var(--bad-bg)':'background:var(--surface2)';
+    const av=`<span style="flex:none;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;overflow:visible"><span style="display:inline-flex;transform:scale(.55);transform-origin:center">${avatar(u.name||'?',u.color,false,u.av,frameFor(id,'auto'))}</span></span>`;
+    const tx=`<div style="min-width:0;flex:1;line-height:1.15"><div class="small" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:${st==='w'?700:500}">${esc(u.name||'Oyuncu')}</div><b class="mono small">${nf(sc||0)}</b></div>`;
+    return`<div style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;${bg};flex-direction:${right?'row-reverse':'row'};${right?'text-align:right;':''}">${av}${tx}</div>`};
+  const rows=H.map(x=>{const w=x.winner;
+    return`<div style="display:flex;align-items:center;gap:6px;padding:3px 0" title="${esc(dt(x.created_at))}">${side(x.p1,x.s1,!w?'d':w===x.p1?'w':'l',false)}<span class="muted" style="font-size:.7rem;flex:none">vs</span>${side(x.p2,x.s2,!w?'d':w===x.p2?'w':'l',true)}</div>`}).join('');
+  return`<div class="card stack" style="gap:8px"><h2>Maç geçmişi</h2>${H.length?`<div style="max-height:250px;overflow-y:auto;overscroll-behavior:contain">${rows}</div><div class="small muted">Son ${H.length} maç${DUEL.allOk?' (tüm oyuncular)':' (yalnızca senin maçların; tüm maçlar için supabase-duel-history.sql çalıştırılmalı)'} · <span style="color:#3b82f6">mavi</span> kazanan, <span style="color:var(--bad)">kırmızı</span> kaybeden, gri beraberlik · her maçta toplanan maç puanı.</div>`:'<div class="small muted">Henüz tamamlanmış düello yok.</div>'}</div>`;
 }
 function vDuel(){
   const P=DUEL.phase,d=DUEL.d,n=DQ_N;
