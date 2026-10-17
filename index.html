@@ -229,6 +229,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .rk .avw{justify-self:center}
 .rk.me{border-color:var(--accent);background:var(--accent-soft)}
 .flg{position:absolute;top:-1px;right:14px;width:19px;height:56px;z-index:6;pointer-events:auto;cursor:default;outline:none;transform-origin:50% 0;animation:flgsw 4.2s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
+.flg.daychamp::after{color:#7a4b00;background:#fff2a8;border-color:#e08a00}
 .flg::after{content:attr(data-tip);position:absolute;right:calc(100% + 6px);top:14px;white-space:nowrap;background:#111;color:#ffd000;border:1px solid #ffd000;border-radius:6px;padding:3px 8px;font:800 .72rem var(--font-body);opacity:0;transform:translateX(4px);transition:opacity .15s,transform .15s;pointer-events:none}
 .flg:hover::after,.flg:focus::after{opacity:1;transform:none}
 .flg svg{display:block;width:100%;height:100%;overflow:visible}
@@ -345,7 +346,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.43.0';
+const APP_VERSION='4.44.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -393,14 +394,18 @@ function leagueMap(){
 const isAdm=id=>id===CLOUD.uid?!!CLOUD.admin:!!((CLOUD.lb.find(x=>x.id===id)||(typeof CHAT!=='undefined'&&CHAT.peers[id])||{}).ad);
 const FLAGS=[{id:'maker',n:'Test eden yapımcı',l:['TEST EDEN','YAPIMCI']}];
 const BYFLAG=new Map(FLAGS.map(f=>[f.id,f]));
-const flagOf=id=>{const m=CLOUD.flags||{};const k=m[id];if(k&&BYFLAG.has(k))return BYFLAG.get(k);if(CLOUD.flagsErr&&isAdm(id))return BYFLAG.get('maker');return null};
+const AUTOFLAG={id:'daychamp',n:'Dünün birincisi',auto:true};   // otomatik: yalnızca dünün günlük lideri, 1 gün boyunca
+const flagOf=id=>{const m=CLOUD.flags||{};const k=m[id];if(k&&BYFLAG.has(k))return BYFLAG.get(k);if(CLOUD.flagsErr&&isAdm(id))return BYFLAG.get('maker');
+  const L=CLOUD.ld&&CLOUD.ld.day;if(L){const a=Array.isArray(L)?L:[L];if(a.some(x=>x&&x.id===id))return AUTOFLAG}
+  return null};
 const flagPath=ph=>{const R=[],L=[];for(let y=0;y<=84;y+=6){const a=.4+y/84*2.6,w=Math.sin(y/13-ph);R.push((32+a*w).toFixed(1)+','+y);L.unshift((2+a*Math.sin(y/13-ph+.35)).toFixed(1)+','+y)}
   const sw=Math.sin(84/13-ph)*3,xr=32+sw,xl=2+Math.sin(84/13-ph+.35)*3;
   return'M'+R.join(' L')+' L'+xr.toFixed(1)+',100 L17,'+(86+sw*.6).toFixed(1)+' L'+xl.toFixed(1)+',100 L'+L.join(' L')+' Z'};
 const FLAGD=(()=>{const a=[];for(let k=0;k<=8;k++)a.push(flagPath(k/8*Math.PI*2));return a.join(';')})();
 const REDM=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion:reduce)').matches;
-const flagHtml=id=>{const f=flagOf(id);if(!f)return'';const d0=flagPath(0);
-  return`<span class="flg ${f.id}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><pattern id="flgp" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="6" fill="#ffd000"/><rect y="6" width="12" height="6" fill="#111"/></pattern></defs><path d="${d0}" fill="url(#flgp)" stroke="#111" stroke-width="1.6" stroke-linejoin="round">${REDM?'':`<animate attributeName="d" dur="3.4s" repeatCount="indefinite" values="${FLAGD}"/>`}</path></svg></span>`};
+const flagHtml=id=>{const f=flagOf(id);if(!f)return'';const d0=flagPath(0),an=REDM?'':`<animate attributeName="d" dur="3.4s" repeatCount="indefinite" values="${FLAGD}"/>`;
+  if(f.auto)return`<span class="flg ${f.id}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><linearGradient id="flgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2a8"/><stop offset=".45" stop-color="#ffc928"/><stop offset="1" stop-color="#e08a00"/></linearGradient></defs><path d="${d0}" fill="url(#flgd)" stroke="#7a4b00" stroke-width="1.6" stroke-linejoin="round">${an}</path><path d="M17 17 l3.2 6.6 7.2 1 -5.2 5.1 1.2 7.2 -6.4 -3.4 -6.4 3.4 1.2 -7.2 -5.2 -5.1 7.2 -1 z" fill="#7a4b00"/><path d="M8 52 q9 -6 18 0 M8 60 q9 -6 18 0" fill="none" stroke="#7a4b00" stroke-width="1.6" stroke-linecap="round"/></svg></span>`;
+  return`<span class="flg ${f.id}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><pattern id="flgp" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="6" fill="#ffd000"/><rect y="6" width="12" height="6" fill="#111"/></pattern></defs><path d="${d0}" fill="url(#flgp)" stroke="#111" stroke-width="1.6" stroke-linejoin="round">${an}</path></svg></span>`};
 const flCls=id=>flagOf(id)?' hasfl':'';
 const lgAttr=id=>`data-lg="${isAdm(id)?'admin':(leagueMap()[id]|0)}"`;
 const myLeague=()=>leagueMap()[CLOUD.uid]|0;
@@ -1257,6 +1262,7 @@ function vHelp(){
     '<b>Sıra</b> sekmesinde Günlük, Haftalık ve Tüm zamanlar tablolarını görürsün. Günlük puan her gün gece yarısı sıfırlanır.',
     'Her ligin kendine ait profil çerçevesi vardır. Ben → Profil\'den adını, avatarını ve çerçevenin görünümünü seçebilirsin. Seçtiğin çerçeve ulaştığın ligi geçemez.',
     '<b>Gün Lideri / Hafta Lideri</b>: bir günü ya da haftayı sıralamada birinci bitiren kişi bu unvanı kazanır. Profil kartında "3 x Gün Lideri", "2 x Hafta Lideri" gibi sayaçlar görünür; Bugün ekranında da dünün ve geçen haftanın lideri puanıyla gösterilir. Sayım yönetici bu özelliği açtığı günden itibaren tutulur.',
+    '<b>Dünün birincisi</b>: günlük sıralamada bir önceki günün birincisi, ertesi gün boyunca profil satırında ve kartında altın yıldızlı flama taşır; ertesi gün kalkar.',
     '<b>Flama</b>: yönetici bazı kullanıcılara özel flama verir (ör. Test eden yapımcı). Flama profil satırının ve kartının sağında sallanır; üzerine gelince ne olduğunu görürsün.',
     'Bir kullanıcıya dokunarak profil kartını açar; puanını, serisini, rozetlerini ve düello istatistiğini görür, ona mesaj gönderebilirsin.']))}
   ${sec('🏅 Rozetler',li([
