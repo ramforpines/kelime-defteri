@@ -277,6 +277,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .avgrid button svg{width:100%;height:100%;display:block;border-radius:8px}
 .avgrid button{height:48px;border-radius:12px;border:2px solid var(--line);background:var(--surface);font-size:1.1rem;padding:2px;overflow:hidden}
 .avgrid button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.frgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}.frg{position:relative;justify-content:center;padding:10px 4px;width:auto}.frg .frl{position:absolute;right:4px;bottom:2px;font-size:.62rem;font-weight:700;color:var(--muted,#667)}
 .frp{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:8px 10px;border:2px solid var(--line);border-radius:12px;background:var(--surface)}
 .frp[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}.frp[disabled]{opacity:.55}
 .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
@@ -346,7 +347,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.51.1';
+const APP_VERSION='4.51.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2252,12 +2253,12 @@ function profileForm(){
   const d=UI.draft||(UI.draft=newDraft());
   const t=awardStats(),wt=weekTop();
   const cur=myLeague();
-  const frames=LEAGUES.map((l,i)=>{const ok=i<=cur;return`<button class="frp" data-fr="${l.k}" aria-pressed="${d.frame===l.k}" ${ok?'':'disabled'}>${avatar(d.name,d.color,false,d.av,l.k)}<span><b>${l.n}</b><br><span class="small muted">${ok?l.rng+' puan':'🔒 '+(l.need||l.rng+' puan')}</span></span></button>`}).join('');
+  const frames=LEAGUES.map((l,i)=>{const ok=i<=cur;return`<button class="frp frg" data-fr="${l.k}" aria-pressed="${d.frame===l.k}" aria-label="${esc(l.n)}${ok?'':' (kilitli)'}" title="${esc(l.n)}" ${ok?'':'disabled'}>${avatar(d.name,d.color,false,d.av,l.k)}${ok?'':'<span class="frl">🔒</span>'}</button>`}).join('');
   return`<div class="stack"><div class="row">${avatar(d.name,d.color,true,d.av,frameFor(CLOUD.uid,d.frame),wt[CLOUD.uid])}<div class="muted small" style="flex:1;min-width:140px">Liderlik tablosunda bu ad, avatar ve çerçeveyle görünürsün.</div></div>
   <label class="f">Görünen ad<input id="pname" class="nameinp" maxlength="24" value="${esc(d.name)}" autocomplete="off" placeholder="Örn. Ayşe"></label>
   <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Avatar</div><div class="avgrid"><button data-av="0" aria-pressed="${!d.av}" aria-label="Harf">Aa</button>${AVATARS.map((e,i)=>(i+1===ADMIN_AV&&!CLOUD.admin)?'':`<button data-av="${i+1}" aria-pressed="${d.av===i+1}" aria-label="${esc(e[0])}" title="${esc(e[0])}">${avSvg(i+1)}</button>`).join('')}</div></div>
   <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Renk</div><div class="sw">${COLORS.map((c,i)=>`<button style="background:${c}" data-sw="${i}" aria-pressed="${d.color===i}" aria-label="Renk ${i+1}"></button>`).join('')}</div></div>
-  <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Çerçeve</div><div class="stack" style="gap:6px"><button class="frp" data-fr="auto" aria-pressed="${d.frame==='auto'}">${avatar(d.name,d.color,false,d.av,LEAGUES[cur].k)}<span><b>Otomatik</b><br><span class="small muted">Şu anki ligin: ${LEAGUES[cur].n}</span></span></button><button class="frp" data-fr="none" aria-pressed="${d.frame==='none'}"><span class="small"><b>Çerçevesiz</b></span></button>${frames}</div></div>
+  <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Çerçeve</div><div class="frgrid"><button class="frp frg" data-fr="auto" aria-pressed="${d.frame==='auto'}" aria-label="Otomatik (şu anki ligin: ${esc(LEAGUES[cur].n)})" title="Otomatik">${avatar(d.name,d.color,false,d.av,LEAGUES[cur].k)}<span class="frl">Oto</span></button><button class="frp frg" data-fr="none" aria-pressed="${d.frame==='none'}" aria-label="Çerçevesiz" title="Çerçevesiz">${avatar(d.name,d.color,false,d.av,'')}<span class="frl">Yok</span></button>${frames}</div></div>
   <button class="btn primary" data-act="save-prof">Profili kaydet</button></div>`;
 }
 function leagueCard(){
