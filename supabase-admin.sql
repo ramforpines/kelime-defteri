@@ -77,6 +77,7 @@ revoke all on public.profiles from anon;
 revoke all on public.admins from anon;
 
 -- 4) Yönetici işlemleri (yalnızca admins tablosundakiler çağırabilir)
+drop function if exists public.admin_list_users();
 create or replace function public.admin_list_users()
 returns table(user_id uuid, username text, name text, approved boolean, is_admin boolean,
               created_at timestamptz, last_sign_in_at timestamptz)
