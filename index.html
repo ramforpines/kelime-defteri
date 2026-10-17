@@ -345,7 +345,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.38.0';
+const APP_VERSION='4.38.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -512,6 +512,8 @@ function myPoints(){
   const t0=today(),wk=weekKey(),D={A:0,C:0,pts:0},W={A:0,C:0,pts:0};
   const x=S.days[t0];if(x){D.A=x.a||0;D.C=x.c||0;D.pts=x.p||0}
   Object.keys(S.days).forEach(k=>{if(k>=wk){const y=S.days[k];W.A+=y.a||0;W.C+=y.c||0;W.pts+=y.p||0}});
+  (S.pen||[]).forEach(e=>{if(e.d>=wk)W.pts-=e.amt||0});   // günlük hedef kesintileri haftalığa da yansır
+  W.pts=Math.max(0,Math.min(W.pts,S.tp||0));   // haftalık puan toplam puanı geçemez
   let A=0,C=0;Object.keys(S.lv).forEach(l=>{C+=S.lv[l][0];A+=S.lv[l][0]+S.lv[l][1]});
   return{D,W,T:{A,C,pts:Math.max(0,S.tp||0)}};
 }
