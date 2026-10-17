@@ -345,7 +345,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.38.3';
+const APP_VERSION='4.38.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -576,7 +576,7 @@ function mergeStates(a,b){
   Object.keys(m.learned).forEach(w=>{delete m.prog[w]});
   const bd=Object.assign({},ot.bd||{}),mb=m.bd||{};Object.keys(mb).forEach(k=>{bd[k]=bd[k]&&bd[k]<mb[k]?bd[k]:mb[k]});m.bd=bd;
   m.bs=Math.max(m.bs||0,ot.bs||0);m.br=Math.max(m.br||0,ot.br||0);
-  Object.keys(ot.days||{}).forEach(k=>{const x=m.days[k],y=ot.days[k];if(!x||(y.a|0)>(x.a|0))m.days[k]=y});
+  Object.keys(ot.days||{}).forEach(k=>{const x=m.days[k],y=ot.days[k];if(!x||(y.a|0)>(x.a|0)){const nt=q=>q?(q.p||0)+(q.adj||0):0;m.tp=Math.max(0,(m.tp||0)+nt(y)-nt(x));m.days[k]=y}});   // gün başka cihazdan alınırsa farkı toplam puana da yansıt
   Object.keys(ot.lv||{}).forEach(k=>{const x=m.lv[k],y=ot.lv[k];m.lv[k]=x?[Math.max(x[0]|0,y[0]|0),Math.max(x[1]|0,y[1]|0)]:y});
   m.dl=Object.assign({},ot.dl||{},m.dl||{});Object.keys(ot.dl||{}).forEach(k=>{const x=m.dl[k],y=ot.dl[k];if(x&&y){x.s=x.s||y.s;x.p=x.p||y.p}});
   m.upd=Date.now();
