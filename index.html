@@ -347,7 +347,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.52.0';
+const APP_VERSION='4.52.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -377,8 +377,8 @@ const LEAGUES=[
 const LGIDX=new Map(LEAGUES.map((l,i)=>[l.k,i]));
 let lgMemo=null;
 function ownPts(){return r1(myPoints().T.pts)}
-const winsReq=i=>({4:10,5:20,6:50,7:100,8:100,9:100})[i]||0;   // lig için gereken dereceli düello galibiyeti
-const winsCap=w=>w>=100?9:w>=50?6:w>=20?5:w>=10?4:3;
+const winsReq=i=>({4:20,5:50,6:100,7:200,8:200,9:200})[i]||0;   // lig için gereken dereceli düello galibiyeti
+const winsCap=w=>w>=200?9:w>=100?6:w>=50?5:w>=20?4:3;
 async function loadWins(){
   if(!sb||!CLOUD.uid)return;
   try{const r=await sb.rpc('duel_wins');if(!r.error&&Array.isArray(r.data)){const m={};r.data.forEach(x=>{m[x.user_id]=x.w|0});CLOUD.rw=m;CLOUD.rwOk=true;CLOUD.rwv=(CLOUD.rwv||0)+1}}catch(e){}
@@ -1268,7 +1268,7 @@ function vHelp(){
     '<b>Günlük soru puanı sınırı</b>: Sorulardan, bonuslardan ve tekrar listesinden bir günde en fazla '+QCAP+' puan kazanabilirsin. Düello puanları bu sınıra girmez, sınırsız eklenir.',
     'Daha ayrıntılı hesap için Sıra sekmesindeki "Puan nasıl hesaplanır?" kutusuna bak.']))}
   ${sec('🏆 Ligler ve sıralama',li([
-    'Toplam puanına göre lig belirlenir: '+LEAGUES.map(l=>'<b>'+l.n+'</b> ('+l.rng+')').join(', ')+'. Büyükustalık ve Şampiyonluk için puan yanında sıralamadaki yer de aranır. Platin için 10, Zümrüt için 20, Elmas için 50, Ustalık ve üstü için 100 dereceli düello galibiyeti de gerekir (rakibin ligi seninkinden en çok 2 lig farklıysa sayılır). Puanın yetse bile bu şart sağlanmadan lige geçemezsin. Günlük hedef, yanlış cevap cezası ve izin günleri puana değil ligine göre belirlenir.',
+    'Toplam puanına göre lig belirlenir: '+LEAGUES.map(l=>'<b>'+l.n+'</b> ('+l.rng+')').join(', ')+'. Büyükustalık ve Şampiyonluk için puan yanında sıralamadaki yer de aranır. Platin için 20, Zümrüt için 50, Elmas için 100, Ustalık ve üstü için 200 dereceli düello galibiyeti de gerekir (rakibin ligi seninkinden en çok 2 lig farklıysa sayılır). Puanın yetse bile bu şart sağlanmadan lige geçemezsin. Günlük hedef, yanlış cevap cezası ve izin günleri puana değil ligine göre belirlenir.',
     '<b>Sıra</b> sekmesinde Günlük, Haftalık ve Tüm zamanlar tablolarını görürsün. Günlük puan her gün gece yarısı sıfırlanır.',
     'Her ligin kendine ait profil çerçevesi vardır. Ben → Profil\'den adını, avatarını ve çerçevenin görünümünü seçebilirsin. Seçtiğin çerçeve ulaştığın ligi geçemez.',
     '<b>Gün Lideri / Hafta Lideri</b>: bir günü ya da haftayı sıralamada birinci bitiren kişi bu unvanı kazanır. Profil kartında "3 x Gün Lideri", "2 x Hafta Lideri" gibi sayaçlar görünür; Bugün ekranında da dünün ve geçen haftanın lideri puanıyla gösterilir. Sayım yönetici bu özelliği açtığı günden itibaren tutulur.',

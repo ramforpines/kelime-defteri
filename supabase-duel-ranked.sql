@@ -7,7 +7,7 @@
 --  * Skorlar eşitse beraberlik: kimse puan almaz/kaybetmez. Negatif maç puanı payda 0 sayılır.
 --  * Düello salonu listeleri modlara göre ayrıdır (klasik sekmesindekiler / dereceli sekmesindekiler).
 --  * Profil kartı düello istatistiği iki mod için ayrıdır; dereceli için ayrı sıralama tablosu (duel_rank) vardır.
---  * Lig şartı: Platin 10, Zümrüt 20, Elmas 50, Ustalık 100 dereceli galibiyet (rakip +-2 lig içindeyse sayılır). Rastgele eşleştirme etkin ligde aynı veya komşu ligde yapılır. Aynı iki kişi arasında 24 saatte en çok 3 dereceli maç oynanabilir.
+--  * Lig şartı: Platin 20, Zümrüt 50, Elmas 100, Ustalık 200 dereceli galibiyet (rakip +-2 lig içindeyse sayılır). Rastgele eşleştirme etkin ligde aynı veya komşu ligde yapılır. Aynı iki kişi arasında 24 saatte en çok 3 dereceli maç oynanabilir.
 -- Supabase SQL Editor'da bir kez çalıştır.
 
 alter table public.duels add column if not exists mode text not null default 'classic';
@@ -40,14 +40,14 @@ $$;
 revoke all on function public.duel_rate(numeric), public.duel_risk(numeric), public.duel_lg(numeric) from public, anon, authenticated;
 
 -- Dereceli galibiyet sayısı (lig şartı): yalnızca rakibin puan ligi, kazananın puan ligiyle en çok 2 lig farklıysa sayılır (maç başındaki puanlara göre).
--- Platin için 10, Zümrüt için 20, Elmas için 50, Ustalık ve üstü için 100 galibiyet gerekir; bundan önceki ligler için şart yoktur.
+-- Platin için 20, Zümrüt için 50, Elmas için 100, Ustalık ve üstü için 200 galibiyet gerekir; bundan önceki ligler için şart yoktur.
 create or replace function public.duel_wincount(u uuid) returns int language sql stable security definer set search_path = public as $$
   select count(*)::int from public.duels d
   where d.mode = 'ranked' and d.status = 'done' and d.winner = u
     and abs(public.duel_lg(case when d.winner = d.p1 then d.rp1 else d.rp2 end) - public.duel_lg(case when d.winner = d.p1 then d.rp2 else d.rp1 end)) <= 2
 $$;
 create or replace function public.duel_wcap(w int) returns int language sql immutable as $$
-  select case when w >= 100 then 9 when w >= 50 then 6 when w >= 20 then 5 when w >= 10 then 4 else 3 end
+  select case when w >= 200 then 9 when w >= 100 then 6 when w >= 50 then 5 when w >= 20 then 4 else 3 end
 $$;
 -- etkin lig: puan ligi ile galibiyet şartının düşüğü (eşleştirmede kullanılır)
 create or replace function public.duel_elg(u uuid) returns int language sql stable security definer set search_path = public as $$
