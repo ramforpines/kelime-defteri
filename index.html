@@ -212,6 +212,7 @@ nav button[aria-current="page"]{color:var(--accent);background:var(--accent-soft
 .opt:hover:not([disabled]){border-color:var(--accent)}
 .opt.ok{border-color:var(--ok);background:var(--ok-bg)}
 .opt.bad{border-color:var(--bad);background:var(--bad-bg)}
+.opt.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
 .opt[disabled]{cursor:default}
 .fb{margin-top:14px;border-radius:12px;padding:12px 14px;background:var(--surface2)}
 .fb.ok{background:var(--ok-bg)}.fb.bad{background:var(--bad-bg)}
@@ -300,6 +301,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 
 <script src="words.js"></script>
 <script src="extr.js"></script>
+<script src="reading.js"></script>
 <script src="supabase.js"></script>
 <script>
 const DATA=window.WORDS||[];
@@ -341,13 +343,13 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.30.0';
+const APP_VERSION='4.31.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
-function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[]}}
+function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[],rd:{}}}
 function load(uid){
   let raw=null;
   try{raw=localStorage.getItem(KEY+'-'+uid)}catch(e){}
@@ -1183,6 +1185,10 @@ function vHelp(){
   ${sec('🎓 Kelime nasıl "öğrenildi" olur?',li([
     'Bir kelimenin sorulabilen tüm özelliklerini (Türkçe, tanım, örnek vb.) farklı sorularda en az bir kez doğru bildiğinde kelime <b>Öğrenildi</b> sayılır ve +2 × seviye katsayısı bonus puan alırsın.',
     'Öğrenilen kelimeler Ben → Öğrenilenler bölümünde listelenir; istersen birini "Öğrenilmedi" olarak işaretleyebilirsin.']))}
+  ${sec('📖 Okuma',li([
+    'Çalışma → <b>Okuma</b> bölümünde seviyene uygun kısa İngilizce metinler ve metinle ilgili sorular vardır. Metni oku, tüm soruları cevapla ve "Cevapları kontrol et" ile sonucunu gör; her sorunun açıklaması da gösterilir.',
+    'Doğru cevap başına '+RD_PT+' × seviye katsayısı puan kazanırsın. Aynı parçayı tekrar çözersen yalnızca önceki en iyi sonucunu geçtiğin kadar puan eklenir. Okuma soruları kelime ilerlemeni, günlük hedefini ve doğruluk oranını etkilemez.',
+    'Metinlerdeki zor kelimeler için "Yardımcı kelimeler" kutusuna bakabilirsin.']))}
   ${sec('🔁 Tekrar ve yanlış defteri',li([
     'Türkçe karşılığını veya tanımını yanlış bildiğin kelime <b>Tekrar</b> listesine girer.',
     'Listeden çıkması için Türkçe ve Tanım sorularını art arda <b>3 kez</b> doğru bilmen gerekir. İlk doğrudan <b>1 gün</b>, ikinci doğrudan <b>3 gün</b> sonra yeniden sorulur. Yanlış yaparsan sayaç düşer.',
@@ -1697,8 +1703,8 @@ const ICON={
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['review','Tekrar']];
-const isStudy=t=>t==='dict'||t==='quiz'||t==='review';
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar']];
+const isStudy=t=>t==='dict'||t==='quiz'||t==='review'||t==='read';
 let lastStudy='quiz';
 const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıra'],['chat','Sohbet'],['help','Kullanım'],['me','Ben']];
 function studySeg(){
@@ -1728,6 +1734,7 @@ function render(){
   if(UI.tab==='today')h=vToday();
   else if(UI.tab==='dict')h=vDict();
   else if(UI.tab==='quiz')h=UI.quiz?vQuiz():(UI.qmode==='duel'?vDuel():vQuizSetup());
+  else if(UI.tab==='read')h=vRead();
   else if(UI.tab==='review')h=vReview();
   else if(UI.tab==='rank')h=vRank();
   else if(UI.tab==='chat')h=vChat();
@@ -1833,6 +1840,48 @@ function vDict(){
   ${chips('status',['Hepsi','Öğrenilmeyen','Öğrenilen','Tekrarda'],D.status)}
   <label class="f">Tür<select id="posf">${['Hepsi'].concat(POSG).map(p=>`<option ${p===D.pos?'selected':''}>${esc(p)}</option>`).join('')}</select></label>
   <div class="stack" id="dlist">${dictList()}</div></div>`;
+}
+// ---- Okuma parçaları ----
+const RD_PT=2;   // doğru cevap başına puan, seviye katsayısıyla çarpılır; yalnızca önceki en iyi sonucu geçtikçe verilir
+function vRead(){
+  const R=UI.rd||(UI.rd={id:null,pick:{},done:false,lv:'Hepsi'}),all=window.READINGS||[],rd=S.rd||{};
+  const P=R.id&&all.find(x=>x.id===R.id);
+  if(P)return vReadOne(P,R);
+  const list=all.filter(x=>R.lv==='Hepsi'||x.lv===R.lv);
+  const doneN=all.filter(x=>rd[x.id]).length;
+  return`<div class="top"><h1>Okuma</h1></div><div class="stack">
+  <div class="card stack"><div class="muted small">Kısa İngilizce metinleri oku, ardından metinle ilgili soruları cevapla. Her parçada doğru sayında önceki en iyi sonucunu geçtikçe puan kazanırsın (doğru başına ${RD_PT} × seviye katsayısı). Okuma soruları kelime ilerlemeni, günlük hedefini ve doğruluk oranını etkilemez.</div>
+  <div class="seg">${['Hepsi'].concat(LEVELS.filter(l=>all.some(x=>x.lv===l))).map(l=>`<button class="chip" aria-pressed="${R.lv===l}" data-act="rd-lv" data-v="${l}">${l}</button>`).join('')}</div>
+  <div class="small muted">${all.length} parça · ${doneN} tanesini çözdün</div></div>
+  ${list.map(x=>{const r=rd[x.id];return`<button class="card" style="text-align:left;display:block;width:100%" data-act="rd-open" data-v="${esc(x.id)}"><div class="row" style="justify-content:space-between;gap:8px"><b>${esc(x.t)}</b>${lvTag(x.lv)}</div><div class="small muted" style="margin-top:4px">${x.q.length} soru${r?` · en iyi: ${r.b}/${r.n}`:' · henüz çözülmedi'}</div></button>`}).join('')||'<div class="card muted">Bu seviyede parça yok.</div>'}
+  </div>`;
+}
+function vReadOne(P,R){
+  const done=R.done,rd=(S.rd||{})[P.id];
+  const right=done?P.q.filter((q,i)=>R.pick[i]===q.a).length:0;
+  const answered=Object.keys(R.pick).length;
+  return`<div class="top"><h1>${esc(P.t)}</h1></div><div class="stack">
+  <div class="row"><button class="btn" data-act="rd-close">← Listeye dön</button>${lvTag(P.lv)}</div>
+  <div class="card stack" lang="en">${P.p.map(t=>`<p style="margin:0;line-height:1.65">${esc(t)}</p>`).join('')}</div>
+  ${P.g&&P.g.length?`<details class="card small"><summary style="cursor:pointer;font-weight:600">Yardımcı kelimeler</summary><div class="stack" style="margin-top:8px;gap:4px">${P.g.map(g=>`<div><b>${esc(g[0])}</b> <span class="muted">${esc(g[1])}</span></div>`).join('')}</div></details>`:''}
+  ${P.q.map((q,qi)=>`<div class="card qcard"><div class="small muted">Soru ${qi+1}/${P.q.length}</div><h2 lang="en">${esc(q.q)}</h2>
+    <div class="opts">${(R.ord&&R.ord[qi]||q.o.map((o,i)=>i)).map((oi,di)=>{const o=q.o[oi];let k='';if(done){if(oi===q.a)k='ok';else if(oi===R.pick[qi])k='bad'}else if(R.pick[qi]===oi)k='sel';
+      return`<button class="opt ${k}" ${done?'disabled':`data-act="rd-pick" data-v="${qi}:${oi}" aria-pressed="${R.pick[qi]===oi}"`} lang="en"><kbd>${'ABCD'[di]}</kbd><span>${esc(o)}</span></button>`}).join('')}</div>
+    ${done&&q.e?`<div class="fb ${R.pick[qi]===q.a?'ok':'bad'}"><b class="t">${R.pick[qi]===q.a?'Doğru':'Yanlış'}</b><div class="small">${esc(q.e)}</div></div>`:''}</div>`).join('')}
+  ${done?`<div class="card stack"><h2>Sonuç: ${right}/${P.q.length}</h2><div class="muted small">${R.gain>0?`+${nf(Math.round(R.gain*100)/100)} puan kazandın.`:'Bu sonuç önceki en iyi sonucunu geçmediği için puan eklenmedi.'}${rd?` En iyi sonucun: ${rd.b}/${rd.n}.`:''}</div>
+    <div class="row"><button class="btn primary" data-act="rd-retry">Yeniden dene</button><button class="btn" data-act="rd-close">Listeye dön</button></div></div>`
+  :`<button class="btn primary block" data-act="rd-check" ${answered<P.q.length?'disabled':''}>Cevapları kontrol et (${answered}/${P.q.length})</button>`}
+  </div>`;
+}
+function rdCheck(){
+  const R=UI.rd,P=R&&(window.READINGS||[]).find(x=>x.id===R.id);
+  if(!P||R.done||Object.keys(R.pick).length<P.q.length)return;
+  const right=P.q.filter((q,i)=>R.pick[i]===q.a).length;
+  S.rd=S.rd||{};const old=S.rd[P.id],prev=old?old.b:0;
+  let gain=0;
+  if(right>prev){gain=addPts((right-prev)*RD_PT*(COEF[P.lv]||1),'c')}
+  if(!old||right>=old.b)S.rd[P.id]={b:right,n:P.q.length,d:today()};
+  R.done=true;R.gain=gain;save();render();
 }
 function vQuizSetup(){
   const s=S.set;
@@ -2768,6 +2817,12 @@ document.addEventListener('click',async e=>{
     case'start-review-all':startQuiz('review',true);break;
     case'next':next();break;
     case'quit':UI.quiz=null;render();break;
+    case'rd-lv':(UI.rd||(UI.rd={id:null,pick:{},done:false,lv:'Hepsi'})).lv=g('data-v');render();break;
+    case'rd-open':{const P0=(window.READINGS||[]).find(x=>x.id===g('data-v'));UI.rd=Object.assign(UI.rd||{lv:'Hepsi'},{id:g('data-v'),pick:{},done:false,gain:0,ord:P0?P0.q.map(q=>shuffle(q.o.map((o,i)=>i))):null});}render();window.scrollTo(0,0);break;
+    case'rd-close':if(UI.rd){UI.rd.id=null;UI.rd.pick={};UI.rd.done=false}render();window.scrollTo(0,0);break;
+    case'rd-pick':{const v=g('data-v').split(':');if(UI.rd&&!UI.rd.done){UI.rd.pick[+v[0]]=+v[1];const y=window.scrollY;render();window.scrollTo(0,y)}break}
+    case'rd-check':rdCheck();window.scrollTo(0,0);break;
+    case'rd-retry':if(UI.rd){UI.rd.pick={};UI.rd.done=false;UI.rd.gain=0;const P1=(window.READINGS||[]).find(x=>x.id===UI.rd.id);if(P1)UI.rd.ord=P1.q.map(q=>shuffle(q.o.map((o,i)=>i)))}render();window.scrollTo(0,0);break;
     case'again':UI.quiz=null;render();break;
     case'home':UI.quiz=null;setTab('today');break;
     case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=dictList();break}
