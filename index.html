@@ -345,7 +345,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.38.4';
+const APP_VERSION='4.39.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -483,6 +483,10 @@ const LVW=[[2,4,6,4,2,2],[2,3,6,5,2,2],[1,3,5,6,3,2],[1,2,5,6,3,3],[1,2,4,6,4,3]
 let WODP=null;
 function wodWord(){if(!WODP)WODP=W.filter(w=>w.level==='B1'||w.level==='B2'||w.level==='C1');const dn=Math.floor(Date.parse(today()+'T12:00:00')/864e5);return WODP.length?WODP[(dn*7919)%WODP.length]:null}
 const QCAP=700;   // günlük soru puanı üst sınırı (düello puanları bu sınıra girmez)
+let CUR_EV=null;   // o an puanı yazılan cevabın olay kaydı (cihazlar arası birleştirme için)
+const EV_DAYS=21;
+function evKey(d,pre){let n=1;const ev=d.ev||(d.ev={});while(ev[pre+'|'+n])n++;return pre+'|'+n}
+function evAdd(d,key,rec){(d.ev||(d.ev={}))[key]=rec;return rec}
 function addPts(delta,kind){
   const d=dayStat(),cur=d.p||0;
   if(d.q==null)d.q=cur;
@@ -491,8 +495,10 @@ function addPts(delta,kind){
   const np=Math.max(0,cur+(q1-d.q)),eff=np-cur;
   d.q=q1;d.p=np;const tp0=S.tp||0,tp1=Math.max(0,tp0+eff);S.tp=tp1;if(tp1-tp0!==eff)d.p=Math.max(0,d.p+(tp1-tp0-eff));   // toplam sıfırda kırpılırsa günlük puan da aynı kadar kırpılır
   const q=UI.quiz;if(q&&q.pts)q.pts[kind]=(q.pts[kind]||0)+eff;
+  if(CUR_EV)CUR_EV.pts=Math.round(((CUR_EV.pts||0)+eff)*1000)/1000;
   return eff;
 }
+function pruneEv(){const lim=addDays(today(),-EV_DAYS);Object.keys(S.days).forEach(k=>{if(k<lim&&S.days[k].ev)delete S.days[k].ev})}
 function applyDecay(){
   if(!S.pc)return 0;
   const t=today();let d=addDays(S.pc,1);
@@ -500,12 +506,13 @@ function applyDecay(){
   let total=0,n=0,rn=0;
   while(d<t){
     const q=reqFor(S.tp||0),did=(S.days[d]&&S.days[d].c)||0;
-    if(did<q.n&&(S.tp||0)>0){if(isRest(d,q.n)){rn++}else{const cut=S.tp*q.r;S.tp-=cut;total+=cut;n++;(S.pen||(S.pen=[])).push({d,amt:r1(cut),need:q.n,did});if(S.pen.length>10)S.pen.shift()}}
+    if(did<q.n&&(S.tp||0)>0){if(isRest(d,q.n)){rn++}else{const cut=S.tp*q.r;S.tp-=cut;total+=cut;n++;evAdd(dayStat(),'pn|'+d,{t:'a',pts:-cut});(S.pen||(S.pen=[])).push({d,amt:r1(cut),need:q.n,did});if(S.pen.length>10)S.pen.shift()}}
     d=addDays(d,1);
   }
   S.pc=addDays(t,-1);
   if(rn>0)setTimeout(()=>toast(rn+' gün izin günün olarak sayıldı, kesinti yok.'),500);
   if(total>0){const dz=dayStat();dz.adj=(dz.adj||0)-total}
+  pruneEv();
   if(total>0)setTimeout(()=>toast(n+' gün günlük asgari hedefi tutturmadın: −'+nf(r1(total))+' puan kesildi.'),900);
   return total;
 }
@@ -563,6 +570,19 @@ const stAns=s=>{let n=0;Object.values((s&&s.lv)||{}).forEach(x=>{n+=(x[0]|0)+(x[
 const stEmpty=s=>!s||(stAns(s)===0&&!Object.keys(s.learned||{}).length&&!Object.keys(s.wrong||{}).length&&!Object.keys(s.days||{}).length&&!((s.tp||0)>0));
 const stSig=s=>{const c=Object.assign({},s);delete c.upd;delete c.rs;return JSON.stringify(c)};
 function normState(x){const s=Object.assign(fresh(),x);s.set=Object.assign(fresh().set,x.set||{});s.prof=Object.assign(fresh().prof,x.prof||{});return s}
+/* aynı gün iki cihazda çözülenleri olay anahtarlarıyla birleştirir: ortak olanlar bir kez, ayrı kalanlar toplanarak işlenir */
+function evAgg(ev){const g={n:0,c:0,qs:0,dp:0,adj:0,l:{}};Object.keys(ev||{}).forEach(k=>{const e=ev[k];if(e.t==='q'){g.n++;g.c+=e.ok?1:0;g.qs+=e.pts||0;const l=g.l[e.lv]||(g.l[e.lv]=[0,0]);l[0]++;l[1]+=e.ok?1:0}else if(e.t==='p')g.dp+=e.pts||0;else if(e.t==='a')g.adj+=e.pts||0});return g}
+function mergeDay(x,y){
+  const U=Object.assign({},x.ev||{},y.ev||{}),ga=evAgg(U);
+  const rem=q=>{const g=evAgg(q.ev),l={};Object.keys(q.l||{}).forEach(k=>{const v=q.l[k],e=g.l[k]||[0,0];l[k]=[Math.max(0,v[0]-e[0]),Math.max(0,v[1]-e[1])]});
+    return{a:Math.max(0,(q.a|0)-g.n),c:Math.max(0,(q.c|0)-g.c),p:Math.max(0,(q.p||0)-g.qs-g.dp),adj:(q.adj||0)-g.adj,l,n:q.n|0}};
+  const rx=rem(x),ry=rem(y),R={a:Math.max(rx.a,ry.a),c:Math.max(rx.c,ry.c),p:Math.max(rx.p,ry.p),adj:Math.abs(rx.adj)>=Math.abs(ry.adj)?rx.adj:ry.adj};
+  const z=Object.assign({},x,y);
+  z.a=R.a+ga.n;z.c=R.c+ga.c;
+  const qp=Math.min(QCAP,Math.max(0,R.p+ga.qs));z.q=qp;z.p=r1(qp+ga.dp);z.adj=r1(R.adj+ga.adj);z.n=Math.max(rx.n,ry.n);
+  const l={};[rx.l,ry.l].forEach(L=>Object.keys(L).forEach(k=>{const o=l[k]||(l[k]=[0,0]);o[0]=Math.max(o[0],L[k][0]);o[1]=Math.max(o[1],L[k][1])}));
+  Object.keys(ga.l).forEach(k=>{const o=l[k]||(l[k]=[0,0]);o[0]+=ga.l[k][0];o[1]+=ga.l[k][1]});
+  z.l=l;z.ev=U;return z}
 /* iki cihazın durumunu birleştirir: hiçbir cihazın ilerlemesi kaybolmaz */
 function mergeStates(a,b){
   if(b.rs&&b.rs>(a.upd||0)&&b.rs>(a.rs||0))return normState(b);   // buluttaki açık sıfırlama, yerel son değişiklikten yeni
@@ -576,7 +596,11 @@ function mergeStates(a,b){
   Object.keys(m.learned).forEach(w=>{delete m.prog[w]});
   const bd=Object.assign({},ot.bd||{}),mb=m.bd||{};Object.keys(mb).forEach(k=>{bd[k]=bd[k]&&bd[k]<mb[k]?bd[k]:mb[k]});m.bd=bd;
   m.bs=Math.max(m.bs||0,ot.bs||0);m.br=Math.max(m.br||0,ot.br||0);
-  Object.keys(ot.days||{}).forEach(k=>{const x=m.days[k],y=ot.days[k];if(!x||(y.a|0)>(x.a|0)){const nt=q=>q?(q.p||0)+(q.adj||0):0;m.tp=Math.max(0,(m.tp||0)+nt(y)-nt(x));m.days[k]=y}});   // gün başka cihazdan alınırsa farkı toplam puana da yansıt
+  Object.keys(ot.days||{}).forEach(k=>{const x=m.days[k],y=ot.days[k],nt=q=>q?(q.p||0)+(q.adj||0):0;
+    if(!x){m.tp=Math.max(0,(m.tp||0)+nt(y));m.days[k]=y;return}
+    let z;
+    if(x.ev||y.ev)z=mergeDay(x,y);else if((y.a|0)>(x.a|0))z=y;else return;
+    m.tp=Math.max(0,(m.tp||0)+nt(z)-nt(x));m.days[k]=z});   // gün başka cihazdan alınırsa/birleşirse farkı toplam puana da yansıt   // gün başka cihazdan alınırsa farkı toplam puana da yansıt
   Object.keys(ot.lv||{}).forEach(k=>{const x=m.lv[k],y=ot.lv[k];m.lv[k]=x?[Math.max(x[0]|0,y[0]|0),Math.max(x[1]|0,y[1]|0)]:y});
   m.dl=Object.assign({},ot.dl||{},m.dl||{});Object.keys(ot.dl||{}).forEach(k=>{const x=m.dl[k],y=ot.dl[k];if(x&&y){x.s=x.s||y.s;x.p=x.p||y.p}});
   m.upd=Date.now();
@@ -1686,6 +1710,11 @@ function startQuiz(mode,all){
   UI.tab='quiz';render();
 }
 function applyAnswer(it,ok,ua,qz,gate){
+  const dd=dayStat(),ev=evAdd(dd,evKey(dd,'q|'+it.w.word+'|'+it.f),{t:'q',ok:ok?1:0,lv:it.w.level,pts:0});
+  CUR_EV=ev;
+  try{return applyAnswerCore(it,ok,ua,qz,gate)}finally{CUR_EV=null}
+}
+function applyAnswerCore(it,ok,ua,qz,gate){
   const w=it.w,bw0=S.wrong[w.word],p0=S.prog[w.word]||[];
   const elig=!gate||(it.kind==='new'&&!S.learned[w.word]&&p0.indexOf(it.f)===-1)||(!!bw0&&(it.f===0||it.f===1));
   const ap=(v,k)=>elig?addPts(gate?v*0.5:v,k):0;   // düelloda test puanı yarıya iner
@@ -1959,10 +1988,12 @@ function rdCheck(){
     d.a++;if(ok)d.c++;
     const lv=S.lv[P.lv]||(S.lv[P.lv]=[0,0]);lv[ok?0:1]++;
     const dl=d.l||(d.l={});const dv=dl[P.lv]||(dl[P.lv]=[0,0]);dv[0]++;if(ok)dv[1]++;
+    CUR_EV=evAdd(d,evKey(d,'r|'+P.id+'|'+qi),{t:'q',ok:ok?1:0,lv:P.lv,pts:0});
     if(!first)return;   // puan, ceza ve hedef bonusu yalnızca parçanın ilk çözümünde
     if(ok){gain+=addPts(cf*RD_PT,'c');if(d.c===G)gain+=addPts(10+Math.min(streak(),10),'b')}
     else if((S.tp||0)>=LG_ALTIN)gain+=addPts(-(((S.tp||0)>=LG_ELMAS)?1:0.25)*cf*RD_PT,'w');
   });
+  CUR_EV=null;
   if(!old||right>=old.b)S.rd[P.id]={b:right,n:P.q.length,d:today()};
   R.done=true;R.gain=gain;R.first=first;save();render();
 }
@@ -2487,10 +2518,10 @@ function duelApply(rows){
   let ch=false,msg='';
   (rows||[]).forEach(d=>{
     const e=S.dl[d.id]||(S.dl[d.id]={});
-    if(!e.s){e.s=1;const dy=dayStat();S.tp=Math.max(0,(S.tp||0)-DSTAKE);dy.adj=(dy.adj||0)-DSTAKE;ch=true}
+    if(!e.s){e.s=1;const dy=dayStat();S.tp=Math.max(0,(S.tp||0)-DSTAKE);dy.adj=(dy.adj||0)-DSTAKE;evAdd(dy,'ds|'+d.id,{t:'a',pts:-DSTAKE});ch=true}
     if(d.status==='done'&&!e.p){
       const mine=d.p1===CLOUD.uid?d.pay1:d.pay2;
-      if(mine!=null){e.p=1;const v=+mine,dy=dayStat();S.tp=(S.tp||0)+v;dy.p=(dy.p||0)+v;ch=true;msg='Düello: '+(v>=DSTAKE?'+':'')+nf(r1(v-DSTAKE))+' puan (net)'}
+      if(mine!=null){e.p=1;const v=+mine,dy=dayStat();S.tp=(S.tp||0)+v;dy.p=(dy.p||0)+v;evAdd(dy,'dp|'+d.id,{t:'p',pts:v});ch=true;msg='Düello: '+(v>=DSTAKE?'+':'')+nf(r1(v-DSTAKE))+' puan (net)'}
     }
   });
   const ks=Object.keys(S.dl);if(ks.length>80){ks.slice(0,ks.length-60).forEach(k=>{delete S.dl[k]})}
