@@ -345,7 +345,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.38.1';
+const APP_VERSION='4.38.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -505,14 +505,14 @@ function applyDecay(){
   }
   S.pc=addDays(t,-1);
   if(rn>0)setTimeout(()=>toast(rn+' gün izin günün olarak sayıldı, kesinti yok.'),500);
+  if(total>0){const dz=dayStat();dz.adj=(dz.adj||0)-total}
   if(total>0)setTimeout(()=>toast(n+' gün günlük asgari hedefi tutturmadın: −'+nf(r1(total))+' puan kesildi.'),900);
   return total;
 }
 function myPoints(){
   const t0=today(),wk=weekKey(),D={A:0,C:0,pts:0},W={A:0,C:0,pts:0};
-  const x=S.days[t0];if(x){D.A=x.a||0;D.C=x.c||0;D.pts=x.p||0}
-  Object.keys(S.days).forEach(k=>{if(k>=wk){const y=S.days[k];W.A+=y.a||0;W.C+=y.c||0;W.pts+=y.p||0}});
-  (S.pen||[]).forEach(e=>{if(e.d>=wk)W.pts-=e.amt||0});   // günlük hedef kesintileri haftalığa da yansır
+  const x=S.days[t0];if(x){D.A=x.a||0;D.C=x.c||0;D.pts=Math.max(0,(x.p||0)+(x.adj||0))}
+  Object.keys(S.days).forEach(k=>{if(k>=wk){const y=S.days[k];W.A+=y.a||0;W.C+=y.c||0;W.pts+=(y.p||0)+(y.adj||0)}});
   W.pts=Math.max(0,Math.min(W.pts,S.tp||0));   // haftalık puan toplam puanı geçemez
   let A=0,C=0;Object.keys(S.lv).forEach(l=>{C+=S.lv[l][0];A+=S.lv[l][0]+S.lv[l][1]});
   return{D,W,T:{A,C,pts:Math.max(0,S.tp||0)}};
@@ -2487,7 +2487,7 @@ function duelApply(rows){
   let ch=false,msg='';
   (rows||[]).forEach(d=>{
     const e=S.dl[d.id]||(S.dl[d.id]={});
-    if(!e.s){e.s=1;const dy=dayStat();S.tp=Math.max(0,(S.tp||0)-DSTAKE);dy.p=Math.max(0,(dy.p||0)-DSTAKE);ch=true}
+    if(!e.s){e.s=1;const dy=dayStat();S.tp=Math.max(0,(S.tp||0)-DSTAKE);dy.adj=(dy.adj||0)-DSTAKE;ch=true}
     if(d.status==='done'&&!e.p){
       const mine=d.p1===CLOUD.uid?d.pay1:d.pay2;
       if(mine!=null){e.p=1;const v=+mine,dy=dayStat();S.tp=(S.tp||0)+v;dy.p=(dy.p||0)+v;ch=true;msg='Düello: '+(v>=DSTAKE?'+':'')+nf(r1(v-DSTAKE))+' puan (net)'}
