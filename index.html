@@ -226,7 +226,8 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:20000;max-width:90vw}
 /* rank */
 .rk{cursor:pointer;display:grid;grid-template-columns:30px 54px 1fr auto;gap:10px;column-gap:20px;align-items:center;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0}
-.vlv{--surface:#2a0610;--line:rgba(243,210,122,.4);--muted:#e6c46a;--ink:#f3d27a;margin:0 -4px;padding:14px 12px 16px;border-radius:16px;color:#f3d27a;border:1px solid #5a1020;box-shadow:inset 0 0 70px rgba(0,0,0,.55),0 4px 18px rgba(60,0,10,.35);background:radial-gradient(120% 90% at 50% 0%,#8a1830 0%,#5e0f22 45%,#3a0814 100%),#4a0a18}
+.vlv,#dvov .dvb.vlv{--surface:#2a0610;--surface2:#3d0c1b;--line:rgba(243,210,122,.4);--muted:#e6c46a;--ink:#f3d27a;--accent:#f3d27a;--accent-ink:#3a0814;--accent-soft:rgba(243,210,122,.16);--ok:#9af0b4;--bad:#ff9d9d;--ok-bg:rgba(60,170,110,.25);--bad-bg:rgba(230,70,70,.28)}
+.vlv,#dvov .dvb.vlv{margin:0 -4px;padding:14px 12px 16px;border-radius:16px;color:#f3d27a;border:1px solid #5a1020;box-shadow:inset 0 0 70px rgba(0,0,0,.55),0 4px 18px rgba(60,0,10,.35);background:radial-gradient(120% 90% at 50% 0%,#8a1830 0%,#5e0f22 45%,#3a0814 100%),#4a0a18}
 .vlv .muted,.vlv .small{color:#e6c46a!important}
 .vlv .rk{background:rgba(30,4,10,.6);border-color:rgba(243,210,122,.4);color:#f3d27a;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
 .vlv .rk.me{border-color:#f3d27a;background:rgba(120,20,40,.6)}
@@ -239,6 +240,12 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .vlv .chip{background:rgba(30,4,10,.6);color:#f3d27a;border-color:rgba(243,210,122,.45)}
 .vlv .chip[aria-pressed="true"]{background:#f3d27a;color:#3a0814;border-color:#f3d27a}
 .vlv .badge{background:#f3d27a;color:#3a0814}
+.vlv h1,.vlv h2,.vlv h3,.vlv b,.vlv label{color:inherit}
+.vlv .btn:hover{background:#4a1224}
+.vlv .btn.primary:hover{background:#ffe08a}
+.vlv.pg{padding:16px 12px 24px;min-height:calc(100vh - var(--nav-h) - 120px)}
+.chip.vlc{background:linear-gradient(180deg,#7a1228,#4a0a18);color:#f3d27a;border-color:#d6aa5a}
+.chip.vlc[aria-pressed="true"]{background:#f3d27a;color:#3a0814}
 .vlv .gap{color:#e6c46a}
 .vlv .card{background:rgba(30,4,10,.6);border-color:rgba(243,210,122,.4);color:#f3d27a}
 .rk .avw{justify-self:center}
@@ -362,7 +369,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.53.8';
+const APP_VERSION='4.53.9';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2396,7 +2403,7 @@ function vRank(){
   }}
   return`<div class="top"><h1>Sıralama</h1></div><div class="stack">${body}</div>`;
 }
-const rkSeg=per=>`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button>${drkLocked()?'':`<button class="chip" aria-pressed="${per==='ranked'}" data-rp="ranked">🏅 Dereceli düello</button>`}</div>`;
+const rkSeg=per=>`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button>${drkLocked()?'':`<button class="chip vlc" aria-pressed="${per==='ranked'}" data-rp="ranked">🏅 Dereceli düello</button>`}</div>`;
 const RKB={per:{},busy:false};
 async function rkbLoad(per,force){
   if(!sb||!CLOUD.uid||RKB.busy)return;
@@ -2661,7 +2668,7 @@ function duelBox(s){
     if(!x||!x.n)return`<div class="small muted"><b>${t}</b>: henüz maç yok.</div>`;
     const acc=x.a?Math.round(x.c/x.a*100):0,avg=x.a?(Math.round(x.t/x.a/100)/10).toFixed(1):'–';
     const net=rk?`<div><b style="color:${x.net>0?'var(--ok)':x.net<0?'var(--bad)':'inherit'}">${x.net>0?'+':x.net<0?'−':'±'}${nf(r1(Math.abs(+x.net||0)))}</b><span>net puan</span></div>`:`<div><b>%${Math.round(x.w/x.n*100)}</b><span>kazanma</span></div>`;
-    return`<div class="stack" style="gap:6px"><b class="small">${t}</b><div class="kp" style="grid-template-columns:repeat(4,1fr)"><div><b>${x.n}</b><span>maç</span></div><div><b>${x.w}-${x.d}-${x.l}</b><span>G-B-M</span></div><div><b>%${acc}</b><span>doğru</span></div>${net}</div><div class="muted small">Ortalama cevap süresi: ${avg} sn</div></div>`};
+    return`<div class="stack${rk?' vlv':''}" style="gap:6px${rk?';padding:10px 12px':''}"><b class="small">${t}</b><div class="kp" style="grid-template-columns:repeat(4,1fr)"><div><b>${x.n}</b><span>maç</span></div><div><b>${x.w}-${x.d}-${x.l}</b><span>G-B-M</span></div><div><b>%${acc}</b><span>doğru</span></div>${net}</div><div class="muted small">Ortalama cevap süresi: ${avg} sn</div></div>`};
   return`<div class="card stack" style="gap:10px;padding:12px"><b>⚔ Düello</b>${sec('Klasik düello',k,false)}${sec('🏅 Dereceli düello',r,true)}</div>`;
 }
 async function duelStat(id){
@@ -2876,6 +2883,7 @@ function lobbyInvites(d){
 }
 function invCss(){return`
 #dvov{position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(10,12,28,.78);backdrop-filter:blur(4px);animation:adfade .2s ease both}
+#dvov .dvb.vlv{border:1px solid #d6aa5a}
 #dvov .dvb{width:min(92vw,380px);background:var(--surface,#fff);color:var(--ink,#111);border-radius:20px;padding:22px 18px;box-shadow:0 20px 60px rgba(0,0,0,.5);border:2px solid var(--accent,#2b4eff);text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;animation:adbox .35s cubic-bezier(.2,1.3,.4,1) both}
 #dvov .dvt{font-size:1.15rem;font-weight:700}
 #dvov .dvbar{width:100%;height:8px;border-radius:99px;background:rgba(128,128,128,.25);overflow:hidden}
@@ -2887,7 +2895,7 @@ function invShow(){
   if(!document.getElementById('dvcss')){const s=document.createElement('style');s.id='dvcss';s.textContent=invCss();document.head.appendChild(s)}
   const o=document.createElement('div');o.id='dvov';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Düello teklifi');
   const w=INV.who,incoming=INV.dir==='in',rkm=INV.mode==='ranked',need=rkm?DRK_MIN:DSTAKE,low=incoming&&(S.tp||0)<need,rg=rkm&&incoming?dRng(S.tp||0,+w.ap||0):null;
-  o.innerHTML=`<div class="dvb">${avatar(w.name,w.color,true,w.av,frameFor(w.id,'auto'))}
+  o.innerHTML=`<div class="dvb${rkm?' vlv':''}">${avatar(w.name,w.color,true,w.av,frameFor(w.id,'auto'))}
    <div class="dvt">${incoming?`${esc(w.name)} seni ${rkm?'dereceli ':''}düelloya davet ediyor`:`${esc(w.name)} adlı kullanıcıya ${rkm?'dereceli düello ':''}teklifi gönderildi`}</div>
    <div class="muted small">${incoming?(rkm?`20 soru, soru başına ${DQ_T} sn. Kazanırsan en fazla +${nf(r1(rg.win))}, kaybedersen en fazla −${nf(r1(rg.lose))} puan (yaklaşık).`:`20 soru, soru başına ${DQ_T} sn. Bahis: ${DSTAKE} puan.`):'Cevap bekleniyor…'}</div>
    <div class="dvbar"><i id="dvbi"></i></div><div class="mono" style="font-size:1.4rem" id="dvsec"></div>
@@ -2980,7 +2988,7 @@ function duelHist(){
 }
 function vDuel(){
   const P=DUEL.phase,d=DUEL.d,n=DQ_N;
-  const seg=`<div class="seg"><button class="chip" aria-pressed="${DUEL.sub!=='ranked'}" data-act="duel-sub" data-v="classic">Klasik düello</button><button class="chip" aria-pressed="${DUEL.sub==='ranked'}" data-act="duel-sub" data-v="ranked" ${drkLocked()?'disabled title="Şimdilik kilitli"':''}>${drkLocked()?'🔒 ':''}Dereceli düello</button></div>`;
+  const seg=`<div class="seg"><button class="chip" aria-pressed="${DUEL.sub!=='ranked'}" data-act="duel-sub" data-v="classic">Klasik düello</button><button class="chip vlc" aria-pressed="${DUEL.sub==='ranked'}" data-act="duel-sub" data-v="ranked" ${drkLocked()?'disabled title="Şimdilik kilitli"':''}>${drkLocked()?'🔒 ':''}Dereceli düello</button></div>`;
   let body='';
   if(P==='lobby'){
     const R=DUEL.rec;
@@ -3031,7 +3039,8 @@ function vDuel(){
       <button class="btn block" data-act="duel-exit">Çık</button></div>`;
   }
   const inGame=['count','play','wait'].includes(P);
-  return`<div class="top"><h1>Düello</h1></div><div class="stack">${P==='lobby'?seg:''}${body}</div>`;
+  const rkv=DUEL.sub==='ranked'||(d&&d.mode==='ranked'&&P!=='lobby');
+  return`<div class="top"><h1>Düello</h1></div><div class="stack${rkv?' vlv pg':''}">${P==='lobby'?seg:''}${body}</div>`;
 }
 function setTab(t){
   if(t==='study')t=lastStudy;
