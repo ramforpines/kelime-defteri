@@ -345,7 +345,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.40.2';
+const APP_VERSION='4.41.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2575,7 +2575,7 @@ function dReset(){dStop();Object.assign(DUEL,{phase:'lobby',id:null,d:null,qs:nu
 async function duelRecord(){
   if(!sb||!CLOUD.uid)return;
   try{
-    const r=await sb.from('duels').select('id,p1,p2,winner,s1,s2,created_at').eq('status','done').order('created_at',{ascending:false}).limit(200);
+    const r=await sb.from('duels').select('id,p1,p2,winner,s1,s2,c1,c2,a1,a2,t1,t2,created_at').eq('status','done').order('created_at',{ascending:false}).limit(200);
     if(r.error)throw r.error;
     const L=r.data||[];let w=0,l=0,dr=0;
     try{const h=await sb.rpc('duel_history',{n:50});if(!h.error&&h.data){DUEL.all=h.data;DUEL.allOk=true}else DUEL.allOk=false}catch(e){DUEL.allOk=false}L.forEach(x=>{if(!x.winner)dr++;else if(x.winner===CLOUD.uid)w++;else l++});
@@ -2832,13 +2832,13 @@ function lobbyCard(){
 function duelHist(){
   const H=DUEL.hist;if(!H)return'';
   const dt=x=>{try{const d=new Date(x);return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}catch(e){return''}};
-  const side=(id,sc,st,right)=>{const u=dPeer(id)||{},bg=st==='w'?'background:rgba(59,130,246,.22)':st==='l'?'background:var(--bad-bg)':'background:var(--surface2)';
+  const side=(id,sc,st,right,cc,aa,tt)=>{const u=dPeer(id)||{},bg=st==='w'?'background:rgba(59,130,246,.22)':st==='l'?'background:var(--bad-bg)':'background:var(--surface2)';
     const av=`<span style="flex:none;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;overflow:visible"><span style="display:inline-flex;transform:scale(.55);transform-origin:center">${avatar(u.name||'?',u.color,false,u.av,frameFor(id,'auto'))}</span></span>`;
-    const tx=`<div style="min-width:0;flex:1;line-height:1.15"><div class="small" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:${st==='w'?700:500}">${esc(u.name||'Oyuncu')}</div><b class="mono small">${nf(sc||0)}</b></div>`;
+    const tx=`<div style="min-width:0;flex:1;line-height:1.15"><div class="small" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:${st==='w'?700:500}">${esc(u.name||'Oyuncu')}</div><b class="mono small">${nf(sc||0)}</b>${aa!=null?`<div class="muted" style="font-size:.7rem">${cc||0}/${aa} doğru · ${aa?(Math.round((+tt||0)/aa/100)/10).toFixed(1):'–'} sn</div>`:''}</div>`;
     return`<div style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;${bg};flex-direction:${right?'row-reverse':'row'};${right?'text-align:right;':''}">${av}${tx}</div>`};
   const rows=H.map(x=>{const w=x.winner;
-    return`<div style="display:flex;align-items:center;gap:6px;padding:3px 0" title="${esc(dt(x.created_at))}">${side(x.p1,x.s1,!w?'d':w===x.p1?'w':'l',false)}<span class="muted" style="font-size:.7rem;flex:none">vs</span>${side(x.p2,x.s2,!w?'d':w===x.p2?'w':'l',true)}</div>`}).join('');
-  return`<div class="card stack" style="gap:8px"><h2>Maç geçmişi</h2>${H.length?`<div style="max-height:250px;overflow-y:auto;overscroll-behavior:contain">${rows}</div><div class="small muted">Son ${H.length} maç${DUEL.allOk?' (tüm oyuncular)':' (yalnızca senin maçların; tüm maçlar için supabase-duel-history.sql çalıştırılmalı)'} · <span style="color:#3b82f6">mavi</span> kazanan, <span style="color:var(--bad)">kırmızı</span> kaybeden, gri beraberlik · her maçta toplanan maç puanı.</div>`:'<div class="small muted">Henüz tamamlanmış düello yok.</div>'}</div>`;
+    return`<div style="display:flex;align-items:center;gap:6px;padding:3px 0" title="${esc(dt(x.created_at))}">${side(x.p1,x.s1,!w?'d':w===x.p1?'w':'l',false,x.c1,x.a1,x.t1)}<span class="muted" style="font-size:.7rem;flex:none">vs</span>${side(x.p2,x.s2,!w?'d':w===x.p2?'w':'l',true,x.c2,x.a2,x.t2)}</div>`}).join('');
+  return`<div class="card stack" style="gap:8px"><h2>Maç geçmişi</h2>${H.length?`<div style="max-height:330px;overflow-y:auto;overscroll-behavior:contain">${rows}</div><div class="small muted">Son ${H.length} maç${DUEL.allOk?' (tüm oyuncular)':' (yalnızca senin maçların; tüm maçlar için supabase-duel-history.sql çalıştırılmalı)'} · <span style="color:#3b82f6">mavi</span> kazanan, <span style="color:var(--bad)">kırmızı</span> kaybeden, gri beraberlik · her maçta toplanan maç puanı.</div>`:'<div class="small muted">Henüz tamamlanmış düello yok.</div>'}</div>`;
 }
 function vDuel(){
   const P=DUEL.phase,d=DUEL.d,n=DQ_N;
