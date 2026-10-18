@@ -402,7 +402,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.56.2';
+const APP_VERSION='4.56.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2405,7 +2405,7 @@ function weekTop(){
   return m;
 }
 function newDraft(){return{name:S.prof.name||CLOUD.defName,color:S.prof.color,av:S.prof.av|0,frame:normFrame(S.prof.frame)}}
-function profileForm(){
+function profileForm(full){
   const d=UI.draft||(UI.draft=newDraft());
   const t=awardStats(),wt=weekTop();
   const cur=myLeague();
@@ -2415,6 +2415,7 @@ function profileForm(){
   <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Avatar</div><div class="avgrid"><button data-av="0" aria-pressed="${!d.av}" aria-label="Harf">Aa</button>${AVATARS.map((e,i)=>{if(i+1===ADMIN_AV&&!CLOUD.admin)return'';const ok=avOk(i+1);return`<button data-av="${i+1}" aria-pressed="${d.av===i+1}" aria-label="${esc(e[0])}${ok?'':' (kilitli)'}" title="${esc(e[0])}${ok?'':' · kilitli'}" ${ok?'':'data-lk="'+esc(avLockMsg())+'" aria-disabled="true" style="opacity:.4"'}>${avSvg(i+1)}</button>`}).join('')}<button data-lk="${esc(isKing(CLOUD.uid)?'Köpek: şu an dereceli düello birincisisin, köpek profil kartında ve satırında otomatik görünüyor.':'Köpek: Sıra → Dereceli düello tablosunda (Tüm zamanlar) 1. ol. Birincilik el değiştirince köpek de yeni birinciye geçer. Seçilemez, sadece birinciye otomatik verilir.')}" aria-disabled="true" aria-label="Köpek (kilitli)" title="Köpek · kilitli" style="${isKing(CLOUD.uid)?'':'opacity:.4'}">${dogAvatar(false,false)}${isKing(CLOUD.uid)?'':'<span class="frl">🔒</span>'}</button></div></div>
   <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Renk</div><div class="sw">${COLORS.map((c,i)=>`<button style="background:${c}" data-sw="${i}" aria-pressed="${d.color===i}" aria-label="Renk ${i+1}"></button>`).join('')}</div></div>
   <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Çerçeve</div><div class="frgrid"><button class="frp frg" data-fr="auto" aria-pressed="${d.frame==='auto'}" aria-label="Otomatik (şu anki ligin: ${esc(LEAGUES[cur].n)})" title="Otomatik">${avatar(d.name,d.color,false,d.av,LEAGUES[cur].k)}<span class="frl">Oto</span></button><button class="frp frg" data-fr="none" aria-pressed="${d.frame==='none'}" aria-label="Çerçevesiz" title="Çerçevesiz">${avatar(d.name,d.color,false,d.av,'')}<span class="frl">Yok</span></button>${frames}</div></div>
+  ${full?profFeatures():''}
   <button class="btn primary" data-act="save-prof">Profili kaydet</button></div>`;
 }
 function leagueCard(){
@@ -2474,11 +2475,11 @@ function profFeatures(){
     tile(king,'Altın sancak',kingFlag('x',true),how(king,'Altın sancak ve "HAV!"','birincinin satırında ve kartında taç ve "1" taşıyan kırmızı sancak dalgalanır, köpek "HAV!" diye havlar.','Dereceli düello birincisi ol. Birincilikle birlikte gelir, kaybedince kalkar.'),true),
     tile(dayc,'Dünün birincisi',flagHtml('x',AUTOFLAG),how(dayc,'Dünün birincisi flaması','altın defne dallı flama; önceki günün günlük birincisine ertesi gün boyunca verilir.','Günlük sıralamayı birinci bitir. Flama ertesi gün gelir ve bir gün kalır.'),true),
     tile(sp,'Test eden yapımcı',flagHtml('x',BYFLAG.get('maker')),how(sp,'Özel flama','yönetici tarafından seçilmiş kişilere verilen özel flama.','yönetici verir; başvuruyla ya da puanla kazanılmaz.'),true)]);
-  return`<details class="card small"><summary style="cursor:pointer;font-weight:700;font-size:1rem">Profil özellikleri <span class="muted small">${opn}/${tot} açık</span></summary><div class="stack" style="margin-top:10px;line-height:1.5"><div class="muted">Avatar, renk, çerçeve, profil rengi ve flamaların hepsi burada. Kilitli olanlar soluk durur; dokununca ne olduğu ve nasıl kazanılacağı yazar.</div>${m1}${m2}${m3}${m4}${m5}<div class="muted">Gün / Hafta Lideri: günü ya da haftayı birinci bitirdikçe profil kartında "3 x Gün Lideri" gibi sayaçlar birikir.</div></div></details>`;
+  return`${m1}${m2}${m3}${m4}${m5}<div class="muted small">Kilitli olanlar soluk durur; dokununca nasıl kazanılacağı yazar. Gün / Hafta Lideri: günü ya da haftayı birinci bitirdikçe profil kartında "3 x Gün Lideri" gibi sayaçlar birikir.</div>`;
 }
 function vProfile(){
   if(!CLOUD.ready)return`<div class="card muted">Profil ve liderlik tablosu için uygulamayı Claude'da yayınlanan bağlantıyla açıp oturum açman gerekir. İndirilmiş dosyada çalışmaz.</div>`;
-  return`${leagueCard()}<div class="card">${profileForm()}</div>${badgeGrid()}${profFeatures()}${CLOUD.write?'':'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. İlerlemen ve skorun kaydedilmez. Katılmak için sahibinden "Katkıda bulunan" izni iste.</div>'}`;
+  return`${leagueCard()}<div class="card">${profileForm(true)}</div>${badgeGrid()}${CLOUD.write?'':'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. İlerlemen ve skorun kaydedilmez. Katılmak için sahibinden "Katkıda bulunan" izni iste.</div>'}`;
 }
 function profilePrompt(){
   if(!CLOUD.ready||S.prof.name||!CLOUD.write)return'';
