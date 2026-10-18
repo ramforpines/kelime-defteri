@@ -403,7 +403,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.59.0';
+const APP_VERSION='4.59.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1312,7 +1312,7 @@ function vHelp(){
     '<b>Ben</b>: Profil, İstatistik, Öğrenilenler, Geri bildirim ve Ayarlar. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
   ${sec('🚀 Hızlı başlangıç',li([
     '<b>Bugün</b> sekmesinde günün hedefini ve "Bugünün testini başlat" düğmesini görürsün. Her gün birkaç test çözmen yeter.',
-    '<b>Çalışma → Test</b> bölümünden soru sayısını (10–40), seviyeyi (A1–C2; B1 ve B2 gibi birden fazlasını aynı anda seçebilirsin) ve kelime türünü seçip istediğin zaman test çözebilirsin.',
+    '<b>Çalışma → Test</b> bölümünden soru sayısını (10–40), seviyeyi (A1–C2; B1 ve B2 gibi birden fazlasını aynı anda seçebilirsin) ve kelime türünü (birden fazla seçebilirsin) seçip istediğin zaman test çözebilirsin.',
     '<b>Çalışma → Sözlük</b> bölümünde 7.700\'den fazla kelimeyi arayabilir, Türkçesini, tanımını ve örnek cümlesini (altında Türkçe çevirisiyle) görebilirsin.',
     'Hesabını ilk açtığında yönetici onayı gerekebilir. Onaylanınca sıralamaya girer, sohbete ve düelloya katılırsın.',
     'İlerlemen hesabına kaydedilir. Telefonda, tabletde ve bilgisayarda aynı kullanıcı adı ve şifreyle girince kaldığın yerden devam edersin.']),true)}
@@ -1764,14 +1764,15 @@ function makeItem(w,f,kind){
 }
 const lvOk=(sel,l)=>!sel||sel==='Hepsi'||sel.split(',').indexOf(l)!==-1;
 const lvOn=(sel,v)=>v==='Hepsi'?(!sel||sel==='Hepsi'):(!!sel&&sel!=='Hepsi'&&sel.split(',').indexOf(v)!==-1);
-function lvToggle(sel,v){
+function mtToggle(sel,v,order){
   if(v==='Hepsi')return'Hepsi';
   let a=(!sel||sel==='Hepsi')?[]:sel.split(',');
   a=a.indexOf(v)!==-1?a.filter(x=>x!==v):a.concat(v);
-  a=LEVELS.filter(l=>a.indexOf(l)!==-1);
-  return(!a.length||a.length===LEVELS.length)?'Hepsi':a.join(',');
+  a=order.filter(l=>a.indexOf(l)!==-1);
+  return(!a.length||a.length===order.length)?'Hepsi':a.join(',');
 }
-const typeOK=w=>!S.set.type||S.set.type==='Hepsi'||posGroup(w)===S.set.type;
+const lvToggle=(sel,v)=>mtToggle(sel,v,LEVELS);
+const typeOK=w=>lvOk(S.set.type,posGroup(w));
 function newItems(n,level,skip){
   const bk={};LEVELS.forEach(l=>{bk[l]=[]});
   W.forEach(w=>{if(!S.learned[w.word]&&lvOk(level,w.level)&&typeOK(w)&&!skip.has(w.word))(bk[w.level]||(bk[w.level]=[])).push(w)});
@@ -2037,7 +2038,7 @@ function dictFiltered(){
   const D=UI.dict,q=D.q.trim().toLowerCase();
   return W.filter(w=>{
     if(!lvOk(D.level,w.level))return false;
-    if(D.pos!=='Hepsi'&&posGroup(w)!==D.pos)return false;
+    if(!lvOk(D.pos,posGroup(w)))return false;
     if(D.status==='Öğrenilen'&&!S.learned[w.word])return false;
     if(D.status==='Öğrenilmeyen'&&S.learned[w.word])return false;
     if(D.status==='Tekrarda'&&!S.wrong[w.word])return false;
@@ -2080,7 +2081,7 @@ function vDict(){
   <div class="stack"><input id="q" class="search" type="search" placeholder="Kelime, Türkçe karşılık veya tanım ara" value="${esc(D.q)}" autocomplete="off">
   <div class="seg" role="group" aria-label="Seviye (birden fazla seçilebilir)">${['Hepsi'].concat(LEVELS).map(v=>`<button class="chip" aria-pressed="${lvOn(D.level,v)}" data-f="level" data-v="${v}">${v}</button>`).join('')}</div>
   ${chips('status',['Hepsi','Öğrenilmeyen','Öğrenilen','Tekrarda'],D.status)}
-  <label class="f">Tür<select id="posf">${['Hepsi'].concat(POSG).map(p=>`<option ${p===D.pos?'selected':''}>${esc(p)}</option>`).join('')}</select></label>
+  <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Tür <span style="font-weight:400">(birden fazla seçebilirsin)</span></div><div class="seg" role="group" aria-label="Tür">${['Hepsi'].concat(POSG).map(p=>`<button class="chip" aria-pressed="${lvOn(D.pos,p)}" data-f="pos" data-v="${esc(p)}">${esc(p==='Hepsi'?p:trType(p))}</button>`).join('')}</div></div>
   <div class="stack" id="dlist">${dictList()}</div></div>`;
 }
 // ---- Okuma parçaları ----
@@ -2151,7 +2152,7 @@ function vQuizSetup(){
   return`<div class="top"><h1>Test</h1></div><div class="card stack">
     <div><h3>Soru sayısı</h3><div class="seg" style="margin-top:8px">${[10,20,30,40].map(n=>`<button class="chip" aria-pressed="${s.count===n}" data-set="count" data-v="${n}">${n}</button>`).join('')}</div></div>
     <div><h3>Seviye <span class="muted small" style="font-weight:400">(birden fazla seçebilirsin)</span></h3><div class="seg" style="margin-top:8px">${['Hepsi'].concat(LEVELS).map(n=>`<button class="chip" aria-pressed="${lvOn(s.level,n)}" data-set="level" data-v="${n}">${n}</button>`).join('')}</div></div>
-    <div><h3>Tür</h3><div class="seg" style="margin-top:8px"><button class="chip" aria-pressed="${(s.type||'Hepsi')==='Hepsi'}" data-set="type" data-v="Hepsi">Hepsi</button>${POSG.filter(g=>tc[g]).map(g=>`<button class="chip" aria-pressed="${s.type===g}" data-set="type" data-v="${esc(g)}">${esc(trType(g))} (${nf(tc[g])})</button>`).join('')}</div></div>
+    <div><h3>Tür <span class="muted small" style="font-weight:400">(birden fazla seçebilirsin)</span></h3><div class="seg" style="margin-top:8px"><button class="chip" aria-pressed="${lvOn(s.type,'Hepsi')}" data-set="type" data-v="Hepsi">Hepsi</button>${POSG.filter(g=>tc[g]).map(g=>`<button class="chip" aria-pressed="${lvOn(s.type,g)}" data-set="type" data-v="${esc(g)}">${esc(trType(g))} (${nf(tc[g])})</button>`).join('')}</div></div>
     <div class="muted small">Her kelimeden bir özellik sorulur: Türkçe karşılık, İngilizce tanım, boşluk doldurma, eş anlam, zıt anlam ve düzensiz fiillerde V2 - V3. Deyim, atasözü, edat kalıbı ve ek gibi türlerde ayrıca özel sorular (atasözü tamamlama, eksik kelime, doğru edat, ek bulma, anlamdan ifadeye) çıkar. Bir kelimenin sorulabilen tüm özellikleri bir kez doğru bilinince kelime Öğrenilenler'e geçer. Bu seçimde ${nf(remaining)} kelime sırada.</div>
     <button class="btn primary block" data-act="start-new">Testi başlat</button></div>`;
 }
@@ -3225,8 +3226,8 @@ document.addEventListener('click',async e=>{
   if(el.hasAttribute('data-pc')){UI.card=g('data-pc');render();return}
   if(el.hasAttribute('data-sw')){syncDraft();UI.draft.color=+g('data-sw');render();return}
   if(el.hasAttribute('data-me')){UI.me=g('data-me');if(UI.me==='admin')UI.me=UI.admSub||'adm';UI.confirmReset=false;render();return}
-  if(el.hasAttribute('data-set')){const k=g('data-set'),v=g('data-v');S.set[k]=k==='count'?+v:k==='level'?lvToggle(S.set.level,v):v;save();render();return}
-  if(el.hasAttribute('data-f')){const fk=g('data-f');UI.dict[fk]=fk==='level'?lvToggle(UI.dict.level,g('data-v')):g('data-v');UI.dict.limit=40;render();return}
+  if(el.hasAttribute('data-set')){const k=g('data-set'),v=g('data-v');S.set[k]=k==='count'?+v:k==='level'?lvToggle(S.set.level,v):k==='type'?mtToggle(S.set.type,v,POSG):v;save();render();return}
+  if(el.hasAttribute('data-f')){const fk=g('data-f');UI.dict[fk]=fk==='level'?lvToggle(UI.dict.level,g('data-v')):fk==='pos'?mtToggle(UI.dict.pos,g('data-v'),POSG):g('data-v');UI.dict.limit=40;render();return}
   switch(g('data-act')){
     case'chat-view':UI.chat.view=g('data-v');UI.chat.peer=null;UI.chat.q='';UI.chat.draft='';render();chatPaint();if(UI.chat.view==='usr')refreshBoard();break;
     case'chat-open':UI.card=null;UI.chat.view='dm';UI.chat.peer=g('data-v');UI.chat.draft='';UI.chat.q='';if(UI.tab!=='chat'){setTab('chat')}else{render();chatPaint()}break;
