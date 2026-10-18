@@ -251,7 +251,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .rk .avw{justify-self:center}
 .rk.me{border-color:var(--accent);background:var(--accent-soft)}
 .flg{position:absolute;top:-1px;right:calc(14px + var(--i,0)*26px);width:19px;height:56px;z-index:6;pointer-events:auto;cursor:default;outline:none;transform-origin:50% 0;animation:flgsw 4.2s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
-.flg.weekchamp::after{color:#0d4a1a;background:#d6f7c4;border-color:#2e9b45}
+.flg.weekchamp::after{color:#7a4b00;background:#fff2a8;border-color:#e08a00}
 .flg.daychamp::after{color:#7a4b00;background:#fff2a8;border-color:#e08a00}
 .flg::after{content:attr(data-tip);position:absolute;right:calc(100% + 6px);top:14px;white-space:nowrap;background:#111;color:#ffd000;border:1px solid #ffd000;border-radius:6px;padding:3px 8px;font:800 .72rem var(--font-body);opacity:0;transform:translateX(4px);transition:opacity .15s,transform .15s;pointer-events:none}
 .flg:hover::after,.flg:focus::after{opacity:1;transform:none}
@@ -404,7 +404,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.60.1';
+const APP_VERSION='4.60.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -469,8 +469,8 @@ const WEEKFLAG={id:'weekchamp',n:'Geçen haftanın birincisi',auto:true};   // o
 const AUTOFLAG={id:'daychamp',n:'Dünün birincisi',auto:true};   // otomatik: yalnızca dünün günlük lideri, 1 gün boyunca
 const flagsOf=id=>{const out=[],m=CLOUD.flags||{},k=m[id];
   if(k&&BYFLAG.has(k))out.push(BYFLAG.get(k));else if(CLOUD.flagsErr&&isAdm(id))out.push(BYFLAG.get('maker'));
-  const L=CLOUD.ld&&CLOUD.ld.day;if(L){const a=Array.isArray(L)?L:[L];if(a.some(x=>x&&x.id===id))out.push(AUTOFLAG)}
   const Wk=CLOUD.ld&&CLOUD.ld.week;if(Wk){const a=Array.isArray(Wk)?Wk:[Wk];if(a.some(x=>x&&x.id===id))out.push(WEEKFLAG)}
+  const L=CLOUD.ld&&CLOUD.ld.day;if(L){const a=Array.isArray(L)?L:[L];if(a.some(x=>x&&x.id===id))out.push(AUTOFLAG)}
   return out};
 const flagOf=id=>flagsOf(id)[0]||null;
 const flagPath=ph=>{const R=[],L=[];for(let y=0;y<=84;y+=6){const a=.4+y/84*2.6,w=Math.sin(y/13-ph);R.push((32+a*w).toFixed(1)+','+y);L.unshift((2+a*Math.sin(y/13-ph+.35)).toFixed(1)+','+y)}
@@ -480,7 +480,7 @@ const FLAGD=(()=>{const a=[];for(let k=0;k<=8;k++)a.push(flagPath(k/8*Math.PI*2)
 const REDM=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion:reduce)').matches;
 const flagOne=(f,fi)=>{const d0=flagPath(0),an=REDM?'':`<animate attributeName="d" dur="3.4s" repeatCount="indefinite" values="${FLAGD}"/>`;
   if(f.id==='weekchamp'){const lf='<path d="M0 0 C-7 -4 -6 -11 -2.5 -10.5 C-1 -10.3 0 -9 0 -8 C0 -9 1 -10.3 2.5 -10.5 C6 -11 7 -4 0 0Z"/>';
-    return`<span class="flg ${f.id}" style="--i:${fi|0}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><linearGradient id="flgw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c6f5b0"/><stop offset=".45" stop-color="#4cc25a"/><stop offset="1" stop-color="#1b7d33"/></linearGradient></defs><path d="${d0}" fill="url(#flgw)" stroke="#0d4a1a" stroke-width="1.6" stroke-linejoin="round">${an}</path><path d="M17 41 C17.5 50 19.5 56 23 62" fill="none" stroke="#0d4a1a" stroke-width="1.8" stroke-linecap="round"/><g transform="translate(17 40)" fill="#fff" stroke="#0d4a1a" stroke-width=".7" stroke-linejoin="round"><g transform="translate(0 -1) rotate(0)">${lf}</g><g transform="translate(1 0) rotate(90)">${lf}</g><g transform="translate(0 1) rotate(180)">${lf}</g><g transform="translate(-1 0) rotate(270)">${lf}</g></g></svg></span>`}
+    return`<span class="flg ${f.id}" style="--i:${fi|0}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><linearGradient id="flgw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2a8"/><stop offset=".45" stop-color="#ffc928"/><stop offset="1" stop-color="#e08a00"/></linearGradient></defs><path d="${d0}" fill="url(#flgw)" stroke="#7a4b00" stroke-width="1.6" stroke-linejoin="round">${an}</path><path d="M17 41 C17.5 50 19.5 56 23 62" fill="none" stroke="#145a25" stroke-width="1.8" stroke-linecap="round"/><g transform="translate(17 40)" fill="#3aa84f" stroke="#145a25" stroke-width=".8" stroke-linejoin="round"><g transform="translate(0 -1) rotate(0)">${lf}</g><g transform="translate(1 0) rotate(90)">${lf}</g><g transform="translate(0 1) rotate(180)">${lf}</g><g transform="translate(-1 0) rotate(270)">${lf}</g></g></svg></span>`}
   if(f.auto)return`<span class="flg ${f.id}" style="--i:${fi|0}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><linearGradient id="flgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2a8"/><stop offset=".45" stop-color="#ffc928"/><stop offset="1" stop-color="#e08a00"/></linearGradient></defs><path d="${d0}" fill="url(#flgd)" stroke="#7a4b00" stroke-width="1.6" stroke-linejoin="round">${an}</path><g fill="#2f5d1f" stroke="#1d3d12" stroke-width=".5"><path d="M17 20 C17.8 25 17.8 38 17 62" fill="none" stroke="#1d3d12" stroke-width="1.3" stroke-linecap="round"/><ellipse cx="17" cy="21" rx="1.9" ry="4.6"/><ellipse cx="12.4" cy="30" rx="4.6" ry="1.9" transform="rotate(35 12.4 30)"/><ellipse cx="21.6" cy="30" rx="4.6" ry="1.9" transform="rotate(-35 21.6 30)"/><ellipse cx="12.4" cy="38" rx="4.6" ry="1.9" transform="rotate(35 12.4 38)"/><ellipse cx="21.6" cy="38" rx="4.6" ry="1.9" transform="rotate(-35 21.6 38)"/><ellipse cx="12.4" cy="46" rx="4.6" ry="1.9" transform="rotate(35 12.4 46)"/><ellipse cx="21.6" cy="46" rx="4.6" ry="1.9" transform="rotate(-35 21.6 46)"/><ellipse cx="12.4" cy="54" rx="4.6" ry="1.9" transform="rotate(35 12.4 54)"/><ellipse cx="21.6" cy="54" rx="4.6" ry="1.9" transform="rotate(-35 21.6 54)"/></g></svg></span>`;
   return`<span class="flg ${f.id}" style="--i:${fi|0}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><pattern id="flgp" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="6" fill="#ffd000"/><rect y="6" width="12" height="6" fill="#111"/></pattern></defs><path d="${d0}" fill="url(#flgp)" stroke="#111" stroke-width="1.6" stroke-linejoin="round">${an}</path></svg></span>`};
 const flagHtml=(id,f0)=>f0?flagOne(f0,0):flagsOf(id).map((f,i)=>flagOne(f,i)).join('');
@@ -1363,7 +1363,7 @@ function vHelp(){
     'Her ligin kendine ait profil çerçevesi vardır. Ben → Profil\'den adını, avatarını ve çerçevenin görünümünü seçebilirsin. Seçtiğin çerçeve ulaştığın ligi geçemez.',
     '<b>Gün Lideri / Hafta Lideri</b>: bir günü ya da haftayı sıralamada birinci bitiren kişi bu unvanı kazanır. Profil kartında "3 x Gün Lideri", "2 x Hafta Lideri" gibi sayaçlar görünür; Bugün ekranında da dünün ve geçen haftanın lideri puanıyla gösterilir. Sayım yönetici bu özelliği açtığı günden itibaren tutulur.',
     '<b>Dünün birincisi</b>: günlük sıralamada bir önceki günün birincisi, ertesi gün boyunca profil satırında ve kartında altın defne dallı flama taşır; ertesi gün kalkar.',
-    '<b>Geçen haftanın birincisi</b>: haftalık sıralamada bir önceki haftanın birincisi, yeni hafta boyunca (bir hafta) profil satırında ve kartında dört yapraklı yoncalı yeşil flama taşır; hafta bitince kalkar. Hem dünün hem geçen haftanın birincisiysen iki flama yan yana görünür.',
+    '<b>Geçen haftanın birincisi</b>: haftalık sıralamada bir önceki haftanın birincisi, yeni hafta boyunca (bir hafta) profil satırında ve kartında dört yapraklı yoncalı altın flama taşır; hafta bitince kalkar. Hem dünün hem geçen haftanın birincisiysen iki flama yan yana görünür (haftanın birincisi önde, dünün birincisi arkada).',
     '<b>Flama</b>: yönetici bazı kullanıcılara özel flama verir (ör. Test eden yapımcı). Flama profil satırının ve kartının sağında sallanır; üzerine gelince ne olduğunu görürsün.',
     'Bir kullanıcıya dokunarak profil kartını açar; puanını, serisini, rozetlerini ve düello istatistiğini görür, ona mesaj gönderebilirsin.']))}
   ${sec('🏅 Rozetler',li([
@@ -2474,7 +2474,7 @@ function profFeatures(){
   const m5=menu('Flama menüsü',[
     tile(king,'Altın sancak',kingFlag('x',true),how(king,'Altın sancak ve "HAV!"','birincinin satırında ve kartında taç ve "1" taşıyan kırmızı sancak dalgalanır, köpek "HAV!" diye havlar.','Dereceli düello birincisi ol. Birincilikle birlikte gelir, kaybedince kalkar.'),true),
     tile(dayc,'Dünün birincisi',flagHtml('x',AUTOFLAG),how(dayc,'Dünün birincisi flaması','altın defne dallı flama; önceki günün günlük birincisine ertesi gün boyunca verilir.','Günlük sıralamayı birinci bitir. Flama ertesi gün gelir ve bir gün kalır.'),true),
-    tile(weekc,'Haftanın birincisi',flagHtml('x',WEEKFLAG),how(weekc,'Geçen haftanın birincisi flaması','dört yapraklı yoncalı yeşil flama; geçen haftayı sıralamada birinci bitirene yeni hafta boyunca verilir.','Haftalık sıralamayı birinci bitir. Flama ertesi hafta gelir ve bir hafta kalır.'),true),
+    tile(weekc,'Haftanın birincisi',flagHtml('x',WEEKFLAG),how(weekc,'Geçen haftanın birincisi flaması','dört yapraklı yoncalı altın flama; geçen haftayı sıralamada birinci bitirene yeni hafta boyunca verilir.','Haftalık sıralamayı birinci bitir. Flama ertesi hafta gelir ve bir hafta kalır.'),true),
     tile(sp,'Test eden yapımcı',flagHtml('x',BYFLAG.get('maker')),how(sp,'Özel flama','yönetici tarafından seçilmiş kişilere verilen özel flama.','yönetici verir; başvuruyla ya da puanla kazanılmaz.'),true)]);
   return`${m4}${m5}<div class="muted small">Kilitli olanlar soluk durur; dokununca nasıl kazanılacağı yazar. Gün / Hafta Lideri: günü ya da haftayı birinci bitirdikçe profil kartında "3 x Gün Lideri" gibi sayaçlar birikir.</div>`;
 }
