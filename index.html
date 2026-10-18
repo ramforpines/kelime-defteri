@@ -327,7 +327,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .crown{position:absolute;right:-7px;top:-9px;font-size:1rem;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
 .avgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:6px}
 .av.svgav{padding:0;overflow:hidden;background:none}.av.svgav svg{width:100%;height:100%;display:block}
-.pfi{border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:3px}.pfi.off{background:var(--accent-soft)}.pft{font-size:.72rem;font-weight:700;padding:1px 8px;border-radius:99px;border:1px solid var(--line)}.pft.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pfi{border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:row;gap:12px;align-items:center}.pfb{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.pfv{width:92px;min-height:64px;flex:none;display:flex;align-items:center;justify-content:center;position:relative;flex-wrap:wrap;gap:4px}.pfv.tall{height:96px}.pfv.lk>*{opacity:.85}.pfv .flg,.pfv .kfl{position:relative;top:0;right:0}.pfv .flg{width:23px;height:68px}.pfv .avw.dogw{width:64px;height:64px}.pfsw{display:grid;grid-template-columns:repeat(4,16px);gap:4px}.pfsw i{width:16px;height:16px;border-radius:50%}.pfav{display:grid;grid-template-columns:repeat(2,36px);gap:6px}.pfav .av{width:36px;height:36px}.pfvl{display:flex;align-items:center;gap:5px;width:88px;padding:6px;border-radius:8px;background:radial-gradient(120% 90% at 50% 0%,#8a1830,#3a0814);border:1px solid #d6aa5a;color:#ffe08a;font-size:.7rem}.pfvl i{margin-left:auto;font-style:normal;font-weight:800}.pfi.off{background:var(--accent-soft)}.pft{font-size:.72rem;font-weight:700;padding:1px 8px;border-radius:99px;border:1px solid var(--line)}.pft.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .avgrid button{position:relative}.avgrid button .frl{position:absolute;right:2px;bottom:0;font-size:.7rem}
 .avgrid button svg{width:100%;height:100%;display:block;border-radius:8px}
 .avgrid button{height:48px;border-radius:12px;border:2px solid var(--line);background:var(--surface);font-size:1.1rem;padding:2px;overflow:hidden}
@@ -402,7 +402,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.56.0';
+const APP_VERSION='4.56.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -472,7 +472,7 @@ const flagPath=ph=>{const R=[],L=[];for(let y=0;y<=84;y+=6){const a=.4+y/84*2.6,
   return'M'+R.join(' L')+' L'+xr.toFixed(1)+',100 L17,'+(86+sw*.6).toFixed(1)+' L'+xl.toFixed(1)+',100 L'+L.join(' L')+' Z'};
 const FLAGD=(()=>{const a=[];for(let k=0;k<=8;k++)a.push(flagPath(k/8*Math.PI*2));return a.join(';')})();
 const REDM=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion:reduce)').matches;
-const flagHtml=id=>{const f=flagOf(id);if(!f)return'';const d0=flagPath(0),an=REDM?'':`<animate attributeName="d" dur="3.4s" repeatCount="indefinite" values="${FLAGD}"/>`;
+const flagHtml=(id,f0)=>{const f=f0||flagOf(id);if(!f)return'';const d0=flagPath(0),an=REDM?'':`<animate attributeName="d" dur="3.4s" repeatCount="indefinite" values="${FLAGD}"/>`;
   if(f.auto)return`<span class="flg ${f.id}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><linearGradient id="flgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2a8"/><stop offset=".45" stop-color="#ffc928"/><stop offset="1" stop-color="#e08a00"/></linearGradient></defs><path d="${d0}" fill="url(#flgd)" stroke="#7a4b00" stroke-width="1.6" stroke-linejoin="round">${an}</path><g fill="#2f5d1f" stroke="#1d3d12" stroke-width=".5"><path d="M17 20 C17.8 25 17.8 38 17 62" fill="none" stroke="#1d3d12" stroke-width="1.3" stroke-linecap="round"/><ellipse cx="17" cy="21" rx="1.9" ry="4.6"/><ellipse cx="12.4" cy="30" rx="4.6" ry="1.9" transform="rotate(35 12.4 30)"/><ellipse cx="21.6" cy="30" rx="4.6" ry="1.9" transform="rotate(-35 21.6 30)"/><ellipse cx="12.4" cy="38" rx="4.6" ry="1.9" transform="rotate(35 12.4 38)"/><ellipse cx="21.6" cy="38" rx="4.6" ry="1.9" transform="rotate(-35 21.6 38)"/><ellipse cx="12.4" cy="46" rx="4.6" ry="1.9" transform="rotate(35 12.4 46)"/><ellipse cx="21.6" cy="46" rx="4.6" ry="1.9" transform="rotate(-35 21.6 46)"/><ellipse cx="12.4" cy="54" rx="4.6" ry="1.9" transform="rotate(35 12.4 54)"/><ellipse cx="21.6" cy="54" rx="4.6" ry="1.9" transform="rotate(-35 21.6 54)"/></g></svg></span>`;
   return`<span class="flg ${f.id}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><pattern id="flgp" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="6" fill="#ffd000"/><rect y="6" width="12" height="6" fill="#111"/></pattern></defs><path d="${d0}" fill="url(#flgp)" stroke="#111" stroke-width="1.6" stroke-linejoin="round">${an}</path></svg></span>`};
 const flCls=id=>flagOf(id)?' hasfl':'';
@@ -2344,8 +2344,8 @@ function frameSVG(k){
   return`<svg class="frm" viewBox="-100 -100 200 200" aria-hidden="true" style="--gc:${P.c}"><defs>${defs}</defs>${b}</svg>`;
 }
 let kflN=0;
-function kingFlag(id){
-  if(!isKing(id))return'';
+function kingFlag(id,force){
+  if(!force&&!isKing(id))return'';
   const u='kf'+(++kflN),wv=(s,p)=>Math.sin(s*4.6-p)*4.2*s+Math.sin(s*8-2*p)*1.3*s,K=8;
   const path=p=>{const n=10,L=[],R=[];for(let i=0;i<=n;i++){const s=i/n,y=5+s*80,w=wv(s,p);L.push((7+w).toFixed(1)+' '+y.toFixed(1));R.push((37+w).toFixed(1)+' '+y.toFixed(1))}
     const ns=.86,nx=(22+wv(ns,p)).toFixed(1),ny=(5+ns*80-12).toFixed(1);return'M'+L.join(' L')+' L'+nx+' '+ny+' L'+R.reverse().join(' L')+'Z'};
@@ -2451,19 +2451,21 @@ function vCard(){
 function profFeatures(){
   const cur=myLeague(),w=myWinsN(),king=isKing(CLOUD.uid),f=flagOf(CLOUD.uid),dayc=!!(f&&f.auto),sp=!!(f&&!f.auto),adm=!!CLOUD.admin;
   const wOk=adm||(w!==null&&w>=1);
-  const it=(ok,t,d,how)=>`<div class="pfi${ok?'':' off'}"><div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap"><b>${t}</b><span class="pft${ok?' on':''}">${ok?'Açık':'Kilitli'}</span></div><div class="muted">${d}</div>${ok?'':'<div class="small"><b>Nasıl kazanılır:</b> '+how+'</div>'}</div>`;
+  const it=(ok,t,d,how,v,tall)=>`<div class="pfi${ok?'':' off'}"><div class="pfv${tall?' tall':''}${ok?'':' lk'}" aria-hidden="true">${v||''}</div><div class="pfb"><div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap"><b>${t}</b><span class="pft${ok?' on':''}">${ok?'Açık':'Kilitli'}</span></div><div class="muted">${d}</div>${ok?'':'<div class="small"><b>Nasıl kazanılır:</b> '+how+'</div>'}</div></div>`;
+  const nm=S.prof.name||CLOUD.defName||'Ad',cl=S.prof.color|0,sa=n=>avatar(nm,cl,false,n);
+  const velv=`<div class="pfvl"><span class="av sm" style="background:#475569"></span><b>Ad Soyad</b><i>1.</i></div>`;
   const list=[
-   it(true,'Profil renkleri','Harf avatarının arka planı için 8 renk. Hepsi baştan açıktır.',''),
-   it(true,'Avatarlar','Tilki dahil hazır avatarlar baştan açıktır. Düello Ejderi ve Köpek hariç.',''),
-   it(true,'Lig çerçeveleri','Ulaştığın lige kadar olan çerçeveleri seçebilirsin ('+LEAGUES[cur].n+' ligindesin, '+(cur+1)+'/'+LEAGUES.length+' çerçeve açık).',''),
-   it(wOk,'Düello Ejderi avatarı','Dereceli düelloda 1 galibiyet alana verilen özel avatar.','Dereceli düelloda 1 maç kazan'+(w===null?'.':' (şu an '+w+'/1).')),
-   it(king,'Köpek avatarı','Dereceli düello birincisinin avatarı ve çerçevesi yerine geçer; sıralamada, profil kartında, sohbette her yerde havlar. Yalnızca birincide görünür.','Sıra → Dereceli düello → Tüm zamanlar tablosunda 1. ol. Birincilik el değiştirince köpek yeni birinciye geçer.'),
-   it(king,'Kırmızı kadife profil','Birincinin satırı, profil kartı ve profil çubuğu kızıl kadife ve altın yazıyla görünür.','Dereceli düello birincisi ol. Birincilikle birlikte gelir, kaybedince kalkar.'),
-   it(king,'Altın sancak ve "HAV!"','Birincinin satırında ve kartında taç ve "1" taşıyan kırmızı sancak dalgalanır; köpeğin havlaması yazıyla görünür.','Dereceli düello birincisi ol. Birincilikle birlikte gelir, kaybedince kalkar.'),
-   it(dayc,'Dünün birincisi flaması','Altın defne dallı flama; bir önceki günün günlük birincisine ertesi gün boyunca verilir.','Günlük sıralamayı birinci bitir. Flama ertesi gün gelir ve bir gün kalır.'),
-   it(sp,'Özel flama (ör. Test eden yapımcı)','Yönetici tarafından seçilmiş kişilere verilen özel flama.','Yönetici verir; başvuru ya da puanla kazanılmaz.'),
-   it(adm,'Kan çerçevesi','Yönetici hesaplarına özel kırmızı çerçeve.','Yalnızca yöneticilere ayrılmıştır.'),
-   it(true,'Gün / Hafta Lideri sayaçları','Günü ya da haftayı birinci bitirdikçe profil kartında "3 x Gün Lideri" gibi sayaçlar birikir.','')
+   it(true,'Profil renkleri','Harf avatarının arka planı için 8 renk. Hepsi baştan açıktır.','','<div class="pfsw">'+COLORS.map(c=>'<i style="background:'+c+'"></i>').join('')+'</div>'),
+   it(true,'Avatarlar','Tilki dahil hazır avatarlar baştan açıktır. Düello Ejderi ve Köpek hariç.','','<div class="pfav">'+[1,2,3,4].map(n=>'<span class="avw"><span class="av em svgav">'+avSvg(n)+'</span></span>').join('')+'</div>'),
+   it(true,'Lig çerçeveleri','Ulaştığın lige kadar olan çerçeveleri seçebilirsin ('+LEAGUES[cur].n+' ligindesin, '+(cur+1)+'/'+LEAGUES.length+' çerçeve açık).','','<div class="pfav">'+[0,3,6,9].map(i=>avatar(nm,cl,false,0,LEAGUES[i].k)).join('')+'</div>'),
+   it(wOk,'Düello Ejderi avatarı','Dereceli düelloda 1 galibiyet alana verilen özel avatar.','Dereceli düelloda 1 maç kazan'+(w===null?'.':' (şu an '+w+'/1).'),'<span class="avw"><span class="av lg em svgav">'+avSvg(DRAGON_AV)+'</span></span>'),
+   it(king,'Köpek avatarı','Dereceli düello birincisinin avatarı ve çerçevesi yerine geçer; sıralamada, profil kartında, sohbette her yerde havlar. Yalnızca birincide görünür.','Sıra → Dereceli düello → Tüm zamanlar tablosunda 1. ol. Birincilik el değiştirince köpek yeni birinciye geçer.',dogAvatar(true,false)),
+   it(king,'Kırmızı kadife profil','Birincinin satırı, profil kartı ve profil çubuğu kızıl kadife ve altın yazıyla görünür.','Dereceli düello birincisi ol. Birincilikle birlikte gelir, kaybedince kalkar.',velv),
+   it(king,'Altın sancak ve "HAV!"','Birincinin satırında ve kartında taç ve "1" taşıyan kırmızı sancak dalgalanır; köpeğin havlaması yazıyla görünür.','Dereceli düello birincisi ol. Birincilikle birlikte gelir, kaybedince kalkar.',kingFlag('x',true),true),
+   it(dayc,'Dünün birincisi flaması','Altın defne dallı flama; bir önceki günün günlük birincisine ertesi gün boyunca verilir.','Günlük sıralamayı birinci bitir. Flama ertesi gün gelir ve bir gün kalır.',flagHtml('x',AUTOFLAG),true),
+   it(sp,'Özel flama (ör. Test eden yapımcı)','Yönetici tarafından seçilmiş kişilere verilen özel flama.','Yönetici verir; başvuru ya da puanla kazanılmaz.',flagHtml('x',BYFLAG.get('maker')),true),
+   it(adm,'Kan çerçevesi','Yönetici hesaplarına özel kırmızı çerçeve.','Yalnızca yöneticilere ayrılmıştır.',avatar(nm,cl,true,0,'kan')),
+   it(true,'Gün / Hafta Lideri sayaçları','Günü ya da haftayı birinci bitirdikçe profil kartında "3 x Gün Lideri" gibi sayaçlar birikir.','','<span class="badge warn">🏆 3 x Gün Lideri</span>')
   ];
   const n=list.filter(x=>!x.includes('pfi off')).length;
   return`<details class="card small"><summary style="cursor:pointer;font-weight:700;font-size:1rem">Profil özellikleri <span class="muted small">${n}/${list.length} açık</span></summary><div class="stack" style="margin-top:10px;line-height:1.5"><div class="muted">Avatar, çerçeve, flama ve profil görünümüyle ilgili her şey burada. Kilitli olanların nasıl kazanılacağı altında yazar.</div>${list.join('')}</div></details>`;
