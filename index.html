@@ -276,6 +276,29 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .avw.fr-gumus{background:linear-gradient(135deg,#6b7280,#f3f4f6,#9ca3af)}
 .avw{--p:3.5px;padding:var(--p)}.avw:has(.av.lg){--p:4.5px}.avw:has(.av.xl){--p:7px}
 .av.sm{width:28px;height:28px}
+.kv{--surface:#2a0610;--surface2:#3d0c1b;--line:rgba(243,210,122,.4);--muted:#e6c46a;--ink:#f3d27a;--accent:#f3d27a;--accent-ink:#3a0814;--accent-soft:rgba(243,210,122,.16);--ok:#9af0b4;--bad:#ff9d9d;--ok-bg:rgba(60,170,110,.25);--bad-bg:rgba(230,70,70,.28);color:#f3d27a;background:radial-gradient(120% 90% at 50% 0%,#8a1830 0%,#5e0f22 45%,#3a0814 100%),#4a0a18!important;border:1px solid #d6aa5a!important;box-shadow:0 0 14px rgba(243,210,122,.28),inset 0 0 40px rgba(0,0,0,.45)}
+.kv .nm,.kv .pos,.kv .val,.kv .pn b,.kv h2{color:#ffe08a}
+.kv .muted,.kv .small{color:#e6c46a!important}
+.rk.king,.pbar.king{margin-top:26px;overflow:visible}
+.sheet.king{padding-top:52px;border-radius:18px 18px 0 0}
+.av.dogav{width:40px;height:40px;border:0;background:none;overflow:visible;display:block;padding:0}.av.dogav.lg{width:56px;height:56px}.av.dogav.xl{width:84px;height:84px}
+.avw.dogw{padding:0;overflow:visible}
+.dsv{width:100%;height:100%;display:block;overflow:visible}
+.dsv .dh{animation:dhk 4s ease-in-out infinite}
+.dsv .dj{animation:djk 4s ease-in-out infinite}
+.dsv .dm,.dsv .dt{animation:dmk 4s ease-in-out infinite;transform-origin:0 0;opacity:0}
+.dsv .dey{animation:deyk 4s ease-in-out infinite}
+.dsv .dr{opacity:0;animation:drk 4s ease-out infinite;transform-origin:0 0}.dsv .dr2{animation-delay:.48s}
+.dsv .dtx{opacity:0;animation:dtk 4s ease-out infinite}
+.av.dogav:not(.lg):not(.xl) .dtx{display:none}
+@keyframes dhk{0%,6%{transform:scale(1.04)}10%{transform:translateY(-5px) scale(1.6)}14%{transform:scale(1.2)}21%{transform:translateY(-5px) scale(1.6)}26%{transform:scale(1.1)}34%,100%{transform:scale(1.04)}}
+@keyframes djk{0%,6%,14%,17%,26%,100%{transform:translateY(0)}10%,21%{transform:translateY(5px)}}
+@keyframes dmk{0%,6%,14%,17%,26%,100%{opacity:0;transform:scaleY(.1)}10%,21%{opacity:1;transform:scaleY(1)}}
+@keyframes deyk{0%,6%,14%,17%,26%,100%{transform:scaleY(1)}10%,21%{transform:scaleY(.55)}}
+@keyframes drk{0%,10%{opacity:0;transform:scale(.9)}12%{opacity:.85;transform:scale(1)}24%{opacity:0;transform:scale(1.5)}100%{opacity:0}}
+@keyframes dtk{0%,10%{opacity:0;transform:translateY(0) scale(.7)}13%{opacity:1;transform:translateY(-2px) scale(1)}23%{opacity:0;transform:translateY(-8px) scale(1.3)}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.dsv *{animation:none!important}}
+
 .frm{position:absolute;left:50%;top:50%;width:200%;height:200%;transform:translate(-50%,-50%);pointer-events:none;overflow:visible;z-index:2;filter:drop-shadow(0 0 3px var(--gc))}
 .crown{z-index:3}
 .frm .spin{transform-origin:0 0}
@@ -369,7 +392,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.53.9';
+const APP_VERSION='4.54.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -443,7 +466,9 @@ const flagHtml=id=>{const f=flagOf(id);if(!f)return'';const d0=flagPath(0),an=RE
   if(f.auto)return`<span class="flg ${f.id}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><linearGradient id="flgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2a8"/><stop offset=".45" stop-color="#ffc928"/><stop offset="1" stop-color="#e08a00"/></linearGradient></defs><path d="${d0}" fill="url(#flgd)" stroke="#7a4b00" stroke-width="1.6" stroke-linejoin="round">${an}</path><g fill="#2f5d1f" stroke="#1d3d12" stroke-width=".5"><path d="M17 20 C17.8 25 17.8 38 17 62" fill="none" stroke="#1d3d12" stroke-width="1.3" stroke-linecap="round"/><ellipse cx="17" cy="21" rx="1.9" ry="4.6"/><ellipse cx="12.4" cy="30" rx="4.6" ry="1.9" transform="rotate(35 12.4 30)"/><ellipse cx="21.6" cy="30" rx="4.6" ry="1.9" transform="rotate(-35 21.6 30)"/><ellipse cx="12.4" cy="38" rx="4.6" ry="1.9" transform="rotate(35 12.4 38)"/><ellipse cx="21.6" cy="38" rx="4.6" ry="1.9" transform="rotate(-35 21.6 38)"/><ellipse cx="12.4" cy="46" rx="4.6" ry="1.9" transform="rotate(35 12.4 46)"/><ellipse cx="21.6" cy="46" rx="4.6" ry="1.9" transform="rotate(-35 21.6 46)"/><ellipse cx="12.4" cy="54" rx="4.6" ry="1.9" transform="rotate(35 12.4 54)"/><ellipse cx="21.6" cy="54" rx="4.6" ry="1.9" transform="rotate(-35 21.6 54)"/></g></svg></span>`;
   return`<span class="flg ${f.id}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><pattern id="flgp" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="6" fill="#ffd000"/><rect y="6" width="12" height="6" fill="#111"/></pattern></defs><path d="${d0}" fill="url(#flgp)" stroke="#111" stroke-width="1.6" stroke-linejoin="round">${an}</path></svg></span>`};
 const flCls=id=>flagOf(id)?' hasfl':'';
-const lgAttr=id=>`data-lg="${isAdm(id)?'admin':(leagueMap()[id]|0)}"`;
+const kingId=()=>{const c=RKB.per.all,r=c&&c.rows&&c.rows[0];return r&&+r.net>0?r.user_id:null};
+const isKing=id=>!!id&&id===kingId();
+const lgAttr=id=>isKing(id)?'':`data-lg="${isAdm(id)?'admin':(leagueMap()[id]|0)}"`;
 const myLeague=()=>leagueMap()[CLOUD.uid]|0;
 const normFrame=f=>(f==='none'||LGIDX.has(f))?f:'auto';
 function frameFor(id,choice){
@@ -756,6 +781,7 @@ function adminStatsCard(){
 async function refreshBoard(){
   if(!sb||!CLOUD.uid||!navigator.onLine)return;
   await loadWins();
+  rkbLoad('all');
   try{
     const r=await sb.from('scores').select('*').limit(1000);
     if(r.error)throw r.error;
@@ -1896,7 +1922,7 @@ function profBar(){
   const name=(r&&r.name)||P.name||CLOUD.defName||'Ben',color=r?r.color:P.color,av=r?r.av:P.av,fr=frameFor(id,r?r.fr:P.frame);
   const st=r&&r.sd&&r.sd>=addDays(today(),-1)?(r.st||0):0;
   let lg='';try{lg=LEAGUES[leagueMap()[id]|0].n}catch(e){}
-  return`<div class="pbar${flCls(id)}" ${lgAttr(id)} data-pc="${esc(id)}" role="button" aria-label="Profil kartım">${avatar(name,color,false,av,fr)}<div class="pn"><b>${esc(name)}</b>${CLOUD.username?`<span class="muted small">@${esc(CLOUD.username)}</span>`:''}</div><div class="pr">${st?`<span class="badge">🔥 ${st}</span>`:''}${lg?`<span class="badge">${esc(lg)}</span>`:''}</div>${flagHtml(id)}</div>`;
+  return`<div class="pbar${flCls(id)}${isKing(id)?' king kv':''}" ${lgAttr(id)} data-pc="${esc(id)}" role="button" aria-label="Profil kartım">${avatar(name,color,false,av,fr,0,0,id)}<div class="pn"><b>${esc(name)}</b>${CLOUD.username?`<span class="muted small">@${esc(CLOUD.username)}</span>`:''}</div><div class="pr">${st?`<span class="badge">🔥 ${st}</span>`:''}${lg?`<span class="badge">${esc(lg)}</span>`:''}</div>${flagHtml(id)}</div>`;
 }
 function render(){
   const app=$('#app');
@@ -2273,7 +2299,38 @@ function frameSVG(k){
   }
   return`<svg class="frm" viewBox="-100 -100 200 200" aria-hidden="true" style="--gc:${P.c}"><defs>${defs}</defs>${b}</svg>`;
 }
-const avatar=(name,color,lg,av,fr,crown,xl)=>{
+let dogN=0;
+function dogAvatar(lg,xl){
+  const u='dg'+(++dogN),sz=xl?' xl':lg?' lg':'';
+  return`<span class="avw dogw"><span class="av dogav${sz}"><svg class="dsv" viewBox="-46 -134 92 92" aria-hidden="true"><defs>
+<radialGradient id="${u}a" cx="50%" cy="30%" r="80%"><stop offset="0" stop-color="#8a1830"/><stop offset="1" stop-color="#2a0610"/></radialGradient>
+<linearGradient id="${u}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a6a50"/><stop offset=".55" stop-color="#6a3e2c"/><stop offset="1" stop-color="#3a1f14"/></linearGradient>
+<linearGradient id="${u}m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9a487"/><stop offset="1" stop-color="#8a5f46"/></linearGradient>
+<radialGradient id="${u}e"><stop offset="0" stop-color="#fff0e0"/><stop offset=".4" stop-color="#ff4a3a"/><stop offset="1" stop-color="#b3101c"/></radialGradient>
+<filter id="${u}g" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="3"/></filter>
+<filter id="${u}s" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".55"/></filter>
+<clipPath id="${u}c"><circle cx="0" cy="-88" r="45"/></clipPath></defs>
+<g transform="translate(0 -88)"><g class="dr"><path d="M-40 -28 Q-60 0 -40 28" fill="none" stroke="#ffd36a" stroke-width="3" stroke-linecap="round"/><path d="M40 -28 Q60 0 40 28" fill="none" stroke="#ffd36a" stroke-width="3" stroke-linecap="round"/></g><g class="dr dr2"><path d="M-40 -28 Q-60 0 -40 28" fill="none" stroke="#ffd36a" stroke-width="3" stroke-linecap="round"/><path d="M40 -28 Q60 0 40 28" fill="none" stroke="#ffd36a" stroke-width="3" stroke-linecap="round"/></g></g>
+<circle cx="0" cy="-88" r="46" fill="url(#${u}a)"/>
+<g clip-path="url(#${u}c)"><path d="M-34 -30 C-34 -52 -26 -66 -18 -70 L18 -70 C26 -66 34 -52 34 -30Z" fill="url(#${u}b)" stroke="#1a0c08" stroke-width="1"/><path d="M-24 -64 Q0 -57 24 -64 L24 -68 Q0 -62 -24 -68Z" fill="#d6aa5a" stroke="#7a5a18" stroke-width=".8"/><circle cx="0" cy="-56" r="3.2" fill="#fff2b0" stroke="#7a5a18" stroke-width=".8"/></g>
+<circle cx="0" cy="-88" r="46" fill="none" stroke="#d6aa5a" stroke-width="3.2"/>
+<g transform="translate(0 -70)"><g class="dh" filter="url(#${u}s)"><g transform="translate(0 70)">
+<path d="M-18 -98 L-37 -126 L-6 -106Z" fill="#4a2a1e" stroke="#1a0c08" stroke-width="1"/><path d="M-18 -100 L-32 -120 L-9 -106Z" fill="#8a5a46"/>
+<path d="M18 -98 L37 -126 L6 -106Z" fill="#4a2a1e" stroke="#1a0c08" stroke-width="1"/><path d="M18 -100 L32 -120 L9 -106Z" fill="#8a5a46"/>
+<ellipse cx="0" cy="-86" rx="26" ry="23" fill="url(#${u}b)" stroke="#1a0c08" stroke-width="1"/>
+<path d="M-18 -102 q3 -8 6 0 M12 -102 q3 -8 6 0" fill="none" stroke="#7a4a36" stroke-width="2" opacity=".7"/>
+<g class="dj"><ellipse cx="0" cy="-72" rx="11" ry="5.5" fill="url(#${u}m)" stroke="#5a3a2a" stroke-width=".8"/></g>
+<g transform="translate(0 -74)"><ellipse class="dm" cx="0" cy="0" rx="9.4" ry="6" fill="#3a0610"/><path class="dm" d="M-5 0 q5 9 10 0Z" fill="#e0707a"/><g class="dt"><path d="M-7.4 -1 l1.4 3.6 l1.4 -3.6z M-3.4 -1 l1.4 3.6 l1.4 -3.6z M .6 -1 l1.4 3.6 l1.4 -3.6z M 4.6 -1 l1.4 3.6 l1.4 -3.6z" fill="#fff"/></g></g>
+<ellipse cx="0" cy="-78" rx="14" ry="7" fill="url(#${u}m)"/><ellipse cx="0" cy="-83" rx="5" ry="3.6" fill="#050203"/>
+<circle cx="-11" cy="-92" r="7" fill="#ff2a2a" opacity=".7" filter="url(#${u}g)"/><circle cx="11" cy="-92" r="7" fill="#ff2a2a" opacity=".7" filter="url(#${u}g)"/>
+<g transform="translate(-11 -92)"><ellipse class="dey" rx="4.6" ry="3.8" fill="url(#${u}e)"/></g><g transform="translate(11 -92)"><ellipse class="dey" rx="4.6" ry="3.8" fill="url(#${u}e)"/></g>
+<path d="M-19 -98 L-6 -93 M19 -98 L6 -93" stroke="#050203" stroke-width="2.6" stroke-linecap="round"/>
+</g></g></g>
+<g transform="translate(40 -130) rotate(-10)"><text class="dtx" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="900" font-size="20" fill="#ffd36a" stroke="#4a0a18" stroke-width="4" paint-order="stroke">HAV!</text></g>
+</svg></span></span>`;
+}
+const avatar=(name,color,lg,av,fr,crown,xl,uid)=>{
+  if(uid&&isKing(uid))return dogAvatar(lg,xl);
   const e=(av|0)>0&&AVATARS[(av|0)-1];
   const sz=xl?' xl':lg?' lg':'';
   const cr=crown?`<span class="crown" aria-hidden="true">${['🥇','🥈','🥉'][crown-1]}</span>`:'';
@@ -2321,8 +2378,8 @@ function vCard(){
   const st=(r.sd&&r.sd>=addDays(td,-1))?(r.st||0):0;
   const ids=String(r.bd||'').split(',').filter(x=>BYBADGE.has(x));
   const lg=LEAGUES[leagueMap()[id]|0],fk=frameFor(id,r.fr);
-  return`<div class="ov" data-act="card-close"><div class="sheet stack${isAdm(id)?' adm':''}" ${lgAttr(id)} data-act="noop" role="dialog" aria-label="Profil kartı">${flagHtml(id)}
-  <div class="row" style="justify-content:space-between;align-items:flex-start${flagOf(id)?';padding-right:34px':''}"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}${isAdm(id)?'<div class="small" style="font-weight:700">🛡 Yönetici</div>':''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':(rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında')+' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
+  return`<div class="ov" data-act="card-close"><div class="sheet stack${isKing(id)?' king kv':isAdm(id)?' adm':''}" ${lgAttr(id)} data-act="noop" role="dialog" aria-label="Profil kartı">${flagHtml(id)}
+  <div class="row" style="justify-content:space-between;align-items:flex-start${flagOf(id)?';padding-right:34px':''}"><div class="row" style="gap:14px;min-width:0">${avatar(r.name,r.color,false,r.av,fk,rk,true,id)}<div style="min-width:0;overflow-wrap:anywhere"><h2 style="margin:0">${esc(r.name)}${id===CLOUD.uid?' <span class="badge">sen</span>':''}</h2>${r.un?`<div class="small" style="font-weight:600">@${esc(r.un)}</div>`:''}${isAdm(id)?'<div class="small" style="font-weight:700">🛡 Yönetici</div>':''}<div class="small muted">${mn?'Liderlik tablosunda görünmüyor':(rk?['🥇 Haftanın birincisi','🥈 Haftanın ikincisi','🥉 Haftanın üçüncüsü'][rk-1]:'Bu hafta ilk 3 dışında')+' · '+lg.n+' ligi'}</div></div></div><button class="btn" data-act="card-close" aria-label="Kapat">Kapat</button></div>
   ${(()=>{if(mn&&id==='bot')return'';const s=DSTAT[id];if(s===undefined){duelStat(id);return''}if(!s)return'';return duelBox(s)})()}
   ${leadTxt(id)?`<div class="row" style="flex-wrap:wrap;gap:6px">${leadTxt(id)}</div>`:''}
   ${id!==CLOUD.uid?`<button class="btn block" data-act="chat-open" data-v="${esc(id)}">Mesaj gönder</button>`:''}
@@ -2353,7 +2410,7 @@ function leadersCard(){
   const L=CLOUD.ld;if(!CLOUD.ready||!L||(!L.day&&!L.week))return'';
   const one=(t,xs,ic)=>{if(!xs)return'';if(!Array.isArray(xs))xs=[xs];return xs.map(x=>one1(t,x,ic)).join('')};
   const one1=(t,x,ic)=>{if(!x)return'';const acc=x.ans?Math.round((x.cor||0)/x.ans*100):0;
-    return`<button class="card" style="text-align:left;display:flex;gap:12px;align-items:center" data-pc="${esc(x.id)}"><span style="flex:none">${avatar(x.name,x.color|0,false,x.av|0,frameFor(x.id,x.fr))}</span><span style="min-width:0;overflow-wrap:anywhere"><span class="muted small" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">${ic} ${t}</span><br><b>${esc(x.name)}</b>${x.un?` <span class="muted small">@${esc(x.un)}</span>`:''}<br><span class="small">${nf(Math.round(x.pts*10)/10)} puan · ${x.cor}/${x.ans} doğru · %${acc}</span></span></button>`};
+    return`<button class="card" style="text-align:left;display:flex;gap:12px;align-items:center" data-pc="${esc(x.id)}"><span style="flex:none">${avatar(x.name,x.color|0,false,x.av|0,frameFor(x.id,x.fr),0,0,x.id)}</span><span style="min-width:0;overflow-wrap:anywhere"><span class="muted small" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">${ic} ${t}</span><br><b>${esc(x.name)}</b>${x.un?` <span class="muted small">@${esc(x.un)}</span>`:''}<br><span class="small">${nf(Math.round(x.pts*10)/10)} puan · ${x.cor}/${x.ans} doğru · %${acc}</span></span></button>`};
   return`<div class="stack">${one('Dünün lideri'+(Array.isArray(L.day)&&L.day.length>1?' (eşit)':''),L.day,'🏆')}${one('Geçen haftanın lideri'+(Array.isArray(L.week)&&L.week.length>1?' (eşit)':''),L.week,'👑')}</div>`;
 }
 function myRankLine(){
@@ -2379,7 +2436,7 @@ function vRank(){
     ranked.forEach((r,i)=>{r.rank=(i>0&&ranked[i-1].x.p===r.x.p)?ranked[i-1].rank:i+1});
     const acc=r=>r.x.n?Math.round(r.x.c/r.x.n*100):0;
     const wt=weekTop();
-    const row=r=>`<div class="rk ${r.me?'me':''} ${r.rank&&r.rank<=3?'top':''}${flCls(r.id)}" ${lgAttr(r.id)} data-pc="${esc(r.id)}"><span class="pos">${r.rank||'–'}</span>${avatar(r.name,r.color,false,r.av,frameFor(r.id,r.fr),wt[r.id])}<div class="nm">${esc(r.name)}${r.me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">${r.x.n} soru · %${acc(r)} doğruluk${r.st?` · 🔥 ${r.st}`:''}</div></div><div class="val">${nf(Math.round(r.x.p*10)/10)}<small>puan</small></div>${flagHtml(r.id)}</div>`;
+    const row=r=>`<div class="rk ${r.me?'me':''} ${r.rank&&r.rank<=3?'top':''}${flCls(r.id)}${isKing(r.id)?' king kv':''}" ${lgAttr(r.id)} data-pc="${esc(r.id)}"><span class="pos">${r.rank||'–'}</span>${avatar(r.name,r.color,false,r.av,frameFor(r.id,r.fr),wt[r.id],0,r.id)}<div class="nm">${esc(r.name)}${r.me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">${r.x.n} soru · %${acc(r)} doğruluk${r.st?` · 🔥 ${r.st}`:''}</div></div><div class="val">${nf(Math.round(r.x.p*10)/10)}<small>puan</small></div>${flagHtml(r.id)}</div>`;
     const TOPN={day:10,week:20,all:30}[per]||10,top=ranked.slice(0,TOPN);
     const me=rows.find(r=>r.me);
     let mine='';
@@ -2408,11 +2465,11 @@ const RKB={per:{},busy:false};
 async function rkbLoad(per,force){
   if(!sb||!CLOUD.uid||RKB.busy)return;
   const c=RKB.per[per];if(c&&!force&&Date.now()-c.t<30000)return;
-  RKB.busy=true;
+  RKB.busy=true;const k0=kingId();
   try{const r=await sb.rpc('duel_rank',{p_per:per});if(r.error)throw r.error;RKB.per[per]={t:Date.now(),rows:r.data||[]}}
   catch(e){RKB.per[per]={t:Date.now(),rows:[],err:/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||''))?'setup':'err'}}
   finally{RKB.busy=false}
-  if(UI.tab==='rank'&&UI.rank.mode==='ranked')render();
+  if((UI.tab==='rank'&&UI.rank.mode==='ranked')||k0!==kingId())render();
 }
 function rankedBoardHtml(per){
   const c=RKB.per[per];if(!c)rkbLoad(per);
@@ -2420,7 +2477,7 @@ function rankedBoardHtml(per){
   rows.forEach((r,i)=>{r.rank=(i>0&&+rows[i-1].net===+r.net)?rows[i-1].rank:i+1});
   const wt=weekTop(),TOPN={day:10,week:20,all:30}[per]||10,top=rows.slice(0,TOPN);
   const row=r=>{const acc=r.a?Math.round(r.c/r.a*100):0,avg=r.a?(Math.round(r.t/r.a/100)/10).toFixed(1):'–',v=+r.net||0,me=r.user_id===CLOUD.uid,u=r.name||'Oyuncu';
-    return`<div class="rk ${me?'me':''} ${r.rank<=3?'top':''}${flCls(r.user_id)}" ${lgAttr(r.user_id)} data-pc="${esc(r.user_id)}"><span class="pos">${r.rank}</span>${avatar(u,r.color|0,false,r.av|0,frameFor(r.user_id,r.fr||''),wt[r.user_id])}<div class="nm">${esc(u)}${me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">G ${r.w} · B ${r.d} · M ${r.l} · %${acc} doğru · ${avg} sn</div></div><div class="val" style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(Math.round(Math.abs(v)*10)/10)}<small>puan</small></div>${flagHtml(r.user_id)}</div>`};
+    return`<div class="rk ${me?'me':''} ${r.rank<=3?'top':''}${flCls(r.user_id)}${isKing(r.user_id)?' king kv':''}" ${lgAttr(r.user_id)} data-pc="${esc(r.user_id)}"><span class="pos">${r.rank}</span>${avatar(u,r.color|0,false,r.av|0,frameFor(r.user_id,r.fr||''),wt[r.user_id],0,r.user_id)}<div class="nm">${esc(u)}${me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">G ${r.w} · B ${r.d} · M ${r.l} · %${acc} doğru · ${avg} sn</div></div><div class="val" style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(Math.round(Math.abs(v)*10)/10)}<small>puan</small></div>${flagHtml(r.user_id)}</div>`};
   const mine=rows.find(r=>r.user_id===CLOUD.uid);
   const extra=mine&&!top.includes(mine)?`<div class="gap" aria-hidden="true">···</div>${row(mine)}`:'';
   return`<div class="vlv">${rkSeg('ranked')}
@@ -2568,12 +2625,12 @@ function vChat(){
     const list=Object.keys(th).sort((a,b)=>th[b].id-th[a].id);
     const q=(C.q||'').trim().toLowerCase().replace(/^@/,'');
     const found=q&&CHAT.found&&CHAT.fq===q?CHAT.found:q?CLOUD.lb.filter(r=>r.id!==CLOUD.uid&&r.name&&((r.name||'').toLowerCase().includes(q)||(r.un||'').toLowerCase().includes(q))).slice(0,12):[];
-    const row=(id,sub,n)=>{const r=chatPeer(id);return`<div class="rk" data-act="chat-open" data-v="${esc(id)}" style="grid-template-columns:54px 1fr auto">${avatar(r.name,r.color,false,r.av,frameFor(id,r.fr))}<div class="nm">${esc(r.name)}<div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(sub)}</div></div>${n?`<span class="badge">${n}</span>`:''}</div>`};
+    const row=(id,sub,n)=>{const r=chatPeer(id);return`<div class="rk" data-act="chat-open" data-v="${esc(id)}" style="grid-template-columns:54px 1fr auto">${avatar(r.name,r.color,false,r.av,frameFor(id,r.fr),0,0,id)}<div class="nm">${esc(r.name)}<div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(sub)}</div></div>${n?`<span class="badge">${n}</span>`:''}</div>`};
     body=`<input id="chq" class="nameinp" type="search" placeholder="Yeni mesaj için ad veya @kullanıcı adı ara" value="${esc(C.q||'')}" autocomplete="off">`+
       (q?(found.length?found.map(r=>row(r.id,r.un?'@'+r.un:'Mesaj yaz',0)).join(''):'<div class="empty">Kullanıcı bulunamadı.</div>'):
         (list.length?list.map(id=>row(id,(th[id].user_id===CLOUD.uid?'Sen: ':'')+th[id].body,chatUnread(id))).join(''):'<div class="empty">Henüz özel mesajın yok. Yukarıdan birini ara ya da Sıra ekranında bir profile dokunup "Mesaj gönder"i seç.</div>'));
   }else{
-    const hd=C.view==='dm'?(()=>{const r=chatPeer(C.peer);return`<div class="row" style="gap:10px"><button class="chip" data-act="chat-back">‹ Geri</button><span class="row" data-pc="${esc(C.peer)}" style="gap:10px;cursor:pointer">${avatar(r.name,r.color,false,r.av,frameFor(C.peer,r.fr))}<b>${esc(r.name)}</b></span></div>`})():'';
+    const hd=C.view==='dm'?(()=>{const r=chatPeer(C.peer);return`<div class="row" style="gap:10px"><button class="chip" data-act="chat-back">‹ Geri</button><span class="row" data-pc="${esc(C.peer)}" style="gap:10px;cursor:pointer">${avatar(r.name,r.color,false,r.av,frameFor(C.peer,r.fr),0,0,C.peer)}<b>${esc(r.name)}</b></span></div>`})():'';
     body=hd+`<div class="chatlist" id="chatlist" role="log" aria-live="polite">${CHAT.ready?'':'<div class="empty">Yükleniyor…</div>'}</div>
     <div class="cfm"><input id="chin" class="nameinp" maxlength="500" placeholder="${C.view==='pub'?'Herkese yaz…':'Mesaj yaz…'}" value="${esc(C.draft)}" autocomplete="off" enterkeyhint="send"><button class="btn primary" data-act="chat-send">Gönder</button></div>`;
   }
@@ -2895,7 +2952,7 @@ function invShow(){
   if(!document.getElementById('dvcss')){const s=document.createElement('style');s.id='dvcss';s.textContent=invCss();document.head.appendChild(s)}
   const o=document.createElement('div');o.id='dvov';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Düello teklifi');
   const w=INV.who,incoming=INV.dir==='in',rkm=INV.mode==='ranked',need=rkm?DRK_MIN:DSTAKE,low=incoming&&(S.tp||0)<need,rg=rkm&&incoming?dRng(S.tp||0,+w.ap||0):null;
-  o.innerHTML=`<div class="dvb${rkm?' vlv':''}">${avatar(w.name,w.color,true,w.av,frameFor(w.id,'auto'))}
+  o.innerHTML=`<div class="dvb${rkm?' vlv':''}">${avatar(w.name,w.color,true,w.av,frameFor(w.id,'auto'),0,0,w.id)}
    <div class="dvt">${incoming?`${esc(w.name)} seni ${rkm?'dereceli ':''}düelloya davet ediyor`:`${esc(w.name)} adlı kullanıcıya ${rkm?'dereceli düello ':''}teklifi gönderildi`}</div>
    <div class="muted small">${incoming?(rkm?`20 soru, soru başına ${DQ_T} sn. Kazanırsan en fazla +${nf(r1(rg.win))}, kaybedersen en fazla −${nf(r1(rg.lose))} puan (yaklaşık).`:`20 soru, soru başına ${DQ_T} sn. Bahis: ${DSTAKE} puan.`):'Cevap bekleniyor…'}</div>
    <div class="dvbar"><i id="dvbi"></i></div><div class="mono" style="font-size:1.4rem" id="dvsec"></div>
@@ -2968,9 +3025,9 @@ function lobbyCard(){
   const lab={free:['Boşta','ok'],invite:['Teklif bekliyor',''],duel:['Maçta','warn']};
   const row=u=>{
     const rkm=DUEL.sub==='ranked',lw=rkm?u.lowr:u.low,can=u.st==='free'&&!lw&&!INV&&(S.tp||0)>=(rkm?DRK_MIN:DSTAKE),l=lab[u.st]||lab.free;
-    return`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="min-width:0;gap:10px">${avatar(u.name,u.color,false,u.av,frameFor(u.id,'auto'))}<div style="min-width:0"><b class="w" style="overflow-wrap:anywhere">${esc(u.name)}</b> <span class="muted small">@${esc(u.un)}</span><br><span class="badge ${l[1]}">${lw&&u.st==='free'?'Puanı yetersiz':l[0]}</span></div></div>
+    return`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="min-width:0;gap:10px">${avatar(u.name,u.color,false,u.av,frameFor(u.id,'auto'),0,0,u.id)}<div style="min-width:0"><b class="w" style="overflow-wrap:anywhere">${esc(u.name)}</b> <span class="muted small">@${esc(u.un)}</span><br><span class="badge ${l[1]}">${lw&&u.st==='free'?'Puanı yetersiz':l[0]}</span></div></div>
     <button class="btn primary" data-act="inv-send" data-u="${esc(u.id)}" ${can?'':'disabled'}>${rkm?'Dereceli teklif':'Düello teklifi'}</button></div></div>`};
-  const dl=x=>`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="gap:6px;min-width:0">${avatar(x.a.name,x.a.color,false,x.a.av,frameFor(x.a.id,'auto'))}<b class="small" style="overflow-wrap:anywhere">${esc(x.a.name)}</b></div><span class="mono muted small">${x.mode==='ranked'?'🏅':'⚔'} ${x.a1}/${x.qn} · ${x.a2}/${x.qn}</span><div class="row" style="gap:6px;min-width:0"><b class="small" style="overflow-wrap:anywhere">${esc(x.b.name)}</b>${avatar(x.b.name,x.b.color,false,x.b.av,frameFor(x.b.id,'auto'))}</div></div></div>`;
+  const dl=x=>`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="gap:6px;min-width:0">${avatar(x.a.name,x.a.color,false,x.a.av,frameFor(x.a.id,'auto'),0,0,x.a.id)}<b class="small" style="overflow-wrap:anywhere">${esc(x.a.name)}</b></div><span class="mono muted small">${x.mode==='ranked'?'🏅':'⚔'} ${x.a1}/${x.qn} · ${x.a2}/${x.qn}</span><div class="row" style="gap:6px;min-width:0"><b class="small" style="overflow-wrap:anywhere">${esc(x.b.name)}</b>${avatar(x.b.name,x.b.color,false,x.b.av,frameFor(x.b.id,'auto'),0,0,x.b.id)}</div></div></div>`;
   return`<div class="card stack"><h2>Düello salonu</h2>
    <div class="stack" style="gap:6px"><span class="small muted">Düello sekmesindekiler (${LOBBY.on.length})</span>${LOBBY.on.length?LOBBY.on.map(row).join(''):'<div class="small muted">Şu an düello sekmesinde başka kimse yok.</div>'}</div>
    <div class="stack" style="gap:6px"><span class="small muted">Şu an oynanan düellolar (${LOBBY.duels.length})</span>${LOBBY.duels.length?LOBBY.duels.map(dl).join(''):'<div class="small muted">Şu an süren düello yok.</div>'}</div></div>`;
@@ -2979,7 +3036,7 @@ function duelHist(){
   const rkm=DUEL.sub==='ranked',H=DUEL.hist&&DUEL.hist.filter(x=>(x.mode==='ranked')===rkm);if(!H)return'';
   const dt=x=>{try{const d=new Date(x);return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}catch(e){return''}};
   const side=(id,sc,st,right,cc,aa,tt,dl)=>{const u=dPeer(id)||{},bg=st==='w'?'background:rgba(59,130,246,.22)':st==='l'?'background:var(--bad-bg)':'background:var(--surface2)';
-    const av=`<span style="flex:none;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;overflow:visible"><span style="display:inline-flex;transform:scale(.55);transform-origin:center">${avatar(u.name||'?',u.color,false,u.av,frameFor(id,'auto'))}</span></span>`;
+    const av=`<span style="flex:none;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;overflow:visible"><span style="display:inline-flex;transform:scale(.55);transform-origin:center">${avatar(u.name||'?',u.color,false,u.av,frameFor(id,'auto'),0,0,id)}</span></span>`;
     const tx=`<div style="min-width:0;flex:1;line-height:1.15"><div class="small" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:${st==='w'?700:500}">${esc(u.name||'Oyuncu')}</div><b class="mono small">${nf(sc||0)}</b>${dl!=null&&rkm?` <b class="mono" style="font-size:.72rem;color:${+dl>0?'#3b82f6':+dl<0?'var(--bad)':'inherit'}">${+dl>0?'+':+dl<0?'−':'±'}${nf(r1(Math.abs(+dl)))}</b>`:''}${aa!=null?`<div class="muted" style="font-size:.7rem">${cc||0}/${aa} doğru · ${aa?(Math.round((+tt||0)/aa/100)/10).toFixed(1):'–'} sn</div>`:''}</div>`;
     return`<div style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;${bg};flex-direction:${right?'row-reverse':'row'};${right?'text-align:right;':''}">${av}${tx}</div>`};
   const rows=H.map(x=>{const w=x.winner;
