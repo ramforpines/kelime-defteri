@@ -280,7 +280,8 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .kv .nm,.kv .pos,.kv .val,.kv .pn b,.kv h2{color:#ffe08a}
 .kv .muted,.kv .small{color:#e6c46a!important}
 .rk.king,.pbar.king{margin-top:26px;overflow:visible}
-.kfl{position:absolute;top:-2px;right:14px;width:38px;height:84px;z-index:6;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.45))}
+.kfl{position:absolute;top:-2px;right:14px;width:38px;height:84px;z-index:6;pointer-events:auto;cursor:default;outline:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.45))}
+.kfl::after{content:attr(data-tip);position:absolute;right:calc(100% + 6px);top:14px;white-space:nowrap;background:#3a0814;color:#f3d27a;border:1px solid #f3d27a;border-radius:6px;padding:3px 8px;font:800 .72rem var(--font-body);opacity:0;transform:translateX(4px);transition:opacity .15s,transform .15s;pointer-events:none}.kfl:hover::after,.kfl:focus::after{opacity:1;transform:none}
 .kfl svg{display:block;width:100%;height:100%;overflow:visible}
 .kv{position:relative}
 .rk.king .val{padding-right:44px}
@@ -402,7 +403,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.56.4';
+const APP_VERSION='4.56.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2352,7 +2353,7 @@ function kingFlag(id,force){
   const vals=[],ems=[];for(let k=0;k<=K;k++){const p=k/K*Math.PI*2;vals.push(path(p));ems.push((wv(.4,p)).toFixed(1)+' 0')}
   const an=REDM?'':`<animate attributeName="d" dur="3.2s" repeatCount="indefinite" values="${vals.join(';')}"/>`;
   const ae=REDM?'':`<animateTransform attributeName="transform" type="translate" dur="3.2s" repeatCount="indefinite" values="${ems.join(';')}"/>`;
-  return`<span class="kfl" aria-hidden="true"><svg viewBox="-4 -2 52 100"><defs>
+  return`<span class="kfl" role="img" tabindex="0" aria-label="Dereceli düello birincisi" data-tip="Dereceli düello birincisi"><svg viewBox="-4 -2 52 100"><defs>
 <linearGradient id="${u}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff2b0"/><stop offset=".5" stop-color="#e0b52a"/><stop offset="1" stop-color="#8a6510"/></linearGradient>
 <linearGradient id="${u}c" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d0183a"/><stop offset="1" stop-color="#6e0a1c"/></linearGradient></defs>
 <path d="${vals[0]}" fill="url(#${u}c)" stroke="#f3d27a" stroke-width="1.4" stroke-linejoin="round">${an}</path>
