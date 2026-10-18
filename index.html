@@ -277,7 +277,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .avw.fr-gumus{background:linear-gradient(135deg,#6b7280,#f3f4f6,#9ca3af)}
 .avw{--p:3.5px;padding:var(--p)}.avw:has(.av.lg){--p:4.5px}.avw:has(.av.xl){--p:7px}
 .av.sm{width:28px;height:28px}
-.kv{--surface:#2a0610;--surface2:#3d0c1b;--line:rgba(243,210,122,.4);--muted:#e6c46a;--ink:#f3d27a;--accent:#f3d27a;--accent-ink:#3a0814;--accent-soft:rgba(243,210,122,.16);--ok:#9af0b4;--bad:#ff9d9d;--ok-bg:rgba(60,170,110,.25);--bad-bg:rgba(230,70,70,.28);color:#f3d27a;background:radial-gradient(120% 90% at 50% 0%,#8a1830 0%,#5e0f22 45%,#3a0814 100%),#4a0a18!important;border:1px solid #d6aa5a!important;box-shadow:0 0 14px rgba(243,210,122,.28),inset 0 0 40px rgba(0,0,0,.45)}
+.kv{--surface:#2a0610;--surface2:#3d0c1b;--line:rgba(243,210,122,.4);--muted:#e6c46a;--ink:#f3d27a;--accent:#f3d27a;--accent-ink:#3a0814;--accent-soft:rgba(243,210,122,.16);--ok:#9af0b4;--bad:#ff9d9d;--ok-bg:rgba(60,170,110,.25);--bad-bg:rgba(230,70,70,.28);color:#f3d27a;background:radial-gradient(120% 90% at 50% 0%,#8a1830 0%,#5e0f22 45%,#3a0814 100%),#4a0a18!important;border:1px solid #d6aa5a!important;box-shadow:inset 0 0 40px rgba(0,0,0,.45)}
 .kv .nm,.kv .pos,.kv .val,.kv .pn b,.kv h2{color:#ffe08a}
 .kv .muted,.kv .small{color:#e6c46a!important}
 .rk.king,.pbar.king{margin-top:26px;overflow:visible}
@@ -285,7 +285,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .kfl::after{content:attr(data-tip);position:absolute;right:calc(100% + 6px);top:14px;white-space:nowrap;background:#3a0814;color:#f3d27a;border:1px solid #f3d27a;border-radius:6px;padding:3px 8px;font:800 .72rem var(--font-body);opacity:0;transform:translateX(4px);transition:opacity .15s,transform .15s;pointer-events:none}.kfl:hover::after,.kfl:focus::after{opacity:1;transform:none}
 .kfl svg{display:block;width:100%;height:100%;overflow:visible}
 .kv{position:relative}
-.rk.king .val{padding-right:44px}
+.rk.king .val{padding-right:30px}.rk.king{padding-right:10px}.rk.king .kfl{right:6px}
 .pbar.king{padding-right:62px}
 .king .flg{right:calc(60px + var(--i,0)*26px)}
 .sheet.king .kfl{right:22px;top:0;width:44px;height:96px}
@@ -404,7 +404,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.60.2';
+const APP_VERSION='4.60.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
