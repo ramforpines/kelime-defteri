@@ -427,7 +427,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.62.0';
+const APP_VERSION='4.62.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2321,7 +2321,6 @@ function vResult(){
     <div class="small"><b>Bu testten ${(qz.pts.c+qz.pts.b+qz.pts.w)>=0?'+':'−'}${nf(r1(Math.abs(qz.pts.c+qz.pts.b+qz.pts.w)))} puan</b><br><span class="muted">Doğru cevaplar +${nf(r1(qz.pts.c))} · bonuslar +${nf(r1(qz.pts.b))}${qz.pts.w?` · yanlış cevaplar −${nf(r1(Math.abs(qz.pts.w)))}`:''}</span></div>
     ${qz.learnedNow.length?`<div class="row">${qz.learnedNow.map(k=>`<span class="badge ok">${esc(k)}</span>`).join('')}</div>`:''}</div>
     ${qz.wrong.length?`<div class="card stack"><h3>Yanlışlar</h3>${qz.wrong.map(it=>`<div><b>${esc(it.w.word)}</b> <span class="muted">${esc(FEAT[it.f])}</span><div class="small">Doğru: ${esc(it.correct)}</div></div>`).join('')}</div>`:''}
-    ${qz.wrong.length?`<button class="btn block" data-act="again-wrong">Yanlışları şimdi tekrar çöz (${qz.wrong.length})</button>`:''}
     <div class="row"><button class="btn primary" data-act="again">Yeni test</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
 }
 function vReview(){
@@ -3389,7 +3388,6 @@ document.addEventListener('click',async e=>{
     case'wl-clear':UI.wlConfirm=true;render();break;
     case'wl-clear-no':UI.wlConfirm=false;render();break;
     case'wl-clear-yes':S.wlog=[];UI.wlConfirm=false;save();render();toast('Yanlış defteri temizlendi.');break;
-    case'again-wrong':{const items=UI.quiz.wrong.map(it=>{const n=makeItem(it.w,it.f,'wlog');if(n)n.lk=it.w.word+'|'+it.f;return n}).filter(Boolean);if(!items.length){toast('Soru hazırlanamadı.');break}UI.quiz={mode:'wlog',items:shuffle(items),i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};render();window.scrollTo(0,0);break}
     case'start-review-all':startQuiz('review',true);break;
     case'next':next();break;
     case'quit':UI.quiz=null;render();break;
