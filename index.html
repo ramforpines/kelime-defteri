@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.71.0';
+const APP_VERSION='4.72.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1408,7 +1408,7 @@ function vHelp(){
   return`<div class="card stack"><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün kelimeleri, bu haftaki sıran, dünün ve geçen haftanın lideri.',
-    '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b>, <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
+    '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b>, <b>İngilizce Vize</b> (ders kitabı üniteleri: kelimeler, dinleme, okuma ve Örnek Vize), <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
     '<b>Sıra</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte). <b>Kullanım</b>: bu sayfa.',
     '<b>Ben</b>: Profil, İstatistik, Öğrenilenler, Geri bildirim ve Ayarlar. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
   ${sec('🚀 Hızlı başlangıç',li([
@@ -2133,7 +2133,7 @@ const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıra'],['chat','
 function studySeg(){
   if(UI.quiz)return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
-  return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='exam'||CLOUD.admin).map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
+  return`<div class="seg" style="margin-bottom:12px">${STUDY.map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
 }
 function renderNav(){
   $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}${k==='chat'&&chatUnread()?` <i class="nbd">${chatUnread()}</i>`:''}</span></button>`).join('');
@@ -2153,7 +2153,6 @@ function render(){
   if(CLOUD.approved===false){$('nav').hidden=true;app.innerHTML=vPending();return}
   $('nav').hidden=false;
   renderNav();
-  if(UI.tab==='exam'&&!CLOUD.admin){UI.tab='dict';UI.quiz=null;if(lastStudy==='exam')lastStudy='quiz'}   // Vize şimdilik yalnızca yönetici
   let h='';
   if(UI.tab==='today')h=vToday();
   else if(UI.tab==='dict')h=vDict();
@@ -2427,7 +2426,6 @@ function examItems(key){
   return exGap(u).concat(exWordTest(u),exDef(u),exEx(u),exRead(u),exListen(u),exPh(u));
 }
 function examStart(key){
-  if(!CLOUD.admin)return;
   const items=examItems(key);
   if(!items.length){toast('Bu sınav için soru bulunamadı.');return}
   UI.quiz={mode:'exam',exam:key,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};
