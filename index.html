@@ -427,7 +427,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.63.0';
+const APP_VERSION='4.64.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -803,6 +803,7 @@ async function loadStats(){
 async function loadAdminStats(){
   const A=UI.adm;if(!sb||!CLOUD.admin)return;A.sbusy=true;
   try{ const r=await sb.rpc('admin_stats'); if(r.error||!r.data)throw 0; A.stats=r.data;A.serr=false }catch(e){A.serr=true}
+  try{ const r=await sb.rpc('admin_solved_series',{n:30}); if(r.error||!Array.isArray(r.data))throw 0; A.solved=r.data;A.solvedErr=false }catch(e){A.solvedErr=true}
   A.sbusy=false; if(UI.tab==='me')render();
 }
 setInterval(()=>{if(!document.hidden)appPing()},60000);
@@ -842,6 +843,16 @@ function adminSecCard(){
   ${A.secErr?'<div class="small" style="color:var(--bad)">Alınamadı. supabase-security.sql çalıştırıldı mı?</div>':''}
   ${L?(L.length?L.map(x=>`<div class="small" style="overflow-wrap:anywhere"><b>${esc(lab[x.kind]||x.kind)}</b> · @${esc(x.username)} · ${esc(x.detail)} <span class="muted">${new Date(x.created_at).toLocaleString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span></div>`).join(''):'<div class="small muted">Şüpheli işlem yok.</div>'):'<div class="small muted">Puanlarda imkânsız sıçrama, yönetici adını taklit eden ad gibi olaylar burada listelenir.</div>'}</div>`;
 }
+function solvedChart(){
+  const A=UI.adm,v=A.solved;
+  if(!v)return A.solvedErr?'<div class="small muted">Çözülen soru grafiği için supabase-stats2.sql dosyasını SQL Editor\'da bir kez çalıştır.</div>':'';
+  const mx=Math.max(1,...v.map(x=>+x.a||0)),tot=v.reduce((t,x)=>t+(+x.a||0),0),cor=v.reduce((t,x)=>t+(+x.c||0),0),td=v.length?v[v.length-1]:{a:0,c:0};
+  const lab=d=>{const p=String(d).split('-');return +p[2]+'.'+ +p[1]};
+  return`<div class="stack" style="gap:4px"><span class="small muted">Çözülen soru sayısı (son ${v.length} gün)</span>
+  <div style="display:flex;align-items:flex-end;gap:2px;height:70px">${v.map(x=>`<span title="${lab(x.d)}: ${nf(+x.a||0)} soru, ${nf(+x.c||0)} doğru" style="flex:1;display:flex;align-items:flex-end;height:100%"><span style="width:100%;background:var(--accent);opacity:.85;border-radius:2px 2px 0 0;height:${Math.max(2,Math.round((+x.a||0)/mx*100))}%"></span></span>`).join('')}</div>
+  <div class="row small muted" style="justify-content:space-between"><span>${lab(v[0].d)}</span><span>${lab(v[v.length-1].d)}</span></div>
+  <div class="small">Bugün <b>${nf(+td.a||0)}</b> · ${v.length} günde toplam <b>${nf(tot)}</b> soru (doğru: ${nf(cor)}${tot?', %'+Math.round(cor/tot*100):''}) · günlük ort. <b>${nf(Math.round(tot/v.length))}</b></div></div>`;
+}
 function adminStatsCard(){
   const A=UI.adm,s=A.stats;
   const head=`<div class="row" style="justify-content:space-between"><b>İstatistikler</b><button class="btn" data-act="adm-stats" ${A.sbusy?'disabled':''}>${A.sbusy?'Yükleniyor…':s?'Yenile':'Yükle'}</button></div>`;
@@ -856,6 +867,7 @@ function adminStatsCard(){
   <div class="kpis">${k(s.never,'hiç çalışmayan')}${k(s.fb_open,'yeni geri bildirim')}${k(s.avg_points,'ort. puan')}</div>
   <div class="kpis">${k(s.duels_done,'biten düello')}${k(s.duels_active,'süren düello')}${k(s.duel_queue,'kuyrukta')}</div>
   <div class="kpis">${k(s.msgs_total,'genel mesaj')}${k(s.dms_total,'özel mesaj')}${k(s.dms_today,'bugün özel')}</div>
+  ${solvedChart()}
   ${spark('active','Aktif kullanıcı')}${spark('joined','Yeni kayıt')}${spark('duels','Düello')}${spark('msgs','Genel sohbet mesajı')}
   ${(s.top_today||[]).length?`<div class="stack" style="gap:2px"><span class="small muted">Bugünün ilk 5'i</span>${s.top_today.map((x,i)=>`<div class="small">${i+1}. <b>${esc(x.name)}</b>${x.un?` <span class="muted">@${esc(x.un)}</span>`:''} · ${nf(Math.round(x.pts))} puan · ${x.cor}/${x.ans} doğru</div>`).join('')}</div>`:''}</div>`;
 }
