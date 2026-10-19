@@ -404,13 +404,13 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.60.4';
+const APP_VERSION='4.61.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
-function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[],rd:{},sav:{}}}
+function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[],rd:{},sav:{},wq:{d:'',done:[]}}}
 function load(uid){
   let raw=null;
   try{raw=localStorage.getItem(KEY+'-'+uid)}catch(e){}
@@ -575,7 +575,30 @@ function dueLearned(){const t=today();return Object.keys(S.learned).filter(k=>BY
 const LVW=[[2,4,6,4,2,2],[2,3,6,5,2,2],[1,3,5,6,3,2],[1,2,5,6,3,3],[1,2,4,6,4,3],[1,1,4,6,5,3],[1,1,5,6,4,3],[1,1,4,6,5,3],[1,1,3,6,5,4],[1,1,3,5,5,5]];
 /* günün kelimesi: B1/B2/C1 arasından, gün başına sabit */
 let WODP=null;
-function wodWord(){if(!WODP)WODP=W.filter(w=>w.level==='B1'||w.level==='B2'||w.level==='C1');const dn=Math.floor(Date.parse(today()+'T12:00:00')/864e5);return WODP.length?WODP[(dn*7919)%WODP.length]:null}
+function wodWords(){
+  if(!WODP)WODP=W.filter(w=>w.level==='B1'||w.level==='B2'||w.level==='C1');
+  if(!WODP.length)return[];
+  const dn=Math.floor(Date.parse(today()+'T12:00:00')/864e5),out=[];
+  for(let k=0,t=0;out.length<3&&t<60;t++){const w=WODP[(dn*7919+k*104729+t*17)%WODP.length];if(w&&out.indexOf(w)===-1){out.push(w);k++}}
+  return out;
+}
+const wodWord=()=>wodWords()[0]||null;
+function wqGet(){if(!S.wq||S.wq.d!==today())S.wq={d:today(),done:[]};return S.wq}
+// günün kelimelerinin soruları: her kelimenin tüm soru türleri, kelimeler sırayla karışık dizilir
+function wodQueue(){
+  const ws=wodWords(),lists=ws.map(w=>applicable(w).slice()),out=[],mx=Math.max(0,...lists.map(l=>l.length));
+  for(let r=0;r<mx;r++)ws.forEach((w,i)=>{if(lists[i][r]!==undefined)out.push({w,f:lists[i][r],k:w.word+'|'+lists[i][r]})});
+  return out;
+}
+const wodLeft=()=>{const dn=wqGet().done;return wodQueue().filter(q=>dn.indexOf(q.k)===-1)};
+function wodPick(items,anyWord){
+  // sıradaki çözülmemiş günün-kelimesi sorusunu seçer; kelime filtreye uymuyorsa atlanır
+  const q=wodLeft().find(q=>anyWord||(lvOk(S.set.level,q.w.level)&&typeOK(q.w)));
+  if(!q)return items;
+  const it=makeItem(q.w,q.f,'wod');
+  if(!it){wqGet().done.push(q.k);return wodPick(items,anyWord)}
+  return items.filter(x=>x.w!==q.w).concat([it]);
+}
 const QCAP=700;   // günlük soru puanı üst sınırı (düello puanları bu sınıra girmez)
 let CUR_EV=null;   // o an puanı yazılan cevabın olay kaydı (cihazlar arası birleştirme için)
 const EV_DAYS=21;
@@ -698,6 +721,7 @@ function mergeStates(a,b){
   Object.keys(ot.lv||{}).forEach(k=>{const x=m.lv[k],y=ot.lv[k];m.lv[k]=x?[Math.max(x[0]|0,y[0]|0),Math.max(x[1]|0,y[1]|0)]:y});
   m.dl=Object.assign({},ot.dl||{},m.dl||{});Object.keys(ot.dl||{}).forEach(k=>{const x=m.dl[k],y=ot.dl[k];if(x&&y){x.s=x.s||y.s;x.p=x.p||y.p}});
   {const sv={};[ot.sav||{},m.sav||{}].forEach(o=>Object.keys(o).forEach(k=>{if(sv[k]==null||Math.abs(o[k])>Math.abs(sv[k]))sv[k]=o[k]}));m.sav=sv}   // kaydedilenler: sayı >0 kayıtlı, <0 kaldırıldı (|değer| = zaman); yeni olan kazanır
+  {const x=m.wq||{},y=ot.wq||{};if(y.d&&(!x.d||y.d>x.d))m.wq={d:y.d,done:(y.done||[]).slice()};else if(y.d&&y.d===x.d){const u=(x.done||[]).slice();(y.done||[]).forEach(k=>{if(u.indexOf(k)===-1)u.push(k)});m.wq={d:x.d,done:u}}}
   m.upd=Date.now();
   return m;
 }
@@ -1314,7 +1338,7 @@ function vHelp(){
   const li=a=>'<ul style="margin:0;padding-left:20px">'+a.map(x=>'<li style="margin-bottom:4px">'+x+'</li>').join('')+'</ul>';
   return`<div class="card stack"><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
   ${sec('🧭 Menüler',li([
-    '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün kelimesi, bu haftaki sıran, dünün ve geçen haftanın lideri.',
+    '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün kelimeleri, bu haftaki sıran, dünün ve geçen haftanın lideri.',
     '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b>, <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
     '<b>Sıra</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte). <b>Kullanım</b>: bu sayfa.',
     '<b>Ben</b>: Profil, İstatistik, Öğrenilenler, Geri bildirim ve Ayarlar. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
@@ -1352,7 +1376,7 @@ function vHelp(){
     '<b>Günlük asgari hedef</b>: toplam puanın 3500\'ün altındaysa (Zümrüt\'ün altı) günde 20 doğru, 3500 ve üstünde 35, 6000 (Elmas) ve üstünde 50 doğru çözmen gerekir. Çözmediğin her gün için toplam puanından %5 kesilir. Seri ve kesinti aynı asgari hedefe bağlıdır.',
     '<b>İzin günü</b>: Haftada 1 gün (Elmas ve üstünde 2 gün) asgari hedefi tutturamasan da puan kesilmez ve seri bozulmaz. Hafta Pazartesi başlar. İzin günü otomatik kullanılır; Bugün ekranında bu haftaki kalan hakkını görürsün.',
     '<b>Öğrenilen kelime tekrarı</b>: Öğrendiğin kelimeler 15 gün sonra ilk kez, sonra her 30 günde bir tekrar sorulur. Bugünün testi ve Tekrar sekmesindeki düğme bunları öne alır. Yanlış yaparsan kelime 7 gün sonra yeniden sorulur.',
-    '<b>Günün kelimesi</b>: B1, B2 ve C1 seviyelerinden günde bir kelime seçilir (24 saat aynı kalır). Bugünün testinde bu kelimeden 1 soru çıkar.',
+    '<b>Günün kelimeleri</b>: B1, B2 ve C1 seviyelerinden günde 3 kelime seçilir (24 saat aynı kalır). Bu 3 kelimenin tüm soruları, çözdüğün her testte birer birer sorulur: Bugünün testinde her zaman, kendi kurduğun testte ise kelimeler seçtiğin seviye ve türe uyuyorsa 1 soru çıkar. Günün kelimeleri Bugün ekranında soru ilerlemesiyle görünür; her gün yenilenir.',
     '<b>Soru seviyeleri</b>: Yeni sorular ligine göre karışık gelir. Yeni başlayanda B1 ve B2 ağırlıklıdır, ligin yükseldikçe C1 ve C2 payı artar, A1 ve A2 azalır.',
     '<b>Yanlış cevap cezası</b>: Altın (1000 puan), Platin ve Zümrüt liglerinde yanlış cevap, doğru cevap puanının dörtte birini düşürür. Elmas ve üstünde, doğru bilseydin alacağın puanın tamamını düşürür. Bu yüzden Elmas ve üstünde doğruluğun %50\'nin altına düşerse puanın azalır; emin olmadığın soruda acele etme. Günlük puan sıfırın altına inmez.',
     '<b>Günlük soru puanı sınırı</b>: Sorulardan, bonuslardan ve tekrar listesinden bir günde en fazla '+QCAP+' puan kazanabilirsin. Düello puanları bu sınıra girmez, sınırsız eklenir.',
@@ -1844,11 +1868,8 @@ function startQuiz(mode,all){
     const rv=reviewItems(Math.ceil(n/3),false);
     const skip=new Set(rv.map(i=>i.w.word));
     items=rv.concat(newItems(n-rv.length,S.set.level,skip));
-    if(S.wod!==today()){
-      const wd=wodWord();
-      if(wd){for(const f of shuffle(applicable(wd))){const it=makeItem(wd,f,'wod');if(it){items=items.filter(x=>x.w!==wd);items.push(it);break}}}
-    }
-  }else items=newItems(n,S.set.level,new Set());
+    items=wodPick(items,true);
+  }else items=wodPick(newItems(n,S.set.level,new Set()),false);
   items=shuffle(items);
   if(!items.length){toast(mode==='wlog'?'Yanlış defterin boş.':mode==='review'?'Tekrar edilecek kelime yok.':'Bu seviyede soru üretilecek kelime kalmadı.');return}
   UI.quiz={mode,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};
@@ -1874,7 +1895,7 @@ function applyAnswerCore(it,ok,ua,qz,gate){
   if(ok){pt+=ap(bq,'c');const G=goalEff();if(d.c===G)pt+=ap(10+Math.min(streak(),10),'b')}
   else if(myLeague()>=3)pt+=ap(-(myLeague()>=6?1:0.25)*bq,'w');   // Altın–Zümrüt: ¼, Elmas ve üstü: doğru cevap puanının tamamı
   if(ok){if(it.kind==='wlog')wlogDel(it.lk||(w.word+'|'+it.f))}else wlogAdd(it,ua);
-  if(it.kind==='wod')S.wod=today();
+  if(it.kind==='wod'){const q=wqGet(),k=w.word+'|'+it.f;if(q.done.indexOf(k)===-1)q.done.push(k);S.wod=today()}
   if(it.kind==='lrev'&&S.learned[w.word]){const L=S.learned[w.word];if(ok){L.lr=today();L.n=(L.n|0)+1}else{L.n=Math.max(1,L.n|0);L.lr=addDays(today(),-(LRN_EVERY-7))}}
   const bw=S.wrong[w.word];
   if(ok){
@@ -2006,7 +2027,7 @@ function vToday(){
   const due=dueWrong(false).length+dueLearned().length;
   const left=Math.max(0,g-d.c);
   const dn=Math.floor(Date.now()/864e5);
-  const wd=wodWord();
+  const wds=wodWords(),wqq=wodQueue(),wql=wodLeft(),wq={total:wqq.length,left:wql.length,done:wqq.length-wql.length};
   const ann=CLOUD.ann?(()=>{const nw=CLOUD.ann.updated_at!==annSeen(),open=UI.annOpen,long=CLOUD.ann.body.length>220;return`<div class="card" style="border-color:var(--accent);margin-bottom:12px" role="status"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b>📢 Duyuru${nw?' <span class="badge ok">yeni</span>':''}</b><span class="muted small">${fmt(String(CLOUD.ann.updated_at).slice(0,10))}</span></div><div style="overflow-wrap:anywhere;white-space:pre-wrap;${long&&!open?'max-height:5.4em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)':''}">${esc(CLOUD.ann.body)}</div>${long?`<button class="btn" style="margin-top:8px" data-act="ann-toggle">${open?'Daralt':'Tamamını göster'}</button>`:''}</div>`})():'';
   return`${ann}<div class="top"><div><h1>Bugün</h1><div class="muted small">${new Date().toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long'})}</div></div>
     <span class="badge ${streak()?'warn':''}" title="Günlük hedefi tutturduğun ardışık gün">🔥 ${streak()} gün seri</span></div>
@@ -2016,9 +2037,9 @@ function vToday(){
     <div class="muted small">${due?`${due} kelime tekrar zamanı gelmiş. Bugünün testi bunları öne alır.`:'Tekrar bekleyen kelime yok.'}</div>
     <button class="btn primary" data-act="start-today">Bugünün testini başlat (${S.set.count} soru)</button></div></div>
   <div class="kpis"><div class="kpi"><b>${nf(learnedCount())}</b><span>öğrenilen</span></div><div class="kpi"><b>${nf(W.length-learnedCount())}</b><span>kalan</span></div><div class="kpi"><b>${nf(Object.keys(S.wrong).length)}</b><span>tekrar listesinde</span></div></div>
-  ${wd?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimesi</span>${lvTag(wd.level)}</div>
-    <div class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div>
-    <div>${esc(wd.tr)}</div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i>${exTr(wd)}</div><div class="small muted">${S.wod===today()?'Bugünkü sorusunu çözdün.':'Bugünün testinde bu kelimeden 1 soru çıkar.'}</div></div>`:''}
+  ${wds.length?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimeleri</span><span class="badge ${wq.left?'':'ok'}">${wq.done}/${wq.total} soru</span></div>
+    ${wds.map(wd=>`<div class="stack" style="gap:2px;padding-top:8px;border-top:1px solid var(--line)"><div class="row" style="justify-content:space-between"><span class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span></span>${lvTag(wd.level)}</div><div class="row"><span>${esc(wd.tr)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i>${exTr(wd)}</div></div>`).join('')}
+    <div class="small muted">${wq.left?'Çözdüğün her testte bu kelimelerden 1 soru çıkar. Bugün '+wq.left+' soru kaldı.':'Günün kelimelerinin tüm sorularını çözdün.'}</div></div>`:''}
   ${reqCard()}${profilePrompt()}${myRankLine()}${leadersCard()}
   ${reminderCard()}
   ${statsCard()}
@@ -2180,7 +2201,7 @@ function vQuiz(){
     nb=`<button class="btn primary block" style="margin-top:12px" data-act="next" id="nextbtn">${qz.i+1>=qz.items.length?'Sonucu gör':'Sonraki soru'}</button>`;
   }
   return`<div class="qtop"><button class="btn" data-act="quit" aria-label="Testten çık">Çık</button><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span class="mono muted">${qz.i+1}/${qz.items.length}</span></div>
-  <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${it.kind==='wlog'?'Yanlış defteri':it.kind==='wod'?'Günün kelimesi':it.kind==='lrev'?'Öğrenilen kelime tekrarı':qz.mode==='review'||it.kind==='review'?'Tekrar':'Yeni'} · ${FEAT[it.f]}</span>${lvTag(w.level)}${it.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rep-open" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}${BYWORD.has(w.word)?`<button class="btn" style="${it.rp?'margin-left:8px;':'margin-left:6px;'}padding:4px 10px;font-size:.8rem" data-act="sv-q" aria-pressed="${isSaved(w.word)}" aria-label="Kelimeyi kaydet">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>`:''}</div>
+  <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${it.kind==='wlog'?'Yanlış defteri':it.kind==='wod'?'Günün kelimeleri':it.kind==='lrev'?'Öğrenilen kelime tekrarı':qz.mode==='review'||it.kind==='review'?'Tekrar':'Yeni'} · ${FEAT[it.f]}</span>${lvTag(w.level)}${it.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rep-open" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}${BYWORD.has(w.word)?`<button class="btn" style="${it.rp?'margin-left:8px;':'margin-left:6px;'}padding:4px 10px;font-size:.8rem" data-act="sv-q" aria-pressed="${isSaved(w.word)}" aria-label="Kelimeyi kaydet">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>`:''}</div>
   <h2>${esc(it.question)}</h2>
   <div class="opts">${it.options.map((o,i)=>{
     let c='';if(ans){if(o===it.correct)c='ok';else if(i===it.chosen)c='bad'}
