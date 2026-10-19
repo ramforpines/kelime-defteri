@@ -427,7 +427,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.62.11';
+const APP_VERSION='4.63.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -615,14 +615,19 @@ function wodQueue(){
 }
 const wodLeft=()=>{const dn=wqGet().done;return wodQueue().filter(q=>dn.indexOf(q.k)===-1)};
 function wodPick(items,anyWord){
-  // sıradaki çözülmemiş günün-kelimesi sorusunu seçer; kelime filtreye uymuyorsa atlanır
-  const q=wodLeft().find(q=>anyWord||(lvOk(S.set.level,q.w.level)&&typeOK(q.w)));
-  if(!q)return items;
-  const it=makeItem(q.w,q.f,'wod');
-  if(!it){wqGet().done.push(q.k);return wodPick(items,anyWord)}
-  const rest=items.filter(x=>x.w!==q.w);
-  if(rest.length===items.length&&rest.length)rest.pop();   // toplam soru sayısı seçilen sayıyı aşmasın
-  return rest.concat([it]);
+  // her 10 soruda 1 günün-kelimesi sorusu (en az 1): sıradaki çözülmemiş sorular seçilir; kelime filtreye uymuyorsa atlanır
+  const need=Math.max(1,Math.floor(items.length/10)),taken=new Set();let out=items;
+  for(let n=0;n<need;n++){
+    const q=wodLeft().find(q=>!taken.has(q.k)&&(anyWord||(lvOk(S.set.level,q.w.level)&&typeOK(q.w))));
+    if(!q)break;
+    const it=makeItem(q.w,q.f,'wod');
+    if(!it){wqGet().done.push(q.k);n--;continue}
+    taken.add(q.k);
+    const rest=out.filter(x=>x.w!==q.w||x.kind==='wod');
+    if(rest.length===out.length){for(let z=rest.length-1;z>=0;z--)if(rest[z].kind!=='wod'){rest.splice(z,1);break}}   // toplam soru sayısı seçilen sayıyı aşmasın (daha önce eklenen günün-kelimesi sorusu atılmaz)
+    out=rest.concat([it]);
+  }
+  return out;
 }
 const QCAP=700;   // günlük soru puanı üst sınırı (düello puanları bu sınıra girmez)
 let CUR_EV=null;   // o an puanı yazılan cevabın olay kaydı (cihazlar arası birleştirme için)
@@ -1409,7 +1414,7 @@ function vHelp(){
     '<b>Günlük asgari hedef</b>: toplam puanın 3500\'ün altındaysa (Zümrüt\'ün altı) günde 20 doğru, 3500 ve üstünde 35, 6000 (Elmas) ve üstünde 50 doğru çözmen gerekir. Çözmediğin her gün için toplam puanından %5 kesilir. Seri ve kesinti aynı asgari hedefe bağlıdır.',
     '<b>İzin günü</b>: Haftada 1 gün (Elmas ve üstünde 2 gün) asgari hedefi tutturamasan da puan kesilmez ve seri bozulmaz. Hafta Pazartesi başlar. İzin günü otomatik kullanılır; Bugün ekranında bu haftaki kalan hakkını görürsün.',
     '<b>Öğrenilen kelime tekrarı</b>: Öğrendiğin kelimeler 15 gün sonra ilk kez, sonra her 30 günde bir tekrar sorulur. Bugünün testi ve Tekrar sekmesindeki düğme bunları öne alır. Yanlış yaparsan kelime 7 gün sonra yeniden sorulur.',
-    '<b>Günün kelimeleri</b>: günde 3 kelime seçilir: B1, B2 ve C1 seviyelerinden birer tane (24 saat aynı kalır). Bu 3 kelimenin tüm soruları, çözdüğün her testte birer birer sorulur: Bugünün testinde her zaman, kendi kurduğun testte ise kelimeler seçtiğin seviye ve türe uyuyorsa 1 soru çıkar. Günün kelimeleri Bugün ekranında soru ilerlemesiyle görünür; her gün yenilenir.',
+    '<b>Günün kelimeleri</b>: günde 3 kelime seçilir: B1, B2 ve C1 seviyelerinden birer tane (24 saat aynı kalır). Bu 3 kelimenin tüm soruları, çözdüğün testlerde her 10 soruda 1 tane sorulur (örneğin 20 soruluk testte 2): Bugünün testinde her zaman, kendi kurduğun testte ise kelimeler seçtiğin seviye ve türe uyuyorsa. Günün kelimeleri Bugün ekranında soru ilerlemesiyle görünür; her gün yenilenir.',
     '<b>Soru seviyeleri</b>: Yeni sorular ligine göre karışık gelir. Yeni başlayanda B1 ve B2 ağırlıklıdır, ligin yükseldikçe C1 ve C2 payı artar, A1 ve A2 azalır.',
     '<b>Yanlış cevap cezası</b>: Altın (1000 puan), Platin ve Zümrüt liglerinde yanlış cevap, doğru cevap puanının dörtte birini düşürür. Elmas ve üstünde, doğru bilseydin alacağın puanın tamamını düşürür. Bu yüzden Elmas ve üstünde doğruluğun %50\'nin altına düşerse puanın azalır; emin olmadığın soruda acele etme. Günlük puan sıfırın altına inmez.',
     '<b>Günlük soru puanı sınırı</b>: Sorulardan, bonuslardan ve tekrar listesinden bir günde en fazla '+QCAP+' puan kazanabilirsin. Düello puanları bu sınıra girmez, sınırsız eklenir.',
@@ -2148,7 +2153,7 @@ function vToday(){
   <div class="kpis"><div class="kpi"><b>${nf(learnedCount())}</b><span>öğrendiğin kelime</span></div><div class="kpi"><b>${nf(W.length-learnedCount())}</b><span>öğrenmediğin kelime</span></div><div class="kpi"><b>${nf(Object.keys(S.wrong).length)}</b><span>tekrar listendeki kelime</span></div></div>
   ${wds.length?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimeleri</span><span class="badge ${wq.left?'':'ok'}">${wq.done}/${wq.total} soru</span></div>
     ${wds.map(wd=>`<div class="stack" style="gap:2px;padding-top:8px;border-top:1px solid var(--line)"><div class="row" style="justify-content:space-between"><span class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span></span>${lvTag(wd.level)}</div><div class="row"><span>${esc(wd.tr)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i>${exTr(wd)}</div></div>`).join('')}
-    <div class="small muted">${wq.left?'Çözdüğün her testte bu kelimelerden 1 soru çıkar. Bugün '+wq.left+' soru kaldı.':'Günün kelimelerinin tüm sorularını çözdün.'}</div></div>`:''}
+    <div class="small muted">${wq.left?'Çözdüğün testlerde her 10 soruda 1 soru bu kelimelerden gelir. Bugün '+wq.left+' soru kaldı.':'Günün kelimelerinin tüm sorularını çözdün.'}</div></div>`:''}
   ${reqCard()}${profilePrompt()}${myRankLine()}${leadersCard()}
   ${reminderCard()}
   ${statsCard()}
