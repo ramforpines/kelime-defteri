@@ -427,7 +427,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.66.1';
+const APP_VERSION='4.66.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -462,6 +462,11 @@ const LEAGUES=[
 const LGIDX=new Map(LEAGUES.map((l,i)=>[l.k,i]));
 let lgMemo=null;
 function ownPts(){return r1(myPoints().T.pts)}
+const rwTot=()=>{const d=typeof DSTAT!=='undefined'?DSTAT[CLOUD.uid]:null;return d&&d.r&&d.r.w!=null?d.r.w|0:null};
+function rwNote(w){   // toplam dereceli galibiyet, sayılanlardan fazlaysa nedenini söyle
+  const t=rwTot();if(t===null||t<=w)return'';
+  return` Toplam <b>${t}</b> dereceli galibiyetin var; <b>${t-w}</b> tanesi rakibinin ligi seninkinden 2 lig ya da daha fazla uzak olduğu için sayılmıyor.`;
+}
 const winsReq=i=>({4:20,5:50,6:100,7:200,8:200,9:200})[i]||0;   // lig için gereken dereceli düello galibiyeti
 const winsCap=w=>w>=200?9:w>=100?6:w>=50?5:w>=20?4:3;
 async function loadWins(){
@@ -2587,7 +2592,7 @@ function leagueCard(){
   let prog='';
   if(cur<=6){const a=L.min,b=LEAGUES[cur+1].min,pc=Math.max(0,Math.min(100,(p-a)/(b-a)*100));prog=`<div class="bar" aria-hidden="true"><i style="width:${pc}%"></i></div><div class="small muted">${nf(p)} puan · ${LEAGUES[cur+1].n} için ${nf(Math.ceil(b-p))} puan kaldı</div>`}
   else{prog=`<div class="small muted">${nf(p)} puan · ${cur===9?'Şampiyonluk':cur===8?'Büyükustalık':'Ustalık'} ligindesin. ${cur<9?'Üst lig için sıranı yükseltmen ya da '+nf(Math.ceil((cur===8?LG_SAMP:LG_BUYUK)-p))+' puan daha toplaman gerekir.':''}</div>`}
-  {const pre=(lgMemo&&lgMemo.pre&&lgMemo.pre[CLOUD.uid])|0,w=(CLOUD.rw||{})[CLOUD.uid]|0;if(CLOUD.rwOk&&pre>cur){const nx=Math.min(pre,cur+1),need=winsReq(nx);prog+=`<div class="small" style="margin-top:4px">Puanın <b>${LEAGUES[pre].n}</b> için yeterli. ${LEAGUES[nx].n} ligine geçmek için <b>${need} dereceli düello galibiyeti</b> gerekiyor: ${w}/${need}.</div>`}}
+  {const pre=(lgMemo&&lgMemo.pre&&lgMemo.pre[CLOUD.uid])|0,w=(CLOUD.rw||{})[CLOUD.uid]|0;if(CLOUD.rwOk&&pre>cur){if(CLOUD.uid&&DSTAT[CLOUD.uid]===undefined)setTimeout(()=>duelStat(CLOUD.uid),0);const nx=Math.min(pre,cur+1),need=winsReq(nx);prog+=`<div class="small" style="margin-top:4px">Puanın <b>${LEAGUES[pre].n}</b> için yeterli. ${LEAGUES[nx].n} ligine geçmek için <b>${need} dereceli düello galibiyeti</b> gerekiyor: ${w}/${need}.${rwNote(w)}</div>`}}
   const rq=reqFor();prog+=`<div class="small muted" style="margin-top:4px">Günlük asgari hedefin: ${rq.n} doğru. Tutturmazsan gün başına toplam puanının %${Math.round(rq.r*100)}'i kesilir; haftada ${restQuota()} izin günün var.${cur>=6?' Bu ligde yanlış cevap, doğru cevabın puanı kadar puan düşürür.':cur>=3?' Bu ligde yanlış cevaplar puan düşürür.':''}</div>`;
   return`<div class="card stack"><h2>Ligin</h2><div class="row" style="gap:14px">${avatar(S.prof.name||'?',S.prof.color,true,S.prof.av,L.k)}<div style="flex:1;min-width:0"><div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700">${L.n}</div>${prog}</div></div>
   <details class="small"><summary style="cursor:pointer;font-weight:600">Tüm ligler</summary><div class="stack" style="margin-top:8px;gap:6px">${LEAGUES.map((l,i)=>`<div class="lgrow ${i===cur?'cur':''}"><span class="avw"><span class="av sm" style="background:#94a3b8"></span>${frameSVG(l.k)}</span><span><b>${l.n}</b><br><span class="muted">${l.rng} puan${l.need&&i>7?'<br>'+l.need:''}${winsReq(i)?'<br>'+winsReq(i)+' dereceli düello galibiyeti':''}</span></span></div>`).join('')}
@@ -2962,7 +2967,7 @@ function duelApply(rows){
         if(mine!=null){e.p=1;e.s=1;const v=Math.round(+mine*10)/10,dy=dayStat();
           if(v>0){if(dy.q==null)dy.q=dy.p||0;S.tp=(S.tp||0)+v;dy.p=(dy.p||0)+v;evAdd(dy,'dr|'+d.id,{t:'p',pts:v})}
           else if(v<0){S.tp=Math.max(0,(S.tp||0)+v);dy.adj=(dy.adj||0)+v;evAdd(dy,'dr|'+d.id,{t:'a',pts:v})}
-          loadWins().then(()=>render());
+          delete DSTAT[CLOUD.uid];loadWins().then(()=>render());
           ch=true;msg=v===0?'Dereceli düello: berabere, puan değişmedi':'Dereceli düello: '+(v>0?'+':'−')+nf(r1(Math.abs(v)))+' puan'}
       }
       return;
@@ -3000,7 +3005,7 @@ async function duelStat(id){
   DSTAT[id]=null;
   try{
     const r=await sb.rpc('duel_stats',{target:id});
-    if(!r.error&&r.data){DSTAT[id]=r.data;if(UI.card===id)render()}else delete DSTAT[id]
+    if(!r.error&&r.data){DSTAT[id]=r.data;if(UI.card===id||(id===CLOUD.uid&&UI.tab==='me'))render()}else delete DSTAT[id]
   }catch(e){delete DSTAT[id]}
 }
 function seededQs(seed,n){
