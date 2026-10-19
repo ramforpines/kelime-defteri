@@ -404,7 +404,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.61.1';
+const APP_VERSION='4.61.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -777,6 +777,11 @@ async function loadAdminStats(){
 setInterval(()=>{if(!document.hidden)appPing()},60000);
 setInterval(()=>{if(!document.hidden&&UI.tab==='today')loadStats()},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){appPing();loadStats()}});
+let POOLN=null;
+function poolCount(){
+  if(!POOLN){let q=0;W.forEach(w=>{q+=applicable(w).length});let r=0;(window.READINGS||[]).forEach(x=>{r+=(x.q||[]).length});POOLN={w:W.length,q,r}}
+  return POOLN;
+}
 function statsCard(){
   const s=CLOUD.stats;
   if(!s)return CLOUD.statsErr?'':'';
@@ -785,11 +790,12 @@ function statsCard(){
   const lm=leagueMap(),cnt=LEAGUES.map(()=>0);Object.keys(lm).forEach(u=>{cnt[lm[u]]++});
   const mx=Math.max(1,...cnt);
   const bars=LEAGUES.map((l,i)=>`<div class="row" style="gap:8px;font-size:12px"><span style="width:92px">${esc(l.n)}</span><span style="flex:1;background:var(--line,#8883);border-radius:4px;height:8px;overflow:hidden"><span style="display:block;height:100%;width:${Math.round(cnt[i]/mx*100)}%;background:var(--accent)"></span></span><span style="width:26px;text-align:right">${cnt[i]}</span></div>`).join('');
-  return`<div class="card stack" style="margin-top:12px"><b>Uygulama genelinde</b>
-  <div class="kpis">${k(s.online,'şu an çevrimiçi')}${k(s.dau,'bugün aktif')}${k(s.users,'kullanıcı')}</div>
-  <div class="kpis">${k(s.solved_today,'bugün çözülen soru')}${k(s.solved_total,'toplam soru')}${k(acc,'% doğru oranı')}</div>
-  <div class="kpis">${k(s.learned_today,'bugün öğrenilen')}${k(s.learned_total,'toplam öğrenilen')}${k(s.best_streak,'en uzun seri (gün)')}</div>
-  <div class="kpis">${k(s.duels_today,'bugün düello')}${k(s.duels_total,'toplam düello')}${k(s.msgs_today,'bugün sohbet mesajı')}</div>
+  return`<div class="card stack" style="margin-top:12px"><b>Uygulama genelinde</b><div class="small muted">Tüm kullanıcıların toplamı. Kendi rakamların Ben → İstatistik'te.</div>
+  <div class="kpis">${k(s.online,'şu an çevrimiçi')}${k(s.dau,'bugün giren kullanıcı')}${k(s.users,'kayıtlı kullanıcı')}</div>
+  <div class="kpis">${k(s.solved_today,'bugün çözülen soru')}${k(s.solved_total,'şimdiye kadar çözülen soru')}${k(acc,'% doğru cevap oranı')}</div>
+  <div class="kpis">${k(s.learned_today,'bugün öğrenilen kelime')}${k(s.learned_total,'toplam öğrenilen kelime')}${k(s.best_streak,'en uzun seri (gün)')}</div>
+  <div class="kpis">${k(s.duels_today,'bugün oynanan düello')}${k(s.duels_total,'şimdiye kadar düello')}${k(s.msgs_today,'bugün sohbet mesajı')}</div>
+  <div class="kpis">${k(poolCount().q,'uygulamadaki soru (kelime testleri)')}${k(poolCount().w,'uygulamadaki kelime')}${k(poolCount().r,'okuma parçası sorusu')}</div>
   ${s.leader?`<div class="small">🏆 Günün lideri: <b>${esc(s.leader.name)}</b> · ${nf(Math.round(s.leader.pts))} puan</div>`:''}
   ${s.duel_king?`<div class="small">⚔️ En çok düello kazanan: <b>${esc(s.duel_king.name)}</b> · ${s.duel_king.wins} galibiyet</div>`:''}
   <div class="stack" style="gap:4px"><span class="small muted">Lig dağılımı</span>${bars}</div></div>`;
@@ -2036,7 +2042,7 @@ function vToday(){
     <div class="stack"><h2>${left?`Hedefe ${left} doğru cevap kaldı`:'Bugünkü hedef tamam'}</h2>
     <div class="muted small">${due?`${due} kelime tekrar zamanı gelmiş. Bugünün testi bunları öne alır.`:'Tekrar bekleyen kelime yok.'}</div>
     <button class="btn primary" data-act="start-today">Bugünün testini başlat (${S.set.count} soru)</button></div></div>
-  <div class="kpis"><div class="kpi"><b>${nf(learnedCount())}</b><span>öğrenilen</span></div><div class="kpi"><b>${nf(W.length-learnedCount())}</b><span>kalan</span></div><div class="kpi"><b>${nf(Object.keys(S.wrong).length)}</b><span>tekrar listesinde</span></div></div>
+  <div class="kpis"><div class="kpi"><b>${nf(learnedCount())}</b><span>öğrendiğin kelime</span></div><div class="kpi"><b>${nf(W.length-learnedCount())}</b><span>öğrenmediğin kelime</span></div><div class="kpi"><b>${nf(Object.keys(S.wrong).length)}</b><span>tekrar listendeki kelime</span></div></div>
   ${wds.length?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimeleri</span><span class="badge ${wq.left?'':'ok'}">${wq.done}/${wq.total} soru</span></div>
     ${wds.map(wd=>`<div class="stack" style="gap:2px;padding-top:8px;border-top:1px solid var(--line)"><div class="row" style="justify-content:space-between"><span class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span></span>${lvTag(wd.level)}</div><div class="row"><span>${esc(wd.tr)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i>${exTr(wd)}</div></div>`).join('')}
     <div class="small muted">${wq.left?'Çözdüğün her testte bu kelimelerden 1 soru çıkar. Bugün '+wq.left+' soru kaldı.':'Günün kelimelerinin tüm sorularını çözdün.'}</div></div>`:''}
