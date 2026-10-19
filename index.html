@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.70.1';
+const APP_VERSION='4.70.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2132,7 +2132,7 @@ const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıra'],['chat','
 function studySeg(){
   if(UI.quiz)return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
-  return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='exam'||CLOUD.admin).map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}">${l}</button>`).join('')}</div>`;
+  return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='exam'||CLOUD.admin).map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
 }
 function renderNav(){
   $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}${k==='chat'&&chatUnread()?` <i class="nbd">${chatUnread()}</i>`:''}</span></button>`).join('');
@@ -2472,10 +2472,10 @@ function vExam(){
   const best=k=>ex[k]?`<span class="small muted"> · en iyi ${ex[k].b}/${ex[k].n}</span>`:'';
   return`<div class="top"><h1>İngilizce Vize</h1></div><div class="stack">
   <div class="card stack"><div class="muted small">Ders kitabındaki ünitelerin kelimeleri ve alıştırmaları. Her ünitede boşluk doldurma, kelime testi, örnek cümle, tanım eşleştirme, okuma (metin + sorular) ve dinleme (ses kaydı + sorular) bölümleri var. Vize normal test gibi puan, günlük hedef, istatistik ve kelime ilerlemesine işlenir; ancak puan ve ilerleme bir sınavın ilk çözümünde verilir. Sonraki çözümlerde yalnızca önceki en iyi sonucundan fazla doğrular için puan ve ilerleme eklenir. Dinleme sorularında ses kaydını istediğin kadar dinleyebilirsin.</div>
-  <div class="small"><b>Örnek vize (100 puan)</b><br>Dinleme 40 puan (8 kısa diyalog + 12 uzun dinleme sorusu, her biri 2 puan), Okuma 40 puan (5 kısa metin, 10 uzun metin, 5 kişi–metin eşleştirme; her biri 2 puan), Kelime bilgisi 20 puan (10 paragraf boşluğu + 10 yazılı boşluk doldurma; her biri 1 puan). Her denemede sorular değişir.</div>
-  <button class="btn primary block" data-act="exam-start" data-v="mock">Örnek vizeı başlat${ex.mock?`<span class="small muted"> · en iyi ${ex.mock.sc!=null?ex.mock.sc:'?'}/100</span>`:''}</button></div>
+  <div class="small"><b>Örnek Vize (100 puan)</b><br>Dinleme 40 puan (8 kısa diyalog + 12 uzun dinleme sorusu, her biri 2 puan), Okuma 40 puan (5 kısa metin, 10 uzun metin, 5 kişi–metin eşleştirme; her biri 2 puan), Kelime bilgisi 20 puan (10 paragraf boşluğu + 10 yazılı boşluk doldurma; her biri 1 puan). Her denemede sorular değişir.</div>
+  <button class="btn primary block" data-act="exam-start" data-v="mock">Örnek Vize${ex.mock?`<span class="small muted"> · en iyi ${ex.mock.sc!=null?ex.mock.sc:'?'}/100</span>`:''}</button></div>
   ${all.map(u=>{const ws=exWords(u);return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Ünite ${u.n} · ${esc(u.t)}</b><span class="small muted">${ws.length} kelime</span></div>
-    <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite vizesi${best(u.id+':all')}</button>
+    <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite soruları${best(u.id+':all')}</button>
     <div class="seg">${EXAM_PART.map(([p,l])=>`<button class="chip" data-act="exam-start" data-v="${u.id}:${p}">${l}${best(u.id+':'+p)}</button>`).join('')}</div>
     <button class="btn" data-act="exam-words" data-v="${u.id}">${UI.exw===u.id?'Kelimeleri gizle':'Kelimeleri gör'}</button>
     ${UI.exw===u.id?ws.map(w=>`<div class="entry"><div class="row" style="justify-content:space-between"><span class="w">${esc(w.word)}</span>${lvTag(w.level)}</div><div class="tr">${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i></div>`:''}</div>`).join(''):''}</div>`}).join('')}
