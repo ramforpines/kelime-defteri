@@ -404,7 +404,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.61.0';
+const APP_VERSION='4.61.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -576,10 +576,10 @@ const LVW=[[2,4,6,4,2,2],[2,3,6,5,2,2],[1,3,5,6,3,2],[1,2,5,6,3,3],[1,2,4,6,4,3]
 /* günün kelimesi: B1/B2/C1 arasından, gün başına sabit */
 let WODP=null;
 function wodWords(){
+  // her gün B1, B2 ve C1 seviyelerinden birer kelime (gün başına sabit)
   if(!WODP)WODP=W.filter(w=>w.level==='B1'||w.level==='B2'||w.level==='C1');
-  if(!WODP.length)return[];
   const dn=Math.floor(Date.parse(today()+'T12:00:00')/864e5),out=[];
-  for(let k=0,t=0;out.length<3&&t<60;t++){const w=WODP[(dn*7919+k*104729+t*17)%WODP.length];if(w&&out.indexOf(w)===-1){out.push(w);k++}}
+  ['B1','B2','C1'].forEach((lv,k)=>{const P=WODP.filter(w=>w.level===lv);if(P.length)out.push(P[(dn*7919+k*104729)%P.length])});
   return out;
 }
 const wodWord=()=>wodWords()[0]||null;
@@ -1376,7 +1376,7 @@ function vHelp(){
     '<b>Günlük asgari hedef</b>: toplam puanın 3500\'ün altındaysa (Zümrüt\'ün altı) günde 20 doğru, 3500 ve üstünde 35, 6000 (Elmas) ve üstünde 50 doğru çözmen gerekir. Çözmediğin her gün için toplam puanından %5 kesilir. Seri ve kesinti aynı asgari hedefe bağlıdır.',
     '<b>İzin günü</b>: Haftada 1 gün (Elmas ve üstünde 2 gün) asgari hedefi tutturamasan da puan kesilmez ve seri bozulmaz. Hafta Pazartesi başlar. İzin günü otomatik kullanılır; Bugün ekranında bu haftaki kalan hakkını görürsün.',
     '<b>Öğrenilen kelime tekrarı</b>: Öğrendiğin kelimeler 15 gün sonra ilk kez, sonra her 30 günde bir tekrar sorulur. Bugünün testi ve Tekrar sekmesindeki düğme bunları öne alır. Yanlış yaparsan kelime 7 gün sonra yeniden sorulur.',
-    '<b>Günün kelimeleri</b>: B1, B2 ve C1 seviyelerinden günde 3 kelime seçilir (24 saat aynı kalır). Bu 3 kelimenin tüm soruları, çözdüğün her testte birer birer sorulur: Bugünün testinde her zaman, kendi kurduğun testte ise kelimeler seçtiğin seviye ve türe uyuyorsa 1 soru çıkar. Günün kelimeleri Bugün ekranında soru ilerlemesiyle görünür; her gün yenilenir.',
+    '<b>Günün kelimeleri</b>: günde 3 kelime seçilir: B1, B2 ve C1 seviyelerinden birer tane (24 saat aynı kalır). Bu 3 kelimenin tüm soruları, çözdüğün her testte birer birer sorulur: Bugünün testinde her zaman, kendi kurduğun testte ise kelimeler seçtiğin seviye ve türe uyuyorsa 1 soru çıkar. Günün kelimeleri Bugün ekranında soru ilerlemesiyle görünür; her gün yenilenir.',
     '<b>Soru seviyeleri</b>: Yeni sorular ligine göre karışık gelir. Yeni başlayanda B1 ve B2 ağırlıklıdır, ligin yükseldikçe C1 ve C2 payı artar, A1 ve A2 azalır.',
     '<b>Yanlış cevap cezası</b>: Altın (1000 puan), Platin ve Zümrüt liglerinde yanlış cevap, doğru cevap puanının dörtte birini düşürür. Elmas ve üstünde, doğru bilseydin alacağın puanın tamamını düşürür. Bu yüzden Elmas ve üstünde doğruluğun %50\'nin altına düşerse puanın azalır; emin olmadığın soruda acele etme. Günlük puan sıfırın altına inmez.',
     '<b>Günlük soru puanı sınırı</b>: Sorulardan, bonuslardan ve tekrar listesinden bir günde en fazla '+QCAP+' puan kazanabilirsin. Düello puanları bu sınıra girmez, sınırsız eklenir.',
