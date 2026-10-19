@@ -427,7 +427,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.62.2';
+const APP_VERSION='4.62.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -620,7 +620,9 @@ function wodPick(items,anyWord){
   if(!q)return items;
   const it=makeItem(q.w,q.f,'wod');
   if(!it){wqGet().done.push(q.k);return wodPick(items,anyWord)}
-  return items.filter(x=>x.w!==q.w).concat([it]);
+  const rest=items.filter(x=>x.w!==q.w);
+  if(rest.length===items.length&&rest.length)rest.pop();   // toplam soru sayısı seçilen sayıyı aşmasın
+  return rest.concat([it]);
 }
 const QCAP=700;   // günlük soru puanı üst sınırı (düello puanları bu sınıra girmez)
 let CUR_EV=null;   // o an puanı yazılan cevabın olay kaydı (cihazlar arası birleştirme için)
