@@ -427,7 +427,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.65.1';
+const APP_VERSION='4.66.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1458,7 +1458,7 @@ function vHelp(){
     'Çalışma → <b>⚔ Düello</b> bölümünden girersin. Başlamak için en az <b>'+DSTAKE+' puanın</b> olmalı.',
     '<b>Eşleştirme</b>: Rakip ara dersen aynı anda arayan biriyle eşleşirsin. Kimse yoksa botla alıştırma yapabilirsin (bot maçı puanı etkilemez).',
     '<b>Düello sekmesindeki kullanıcılar</b> listede görünür. Yanındaki düello teklifi düğmesiyle teklif gönderebilirsin. Teklif <b>15 saniye</b> geçerlidir; kabul edilmezse tekrar gönderebilirsin. Teklifi yapan da alan da yalnızca düello kutusunu görür, kabul ya da red edilmeden başka işlem yapılamaz.',
-    'İki oyuncu da aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Doğru cevap puanı <b>100 × seviye çarpanı × hız çarpanı</b>dır: seviye çarpanı A1 için 1,00, C2 için 1,85; hız çarpanı sorunun ilk 3 saniyesinde sabit 1,50\'dir (soruyu okuma süresi), 3. saniyeden 7. saniyeye kadar 1,00\'a düşer, 7 saniyeden sonra 1,00\'dır. <b>Yanlış cevap</b> 75 × seviye çarpanı kadar puan düşürür; süre dolup cevap vermezsen bunun yarısı düşer. Maçı yarıda bırakırsan cevaplamadığın her soru için 100 puan düşer. Bu yüzden bilmediğin soruda tahmin etmek zarar getirir.',
+    'İki oyuncu da aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Doğru cevap puanı <b>100 × seviye çarpanı × hız çarpanı</b>dır: seviye çarpanı A1 için 1,00, C2 için 1,85; hız çarpanı sorunun ilk 2 saniyesinde sabit 1,50\'dir (soruyu okuma süresi), 2. saniyeden 6. saniyeye kadar 1,00\'a düşer, 6 saniyeden sonra 1,00\'dır. <b>Yanlış cevap</b> 75 × seviye çarpanı kadar puan düşürür; süre dolup cevap vermezsen bunun yarısı düşer. Maçı yarıda bırakırsan cevaplamadığın her soru için 100 puan düşer. Bu yüzden bilmediğin soruda tahmin etmek zarar getirir.',
     '<b>Klasik / Dereceli</b>: Düello bölümünde iki mod vardır. Aşağıdaki bahis düzeni <b>Klasik düello</b>dur. <b>Dereceli düello</b> aşağıda ayrıca anlatılır. İki modda da sorular, doğru ve yanlış puanı, hız çarpanı aynıdır; salon listeleri, maç geçmişi ve istatistikler ayrıdır.',
     '<b>Dereceli düello — risk</b>: Bronz ligden (200 puan) itibaren oynanır, bahis yoktur. Her oyuncunun riski, puanının lig oranı kadarıdır: Bronz %10→9, Gümüş %9→8, Altın %8→7, Platin %7→6, Zümrüt %6→5, Elmas %5→4, Ustalık ve üstü %4 (oran lig içinde doğrusal azalır). Örnek: 200 puanın riski 20, 1.000 puanın riski 80. Puanlar maç başında kaydedilir.',
     '<b>Dereceli düello — puan geçişi</b>: Kaybedenin riski, kazanana <b>kazananın maç skoru payı</b> oranında geçer. Örnek: kaybeden 20 puan riskteyse ve skorlar 3000 / 5000 ise kaybeden −12, kazanan +12 olur; kazanılan puandan %5 kesinti yapılır (en az 1 puan), yani kazanan +11 alır. Kazanan, <b>kendi riskinin 4 katından fazlasını</b> alamaz. Skorlar eşitse beraberliktir, kimse puan kaybetmez. Negatif maç puanı payda 0 sayılır.',
@@ -2942,7 +2942,7 @@ const DQ_N=20,DQ_T=15;
 const DUEL={sub:'classic',phase:'lobby',id:null,d:null,off:0,qs:null,idx:0,tq:0,sel:null,bot:null,opp:'',err:'',rec:null,find:0,findT:null,poll:null,tick:null,busy:false,me:{s:0,c:0,t:0}};
 UI.qmode='solo';
 const DSTAKE=20;
-const DBONUS_FULL=3000,DBONUS_T=7000;   // hız çarpanı: ilk 3 sn tam (×1,50), 3. saniyeden 7. saniyeye doğrusal düşer, 7 sn ve sonrası ×1,00 (soruyu okuma süresi)
+const DBONUS_FULL=2000,DBONUS_T=6000;   // hız çarpanı: ilk 2 sn tam (×1,50), 2. saniyeden 6. saniyeye doğrusal düşer, 6 sn ve sonrası ×1,00 (soruyu okuma süresi)
 const dPts=(lv,ms)=>Math.round(100*(COEF[lv]||1)*(1+0.5*(1-(Math.min(Math.max(ms,DBONUS_FULL),DBONUS_T)-DBONUS_FULL)/(DBONUS_T-DBONUS_FULL))));   // seviye çarpanı × hız çarpanı (1,00–1,50) × 100
 const drkLocked=()=>false;   // dereceli düello herkese açık (kilitlemek için true döndür)
 const DRK_MIN=200;   // dereceli düello: Bronz ligden (200 puan) itibaren

@@ -1,6 +1,6 @@
 -- Dosya: supabase-duel-final.sql
 -- Kelime Defteri: düello puanlaması (tek dosya, başka düello SQL'i gerekmez; supabase-duel.sql/duel2/invite daha önce çalıştırılmış olmalı).
---  * Doğru: 100 x seviye (1,00-1,85) x hız (ilk 3 sn 1,50, 7 sn'ye kadar 1,00'a düşer)
+--  * Doğru: 100 x seviye (1,00-1,85) x hız (ilk 2 sn 1,50, 6 sn'ye kadar 1,00'a düşer)
 --  * Yanlış: -75 x seviye; süre dolması (cevapsız): -37,5 x seviye
 --  * Maç yarıda kalırsa cevaplanmayan her soru -100
 --  * Ödemede negatif maç puanı 0 sayılır; kazanan ham puana göre belirlenir
@@ -23,7 +23,7 @@ begin
   if idx <> mine or idx >= d.qn then return; end if;
   m := least(greatest(coalesce(ms, 0), 300), d.per_q * 1000);
   l := least(greatest(coalesce(lv, 1), 1), 1.85);
-  pts := case when ok then round(100 * l * (1 + 0.5 * (1 - (least(greatest(m, 3000), 7000) - 3000)::numeric / 4000)))::int
+  pts := case when ok then round(100 * l * (1 + 0.5 * (1 - (least(greatest(m, 2000), 6000) - 2000)::numeric / 4000)))::int
               else -round(75 * l * (case when coalesce("to", false) then 0.5 else 1 end))::int end;
   if uid = d.p1 then
     update public.duels set a1 = a1 + 1, s1 = s1 + pts, c1 = c1 + (case when ok then 1 else 0 end), t1 = t1 + m where id = did;
