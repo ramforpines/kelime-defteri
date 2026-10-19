@@ -427,7 +427,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.64.1';
+const APP_VERSION='4.65.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1297,9 +1297,19 @@ async function loadAdminRep(){
   }catch(e){A.err=/PGRST202|42883|does not exist|schema cache/i.test(String((e&&(e.message||e.code))||''))?'setup':'err'}
   A.busy=false;quietRender();
 }
+const ARP_AUTO={fixed:'Bildirdiğin için teşekkürler! Soruyu kontrol ettik ve düzelttik. Güncel hâli bir sonraki karşılaşmanda gelecek.',dismissed:'Bildirdiğin için teşekkürler. Soruyu kontrol ettik, bir hata bulamadık. Şıklara ve kelimenin anlamına bir kez daha bakmanı öneririz; yine de takıldığın bir şey olursa bildirmekten çekinme.'};
 async function arpAct(k,st){
-  const A=UI.arp;A.busy=true;render();
-  try{const r=await sb.rpc('admin_set_reports',{k:k,new_status:st});if(r.error)throw r.error;toast(st==='delete'?'Rapor silindi.':'Güncellendi.')}
+  const A=UI.arp,it=A.list.find(x=>x.qkey===k);
+  // Düzeltildi / Sorun yok: yanıt bekleyen raporlayanlara otomatik bilgi gider (yazdığın yanıt varsa o gider)
+  let note='';
+  if((st==='fixed'||st==='dismissed')&&it&&it.pending>0){
+    const el=arpTa(k),typed=((el?el.value:(A.reply[k]||''))||'').trim();
+    A.busy=true;render();
+    try{const r=await sb.rpc('admin_reply_report',{k:k,reply_text:typed.length>=2?typed:ARP_AUTO[st]});if(r.error)throw r.error;delete A.reply[k];note=' '+(r.data|0)+' kullanıcıya bilgi gönderildi.'}
+    catch(e){note=' Kullanıcıya bilgi gönderilemedi.'}
+  }
+  A.busy=true;render();
+  try{const r=await sb.rpc('admin_set_reports',{k:k,new_status:st});if(r.error)throw r.error;toast((st==='delete'?'Rapor silindi.':'Güncellendi.')+note)}
   catch(e){toast('İşlem yapılamadı.')}
   A.del=null;await loadAdminRep();render();
 }
@@ -1319,7 +1329,7 @@ function vReports(){
   const list=A.list.filter(x=>A.filter==='all'||x.status==='open');
   return`<div class="card stack"><div class="seg"><button class="chip" aria-pressed="${A.filter==='open'}" data-act="arp-filter" data-v="open">Açık (${repOpen()})</button><button class="chip" aria-pressed="${A.filter==='all'}" data-act="arp-filter" data-v="all">Hepsi (${A.list.length})</button></div>
   <div class="row"><button class="btn" data-act="arp-load" ${A.busy?'disabled':''}>${A.busy?'Yükleniyor…':'Yenile'}</button></div>
-  <div class="small muted">Kullanıcıların işaretlediği hatalı sorular. En çok raporlanan en üstte.</div>
+  <div class="small muted">Kullanıcıların işaretlediği hatalı sorular. En çok raporlanan en üstte. «Düzeltildi» ve «Sorun yok» düğmeleri, yanıt bekleyen raporlayanlara kısa bir bilgi mesajı da gönderir (kutuya yanıt yazdıysan o gider).</div>
   ${A.err==='setup'?'<div class="small" style="color:var(--bad)">Raporlar için supabase-reports.sql henüz çalıştırılmamış.</div>':A.err?'<div class="small" style="color:var(--bad)">Raporlar alınamadı.</div>':''}</div>
   ${!A.loaded&&!A.err?'<div class="empty">Yükleniyor…</div>':list.length?list.map(x=>{
     const opts=Array.isArray(x.options)?x.options:[],rs=x.reasons||{},notes=Array.isArray(x.notes)?x.notes:[];
