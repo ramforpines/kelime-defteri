@@ -427,7 +427,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.66.2';
+const APP_VERSION='4.66.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -465,7 +465,7 @@ function ownPts(){return r1(myPoints().T.pts)}
 const rwTot=()=>{const d=typeof DSTAT!=='undefined'?DSTAT[CLOUD.uid]:null;return d&&d.r&&d.r.w!=null?d.r.w|0:null};
 function rwNote(w){   // toplam dereceli galibiyet, sayılanlardan fazlaysa nedenini söyle
   const t=rwTot();if(t===null||t<=w)return'';
-  return` Toplam <b>${t}</b> dereceli galibiyetin var; <b>${t-w}</b> tanesi rakibinin ligi seninkinden 2 lig ya da daha fazla uzak olduğu için sayılmıyor.`;
+  return` Toplam <b>${t}</b> dereceli galibiyetin var; <b>${t-w}</b> tanesi rakibinin ligi seninkinden 2 lig ya da daha fazla uzak olduğu için sayılmıyor (lig, şartlar dahil gerçek ligindir).`;
 }
 const winsReq=i=>({4:20,5:50,6:100,7:200,8:200,9:200})[i]||0;   // lig için gereken dereceli düello galibiyeti
 const winsCap=w=>w>=200?9:w>=100?6:w>=50?5:w>=20?4:3;
