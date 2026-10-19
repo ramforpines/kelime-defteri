@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.70.0';
+const APP_VERSION='4.70.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2122,7 +2122,7 @@ const ICON={
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['duel','⚔ Düello'],['read','Okuma'],['exam','Sınav'],['review','Tekrar'],['saved','Kaydedilenler']];
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['duel','⚔ Düello'],['read','Okuma'],['exam','İngilizce Vize'],['review','Tekrar'],['saved','Kaydedilenler']];
 const isStudy=t=>t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
@@ -2152,7 +2152,7 @@ function render(){
   if(CLOUD.approved===false){$('nav').hidden=true;app.innerHTML=vPending();return}
   $('nav').hidden=false;
   renderNav();
-  if(UI.tab==='exam'&&!CLOUD.admin){UI.tab='dict';UI.quiz=null;if(lastStudy==='exam')lastStudy='quiz'}   // Sınav şimdilik yalnızca yönetici
+  if(UI.tab==='exam'&&!CLOUD.admin){UI.tab='dict';UI.quiz=null;if(lastStudy==='exam')lastStudy='quiz'}   // Vize şimdilik yalnızca yönetici
   let h='';
   if(UI.tab==='today')h=vToday();
   else if(UI.tab==='dict')h=vDict();
@@ -2338,7 +2338,7 @@ function rdCheck(){
 const EXAM_PART=[['g','Boşluk doldurma'],['w','Kelime testi'],['e','Örnek cümle'],['d','Tanım → kelime'],['r','Okuma'],['l','Dinleme'],['k','Kalıp ifadeler']];
 const exU=id=>(window.EXAM||[]).find(x=>x.id===id);
 const exWords=u=>u.a.concat(u.b.filter(k=>u.a.indexOf(k)===-1)).map(k=>BYWORD.get(k)).filter(Boolean);
-const exNoW=(it,t)=>{it.noW=true;it.w={word:'Sınav: '+t,level:'B2',pron:'',tr:'',def:'',ex:''};return it};
+const exNoW=(it,t)=>{it.noW=true;it.w={word:'Vize: '+t,level:'B2',pron:'',tr:'',def:'',ex:''};return it};
 function exOpts(cor,pool,w){
   const g=w?posGroup(w):'',same=[],oth=[];
   shuffle(pool.filter(k=>k!==cor)).forEach(k=>{const x=BYWORD.get(k);(x&&g&&posGroup(x)===g?same:oth).push(k)});
@@ -2390,7 +2390,7 @@ function exPh(u){return(u.ph||[]).map(q=>exNoW({f:18,kind:'exam',question:q.q,co
 const exPick=(a,n)=>shuffle(a||[]).slice(0,n);
 const exTag=(it,part,pn,wt)=>{it.part=part;it.pn=pn;it.wt=wt;return it};
 function exMock(){
-  const M=window.MOCK||{},out=[],T='Örnek sınav';
+  const M=window.MOCK||{},out=[],T='Örnek vize';
   exPick(M.dlg,8).forEach(d=>out.push(exTag(exNoW({f:17,kind:'exam',question:d.q,correct:d.o[d.a],options:shuffle(d.o),chosen:null,audio:d.au,e:'Konuşma metni: '+d.sc},T),1,'Dinleme · Kısa diyalog',2)));
   exPick(M.talk,2).forEach((t,k)=>t.q.forEach(q=>out.push(exTag(exNoW({f:17,kind:'exam',question:q.q,correct:q.o[q.a],options:shuffle(q.o),chosen:null,audio:t.au,e:'Konuşma metni: '+t.sc},T),1,'Dinleme · Uzun metin '+(k+1),2))));
   exPick(M.short,5).forEach(s=>out.push(exTag(exNoW({f:14,kind:'exam',question:s.q,correct:s.o[s.a],options:shuffle(s.o),chosen:null,pass:s.x.split('\n'),pt0:'Kısa metin',first:true},T),2,'Okuma · Kısa metin',2)));
@@ -2470,12 +2470,12 @@ function examSave(qz){
 function vExam(){
   const all=window.EXAM||[],ex=S.ex||{};
   const best=k=>ex[k]?`<span class="small muted"> · en iyi ${ex[k].b}/${ex[k].n}</span>`:'';
-  return`<div class="top"><h1>Sınav</h1></div><div class="stack">
-  <div class="card stack"><div class="muted small">Ders kitabındaki ünitelerin kelimeleri ve alıştırmaları. Her ünitede boşluk doldurma, kelime testi, örnek cümle, tanım eşleştirme, okuma (metin + sorular) ve dinleme (ses kaydı + sorular) bölümleri var. Sınav normal test gibi puan, günlük hedef, istatistik ve kelime ilerlemesine işlenir; ancak puan ve ilerleme bir sınavın ilk çözümünde verilir. Sonraki çözümlerde yalnızca önceki en iyi sonucundan fazla doğrular için puan ve ilerleme eklenir. Dinleme sorularında ses kaydını istediğin kadar dinleyebilirsin.</div>
-  <div class="small"><b>Örnek sınav (100 puan)</b><br>Dinleme 40 puan (8 kısa diyalog + 12 uzun dinleme sorusu, her biri 2 puan), Okuma 40 puan (5 kısa metin, 10 uzun metin, 5 kişi–metin eşleştirme; her biri 2 puan), Kelime bilgisi 20 puan (10 paragraf boşluğu + 10 yazılı boşluk doldurma; her biri 1 puan). Her denemede sorular değişir.</div>
-  <button class="btn primary block" data-act="exam-start" data-v="mock">Örnek sınavı başlat${ex.mock?`<span class="small muted"> · en iyi ${ex.mock.sc!=null?ex.mock.sc:'?'}/100</span>`:''}</button></div>
+  return`<div class="top"><h1>İngilizce Vize</h1></div><div class="stack">
+  <div class="card stack"><div class="muted small">Ders kitabındaki ünitelerin kelimeleri ve alıştırmaları. Her ünitede boşluk doldurma, kelime testi, örnek cümle, tanım eşleştirme, okuma (metin + sorular) ve dinleme (ses kaydı + sorular) bölümleri var. Vize normal test gibi puan, günlük hedef, istatistik ve kelime ilerlemesine işlenir; ancak puan ve ilerleme bir sınavın ilk çözümünde verilir. Sonraki çözümlerde yalnızca önceki en iyi sonucundan fazla doğrular için puan ve ilerleme eklenir. Dinleme sorularında ses kaydını istediğin kadar dinleyebilirsin.</div>
+  <div class="small"><b>Örnek vize (100 puan)</b><br>Dinleme 40 puan (8 kısa diyalog + 12 uzun dinleme sorusu, her biri 2 puan), Okuma 40 puan (5 kısa metin, 10 uzun metin, 5 kişi–metin eşleştirme; her biri 2 puan), Kelime bilgisi 20 puan (10 paragraf boşluğu + 10 yazılı boşluk doldurma; her biri 1 puan). Her denemede sorular değişir.</div>
+  <button class="btn primary block" data-act="exam-start" data-v="mock">Örnek vizeı başlat${ex.mock?`<span class="small muted"> · en iyi ${ex.mock.sc!=null?ex.mock.sc:'?'}/100</span>`:''}</button></div>
   ${all.map(u=>{const ws=exWords(u);return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Ünite ${u.n} · ${esc(u.t)}</b><span class="small muted">${ws.length} kelime</span></div>
-    <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite sınavı${best(u.id+':all')}</button>
+    <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite vizesi${best(u.id+':all')}</button>
     <div class="seg">${EXAM_PART.map(([p,l])=>`<button class="chip" data-act="exam-start" data-v="${u.id}:${p}">${l}${best(u.id+':'+p)}</button>`).join('')}</div>
     <button class="btn" data-act="exam-words" data-v="${u.id}">${UI.exw===u.id?'Kelimeleri gizle':'Kelimeleri gör'}</button>
     ${UI.exw===u.id?ws.map(w=>`<div class="entry"><div class="row" style="justify-content:space-between"><span class="w">${esc(w.word)}</span>${lvTag(w.level)}</div><div class="tr">${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i></div>`:''}</div>`).join(''):''}</div>`}).join('')}
@@ -2508,7 +2508,7 @@ function vQuiz(){
     nb=`<button class="btn primary block" style="margin-top:12px" data-act="next" id="nextbtn">${qz.i+1>=qz.items.length?'Sonucu gör':'Sonraki soru'}</button>`;
   }
   return`<div class="qtop"><button class="btn" data-act="quit" aria-label="Testten çık">Çık</button><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span class="mono muted">${qz.i+1}/${qz.items.length}</span></div>
-  <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${qz.mode==='exam'?(it.part&&it.pn?it.pn:'Sınav'):it.kind==='wlog'?'Yanlış defteri':it.kind==='wod'?'Günün kelimeleri':it.kind==='lrev'?'Öğrenilen kelime tekrarı':qz.mode==='review'||it.kind==='review'?'Tekrar':'Yeni'} · ${FEAT[it.f]}</span>${lvTag(w.level)}${it.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rep-open" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}${BYWORD.has(w.word)?`<button class="btn" style="${it.rp?'margin-left:8px;':'margin-left:6px;'}padding:4px 10px;font-size:.8rem" data-act="sv-q" aria-pressed="${isSaved(w.word)}" aria-label="Kelimeyi kaydet">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>`:''}</div>
+  <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${qz.mode==='exam'?(it.part&&it.pn?it.pn:'Vize'):it.kind==='wlog'?'Yanlış defteri':it.kind==='wod'?'Günün kelimeleri':it.kind==='lrev'?'Öğrenilen kelime tekrarı':qz.mode==='review'||it.kind==='review'?'Tekrar':'Yeni'} · ${FEAT[it.f]}</span>${lvTag(w.level)}${it.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rep-open" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}${BYWORD.has(w.word)?`<button class="btn" style="${it.rp?'margin-left:8px;':'margin-left:6px;'}padding:4px 10px;font-size:.8rem" data-act="sv-q" aria-pressed="${isSaved(w.word)}" aria-label="Kelimeyi kaydet">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>`:''}</div>
   ${it.audio?`<audio controls preload="none" src="${esc(it.audio)}" style="width:100%;margin-bottom:10px"></audio>`:''}
   ${it.pass?`<details class="card small" lang="en" style="margin-bottom:10px" ${it.first?'open':''}><summary style="cursor:pointer;font-weight:600">${esc(it.pt0||'Metin')}</summary><div class="stack" style="margin-top:8px">${it.pass.map(t=>`<p style="margin:0;line-height:1.6">${esc(t)}</p>`).join('')}</div></details>`:''}
   <h2>${esc(it.question)}</h2>
@@ -2525,7 +2525,7 @@ function vResult(){
     ${`<div class="small"><b>${qz.mode==='exam'?'Bu sınavdan':'Bu testten'} ${(qz.pts.c+qz.pts.b+qz.pts.w)>=0?'+':'−'}${nf(r1(Math.abs(qz.pts.c+qz.pts.b+qz.pts.w)))} puan</b><br><span class="muted">Doğru cevaplar +${nf(r1(qz.pts.c))} · bonuslar +${nf(r1(qz.pts.b))}${qz.pts.w?` · yanlış cevaplar −${nf(r1(Math.abs(qz.pts.w)))}`:''}</span></div>`}
     ${qz.learnedNow.length?`<div class="row">${qz.learnedNow.map(k=>`<span class="badge ok">${esc(k)}</span>`).join('')}</div>`:''}</div>
     ${qz.wrong.length?`<div class="card stack"><h3>Yanlışlar</h3>${qz.wrong.map(it=>`<div><b>${esc(it.w.word)}</b> <span class="muted">${esc(FEAT[it.f])}</span><div class="small">Doğru: ${esc(it.correct)}</div></div>`).join('')}</div>`:''}
-    <div class="row"><button class="btn primary" data-act="again">${qz.mode==='exam'?'Sınav listesine dön':'Yeni test'}</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
+    <div class="row"><button class="btn primary" data-act="again">${qz.mode==='exam'?'Vize listesine dön':'Yeni test'}</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
 }
 function vReview(){
   const keys=Object.keys(S.wrong).filter(k=>BYWORD.has(k)),dl=dueLearned().length,due=dueWrong(false).length+dl;
