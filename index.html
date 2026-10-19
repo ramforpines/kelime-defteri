@@ -428,7 +428,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.68.0';
+const APP_VERSION='4.68.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2019,21 +2019,22 @@ function startQuiz(mode,all){
   UI.tab='quiz';render();
 }
 function applyAnswer(it,ok,ua,qz,gate){
-  const dd=dayStat(),ev=evAdd(dd,evKey(dd,'q|'+it.w.word+'|'+it.f),{t:'q',ok:ok?1:0,lv:it.w.level,pts:0});
+  const dd=dayStat(),ev=EXNOST?null:evAdd(dd,evKey(dd,'q|'+it.w.word+'|'+it.f),{t:'q',ok:ok?1:0,lv:it.w.level,pts:0});
   CUR_EV=ev;
   try{return applyAnswerCore(it,ok,ua,qz,gate)}finally{CUR_EV=null}
 }
-let EXNOPT=false;   // sınav tekrarında puan/ilerleme verilmeyen cevaplar
+let EXNOPT=false,EXNOST=false;   // sınav tekrarında puan/ilerleme verilmeyen cevaplar
 function applyAnswerCore(it,ok,ua,qz,gate){
   const w=it.w,bw0=S.wrong[w.word],p0=S.prog[w.word]||[];
   const elig=!gate||(it.kind==='new'&&!S.learned[w.word]&&p0.indexOf(it.f)===-1)||(!!bw0&&(it.f===0||it.f===1));
   const ap=(v,k)=>elig&&!EXNOPT?addPts(gate?v*0.5:v,k):0;   // düelloda test puanı yarıya iner
-  if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
   const d=dayStat();
+  if(!EXNOST){
+  if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
   d.a++;if(ok)d.c++;
   const lv=S.lv[w.level]||(S.lv[w.level]=[0,0]);
   lv[ok?0:1]++;
-  const dl=d.l||(d.l={});const dv=dl[w.level]||(dl[w.level]=[0,0]);dv[0]++;if(ok)dv[1]++;
+  const dl=d.l||(d.l={});const dv=dl[w.level]||(dl[w.level]=[0,0]);dv[0]++;if(ok)dv[1]++;}
   const cf=COEF[w.level]||1,bq=cf*(TYPEC[it.f]||1);
   let pt=0;
   if(ok){pt+=ap(bq,'c');const G=goalEff();if(d.c===G)pt+=ap(10+Math.min(streak(),10),'b')}
@@ -2397,16 +2398,18 @@ function examSave(qz){
   let allow=first?1e9:Math.max(0,right-old.b);   // ilk çözümde hepsi; sonra yalnızca önceki en iyiden fazla doğrular puan ve ilerleme getirir
   qz.items.forEach(it=>{
     const ok=!!it.ok,ua=it.options[it.chosen];
-    EXNOPT=ok?!(allow>0):!first;
+    EXNOPT=ok?!(allow>0):!first;EXNOST=!first;
     if(ok&&allow>0)allow--;
     try{
       if(it.noW){
         const lvn='B2',cf=COEF[lvn]||1,d=dayStat(),G=goalEff();
-        if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run;qz.right++}else{S.run=0;qz.wrong.push(it)}
+        if(ok)qz.right++;else qz.wrong.push(it);
+        if(first){
+        if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
         d.a++;if(ok)d.c++;
         const lv=S.lv[lvn]||(S.lv[lvn]=[0,0]);lv[ok?0:1]++;
         const dl=d.l||(d.l={});const dv=dl[lvn]||(dl[lvn]=[0,0]);dv[0]++;if(ok)dv[1]++;
-        CUR_EV=evAdd(d,evKey(d,'x|'+qz.exam+'|'+it.question.slice(0,40)),{t:'q',ok:ok?1:0,lv:lvn,pts:0});
+        CUR_EV=evAdd(d,evKey(d,'x|'+qz.exam+'|'+it.question.slice(0,40)),{t:'q',ok:ok?1:0,lv:lvn,pts:0});}
         if(!EXNOPT){
           if(ok){addPts(cf*RD_PT,'c');if(d.c===G)addPts(10+Math.min(streak(),10),'b')}
           else if(myLeague()>=3)addPts(-(myLeague()>=6?1:0.25)*cf*RD_PT,'w');
@@ -2418,7 +2421,7 @@ function examSave(qz){
       }
     }finally{CUR_EV=null}
   });
-  EXNOPT=false;
+  EXNOPT=false;EXNOST=false;
   if(!old||old.n!==n||right>old.b)S.ex[qz.exam]={b:right,n,d:today()};
   save();
 }
