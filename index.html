@@ -2322,7 +2322,7 @@ function rdCheck(){
   R.done=true;R.gain=gain;R.first=first;save();render();
 }
 /* ---------- sınav (ders kelimeleri) ---------- */
-const EXAM_PART=[['g','Boşluk doldurma'],['w','Kelime testi'],['d','Tanım → kelime'],['r','Okuma']];
+const EXAM_PART=[['g','Boşluk doldurma'],['w','Kelime testi'],['e','Örnek cümle'],['d','Tanım → kelime'],['r','Okuma']];
 const exU=id=>(window.EXAM||[]).find(x=>x.id===id);
 const exWords=u=>u.a.concat(u.b.filter(k=>u.a.indexOf(k)===-1)).map(k=>BYWORD.get(k)).filter(Boolean);
 const exNoW=(it,t)=>{it.noW=true;it.w={word:'Sınav: '+t,level:'B2',pron:'',tr:'',def:'',ex:''};return it};
@@ -2349,6 +2349,17 @@ function exDef(u){
   const ws=exWords(u),pool=ws.map(w=>w.word);
   return shuffle(ws.map(w=>({w,f:13,kind:'exam',question:'Hangi kelime/ifade bu tanıma uyuyor?\n“'+w.def+'”',correct:w.word,options:exOpts(w.word,pool,w),chosen:null})));
 }
+function exEx(u){
+  const pool=exWords(u).map(w=>w.word),out=[];
+  exWords(u).forEach(w=>{
+    if(!w.ex)return;
+    const k=w.word.toLowerCase(),ws=k.split(' '),st=ws[0].length>3?ws[0].replace(/(e|y)$/,''):ws[0];
+    const re=new RegExp('\\b'+st.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[a-z]*'+(ws.length>1?' '+ws.slice(1).join(' '):'')+'\\b','i');
+    const m=w.ex.match(re);if(!m)return;
+    out.push({w,f:12,kind:'exam',question:w.ex.replace(m[0],'_____'),correct:w.word,options:exOpts(w.word,pool,w),chosen:null});
+  });
+  return shuffle(out);
+}
 function exRead(u){
   const out=[],t=u.rt;
   u.rq.forEach((q,i)=>{const it=exNoW({f:14,kind:'exam',question:q.q,correct:q.o[q.a],options:q.o.slice(),chosen:null,pass:u.rp,pt0:'“'+t+'” metni',first:i===0},t);out.push(it)});
@@ -2360,15 +2371,16 @@ function examItems(key){
   const [id,part]=key.split(':');
   if(id==='all'){
     const out=[];
-    (window.EXAM||[]).forEach(u=>{out.push.apply(out,shuffle(exGap(u)).slice(0,3));out.push.apply(out,exWordTest(u).slice(0,3));out.push.apply(out,exDef(u).slice(0,3));out.push.apply(out,shuffle(exRead(u)).slice(0,2))});
+    (window.EXAM||[]).forEach(u=>{out.push.apply(out,shuffle(exGap(u)).slice(0,3));out.push.apply(out,exWordTest(u).slice(0,3));out.push.apply(out,exDef(u).slice(0,3));out.push.apply(out,exEx(u).slice(0,2));out.push.apply(out,shuffle(exRead(u)).slice(0,2))});
     return shuffle(out);
   }
   const u=exU(id);if(!u)return[];
   if(part==='g')return exGap(u);
   if(part==='w')return exWordTest(u);
   if(part==='d')return exDef(u);
+  if(part==='e')return exEx(u);
   if(part==='r')return exRead(u);
-  return exGap(u).concat(exWordTest(u),exDef(u),exRead(u));
+  return exGap(u).concat(exWordTest(u),exDef(u),exEx(u),exRead(u));
 }
 function examStart(key){
   if(!CLOUD.admin)return;
@@ -2387,7 +2399,7 @@ function vExam(){
   const all=window.EXAM||[],ex=S.ex||{};
   const best=k=>ex[k]?`<span class="small muted"> · en iyi ${ex[k].b}/${ex[k].n}</span>`:'';
   return`<div class="top"><h1>Sınav</h1></div><div class="stack">
-  <div class="card stack"><div class="muted small">Ders kitabındaki ünitelerin kelimeleri ve alıştırmaları. Her ünitede boşluk doldurma, kelime testi, tanım eşleştirme ve okuma (metin + sorular) bölümleri var. Sınav cevapların puanını, günlük hedefini ve kelime ilerlemeni etkilemez; yalnızca en iyi sonucun kaydedilir. Dinleme soruları ses olmadığı için yer almaz.</div>
+  <div class="card stack"><div class="muted small">Ders kitabındaki ünitelerin kelimeleri ve alıştırmaları. Her ünitede boşluk doldurma, kelime testi, örnek cümle, tanım eşleştirme ve okuma (metin + sorular) bölümleri var. Sınav cevapların puanını, günlük hedefini ve kelime ilerlemeni etkilemez; yalnızca en iyi sonucun kaydedilir. Dinleme soruları ses olmadığı için yer almaz.</div>
   <button class="btn primary block" data-act="exam-start" data-v="all">Genel sınav (tüm ünitelerden karışık)${best('all')}</button></div>
   ${all.map(u=>{const ws=exWords(u);return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Ünite ${u.n} · ${esc(u.t)}</b><span class="small muted">${ws.length} kelime</span></div>
     <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite sınavı${best(u.id+':all')}</button>
