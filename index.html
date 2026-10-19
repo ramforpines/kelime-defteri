@@ -428,7 +428,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.67.1';
+const APP_VERSION='4.68.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2023,10 +2023,11 @@ function applyAnswer(it,ok,ua,qz,gate){
   CUR_EV=ev;
   try{return applyAnswerCore(it,ok,ua,qz,gate)}finally{CUR_EV=null}
 }
+let EXNOPT=false;   // sınav tekrarında puan/ilerleme verilmeyen cevaplar
 function applyAnswerCore(it,ok,ua,qz,gate){
   const w=it.w,bw0=S.wrong[w.word],p0=S.prog[w.word]||[];
   const elig=!gate||(it.kind==='new'&&!S.learned[w.word]&&p0.indexOf(it.f)===-1)||(!!bw0&&(it.f===0||it.f===1));
-  const ap=(v,k)=>elig?addPts(gate?v*0.5:v,k):0;   // düelloda test puanı yarıya iner
+  const ap=(v,k)=>elig&&!EXNOPT?addPts(gate?v*0.5:v,k):0;   // düelloda test puanı yarıya iner
   if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
   const d=dayStat();
   d.a++;if(ok)d.c++;
@@ -2037,7 +2038,7 @@ function applyAnswerCore(it,ok,ua,qz,gate){
   let pt=0;
   if(ok){pt+=ap(bq,'c');const G=goalEff();if(d.c===G)pt+=ap(10+Math.min(streak(),10),'b')}
   else if(myLeague()>=3)pt+=ap(-(myLeague()>=6?1:0.25)*bq,'w');   // Altın–Zümrüt: ¼, Elmas ve üstü: doğru cevap puanının tamamı
-  if(ok){if(it.kind==='wlog')wlogDel(it.lk||(w.word+'|'+it.f))}else wlogAdd(it,ua);
+  if(ok){if(it.kind==='wlog')wlogDel(it.lk||(w.word+'|'+it.f))}else if(it.f<12)wlogAdd(it,ua);
   if(it.kind==='wod'){const q=wqGet(),k=w.word+'|'+it.f;if(q.done.indexOf(k)===-1)q.done.push(k);S.wod=today()}
   if(it.kind==='lrev'&&S.learned[w.word]){const L=S.learned[w.word];if(ok){L.lr=today();L.n=(L.n|0)+1}else{L.n=Math.max(1,L.n|0);L.lr=addDays(today(),-(LRN_EVERY-7))}}
   const bw=S.wrong[w.word];
@@ -2070,7 +2071,7 @@ function answer(idx){
   it.chosen=idx;
   const ok=it.options[idx]===it.correct;
   it.ok=ok;
-  if(qz.mode==='exam'){it.pt=0;if(ok)qz.right++;else qz.wrong.push(it);render();return}   // sınav: puan, öğrenme ve hedef etkilenmez
+  if(qz.mode==='exam'){it.pt=0;render();return}   // sınav: işleme test bitince yapılır (examFinish)
   it.pt=applyAnswer(it,ok,it.options[idx],qz,false);
   save();render();
 }
@@ -2391,15 +2392,41 @@ function examStart(key){
   render();window.scrollTo(0,0);
 }
 function examSave(qz){
-  S.ex=S.ex||{};const old=S.ex[qz.exam],n=qz.items.length;
-  if(!old||qz.right>old.b||(qz.right===old.b&&n!==old.n))S.ex[qz.exam]={b:qz.right,n,d:today()};
+  S.ex=S.ex||{};const old=S.ex[qz.exam],n=qz.items.length,first=!old||old.n!==n;
+  const right=qz.items.filter(i=>i.ok).length;
+  let allow=first?1e9:Math.max(0,right-old.b);   // ilk çözümde hepsi; sonra yalnızca önceki en iyiden fazla doğrular puan ve ilerleme getirir
+  qz.items.forEach(it=>{
+    const ok=!!it.ok,ua=it.options[it.chosen];
+    EXNOPT=ok?!(allow>0):!first;
+    if(ok&&allow>0)allow--;
+    try{
+      if(it.noW){
+        const lvn='B2',cf=COEF[lvn]||1,d=dayStat(),G=goalEff();
+        if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run;qz.right++}else{S.run=0;qz.wrong.push(it)}
+        d.a++;if(ok)d.c++;
+        const lv=S.lv[lvn]||(S.lv[lvn]=[0,0]);lv[ok?0:1]++;
+        const dl=d.l||(d.l={});const dv=dl[lvn]||(dl[lvn]=[0,0]);dv[0]++;if(ok)dv[1]++;
+        CUR_EV=evAdd(d,evKey(d,'x|'+qz.exam+'|'+it.question.slice(0,40)),{t:'q',ok:ok?1:0,lv:lvn,pts:0});
+        if(!EXNOPT){
+          if(ok){addPts(cf*RD_PT,'c');if(d.c===G)addPts(10+Math.min(streak(),10),'b')}
+          else if(myLeague()>=3)addPts(-(myLeague()>=6?1:0.25)*cf*RD_PT,'w');
+        }
+        CUR_EV=null;
+      }else{
+        it.kind=(ok&&!EXNOPT&&it.f<12)?'new':'exam';
+        applyAnswer(it,ok,ua,qz,false);
+      }
+    }finally{CUR_EV=null}
+  });
+  EXNOPT=false;
+  if(!old||old.n!==n||right>old.b)S.ex[qz.exam]={b:right,n,d:today()};
   save();
 }
 function vExam(){
   const all=window.EXAM||[],ex=S.ex||{};
   const best=k=>ex[k]?`<span class="small muted"> · en iyi ${ex[k].b}/${ex[k].n}</span>`:'';
   return`<div class="top"><h1>Sınav</h1></div><div class="stack">
-  <div class="card stack"><div class="muted small">Ders kitabındaki ünitelerin kelimeleri ve alıştırmaları. Her ünitede boşluk doldurma, kelime testi, örnek cümle, tanım eşleştirme ve okuma (metin + sorular) bölümleri var. Sınav cevapların puanını, günlük hedefini ve kelime ilerlemeni etkilemez; yalnızca en iyi sonucun kaydedilir. Dinleme soruları ses olmadığı için yer almaz.</div>
+  <div class="card stack"><div class="muted small">Ders kitabındaki ünitelerin kelimeleri ve alıştırmaları. Her ünitede boşluk doldurma, kelime testi, örnek cümle, tanım eşleştirme ve okuma (metin + sorular) bölümleri var. Sınav normal test gibi puan, günlük hedef, istatistik ve kelime ilerlemesine işlenir; ancak puan ve ilerleme bir sınavın ilk çözümünde verilir. Sonraki çözümlerde yalnızca önceki en iyi sonucundan fazla doğrular için puan ve ilerleme eklenir. Dinleme soruları ses olmadığı için yer almaz.</div>
   <button class="btn primary block" data-act="exam-start" data-v="all">Genel sınav (tüm ünitelerden karışık)${best('all')}</button></div>
   ${all.map(u=>{const ws=exWords(u);return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Ünite ${u.n} · ${esc(u.t)}</b><span class="small muted">${ws.length} kelime</span></div>
     <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite sınavı${best(u.id+':all')}</button>
@@ -2447,7 +2474,7 @@ function vResult(){
   return`<div class="top"><h1>Sonuç</h1></div><div class="stack"><div class="card stack"><div class="score">${qz.right}/${n}</div>
     <div class="bar"><i style="width:${p}%"></i></div>
     <div class="muted">%${p} doğru${qz.learnedNow.length?` · ${qz.learnedNow.length} kelime öğrenildi`:''}</div>
-    ${qz.mode==='exam'?'<div class="small muted">Sınav sonuçları puanını, günlük hedefini ve kelime ilerlemeni etkilemez.</div>':`<div class="small"><b>Bu testten ${(qz.pts.c+qz.pts.b+qz.pts.w)>=0?'+':'−'}${nf(r1(Math.abs(qz.pts.c+qz.pts.b+qz.pts.w)))} puan</b><br><span class="muted">Doğru cevaplar +${nf(r1(qz.pts.c))} · bonuslar +${nf(r1(qz.pts.b))}${qz.pts.w?` · yanlış cevaplar −${nf(r1(Math.abs(qz.pts.w)))}`:''}</span></div>`}
+    ${`<div class="small"><b>${qz.mode==='exam'?'Bu sınavdan':'Bu testten'} ${(qz.pts.c+qz.pts.b+qz.pts.w)>=0?'+':'−'}${nf(r1(Math.abs(qz.pts.c+qz.pts.b+qz.pts.w)))} puan</b><br><span class="muted">Doğru cevaplar +${nf(r1(qz.pts.c))} · bonuslar +${nf(r1(qz.pts.b))}${qz.pts.w?` · yanlış cevaplar −${nf(r1(Math.abs(qz.pts.w)))}`:''}</span></div>`}
     ${qz.learnedNow.length?`<div class="row">${qz.learnedNow.map(k=>`<span class="badge ok">${esc(k)}</span>`).join('')}</div>`:''}</div>
     ${qz.wrong.length?`<div class="card stack"><h3>Yanlışlar</h3>${qz.wrong.map(it=>`<div><b>${esc(it.w.word)}</b> <span class="muted">${esc(FEAT[it.f])}</span><div class="small">Doğru: ${esc(it.correct)}</div></div>`).join('')}</div>`:''}
     <div class="row"><button class="btn primary" data-act="again">${qz.mode==='exam'?'Sınav listesine dön':'Yeni test'}</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
