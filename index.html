@@ -427,7 +427,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.62.4';
+const APP_VERSION='4.62.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1664,7 +1664,7 @@ function affixTok(w){   // önek/sonek: örnek cümlede ekle türetilmiş kelime
 }
 function applicable(w){
   if(w._app)return w._app;
-  const f=[0,1];
+  const f=String(w.tr).trim().toLowerCase()===String(w.word).trim().toLowerCase()?[1]:[0,1];   // Türkçesi İngilizcesiyle aynıysa (patent, atom...) Türkçe sorusu anlamsız
   if(cloze(w))f.push(3);
   if(has(w.syn))f.push(4);
   if(has(w.ant))f.push(5);
