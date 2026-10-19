@@ -386,13 +386,14 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="reading.js"></script>
 <script src="reading-tr.js"></script>
 <script src="reading2.js"></script>
+<script src="exam.js"></script>
 <script src="supabase.js"></script>
 <script>
 const DATA=window.WORDS||[];
 (function(){
 'use strict';
 const LEVELS=['A1','A2','B1','B2','C1','C2'];
-const FEAT=['Türkçe','Tanım','Tür','Örnek','Eş','Zıt','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade'];
+const FEAT=['Türkçe','Tanım','Tür','Örnek','Eş','Zıt','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş'];
 const REVERSE_RATE=0.4, STREAK_GOAL=3, INTERVALS=[1,3];
 const W=DATA.map((r,i)=>({id:i,word:r[0],def:r[1],tr:r[2],pos:r[3],ex:r[4],syn:r[5],ant:r[6],level:(r[7]||'').toUpperCase(),pron:r[8],v2:r[9],v3:r[10]}));
 const BYWORD=new Map(W.map(w=>[w.word,w]));
@@ -427,13 +428,13 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.66.3';
+const APP_VERSION='4.67.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
-function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[],rd:{},sav:{},wq:{d:'',done:[]},rwd:{}}}
+function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[],rd:{},ex:{},sav:{},wq:{d:'',done:[]},rwd:{}}}
 function load(uid){
   let raw=null;
   try{raw=localStorage.getItem(KEY+'-'+uid)}catch(e){}
@@ -755,6 +756,7 @@ function mergeStates(a,b){
     m.tp=Math.max(0,(m.tp||0)+nt(z)-nt(x));m.days[k]=z});   // gün başka cihazdan alınırsa/birleşirse farkı toplam puana da yansıt   // gün başka cihazdan alınırsa farkı toplam puana da yansıt
   Object.keys(ot.lv||{}).forEach(k=>{const x=m.lv[k],y=ot.lv[k];m.lv[k]=x?[Math.max(x[0]|0,y[0]|0),Math.max(x[1]|0,y[1]|0)]:y});
   m.dl=Object.assign({},ot.dl||{},m.dl||{});Object.keys(ot.dl||{}).forEach(k=>{const x=m.dl[k],y=ot.dl[k];if(x&&y){x.s=x.s||y.s;x.p=x.p||y.p}});
+  {const ex=Object.assign({},ot.ex||{});Object.keys(m.ex||{}).forEach(k=>{const a=m.ex[k],b=ex[k];ex[k]=!b||(a.b|0)>(b.b|0)||((a.b|0)===(b.b|0)&&(a.d||'')>(b.d||''))?a:b});m.ex=ex}
   {const sv={};[ot.sav||{},m.sav||{}].forEach(o=>Object.keys(o).forEach(k=>{if(sv[k]==null||Math.abs(o[k])>Math.abs(sv[k]))sv[k]=o[k]}));m.sav=sv}   // kaydedilenler: sayı >0 kayıtlı, <0 kaldırıldı (|değer| = zaman); yeni olan kazanır
   {const x=m.wq||{},y=ot.wq||{};if(y.d&&(!x.d||y.d>x.d))m.wq={d:y.d,done:(y.done||[]).slice()};else if(y.d&&y.d===x.d){const u=(x.done||[]).slice();(y.done||[]).forEach(k=>{if(u.indexOf(k)===-1)u.push(k)});m.wq={d:x.d,done:u}}}
   {const rv={};[ot.rwd||{},m.rwd||{}].forEach(o=>Object.keys(o).forEach(k=>{if(rv[k]==null||Math.abs(o[k])>Math.abs(rv[k]))rv[k]=o[k]}));m.rwd=rv}   // ödül bildirimleri: görülenler birleşir
@@ -2068,12 +2070,13 @@ function answer(idx){
   it.chosen=idx;
   const ok=it.options[idx]===it.correct;
   it.ok=ok;
+  if(qz.mode==='exam'){it.pt=0;if(ok)qz.right++;else qz.wrong.push(it);render();return}   // sınav: puan, öğrenme ve hedef etkilenmez
   it.pt=applyAnswer(it,ok,it.options[idx],qz,false);
   save();render();
 }
 function next(){
   const qz=UI.quiz;
-  if(qz.i+1>=qz.items.length){qz.done=true}else qz.i++;
+  if(qz.i+1>=qz.items.length){qz.done=true;if(qz.mode==='exam')examSave(qz)}else qz.i++;
   render();window.scrollTo(0,0);
 }
 
@@ -2106,8 +2109,8 @@ const ICON={
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['duel','⚔ Düello'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']];
-const isStudy=t=>t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='saved';
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['duel','⚔ Düello'],['read','Okuma'],['exam','Sınav'],['review','Tekrar'],['saved','Kaydedilenler']];
+const isStudy=t=>t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
 const savedWords=()=>Object.keys(S.sav||{}).filter(k=>S.sav[k]>0&&BYWORD.has(k)).sort((a,b)=>S.sav[b]-S.sav[a]).map(k=>BYWORD.get(k));
@@ -2116,7 +2119,7 @@ const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıra'],['chat','
 function studySeg(){
   if(UI.quiz)return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
-  return`<div class="seg" style="margin-bottom:12px">${STUDY.map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}">${l}</button>`).join('')}</div>`;
+  return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='exam'||CLOUD.admin).map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}">${l}</button>`).join('')}</div>`;
 }
 function renderNav(){
   $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}${k==='chat'&&chatUnread()?` <i class="nbd">${chatUnread()}</i>`:''}</span></button>`).join('');
@@ -2136,11 +2139,13 @@ function render(){
   if(CLOUD.approved===false){$('nav').hidden=true;app.innerHTML=vPending();return}
   $('nav').hidden=false;
   renderNav();
+  if(UI.tab==='exam'&&!CLOUD.admin){UI.tab='dict';UI.quiz=null;if(lastStudy==='exam')lastStudy='quiz'}   // Sınav şimdilik yalnızca yönetici
   let h='';
   if(UI.tab==='today')h=vToday();
   else if(UI.tab==='dict')h=vDict();
   else if(UI.tab==='quiz')h=UI.quiz?vQuiz():(UI.qmode==='duel'?vDuel():vQuizSetup());
   else if(UI.tab==='read')h=vRead();
+  else if(UI.tab==='exam')h=UI.quiz?vQuiz():vExam();
   else if(UI.tab==='review')h=vReview();
   else if(UI.tab==='saved')h=vSaved();
   else if(UI.tab==='rank')h=vRank();
@@ -2316,6 +2321,81 @@ function rdCheck(){
   if(!old||right>=old.b)S.rd[P.id]={b:right,n:P.q.length,d:today()};
   R.done=true;R.gain=gain;R.first=first;save();render();
 }
+/* ---------- sınav (ders kelimeleri) ---------- */
+const EXAM_PART=[['g','Boşluk doldurma'],['w','Kelime testi'],['d','Tanım → kelime'],['r','Okuma']];
+const exU=id=>(window.EXAM||[]).find(x=>x.id===id);
+const exWords=u=>u.a.concat(u.b.filter(k=>u.a.indexOf(k)===-1)).map(k=>BYWORD.get(k)).filter(Boolean);
+const exNoW=(it,t)=>{it.noW=true;it.w={word:'Sınav: '+t,level:'B2',pron:'',tr:'',def:'',ex:''};return it};
+function exOpts(cor,pool,w){
+  const g=w?posGroup(w):'',same=[],oth=[];
+  shuffle(pool.filter(k=>k!==cor)).forEach(k=>{const x=BYWORD.get(k);(x&&g&&posGroup(x)===g?same:oth).push(k)});
+  return shuffle([cor].concat(same.concat(oth).slice(0,3)));
+}
+function exGap(u){
+  return u.gap.map(([s,a])=>{
+    const w=BYWORD.get(a);
+    return{w:w||{word:a,level:'B2',pron:'',tr:'',def:'',ex:''},f:12,kind:'exam',question:s.replace('___','_____'),correct:a,options:exOpts(a,u.box,w),chosen:null};
+  });
+}
+function exWordTest(u){
+  const out=[];
+  exWords(u).forEach(w=>{
+    const fs=shuffle(applicable(w).filter(f=>f<12));
+    for(const f of fs){const it=makeItem(w,f,'exam');if(it){out.push(it);break}}
+  });
+  return shuffle(out);
+}
+function exDef(u){
+  const ws=exWords(u),pool=ws.map(w=>w.word);
+  return shuffle(ws.map(w=>({w,f:13,kind:'exam',question:'Hangi kelime/ifade bu tanıma uyuyor?\n“'+w.def+'”',correct:w.word,options:exOpts(w.word,pool,w),chosen:null})));
+}
+function exRead(u){
+  const out=[],t=u.rt;
+  u.rq.forEach((q,i)=>{const it=exNoW({f:14,kind:'exam',question:q.q,correct:q.o[q.a],options:q.o.slice(),chosen:null,pass:u.rp,pt0:'“'+t+'” metni',first:i===0},t);out.push(it)});
+  if(u.tf)u.tf.forEach(([s,a])=>out.push(exNoW({f:16,kind:'exam',question:'Metne göre bu cümle doğru mu?\n“'+s+'”',correct:a,options:['True','False','Not Given'],chosen:null,pass:u.rp,pt0:'“'+t+'” metni'},t)));
+  u.who.q.forEach(([s,a])=>out.push(exNoW({f:15,kind:'exam',question:'Bu ifadeyi kim söylüyor?\n“'+s+'”',correct:a,options:u.who.p.slice(),chosen:null,pass:u.rp,pt0:'“'+t+'” metni'},t)));
+  return out;
+}
+function examItems(key){
+  const [id,part]=key.split(':');
+  if(id==='all'){
+    const out=[];
+    (window.EXAM||[]).forEach(u=>{out.push.apply(out,shuffle(exGap(u)).slice(0,3));out.push.apply(out,exWordTest(u).slice(0,3));out.push.apply(out,exDef(u).slice(0,3));out.push.apply(out,shuffle(exRead(u)).slice(0,2))});
+    return shuffle(out);
+  }
+  const u=exU(id);if(!u)return[];
+  if(part==='g')return exGap(u);
+  if(part==='w')return exWordTest(u);
+  if(part==='d')return exDef(u);
+  if(part==='r')return exRead(u);
+  return exGap(u).concat(exWordTest(u),exDef(u),exRead(u));
+}
+function examStart(key){
+  if(!CLOUD.admin)return;
+  const items=examItems(key);
+  if(!items.length){toast('Bu sınav için soru bulunamadı.');return}
+  UI.quiz={mode:'exam',exam:key,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};
+  UI.tab='exam';lastStudy='exam';try{sessionStorage.setItem('kd-tab','exam')}catch(e){}
+  render();window.scrollTo(0,0);
+}
+function examSave(qz){
+  S.ex=S.ex||{};const old=S.ex[qz.exam],n=qz.items.length;
+  if(!old||qz.right>old.b||(qz.right===old.b&&n!==old.n))S.ex[qz.exam]={b:qz.right,n,d:today()};
+  save();
+}
+function vExam(){
+  const all=window.EXAM||[],ex=S.ex||{};
+  const best=k=>ex[k]?`<span class="small muted"> · en iyi ${ex[k].b}/${ex[k].n}</span>`:'';
+  return`<div class="top"><h1>Sınav</h1></div><div class="stack">
+  <div class="card stack"><div class="muted small">Ders kitabındaki ünitelerin kelimeleri ve alıştırmaları. Her ünitede boşluk doldurma, kelime testi, tanım eşleştirme ve okuma (metin + sorular) bölümleri var. Sınav cevapların puanını, günlük hedefini ve kelime ilerlemeni etkilemez; yalnızca en iyi sonucun kaydedilir. Dinleme soruları ses olmadığı için yer almaz.</div>
+  <button class="btn primary block" data-act="exam-start" data-v="all">Genel sınav (tüm ünitelerden karışık)${best('all')}</button></div>
+  ${all.map(u=>{const ws=exWords(u);return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Ünite ${u.n} · ${esc(u.t)}</b><span class="small muted">${ws.length} kelime</span></div>
+    <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite sınavı${best(u.id+':all')}</button>
+    <div class="seg">${EXAM_PART.map(([p,l])=>`<button class="chip" data-act="exam-start" data-v="${u.id}:${p}">${l}${best(u.id+':'+p)}</button>`).join('')}</div>
+    <button class="btn" data-act="exam-words" data-v="${u.id}">${UI.exw===u.id?'Kelimeleri gizle':'Kelimeleri gör'}</button>
+    ${UI.exw===u.id?ws.map(w=>`<div class="entry"><div class="row" style="justify-content:space-between"><span class="w">${esc(w.word)}</span>${lvTag(w.level)}</div><div class="tr">${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i></div>`:''}</div>`).join(''):''}</div>`}).join('')}
+  </div>`;
+}
 function vQuizSetup(){
   const s=S.set;
   const remaining=W.filter(w=>!S.learned[w.word]&&lvOk(s.level,w.level)&&typeOK(w)).length;
@@ -2335,14 +2415,16 @@ function vQuiz(){
   const w=it.w;
   let fb='',nb='';
   if(ans){
-    fb=`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.cleared?' · tekrar listesinden çıktı':''}${qz.learnedNow.indexOf(w.word)!==-1?' · öğrenildi':''}${it.pt?` · ${it.pt>0?'+':'−'}${nf(Math.round(Math.abs(it.pt)*100)/100)} puan`:''}</b>
+    fb=it.noW?`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}</b>${it.ok?'':`<div class="small" style="margin-top:6px">Doğru cevap: <b>${esc(it.correct)}</b></div>`}${it.e?`<div class="small muted" style="margin-top:6px">${esc(it.e)}</div>`:''}</div>`
+    :`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.cleared?' · tekrar listesinden çıktı':''}${qz.learnedNow.indexOf(w.word)!==-1?' · öğrenildi':''}${it.pt?` · ${it.pt>0?'+':'−'}${nf(Math.round(Math.abs(it.pt)*100)/100)} puan`:''}</b>
       <div><b>${esc(w.word)}</b> <span class="mono muted">${esc(w.pron)}</span> ${lvTag(w.level)}</div>
       <div>${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i>${exTr(w)}</div>`:''}
       ${it.ok?'':`<div class="small" style="margin-top:6px">Doğru cevap: <b>${esc(it.correct)}</b></div>`}${optMeans(it)}</div>`;
     nb=`<button class="btn primary block" style="margin-top:12px" data-act="next" id="nextbtn">${qz.i+1>=qz.items.length?'Sonucu gör':'Sonraki soru'}</button>`;
   }
   return`<div class="qtop"><button class="btn" data-act="quit" aria-label="Testten çık">Çık</button><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span class="mono muted">${qz.i+1}/${qz.items.length}</span></div>
-  <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${it.kind==='wlog'?'Yanlış defteri':it.kind==='wod'?'Günün kelimeleri':it.kind==='lrev'?'Öğrenilen kelime tekrarı':qz.mode==='review'||it.kind==='review'?'Tekrar':'Yeni'} · ${FEAT[it.f]}</span>${lvTag(w.level)}${it.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rep-open" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}${BYWORD.has(w.word)?`<button class="btn" style="${it.rp?'margin-left:8px;':'margin-left:6px;'}padding:4px 10px;font-size:.8rem" data-act="sv-q" aria-pressed="${isSaved(w.word)}" aria-label="Kelimeyi kaydet">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>`:''}</div>
+  <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${qz.mode==='exam'?'Sınav':it.kind==='wlog'?'Yanlış defteri':it.kind==='wod'?'Günün kelimeleri':it.kind==='lrev'?'Öğrenilen kelime tekrarı':qz.mode==='review'||it.kind==='review'?'Tekrar':'Yeni'} · ${FEAT[it.f]}</span>${lvTag(w.level)}${it.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rep-open" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}${BYWORD.has(w.word)?`<button class="btn" style="${it.rp?'margin-left:8px;':'margin-left:6px;'}padding:4px 10px;font-size:.8rem" data-act="sv-q" aria-pressed="${isSaved(w.word)}" aria-label="Kelimeyi kaydet">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>`:''}</div>
+  ${it.pass?`<details class="card small" lang="en" style="margin-bottom:10px" ${it.first?'open':''}><summary style="cursor:pointer;font-weight:600">${esc(it.pt0||'Metin')}</summary><div class="stack" style="margin-top:8px">${it.pass.map(t=>`<p style="margin:0;line-height:1.6">${esc(t)}</p>`).join('')}</div></details>`:''}
   <h2>${esc(it.question)}</h2>
   <div class="opts">${it.options.map((o,i)=>{
     let c='';if(ans){if(o===it.correct)c='ok';else if(i===it.chosen)c='bad'}
@@ -2353,10 +2435,10 @@ function vResult(){
   return`<div class="top"><h1>Sonuç</h1></div><div class="stack"><div class="card stack"><div class="score">${qz.right}/${n}</div>
     <div class="bar"><i style="width:${p}%"></i></div>
     <div class="muted">%${p} doğru${qz.learnedNow.length?` · ${qz.learnedNow.length} kelime öğrenildi`:''}</div>
-    <div class="small"><b>Bu testten ${(qz.pts.c+qz.pts.b+qz.pts.w)>=0?'+':'−'}${nf(r1(Math.abs(qz.pts.c+qz.pts.b+qz.pts.w)))} puan</b><br><span class="muted">Doğru cevaplar +${nf(r1(qz.pts.c))} · bonuslar +${nf(r1(qz.pts.b))}${qz.pts.w?` · yanlış cevaplar −${nf(r1(Math.abs(qz.pts.w)))}`:''}</span></div>
+    ${qz.mode==='exam'?'<div class="small muted">Sınav sonuçları puanını, günlük hedefini ve kelime ilerlemeni etkilemez.</div>':`<div class="small"><b>Bu testten ${(qz.pts.c+qz.pts.b+qz.pts.w)>=0?'+':'−'}${nf(r1(Math.abs(qz.pts.c+qz.pts.b+qz.pts.w)))} puan</b><br><span class="muted">Doğru cevaplar +${nf(r1(qz.pts.c))} · bonuslar +${nf(r1(qz.pts.b))}${qz.pts.w?` · yanlış cevaplar −${nf(r1(Math.abs(qz.pts.w)))}`:''}</span></div>`}
     ${qz.learnedNow.length?`<div class="row">${qz.learnedNow.map(k=>`<span class="badge ok">${esc(k)}</span>`).join('')}</div>`:''}</div>
     ${qz.wrong.length?`<div class="card stack"><h3>Yanlışlar</h3>${qz.wrong.map(it=>`<div><b>${esc(it.w.word)}</b> <span class="muted">${esc(FEAT[it.f])}</span><div class="small">Doğru: ${esc(it.correct)}</div></div>`).join('')}</div>`:''}
-    <div class="row"><button class="btn primary" data-act="again">Yeni test</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
+    <div class="row"><button class="btn primary" data-act="again">${qz.mode==='exam'?'Sınav listesine dön':'Yeni test'}</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
 }
 function vReview(){
   const keys=Object.keys(S.wrong).filter(k=>BYWORD.has(k)),dl=dueLearned().length,due=dueWrong(false).length+dl;
@@ -3426,6 +3508,8 @@ document.addEventListener('click',async e=>{
     case'start-review-all':startQuiz('review',true);break;
     case'next':next();break;
     case'quit':UI.quiz=null;render();break;
+    case'exam-start':examStart(g('data-v'));break;
+    case'exam-words':{UI.exw=UI.exw===g('data-v')?null:g('data-v');render();break}
     case'rd-rep':{const R0=UI.rd,P0=R0&&(window.READINGS||[]).find(x=>x.id===R0.id);if(P0){UI.rep={it:rdItem(P0,R0,+g('data-v')),reason:'multi',note:'',busy:false};const y=window.scrollY;render();window.scrollTo(0,y)}break}
     case'rd-lv':(UI.rd||(UI.rd={id:null,pick:{},done:false,lv:'Hepsi'})).lv=g('data-v');render();break;
     case'rd-open':{const P0=(window.READINGS||[]).find(x=>x.id===g('data-v'));UI.rd=Object.assign(UI.rd||{lv:'Hepsi'},{id:g('data-v'),pick:{},done:false,gain:0,rits:{},ord:P0?P0.q.map(q=>shuffle(q.o.map((o,i)=>i))):null});}render();window.scrollTo(0,0);break;
@@ -3532,7 +3616,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.id==='chin'){e.preventDefault();chatSend();return}
   if(e.key==='Enter'&&!CLOUD.uid&&/^au-/.test(e.target.id||'')){e.preventDefault();doAuth();return}
   if(UI.tab==='quiz'&&DUEL.phase==='play'&&!UI.quiz&&!/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)&&e.key>='1'&&e.key<='4'){duelAnswer(+e.key-1);return}
-  if(UI.tab!=='quiz'||!UI.quiz||UI.quiz.done)return;
+  if((UI.tab!=='quiz'&&UI.tab!=='exam')||!UI.quiz||UI.quiz.done)return;
   if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
   const it=UI.quiz.items[UI.quiz.i];
   if(e.key>='1'&&e.key<='4'&&it.chosen===null){answer(+e.key-1)}
