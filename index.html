@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.75.1';
+const APP_VERSION='4.75.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3445,9 +3445,9 @@ function invShow(){
   if(!document.getElementById('dvcss')){const s=document.createElement('style');s.id='dvcss';s.textContent=invCss();document.head.appendChild(s)}
   const o=document.createElement('div');o.id='dvov';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Düello teklifi');
   const w=INV.who,incoming=INV.dir==='in',rkm=INV.mode==='ranked',need=rkm?DRK_MIN:DSTAKE,low=incoming&&(S.tp||0)<need,rg=rkm&&incoming?dRng(S.tp||0,+w.ap||0):null;
-  const wn=rkm?lgName(w.id)+' ligi':esc(w.name);
+  const wn=rkm?'Gizli kullanıcı · Lig: '+lgName(w.id)+' ligi':esc(w.name);
   o.innerHTML=`<div class="dvb${rkm?' vlv':''}">${rkm?'':avatar(w.name,w.color,true,w.av,frameFor(w.id,'auto'),0,0,w.id)}
-   <div class="dvt">${incoming?`${rkm?'Bir rakip':wn} seni ${rkm?'dereceli ':''}düelloya davet ediyor${rkm?` (${wn})`:''}`:`${rkm?'Seçtiğin rakibe ('+wn+')':wn+' adlı kullanıcıya'} ${rkm?'dereceli düello ':''}teklifi gönderildi`}</div>
+   <div class="dvt">${incoming?`${rkm?'Gizli kullanıcı':wn} seni ${rkm?'dereceli ':''}düelloya davet ediyor${rkm?` (Lig: ${lgName(w.id)} ligi)`:''}`:`${rkm?'Gizli kullanıcıya (Lig: '+lgName(w.id)+' ligi)':wn+' adlı kullanıcıya'} ${rkm?'dereceli düello ':''}teklifi gönderildi`}</div>
    <div class="muted small">${incoming?(rkm?`20 soru, soru başına ${DQ_T} sn. Kazanırsan en fazla +${nf(r1(rg.win))}, kaybedersen en fazla −${nf(r1(rg.lose))} puan (yaklaşık).`:`20 soru, soru başına ${DQ_T} sn. Bahis: ${DSTAKE} puan.`):'Cevap bekleniyor…'}</div>
    <div class="dvbar"><i id="dvbi"></i></div><div class="mono" style="font-size:1.4rem" id="dvsec"></div>
    ${incoming?`${low?`<div class="small" style="color:var(--bad)">Düelloya girmek için en az ${need} puanın olmalı.</div>`:''}<div class="dvr"><button class="btn primary" data-inv="yes" ${low?'disabled':''}>Kabul et</button><button class="btn danger" data-inv="no">Reddet</button></div>`
@@ -3520,7 +3520,7 @@ function lobbyCard(){
   const lab={free:['Boşta','ok'],invite:['Teklif bekliyor',''],duel:['Maçta','warn']};
   const row=u=>{
     const rkm=DUEL.sub==='ranked',lw=rkm?u.lowr:u.low,can=u.st==='free'&&!lw&&!INV&&(S.tp||0)>=(rkm?DRK_MIN:DSTAKE),l=lab[u.st]||lab.free;
-    if(rkm)return`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div style="min-width:0"><b>${esc(lgName(u.id))} ligi</b><br><span class="badge ${u.st==='free'&&!lw?'ok':l[1]}">${u.st==='free'?(lw?'Puanı yetersiz':'Maç arıyor'):l[0]}</span></div>
+    if(rkm)return`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div style="min-width:0"><b>Gizli kullanıcı</b><br><span class="small muted">Lig: ${esc(lgName(u.id))} ligi</span><br><span class="badge ${u.st==='free'&&!lw?'ok':l[1]}">${u.st==='free'?(lw?'Puanı yetersiz':'Maç arıyor'):l[0]}</span></div>
     <button class="btn primary" data-act="inv-send" data-u="${esc(u.id)}" ${can?'':'disabled'}>Dereceli teklif</button></div></div>`;
     return`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="min-width:0;gap:10px">${avatar(u.name,u.color,false,u.av,frameFor(u.id,'auto'),0,0,u.id)}<div style="min-width:0"><b class="w" style="overflow-wrap:anywhere">${esc(u.name)}</b> <span class="muted small">@${esc(u.un)}</span><br><span class="badge ${l[1]}">${lw&&u.st==='free'?'Puanı yetersiz':l[0]}</span></div></div>
     <button class="btn primary" data-act="inv-send" data-u="${esc(u.id)}" ${can?'':'disabled'}>${rkm?'Dereceli teklif':'Düello teklifi'}</button></div></div>`};
