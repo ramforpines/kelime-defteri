@@ -447,7 +447,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.86.1';
+const APP_VERSION='4.87.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1375,6 +1375,20 @@ async function arpReply(k){
   await loadAdminRep();render();
 }
 function repOpen(){return UI.arp.list.filter(x=>x.status==='open').length}
+async function loadGuard(){
+  if(!sb||!CLOUD.admin)return;
+  const G=UI.grd;G.busy=true;
+  try{const r=await sb.rpc('duel_flag_list',{n:100});if(r.error)throw r.error;G.list=r.data||[];G.loaded=true;G.err=''}
+  catch(e){G.err=/PGRST202|42883|does not exist|schema cache/i.test(String((e&&(e.message||e.code))||''))?'setup':'err'}
+  G.busy=false;quietRender();
+}
+function vGuard(){
+  const G=UI.grd,KL={hide:'Uygulamadan ayrıldı',blur:'Odak kaybı (uyarı)',blur2:'Odak kaybı (2.), maç iptal'};
+  return`<div class="card stack"><h2>🛡 Hile şüphesi</h2><div class="small muted">Dereceli düelloda uygulamadan ayrılma ve odak kaybı kayıtları (şimdilik yalnızca yönetici hesabının maçları kaydedilir). En yeni en üstte.</div>
+  <div class="row"><button class="btn" data-act="grd-load" ${G.busy?'disabled':''}>${G.busy?'Yükleniyor…':'Yenile'}</button></div>
+  ${G.err==='setup'?'<div class="small" style="color:var(--bad)">supabase-duel-guard.sql henüz çalıştırılmamış.</div>':G.err?'<div class="small" style="color:var(--bad)">Liste alınamadı.</div>':''}
+  ${G.list.length?G.list.map(x=>`<div class="card" style="padding:10px;${x.voided?'border-color:var(--bad)':''}"><div class="row" style="justify-content:space-between;gap:8px"><b>${esc(x.name||'Oyuncu')}${x.un?' <span class="muted small">@'+esc(x.un)+'</span>':''}</b>${x.voided?'<span class="badge bad">Maç iptal</span>':'<span class="badge warn">Uyarı</span>'}</div><div class="small muted">${KL[x.kind]||esc(x.kind)} · Soru ${x.q!=null?(+x.q+1):'?'}${x.away_ms!=null?' · '+(x.away_ms/1000).toFixed(1)+' sn':''}<br>${esc(fdt(x.created_at))} · Bu hafta iptal: <b>${x.wk||0}</b></div></div>`).join(''):(G.loaded&&!G.err?'<div class="empty">Henüz kayıt yok.</div>':'')}</div>`;
+}
 function vReports(){
   const A=UI.arp;
   const list=A.list.filter(x=>A.filter==='all'||x.status==='open');
@@ -2172,7 +2186,7 @@ function streak(){
 const learnedCount=()=>Object.keys(S.learned).filter(k=>BYWORD.has(k)).length;
 
 /* ---------- arayüz ---------- */
-const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'prof',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
+const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,grd:{list:[],loaded:false,busy:false,err:''},arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'prof',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
 try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz')UI.tab=t}catch(e){}
 const ICON={
   today:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
@@ -2666,13 +2680,13 @@ function vMe(){
   const fu=fbUnread();
   const seg=[['prof','Profil'],['stats','İstatistik'],['set','Ayarlar'+(fu?' ('+fu+')':'')],['help','Nasıl kullanılır?']];
   const nM=fbNew(),nR=repOpen(),nU=UI.adm.loaded?UI.adm.list.filter(u=>!u.approved).length:0;
-  const subs=[['msg','Mesajlar'+(nM?' ('+nM+')':'')],['live','Anlık duyuru'],['fla','Flamalar'],['rep','Raporlar'+(nR?' ('+nR+')':'')],['adm','Yönetim'+(nU?' ('+nU+')':'')]];
+  const subs=[['msg','Mesajlar'+(nM?' ('+nM+')':'')],['live','Anlık duyuru'],['fla','Flamalar'],['rep','Raporlar'+(nR?' ('+nR+')':'')],['grd','Hile şüphesi'],['adm','Yönetim'+(nU?' ('+nU+')':'')]];
   const inAdm=CLOUD.admin&&subs.some(x=>x[0]===UI.me);
   if(inAdm)UI.admSub=UI.me;
   if(CLOUD.admin){const t=nM+nR+nU;seg.push(['admin','🛡 Yönetici'+(t?' ('+t+')':'')])}
   let body='';
   if(UI.me==='learned')UI.me='stats';else if(UI.me==='fb')UI.me='set';
-  if(UI.me==='stats')body=vStats()+'<h2 style="margin:10px 2px 0">Öğrenilenler</h2>'+vLearned();else if(UI.me==='help')body=vHelp();else if(UI.me==='prof')body=vProfile();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings()+vFeedback();
+  if(UI.me==='stats')body=vStats()+'<h2 style="margin:10px 2px 0">Öğrenilenler</h2>'+vLearned();else if(UI.me==='help')body=vHelp();else if(UI.me==='prof')body=vProfile();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='grd'&&CLOUD.admin)body=vGuard();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings()+vFeedback();
   return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${k==='admin'?inAdm:UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${inAdm?`<div class="seg">${subs.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>`:''}${body}</div>`;
 }
 function vStats(){
@@ -3354,6 +3368,48 @@ function dOpp(){
 function dOppId(){const d=DUEL.d;if(!d)return null;if(DUEL.bot)return'bot';return dIsP1()?d.p2:d.p1}
 function dPeer(id){return id==='bot'?{id:'bot',name:'Bot Kemal',color:3,av:36,fr:''}:chatPeer(id)}
 function dStop(){clearTimeout(DUEL.findT);clearInterval(DUEL.poll);clearInterval(DUEL.tick);DUEL.findT=DUEL.poll=DUEL.tick=null}
+/* ---------- hile koruması: dereceli düelloda uygulamadan ayrılma (ŞİMDİLİK YALNIZCA YÖNETİCİ) ---------- */
+DUEL.g={hide:0,blur:0,nb:0,saw:false};
+const grdOn=()=>!!CLOUD.admin&&!DUEL.bot&&!!DUEL.id&&!!DUEL.d&&DUEL.d.mode==='ranked'&&DUEL.d.status==='active'&&DUEL.phase==='play';
+async function grdSend(kind,away){
+  if(!sb||!DUEL.id)return null;
+  try{const r=await sb.rpc('duel_guard',{did:DUEL.id,p_kind:kind,p_q:DUEL.idx,p_away:away==null?null:Math.round(away)});
+    return r&&!r.error&&r.data?r.data:null}catch(e){return null}
+}
+async function grdVoid(res){
+  if(DUEL.phase==='void'||DUEL.phase==='result')return;
+  DUEL.voids=res&&res.voids!=null?res.voids:null;
+  await duelFetch();
+  if(DUEL.d&&DUEL.d.status==='void')duelVoid();
+}
+function duelVoid(){
+  if(DUEL.phase==='void')return;
+  dStop();DUEL.phase='void';DUEL.sel=null;render();
+  duelRecord();
+}
+document.addEventListener('visibilitychange',async()=>{
+  const g=DUEL.g;
+  if(document.hidden){
+    if(!grdOn())return;
+    g.hide=Date.now();g.saw=true;
+    grdSend('hide',null);   // en iyi çaba: telefon uygulamayı dondurmadan gitmeyebilir, dönüşte yeniden bildirilir
+  }else{
+    const t=g.hide;g.hide=0;setTimeout(()=>{g.saw=false},400);
+    if(!t||!grdOn())return;
+    const res=await grdSend('hide',Date.now()-t);
+    if(res&&res.status==='void')grdVoid(res);
+  }
+});
+window.addEventListener('blur',()=>{if(grdOn())DUEL.g.blur=Date.now()});
+window.addEventListener('focus',async()=>{
+  const g=DUEL.g,t=g.blur;g.blur=0;
+  if(!t||g.saw)return;
+  const d=Date.now()-t;
+  if(d<700||!grdOn())return;
+  g.nb++;
+  if(g.nb===1){toast('⚠️ Odağını kaybettin. Tekrarlarsan maç iptal edilir (1/2).');grdSend('blur',d)}
+  else{const res=await grdSend('blur2',d);if(res&&res.status==='void')grdVoid(res)}
+});
 function dReset(){dStop();Object.assign(DUEL,{phase:'lobby',id:null,d:null,qs:null,idx:0,sel:null,bot:null,err:'',find:0,busy:false,me:{s:0,c:0,t:0}})}
 const bugD=x=>x.mode==='ranked'&&+x.s1<=0&&+x.s2<=0&&(x.winner||+x.dl1||+x.dl2)?Object.assign({},x,{winner:null,dl1:0,dl2:0}):x;   // iki tarafın da skoru 0 ya da altı: beraberlik, puan geçişi yok
 DUEL.hp={classic:{rows:[],done:false,busy:false},ranked:{rows:[],done:false,busy:false}};DUEL.hpOk=null;
@@ -3445,8 +3501,8 @@ async function duelStart(id){
   DUEL.qs=seededQs(d.seed,d.qn);
   duelApply([d]);
   const m=dMine();DUEL.idx=Math.min(m.a,d.qn);DUEL.sel=null;
-  DUEL.phase=d.status==='done'?'result':(DUEL.idx>=d.qn?'wait':'count');
-  DUEL.tq=0;
+  DUEL.phase=d.status==='void'?'void':d.status==='done'?'result':(DUEL.idx>=d.qn?'wait':'count');
+  DUEL.tq=0;DUEL.g={hide:0,blur:0,nb:0,saw:false};DUEL.voids=null;
   duelLoops();render();
 }
 function duelStartBot(){
@@ -3464,7 +3520,9 @@ function duelLoops(){
   clearInterval(DUEL.poll);clearInterval(DUEL.tick);
   if(!DUEL.bot)DUEL.poll=setInterval(async()=>{
     if(!['count','play','wait'].includes(DUEL.phase))return;
-    await duelFetch();duelHud();
+    await duelFetch();
+    if(DUEL.d&&DUEL.d.status==='void'){duelVoid();return}
+    duelHud();
     if(DUEL.d&&DUEL.d.status==='done'&&DUEL.phase!=='result'&&(DUEL.phase==='wait'||dNow()>new Date(DUEL.d.start_at).getTime()+DQ_N*DQ_T*1000))duelEnd();
   },1500);
   DUEL.tick=setInterval(duelTick,100);
@@ -3690,6 +3748,7 @@ function vDuel(){
       <div class="kp"><div><b>${nf(r1(S.tp||0))}</b><span>puanın</span></div><div><b>${(LEAGUES[myLeague()]||LEAGUES[0]).n}</b><span>ligin</span></div><div><b>${(S.tp||0)>=DRK_MIN?nf(r1(dRisk(S.tp||0))):'–'}</b><span>riskin${(S.tp||0)>=DRK_MIN?' (%'+nf(Math.round(dRate(S.tp||0)*1000)/10)+')':''}</span></div></div>
       ${DUEL.recR?`<div class="kp"><div><b>${DUEL.recR.w}</b><span>galibiyet</span></div><div><b>${DUEL.recR.l}</b><span>mağlubiyet</span></div><div><b>${DUEL.recR.d}</b><span>beraberlik</span></div></div><div style="width:100%;box-sizing:border-box;text-align:center;padding:14px 10px;border-radius:14px;background:var(--surface2)"><div style="font-size:2.2rem;font-weight:800;line-height:1.1;color:${DUEL.recR.net>0?'var(--ok)':DUEL.recR.net<0?'var(--bad)':'inherit'}">${DUEL.recR.net>0?'+':DUEL.recR.net<0?'−':''}${nf(r1(Math.abs(DUEL.recR.net)))}</div><div class="muted small" style="margin-top:2px">Dereceli puanı</div></div>`:''}
       ${err}
+      ${CLOUD.admin?'<div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)"><b>⚠️ Hile koruması (yönetici testi)</b><div class="muted" style="margin-top:4px">Maç sırasında uygulamadan bir an bile çıkarsan (ana ekran, başka uygulama, kilit ekranı) maç anında iptal edilir, puan değişmez. Ekran odağını kaybedersen bir kez uyarılırsın, tekrarında maç iptal edilir.</div></div>':''}
       <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DRK_MIN?'disabled':''}>Dereceli rakip bul</button>${(S.tp||0)<DRK_MIN?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. Dereceli düello Bronz ligden (${DRK_MIN} puan) başlar.</div>`:''}</div>${lobbyCard()}${duelHist()}`:`<div class="card stack"><h2>⚔ Klasik düello</h2>
       <div class="muted small">Aynı ${n} soruyu çözen iki oyuncudan çok puan toplayan kazanır. Bahis: ${DSTAKE} puan. Kuralların tamamı <b>Ben → Nasıl kullanılır? → Düello</b> bölümünde.</div>
       ${R?`<div class="kp"><div><b>${R.w}</b><span>galibiyet</span></div><div><b>${R.l}</b><span>mağlubiyet</span></div><div><b>${R.d}</b><span>beraberlik</span></div></div>${R.last.length?`<div class="row" style="gap:6px">${R.last.map(x=>`<span class="badge ${x==='W'?'ok':x==='L'?'warn':''}">${x==='W'?'G':x==='L'?'M':'B'}</span>`).join('')}<span class="muted small">son maçlar</span></div>`:''}`:''}
@@ -3715,6 +3774,13 @@ function vDuel(){
     ${ans?`<div class="fb ${DUEL.lastOk?'ok':'bad'}"><b class="t">${DUEL.sel===-1?'Süre doldu':DUEL.lastOk?'Doğru':'Yanlış'}</b>${DUEL.lastOk?'':` <span class="small">Doğru cevap: <b>${esc(it.correct)}</b></span>`}</div>`:''}</div>`;
   }else if(P==='wait'){
     body=`<div class="card stack" style="text-align:center"><div id="dhud">${dHudHtml()}</div><h2>Bitirdin</h2><div class="muted">Rakibin bitirmesi bekleniyor…</div></div>`;
+  }else if(P==='void'){
+    const mine=d&&d.void_by===CLOUD.uid,why=d&&d.void_reason==='blur2'?'ekran odağını ikinci kez kaybettiğin':'uygulamadan ayrıldığın';
+    body=`<div class="card stack" style="text-align:center"><h1 style="margin:0">⛔ Maç iptal edildi</h1>
+      <div class="muted">${mine?'Maç sırasında '+why+' için düello iptal edildi.':'Rakibin maç sırasında uygulamadan ayrıldı (hile koruması). Düello iptal edildi.'}</div>
+      <div class="card" style="background:var(--ok-bg);border-color:transparent"><b style="color:var(--ok)">Puanında değişiklik yok.</b></div>
+      ${mine&&DUEL.voids!=null?`<div class="muted small">Bu hafta iptal sayın: <b>${DUEL.voids}</b></div>`:''}
+      <button class="btn primary block" data-act="duel-exit">Lobiye dön</button></div>`;
   }else{
     const m=dMine(),o=dOpp(),op=dPeer(dOppId());
     const win=d.winner===CLOUD.uid,draw=!d.winner;
@@ -3759,7 +3825,7 @@ document.addEventListener('click',async e=>{
   if(el.hasAttribute('data-fr')){syncDraft();UI.draft.frame=g('data-fr');render();return}
   if(el.hasAttribute('data-pc')){UI.card=g('data-pc');render();return}
   if(el.hasAttribute('data-sw')){syncDraft();UI.draft.color=+g('data-sw');render();return}
-  if(el.hasAttribute('data-me')){UI.me=g('data-me');if(UI.me==='admin')UI.me=UI.admSub||'adm';UI.confirmReset=false;render();return}
+  if(el.hasAttribute('data-me')){UI.me=g('data-me');if(UI.me==='admin')UI.me=UI.admSub||'adm';UI.confirmReset=false;render();if(UI.me==='grd')loadGuard();return}
   if(el.hasAttribute('data-set')){const k=g('data-set'),v=g('data-v');S.set[k]=k==='count'?+v:k==='level'?lvToggle(S.set.level,v):k==='type'?mtToggle(S.set.type,v,POSG):v;save();render();return}
   if(el.hasAttribute('data-f')){const fk=g('data-f');UI.dict[fk]=fk==='level'?lvToggle(UI.dict.level,g('data-v')):fk==='pos'?mtToggle(UI.dict.pos,g('data-v'),POSG):g('data-v');UI.dict.limit=40;render();return}
   switch(g('data-act')){
@@ -3819,6 +3885,7 @@ document.addEventListener('click',async e=>{
     case'rep-send':sendRep();break;
     case'arp-filter':UI.arp.filter=g('data-v');render();break;
     case'arp-load':loadAdminRep();break;
+    case'grd-load':loadGuard();break;
     case'arp-edit':{const id=g('data-k')+RSEP+g('data-i');UI.arp.edit[id]=true;render();break}
     case'arp-edit-no':{const id=g('data-k')+RSEP+g('data-i');delete UI.arp.edit[id];delete UI.arp.reply[id];render();break}
     case'arp-edit-save':arpEditSave(g('data-k'),+g('data-i'));break;
