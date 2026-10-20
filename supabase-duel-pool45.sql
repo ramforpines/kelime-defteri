@@ -1,5 +1,5 @@
 -- Klasik düello havuzu: iki oyuncu 20+20 = 40 koyar, sistem 5 ekler (45 puan dağıtılır).
--- Kazanan 30 + maç skoruna göre paylaşılan 15 puanın payını alır; beraberlikte 22,5 / 22,5.
+-- Kazanan 25 + maç skoruna göre paylaşılan 20 puanın payını alır; beraberlikte 22,5 / 22,5.
 -- Dereceli kuralları (beraberlik dahil) aynı fonksiyonda korunur. Bir kez çalıştırın.
 
 create or replace function public.duel_settle(did uuid) returns void
@@ -54,7 +54,7 @@ begin
     p1v := 22.5; p2v := 22.5;
   else
     sw := greatest(case when w = d.p1 then d.s1 else d.s2 end, 0);
-    pw := round(30 + case when tot = 0 then 7.5 else 15.0 * sw / tot end, 1);
+    pw := round(25 + case when tot = 0 then 10 else 20.0 * sw / tot end, 1);
     if w = d.p1 then p1v := pw; p2v := 45 - pw; else p2v := pw; p1v := 45 - pw; end if;
   end if;
   update public.duels set status = 'done', done_at = now(), winner = w, pay1 = p1v, pay2 = p2v where id = did;
