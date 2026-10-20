@@ -439,7 +439,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.83.7';
+const APP_VERSION='4.84.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1249,7 +1249,7 @@ async function loadMyFb(){
     const r=await sb.from('feedback').select('id,kind,body,status,reply,created_at,replied_at').eq('user_id',CLOUD.uid).order('created_at',{ascending:false}).limit(50);
     if(r.error)throw r.error;
     const had=UI.fb.loaded;UI.fb.list=r.data||[];UI.fb.loaded=true;UI.fb.err='';
-    if(!had&&fbUnread()&&UI.tab!=='me')toast('Yöneticiden yanıt var: Ben > Geri bildirim');
+    if(!had&&fbUnread()&&UI.tab!=='me')toast('Yöneticiden yanıt var: Ben > Ayarlar > Yöneticiye mesaj');
   }catch(e){UI.fb.err=/PGRST205|42P01|does not exist|schema cache/i.test(String((e&&(e.message||e.code))||''))?'setup':'err'}
   quietRender();
 }
@@ -1444,7 +1444,7 @@ function vHelp(){
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün kelimeleri, bu haftaki sıran, dünün ve geçen haftanın lideri.',
     '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b>, <b>İngilizce Vize</b> (ders kitabı üniteleri: kelimeler, dinleme, okuma ve Örnek Vize), <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
     '<b>Sıra</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte). <b>Kullanım</b>: bu sayfa.',
-    '<b>Ben</b>: Profil, İstatistik, Öğrenilenler, Geri bildirim ve Ayarlar. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
+    '<b>Ben</b>: Profil, İstatistik (öğrenilen kelimeler en altında) ve Ayarlar (geri bildirim en altında). Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
   ${sec('🚀 Hızlı başlangıç',li([
     '<b>Bugün</b> sekmesinde günün hedefini ve "Bugünün testini başlat" düğmesini görürsün. Her gün birkaç test çözmen yeter.',
     '<b>Çalışma → Test</b> bölümünden soru sayısını (10–40), seviyeyi (A1–C2; B1 ve B2 gibi birden fazlasını aynı anda seçebilirsin) ve kelime türünü (birden fazla seçebilirsin) seçip istediğin zaman test çözebilirsin.',
@@ -1462,7 +1462,7 @@ function vHelp(){
     '<b>⚑ Bildir</b>: Sorunun şıklarından birden fazlası uygunsa ya da doğru cevap hatalıysa soru kartının sağ üstündeki Bildir düğmesine bas, nedeni seç. Raporlar yöneticiye ulaşır ve sorular düzeltilir. Günde en fazla 40 rapor gönderebilirsin.']))}
   ${sec('🎓 Kelime nasıl "öğrenildi" olur?',li([
     'Bir kelimenin sorulabilen tüm özelliklerini (Türkçe, tanım, örnek vb.) farklı sorularda en az bir kez doğru bildiğinde kelime <b>Öğrenildi</b> sayılır ve +2 × seviye katsayısı bonus puan alırsın.',
-    'Öğrenilen kelimeler Ben → Öğrenilenler bölümünde listelenir; istersen birini "Öğrenilmedi" olarak işaretleyebilirsin.']))}
+    'Öğrenilen kelimeler Ben → İstatistik sayfasının en altında listelenir; istersen birini "Öğrenilmedi" olarak işaretleyebilirsin.']))}
   ${sec('📖 Okuma',li([
     'Çalışma → <b>Okuma</b> bölümünde seviyene uygun kısa İngilizce metinler ve metinle ilgili sorular vardır. Metni oku, tüm soruları cevapla ve "Cevapları kontrol et" ile sonucunu gör; her sorunun açıklaması da gösterilir.',
     'Doğru cevap başına '+RD_PT+' × seviye katsayısı puan kazanırsın. Yüksek liglerde yanlış cevap, testteki gibi puan düşürür. Puan, ceza ve günlük hedef bonusu bir parçanın yalnızca ilk çözümünde işler; tekrar çözümde cevapların yine de istatistiklerine sayılır. Cevapların günlük hedefine, doğruluk oranına, seviye istatistiklerine ve doğru serine eklenir; yalnızca kelime ilerlemeni (öğrenildi ve tekrar listesi) etkilemez.',
@@ -1527,7 +1527,7 @@ function vHelp(){
     '<b>Özel mesaj</b>: birine yazmak için kullanıcı adını ya da adını ara, ya da profil kartından "Mesaj gönder"e bas. Okunmamış mesajlar bildirim sayısıyla görünür: Sohbet düğmesinde özel ve genel mesajların toplamı, sohbetin içinde Özel ve Genel sekmelerinde ayrı ayrı. Genel sohbeti açınca, son çıkışından sonra gelen ilk mesajın üstünde "Okunmamış mesajlar" çizgisi görünür ve liste oraya kayar.',
     'Kendi mesajını silebilirsin. Hakaret, spam ve rahatsız edici içerik yasaktır; yönetici gerekli gördüğünde mesajları silebilir ve hesabı kısıtlayabilir.']))}
   ${sec('✉ Geri bildirim',li([
-    'Ben → <b>Geri bildirim</b> bölümünden yöneticiye öneri, hata ya da soru yazabilirsin. Günde en fazla 5 mesaj gönderilebilir.',
+    'Ben → <b>Ayarlar</b> sayfasının en altındaki <b>Yöneticiye mesaj</b> bölümünden yöneticiye öneri, hata ya da soru yazabilirsin. Günde en fazla 5 mesaj gönderilebilir.',
     'Yönetici yanıt yazarsa aynı yerde görürsün; yeni yanıt olduğunda sekme adında sayı çıkar. Bildirdiğin sorular hakkında yöneticiden gelen açıklamalar da burada görünür.',
     'Tek bir sorunun hatalı olduğunu bildirmek için mesaj yazmak yerine soru kartındaki ⚑ Bildir düğmesini kullan.']))}
   ${sec('📢 Duyurular',li([
@@ -2641,14 +2641,15 @@ function vReview(){
 }
 function vMe(){
   const fu=fbUnread();
-  const seg=[['prof','Profil'],['stats','İstatistik'],['learned','Öğrenilenler'],['fb','Geri bildirim'+(fu?' ('+fu+')':'')],['set','Ayarlar']];
+  const seg=[['prof','Profil'],['stats','İstatistik'],['set','Ayarlar'+(fu?' ('+fu+')':'')]];
   const nM=fbNew(),nR=repOpen(),nU=UI.adm.loaded?UI.adm.list.filter(u=>!u.approved).length:0;
   const subs=[['msg','Mesajlar'+(nM?' ('+nM+')':'')],['live','Anlık duyuru'],['fla','Flamalar'],['rep','Raporlar'+(nR?' ('+nR+')':'')],['adm','Yönetim'+(nU?' ('+nU+')':'')]];
   const inAdm=CLOUD.admin&&subs.some(x=>x[0]===UI.me);
   if(inAdm)UI.admSub=UI.me;
   if(CLOUD.admin){const t=nM+nR+nU;seg.push(['admin','🛡 Yönetici'+(t?' ('+t+')':'')])}
   let body='';
-  if(UI.me==='stats')body=vStats();else if(UI.me==='learned')body=vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='fb')body=vFeedback();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings();
+  if(UI.me==='learned')UI.me='stats';else if(UI.me==='fb')UI.me='set';
+  if(UI.me==='stats')body=vStats()+'<h2 style="margin:10px 2px 0">Öğrenilenler</h2>'+vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings()+vFeedback();
   return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${k==='admin'?inAdm:UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${inAdm?`<div class="seg">${subs.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>`:''}${body}</div>`;
 }
 function vStats(){
