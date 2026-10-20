@@ -447,7 +447,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.86.0';
+const APP_VERSION='4.86.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2246,7 +2246,9 @@ function render(){
   if(isStudy(UI.tab)){lastStudy=UI.tab;if(!dlk)h=studySeg()+h}
   const fa=document.activeElement,fid=fa&&fa.id&&/^(chin|chq)$/.test(fa.id)?fa.id:null,fs=fid?[fa.selectionStart,fa.selectionEnd]:null;
   const ol=document.getElementById('chatlist');if(ol&&ol.dataset.init){UI.chat.st=ol.scrollTop;UI.chat.nb=ol.scrollHeight-ol.scrollTop-ol.clientHeight<90}
+  const dh0=document.getElementById('dhl'),dhs=dh0?dh0.scrollTop:0;
   app.innerHTML=profBar()+h+vCard();
+  if(dhs){const dh1=document.getElementById('dhl');if(dh1)dh1.scrollTop=dhs}
   if(fid){const n=document.getElementById(fid);if(n){n.focus({preventScroll:true});try{n.setSelectionRange(fs[0],fs[1])}catch(e){}}}
   if(UI.tab==='chat'&&document.getElementById('chatlist'))chatPaint();
 }
@@ -3355,9 +3357,18 @@ function dStop(){clearTimeout(DUEL.findT);clearInterval(DUEL.poll);clearInterval
 function dReset(){dStop();Object.assign(DUEL,{phase:'lobby',id:null,d:null,qs:null,idx:0,sel:null,bot:null,err:'',find:0,busy:false,me:{s:0,c:0,t:0}})}
 const bugD=x=>x.mode==='ranked'&&+x.s1<=0&&+x.s2<=0&&(x.winner||+x.dl1||+x.dl2)?Object.assign({},x,{winner:null,dl1:0,dl2:0}):x;   // iki tarafın da skoru 0 ya da altı: beraberlik, puan geçişi yok
 DUEL.hp={classic:{rows:[],done:false,busy:false},ranked:{rows:[],done:false,busy:false}};DUEL.hpOk=null;
+DUEL.dhT=0;
+['touchstart','touchmove','wheel','pointerdown'].forEach(ev=>document.addEventListener(ev,e=>{const t=e.target;if(t&&t.closest&&t.closest('#dhl'))DUEL.dhT=Date.now()},{capture:true,passive:true}));
+document.addEventListener('scroll',e=>{const t=e.target;if(t&&t.id==='dhl')DUEL.dhT=Date.now()},true);
+const dhBusy=()=>Date.now()-DUEL.dhT<1800;
+function softRender(){
+  if(dhBusy()){clearTimeout(DUEL.srT);DUEL.srT=setTimeout(softRender,600);return}
+  render();
+}
+const histSig=a=>a.map(x=>x.id+':'+(x.winner||'')+':'+(x.dl1==null?'':x.dl1)+':'+(x.dl2==null?'':x.dl2)).join('|');
 async function histPage(mode,reset){
   const st=DUEL.hp[mode];if(!sb||!CLOUD.uid||st.busy||(!reset&&st.done)||DUEL.hpOk===false)return;
-  st.busy=true;const el0=document.getElementById('dhl'),sc0=el0?el0.scrollTop:0;
+  st.busy=true;const sg0=histSig(st.rows);
   try{
     const r=await sb.rpc('duel_history_page',{p_mode:mode,p_off:reset?0:st.rows.length,p_n:50});
     if(r.error)throw r.error;
@@ -3368,7 +3379,7 @@ async function histPage(mode,reset){
   }catch(e){if(/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||'')))DUEL.hpOk=false}
   st.busy=false;
   if(DUEL.hpOk){DUEL.hist=DUEL.hp.classic.rows.concat(DUEL.hp.ranked.rows);DUEL.allOk=true;
-    if(UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby'){render();const el=document.getElementById('dhl');if(el)el.scrollTop=sc0}}
+    if(histSig(st.rows)!==sg0&&UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')softRender()}
 }
 document.addEventListener('scroll',e=>{const t=e.target;if(t&&t.id==='dhl'&&t.scrollHeight-t.scrollTop-t.clientHeight<140)histPage(DUEL.sub==='ranked'?'ranked':'classic')},true);
 async function duelRecord(){
@@ -3390,7 +3401,7 @@ async function duelRecord(){
   DUEL.recBusy=false;
   const hs=JSON.stringify([(DUEL.hist||[]).slice(0,12).map(x=>x.id),DUEL.rec,DUEL.recR]);
   const chg=hs!==DUEL.recSig;DUEL.recSig=hs;
-  if(chg&&UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')render();
+  if(chg&&UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')softRender();
   if(DUEL.recAgain){DUEL.recAgain=false;duelRecord()}
 }
 async function duelFind(){
@@ -3531,7 +3542,7 @@ async function lobbyLoad(){
     if(prevIds.some(id=>!LOBBY.duels.some(x=>x.id===id))&&duelLobbyView()){duelRecord();setTimeout(()=>{if(duelLobbyView())duelRecord()},2500)}   // biten maç geçmişe 1 sn içinde düşsün
     lobbyInvites(d);
     const sig=JSON.stringify([LOBBY.on.map(x=>[x.id,x.st,x.low]),(LOBBY.wait||[]).map(x=>x.id),LOBBY.duels.map(x=>[x.id,x.a1,x.a2])]);
-    if(sig!==LOBBY.sig){LOBBY.sig=sig;if(duelLobbyView()&&!INV)render()}
+    if(sig!==LOBBY.sig){LOBBY.sig=sig;if(duelLobbyView()&&!INV)softRender()}
   }catch(e){LOBBY.err='err'}finally{LOBBY.busy=false}
 }
 function lobbyInvites(d){
