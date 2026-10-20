@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.76.2';
+const APP_VERSION='4.76.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3520,8 +3520,8 @@ async function invCancel(){
 setInterval(()=>{
   if(document.hidden||!CLOUD.uid||CLOUD.approved===false)return;
   LOBBY.tick++;
-  if(INV||(duelLobbyView()&&LOBBY.tick%2===0))lobbyLoad();
-},1500);
+  if(INV||(duelLobbyView()&&(DUEL.sub==='ranked'||LOBBY.tick%3===0)))lobbyLoad();
+},1000);
 const lgName=id=>{try{return LEAGUES[leagueMap()[id]|0].n}catch(e){return'Lig'}};
 function lobbyCard(){
   if(!sb)return'';
