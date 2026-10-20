@@ -430,7 +430,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.82.0';
+const APP_VERSION='4.82.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1438,7 +1438,7 @@ function vHelp(){
   ${sec('🚀 Hızlı başlangıç',li([
     '<b>Bugün</b> sekmesinde günün hedefini ve "Bugünün testini başlat" düğmesini görürsün. Her gün birkaç test çözmen yeter.',
     '<b>Çalışma → Test</b> bölümünden soru sayısını (10–40), seviyeyi (A1–C2; B1 ve B2 gibi birden fazlasını aynı anda seçebilirsin) ve kelime türünü (birden fazla seçebilirsin) seçip istediğin zaman test çözebilirsin.',
-    '<b>Çalışma → Sözlük</b> bölümünde 7.700\'den fazla kelimeyi arayabilir, Türkçesini, tanımını ve örnek cümlesini (altında Türkçe çevirisiyle) görebilirsin.',
+    '<b>Çalışma → Sözlük</b> bölümünde 10.000\'den fazla kelimeyi arayabilir, Türkçesini, tanımını ve örnek cümlesini (altında Türkçe çevirisiyle) görebilirsin.',
     'Hesabını ilk açtığında yönetici onayı gerekebilir. Onaylanınca sıralamaya girer, sohbete ve düelloya katılırsın.',
     'İlerlemen hesabına kaydedilir. Telefonda, tabletde ve bilgisayarda aynı kullanıcı adı ve şifreyle girince kaldığın yerden devam edersin.']),true)}
   ${sec('📝 Testler ve soru türleri',li([
@@ -1473,18 +1473,18 @@ function vHelp(){
     '<b>Doğru cevap</b> = seviye katsayısı × soru türü katsayısı. Seviye katsayıları: '+LEVELS.map(l=>l+' × '+COEF[l]).join(', ')+'. Örnek cümle, eş/zıt anlam gibi türlerin katsayısı biraz daha yüksektir.',
     '<b>Bonuslar</b>: yeni kelimeyi öğrenmek (+2 × seviye katsayısı), tekrar listesinden kelime çıkarmak (+1 × seviye katsayısı), günlük hedefini tamamlamak (+10 ve seri bonusu, en fazla +10).',
     '<b>Günlük hedef</b>: Ayarlar\'dan seçtiğin doğru cevap sayısıdır (20–100); asgari hedefin altına inemez. Günlük asgari hedefi tutturduğun her gün serini (🔥) bir artırır.',
-    '<b>Günlük asgari hedef</b>: toplam puanın 3500\'ün altındaysa (Zümrüt\'ün altı) günde 20 doğru, 3500 ve üstünde 35, 6000 (Elmas) ve üstünde 50 doğru çözmen gerekir. Çözmediğin her gün için toplam puanından %5 kesilir. Seri ve kesinti aynı asgari hedefe bağlıdır.',
+    '<b>Günlük asgari hedef</b>: ligine göre belirlenir: Zümrüt\'ün altındaki liglerde günde 20 doğru, Zümrüt ligindeyken 35, Elmas ve üstünde 50 doğru çözmen gerekir (lig, dereceli galibiyet şartı dahil gerçek ligindir). Çözmediğin her gün için toplam puanından %5 kesilir. Seri ve kesinti aynı asgari hedefe bağlıdır.',
     '<b>İzin günü</b>: Haftada 1 gün (Elmas ve üstünde 2 gün) asgari hedefi tutturamasan da puan kesilmez ve seri bozulmaz. Hafta Pazartesi başlar. İzin günü otomatik kullanılır; Bugün ekranında bu haftaki kalan hakkını görürsün.',
     '<b>Öğrenilen kelime tekrarı</b>: Öğrendiğin kelimeler 15 gün sonra ilk kez, sonra her 30 günde bir tekrar sorulur. Bugünün testi ve Tekrar sekmesindeki düğme bunları öne alır. Yanlış yaparsan kelime 7 gün sonra yeniden sorulur.',
     '<b>Günün kelimeleri</b>: günde 3 kelime seçilir: B1, B2 ve C1 seviyelerinden birer tane (24 saat aynı kalır). Bu 3 kelimenin tüm soruları, çözdüğün testlerde her 10 soruda 1 tane sorulur (örneğin 20 soruluk testte 2): Bugünün testinde her zaman, kendi kurduğun testte ise kelimeler seçtiğin seviye ve türe uyuyorsa. Günün kelimeleri Bugün ekranında soru ilerlemesiyle görünür; her gün yenilenir.',
     '<b>Soru seviyeleri</b>: Yeni sorular ligine göre karışık gelir. Yeni başlayanda B1 ve B2 ağırlıklıdır, ligin yükseldikçe C1 ve C2 payı artar, A1 ve A2 azalır.',
     '<b>Yanlış cevap cezası</b>: Altın (1000 puan), Platin ve Zümrüt liglerinde yanlış cevap, doğru cevap puanının dörtte birini düşürür. Elmas ve üstünde, doğru bilseydin alacağın puanın tamamını düşürür. Bu yüzden Elmas ve üstünde doğruluğun %50\'nin altına düşerse puanın azalır; emin olmadığın soruda acele etme. Günlük puan sıfırın altına inmez.',
     '<b>Günlük soru puanı sınırı</b>: Sorulardan, bonuslardan ve tekrar listesinden bir günde en fazla '+QCAP+' puan kazanabilirsin. Düello puanları bu sınıra girmez, sınırsız eklenir.',
-    '<b>Lig puan tavanı</b>: Dereceli düello galibiyeti şartını henüz sağlamadığın için geçemediğin bir sonraki ligin puanını aşamazsın. Örneğin 20 dereceli galibiyetin yoksa puanın 3499\'da (Platin\'in sonu) durur; şartı sağlayınca tavan kalkar. Tavanın üstünde zaten puanı olanların puanı azaltılmaz.',
+    '<b>Lig puan tavanı</b>: Dereceli düello galibiyet şartını sağlamadığın için geçemediğin bir ligin puanını aşamazsın; puanın tavanda durur. Dereceli galibiyet sayına göre tavan: 20\'den az galibiyet → 3.499 puan, 20–49 → 5.999, 50–99 → 9.999, 100–199 → 15.999, 200 ve üstü → sınır yok. Şartı sağlayınca tavan yükselir. Tavanın üstünde zaten puanı olanların puanı azaltılmaz. Galibiyet sayın henüz yüklenmediyse tavan uygulanmaz.',
     'Daha ayrıntılı hesap için Sıra sekmesindeki "Puan nasıl hesaplanır?" kutusuna bak.']))}
   ${sec('🏆 Ligler ve sıralama',li([
     'Toplam puanına göre lig belirlenir: '+LEAGUES.map(l=>'<b>'+l.n+'</b> ('+l.rng+')').join(', ')+'. Büyükustalık ve Şampiyonluk için puan yanında sıralamadaki yer de aranır. Platin için 20, Zümrüt için 50, Elmas için 100, Ustalık ve üstü için 200 dereceli düello galibiyeti de gerekir (rakibin ligi seninkinden en çok 2 lig farklıysa sayılır). Puanın yetse bile bu şart sağlanmadan lige geçemezsin. Günlük hedef, yanlış cevap cezası ve izin günleri puana değil ligine göre belirlenir.',
-    '<b>Sıra</b> sekmesinde Günlük, Haftalık ve Tüm zamanlar tablolarını görürsün. Günlük puan her gün gece yarısı sıfırlanır.',
+    '<b>Sıra</b> sekmesinde Günlük, Haftalık ve Tüm zamanlar tablolarını görürsün. Günlük puan her gün gece yarısı sıfırlanır. <b>Tüm zamanlar</b> tablosunda önce gerçek lige (dereceli galibiyet şartı dahil), aynı ligdekiler kendi arasında puana göre sıralanır: dereceli galibiyet şartını sağlamadığı için daha düşük ligde kalan 3000 puanlı biri, şartı sağlayıp Platin olan 2500 puanlının altında görünür. Günlük ve haftalık tablolar o dönemin puanına göre sıralanır.',
     'Her ligin kendine ait profil çerçevesi vardır. Ben → Profil\'den adını, avatarını ve çerçevenin görünümünü seçebilirsin. Seçtiğin çerçeve ulaştığın ligi geçemez. <b>Miğfer avatarları</b>: Platin, Zümrüt, Elmas, Ustalık, Büyükustalık ve Şampiyonluk liglerine ulaşanlar o ligin renginde bir miğfer avatarı kazanır (Ben → Profil → Avatar). Diğer kullanıcılar için kilitlidir. Ligin düşerse üstteki miğferler yeniden kilitlenir.',
     '<b>Gün Lideri / Hafta Lideri</b>: bir günü ya da haftayı sıralamada birinci bitiren kişi bu unvanı kazanır. Profil kartında "3 x Gün Lideri", "2 x Hafta Lideri" gibi sayaçlar görünür; Bugün ekranında da dünün ve geçen haftanın lideri puanıyla gösterilir. Sayım yönetici bu özelliği açtığı günden itibaren tutulur.',
     '<b>Ödül bildirimi</b>: Yeni bir rozet, lig çerçevesi, avatar, flama ya da dereceli düello ilk üçü (köpek, kadife, Fatih flaması) kazandığın anda ekranın ortasında, parlayan bir kart açılır. Kartta ödülün ne olduğu, neden kazandığın ve ne kadar süre geçerli olduğu yazar. Test veya düello sürerken kart bekler, bitince açılır. Bir ödül sana bir kez gösterilir.',
@@ -1514,7 +1514,7 @@ function vHelp(){
     'Düello bitince sonuç ekranında doğru sayını ve süreni görürsün. Profil kartında düello sayın, kazanma oranın ve G-M-B (galibiyet-mağlubiyet-beraberlik) istatistiğin yer alır.']))}
   ${sec('💬 Sohbet',li([
     '<b>Genel sohbet</b>: herkesin gördüğü ortak odadır. Dakikada en fazla 5 mesaj gönderebilirsin; mesaj en çok 500 karakterdir.',
-    '<b>Özel mesaj</b>: birine yazmak için kullanıcı adını ya da adını ara, ya da profil kartından "Mesaj gönder"e bas. Okunmamış mesajlar bildirim sayısıyla görünür.',
+    '<b>Özel mesaj</b>: birine yazmak için kullanıcı adını ya da adını ara, ya da profil kartından "Mesaj gönder"e bas. Okunmamış mesajlar bildirim sayısıyla görünür: Sohbet düğmesinde özel ve genel mesajların toplamı, sohbetin içinde Özel ve Genel sekmelerinde ayrı ayrı. Genel sohbeti açınca, son çıkışından sonra gelen ilk mesajın üstünde "Okunmamış mesajlar" çizgisi görünür ve liste oraya kayar.',
     'Kendi mesajını silebilirsin. Hakaret, spam ve rahatsız edici içerik yasaktır; yönetici gerekli gördüğünde mesajları silebilir ve hesabı kısıtlayabilir.']))}
   ${sec('✉ Geri bildirim',li([
     'Ben → <b>Geri bildirim</b> bölümünden yöneticiye öneri, hata ya da soru yazabilirsin. Günde en fazla 5 mesaj gönderilebilir.',
@@ -2954,7 +2954,7 @@ function vRank(){
       <div><b>Bonuslar:</b> yeni kelimeyi öğrenmek +2 × seviye katsayısı, tekrar listesinden bir kelimeyi çıkarmak +1 × seviye katsayısı, günlük hedefi tamamlamak +10 ve seri bonusu (en fazla +10).</div>
       <div><b>Altın (1000 puan), Platin ve Zümrüt liglerinde</b> yanlış cevap, doğru cevap puanının dörtte biri kadar puan düşürür. <b>Elmas ve üstü liglerde</b> yanlış cevap, doğru bilseydin alacağın puanın tamamını (seviye × soru türü katsayısı) düşürür. Günlük puan sıfırın altına inmez.</div>
       <div><b>Günlük sınır:</b> Sorulardan ve bonuslardan bir günde en fazla ${QCAP} puan kazanılır. Düello puanları sınırsız eklenir.</div>
-      <div><b>Günlük asgari hedef:</b> 3500 puanın altında 20 doğru, 3500 puandan (Zümrüt) itibaren 35, 6000 puandan (Elmas) itibaren 50 doğru. Tutturmayan her gün için toplam puanından, hangi ligde olursan ol, %5 kesilir.</div></div></details>
+      <div><b>Günlük asgari hedef:</b> Zümrüt'ün altındaki liglerde 20 doğru, Zümrüt ligindeyken 35, Elmas ve üstünde 50 doğru (gerçek ligine göre; dereceli galibiyet şartı dahil). Tutturmayan her gün için toplam puanından, hangi ligde olursan ol, %5 kesilir.</div></div></details>
     ${!CLOUD.write?'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. Sıraya girmek için sahibinden "Katkıda bulunan" izni iste.</div>':''}
     ${CLOUD.lbErr?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':''}`;
   }}
