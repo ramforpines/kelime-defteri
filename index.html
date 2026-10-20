@@ -439,7 +439,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.83.6';
+const APP_VERSION='4.83.7';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3142,12 +3142,12 @@ function vChatUsers(){
   const lm=leagueMap();
   const all=CLOUD.lb.filter(r=>r.name&&!r.hide).map(r=>({r,t:r.updated_at?+new Date(r.updated_at):0})).sort((x,y)=>y.t-x.t||x.r.name.localeCompare(y.r.name,'tr'));
   const list=all.filter(x=>!q||x.r.name.toLowerCase().includes(q)||(x.r.un||'').toLowerCase().includes(q));
-  const G=[['now','Şimdi aktif',m=>m<=10*6e4],['day','Son 24 saatte aktif',m=>m<=24*36e5],['week','Bu hafta aktif',m=>m<=7*864e5],['old','Daha eski',m=>true]];
+  const G=[['now','Şimdi aktif',m=>m<=5*6e4],['day','Son 24 saatte aktif',m=>m<=24*36e5],['week','Bu hafta aktif',m=>m<=7*864e5],['old','Daha eski',m=>true]];
   const grp=x=>{if(!x.t)return'old';const m=now-x.t;for(const g of G)if(g[2](m))return g[0];return'old'};
   const bk={now:[],day:[],week:[],old:[]};list.forEach(x=>bk[grp(x)].push(x));
-  const nNow=all.filter(x=>x.t&&now-x.t<=10*6e4).length,nDay=all.filter(x=>x.t&&now-x.t<=24*36e5).length;
+  const nNow=all.filter(x=>x.t&&now-x.t<=5*6e4).length,nDay=all.filter(x=>x.t&&now-x.t<=24*36e5).length;
   const row=x=>{const r=x.r,id=r.id,m=x.t?now-x.t:null;
-    const dot=m==null?'#9aa0b8':m<=10*6e4?'#22c55e':m<=24*36e5?'#f59e0b':'#9aa0b8';
+    const dot=m==null?'#9aa0b8':m<=5*6e4?'#22c55e':m<=24*36e5?'#f59e0b':'#9aa0b8';
     return`<div class="rk" data-pc="${esc(id)}" style="grid-template-columns:54px 1fr auto;cursor:pointer">${avatar(r.name,r.color|0,false,r.av|0,frameFor(id,r.fr),0,0,id)}<div class="nm">${esc(r.name)}<div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.un?'@'+esc(r.un)+' · ':''}${esc(LEAGUES[lm[id]|0].n)}</div></div><div style="text-align:right"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${dot};margin-right:5px"></span><span class="small">${m==null?'–':agoTr(m)}</span></div></div>`};
   const sec=(k,t)=>bk[k].length?`<div class="stack" style="gap:8px"><b style="padding:0 2px">${t} (${bk[k].length})</b>${bk[k].map(row).join('')}</div>`:'';
   return`<div class="small muted">Sıralamadaki tüm kullanıcılar, en son aktif olanlar en üstte. Dokununca profil kartı açılır; oradan mesaj gönderebilirsin.</div>
