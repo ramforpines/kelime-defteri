@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.72.1';
+const APP_VERSION='4.73.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -641,13 +641,31 @@ let CUR_EV=null;   // o an puanı yazılan cevabın olay kaydı (cihazlar arası
 const EV_DAYS=21;
 function evKey(d,pre){let n=1;const ev=d.ev||(d.ev={});while(ev[pre+'|'+n])n++;return pre+'|'+n}
 function evAdd(d,key,rec){(d.ev||(d.ev={}))[key]=rec;return rec}
+function ptsCeil(){   // lig şartı (dereceli galibiyet) sağlanmadıysa, geçilemeyen ligin tavan puanı geçilemez
+  if(!CLOUD.rwOk||!CLOUD.uid)return Infinity;
+  const c=winsCap((CLOUD.rw||{})[CLOUD.uid]|0);if(c>=9)return Infinity;
+  const nx=LEAGUES[c+2];return nx?nx.min-1:Infinity;
+}
+function capGain(v){   // v>0 ise tavana göre kısılmış kazanç
+  if(!(v>0))return v;
+  const c=ptsCeil();if(c===Infinity)return v;
+  const room=Math.max(0,c-(S.tp||0));
+  if(v>room){capNote(c);return room}
+  return v;
+}
+let CAPN=0;
+function capNote(c){
+  const now=Date.now();if(now-CAPN<60000)return;CAPN=now;
+  const w=(CLOUD.rw||{})[CLOUD.uid]|0,cl=winsCap(w),need=winsReq(cl+1);
+  setTimeout(()=>toast('Puanın '+nf(c)+' ile sınırlı: '+(LEAGUES[cl+1]||{n:'sonraki lig'}).n+' için '+need+' dereceli düello galibiyeti gerekiyor (şu an '+w+').'),400);
+}
 function addPts(delta,kind){
   const d=dayStat(),cur=d.p||0;
   if(d.q==null)d.q=cur;
   const q1=Math.min(QCAP,Math.max(0,d.q+delta));
   if(delta>0&&q1<d.q+delta&&!d.qc){d.qc=1;setTimeout(()=>toast('Günlük soru puanı sınırına ('+QCAP+') ulaştın. Düello puanları sınırsız eklenmeye devam eder.'),400)}
-  const np=Math.max(0,cur+(q1-d.q)),eff=np-cur;
-  d.q=q1;d.p=np;const tp0=S.tp||0,tp1=Math.max(0,tp0+eff);S.tp=tp1;if(tp1-tp0!==eff)d.p=Math.max(0,d.p+(tp1-tp0-eff));   // toplam sıfırda kırpılırsa günlük puan da aynı kadar kırpılır
+  const np=Math.max(0,cur+(q1-d.q));let eff=np-cur;
+  d.q=q1;d.p=np;const tp0=S.tp||0;if(eff>0)eff=capGain(eff);const tp1=Math.max(0,tp0+eff);S.tp=tp1;if(tp1-tp0!==np-cur)d.p=Math.max(0,d.p+(tp1-tp0-(np-cur)));eff=tp1-tp0;   // toplam sıfırda kırpılırsa günlük puan da aynı kadar kırpılır
   const q=UI.quiz;if(q&&q.pts)q.pts[kind]=(q.pts[kind]||0)+eff;
   if(CUR_EV)CUR_EV.pts=Math.round(((CUR_EV.pts||0)+eff)*1000)/1000;
   return eff;
@@ -3138,7 +3156,7 @@ function duelApply(rows){
       if(d.status==='done'&&!e.p){
         const mine=d.p1===CLOUD.uid?d.dl1:d.dl2;
         if(mine!=null){e.p=1;e.s=1;const v=Math.round(+mine*10)/10,dy=dayStat();
-          if(v>0){if(dy.q==null)dy.q=dy.p||0;S.tp=(S.tp||0)+v;dy.p=(dy.p||0)+v;evAdd(dy,'dr|'+d.id,{t:'p',pts:v})}
+          if(v>0){if(dy.q==null)dy.q=dy.p||0;const g=capGain(v);S.tp=(S.tp||0)+g;dy.p=(dy.p||0)+g;evAdd(dy,'dr|'+d.id,{t:'p',pts:g})}
           else if(v<0){S.tp=Math.max(0,(S.tp||0)+v);dy.adj=(dy.adj||0)+v;evAdd(dy,'dr|'+d.id,{t:'a',pts:v})}
           delete DSTAT[CLOUD.uid];loadWins().then(()=>render());
           ch=true;msg=v===0?'Dereceli düello: berabere, puan değişmedi':'Dereceli düello: '+(v>0?'+':'−')+nf(r1(Math.abs(v)))+' puan'}
@@ -3148,7 +3166,7 @@ function duelApply(rows){
     if(!e.s){e.s=1;const dy=dayStat();S.tp=Math.max(0,(S.tp||0)-DSTAKE);dy.adj=(dy.adj||0)-DSTAKE;evAdd(dy,'ds|'+d.id,{t:'a',pts:-DSTAKE});ch=true}
     if(d.status==='done'&&!e.p){
       const mine=d.p1===CLOUD.uid?d.pay1:d.pay2;
-      if(mine!=null){e.p=1;const v=+mine,dy=dayStat();if(dy.q==null)dy.q=dy.p||0;S.tp=(S.tp||0)+v;dy.p=(dy.p||0)+v;evAdd(dy,'dp|'+d.id,{t:'p',pts:v});ch=true;msg='Düello: '+(v>=DSTAKE?'+':'')+nf(r1(v-DSTAKE))+' puan (net)'}
+      if(mine!=null){e.p=1;const v0=+mine,v=v0>0?capGain(v0):v0,dy=dayStat();if(dy.q==null)dy.q=dy.p||0;S.tp=(S.tp||0)+v;dy.p=(dy.p||0)+v;evAdd(dy,'dp|'+d.id,{t:'p',pts:v});ch=true;msg='Düello: '+(v>=DSTAKE?'+':'')+nf(r1(v-DSTAKE))+' puan (net)'}
     }
   });
   const ks=Object.keys(S.dl);if(ks.length>80){ks.slice(0,ks.length-60).forEach(k=>{delete S.dl[k]})}
