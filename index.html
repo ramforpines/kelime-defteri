@@ -429,13 +429,13 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.73.1';
+const APP_VERSION='4.74.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
-function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[],rd:{},ex:{},exq:{},sav:{},wq:{d:'',done:[]},rwd:{}}}
+function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[],rd:{},ex:{},exq:{},exc:{},sav:{},wq:{d:'',done:[]},rwd:{}}}
 function load(uid){
   let raw=null;
   try{raw=localStorage.getItem(KEY+'-'+uid)}catch(e){}
@@ -776,6 +776,7 @@ function mergeStates(a,b){
   Object.keys(ot.lv||{}).forEach(k=>{const x=m.lv[k],y=ot.lv[k];m.lv[k]=x?[Math.max(x[0]|0,y[0]|0),Math.max(x[1]|0,y[1]|0)]:y});
   m.dl=Object.assign({},ot.dl||{},m.dl||{});Object.keys(ot.dl||{}).forEach(k=>{const x=m.dl[k],y=ot.dl[k];if(x&&y){x.s=x.s||y.s;x.p=x.p||y.p}});
   {const ex=Object.assign({},ot.ex||{});Object.keys(m.ex||{}).forEach(k=>{const a=m.ex[k],b=ex[k];ex[k]=!b||(a.b|0)>(b.b|0)||((a.b|0)===(b.b|0)&&(a.d||'')>(b.d||''))?a:b});m.ex=ex}
+  {const c=JSON.parse(JSON.stringify(ot.exc||{}));Object.keys(m.exc||{}).forEach(k=>{c[k]=Object.assign(c[k]||{},m.exc[k])});m.exc=c}
   {const q=Object.assign({},ot.exq||{});Object.keys(m.exq||{}).forEach(k=>{q[k]=(q[k]|0)|(m.exq[k]|0)});m.exq=q}
   {const sv={};[ot.sav||{},m.sav||{}].forEach(o=>Object.keys(o).forEach(k=>{if(sv[k]==null||Math.abs(o[k])>Math.abs(sv[k]))sv[k]=o[k]}));m.sav=sv}   // kaydedilenler: sayı >0 kayıtlı, <0 kaldırıldı (|değer| = zaman); yeni olan kazanır
   {const x=m.wq||{},y=ot.wq||{};if(y.d&&(!x.d||y.d>x.d))m.wq={d:y.d,done:(y.done||[]).slice()};else if(y.d&&y.d===x.d){const u=(x.done||[]).slice();(y.done||[]).forEach(k=>{if(u.indexOf(k)===-1)u.push(k)});m.wq={d:x.d,done:u}}}
@@ -2094,7 +2095,7 @@ function answer(idx){
   it.chosen=idx;
   const ok=it.options[idx]===it.correct;
   it.ok=ok;
-  if(qz.mode==='exam'){it.pt=0;render();return}   // sınav: işleme test bitince yapılır (examFinish)
+  if(qz.mode==='exam'){it.pt=0;if(qz.chunk){examOne(it,qz,true,{n:1e9});S.exc=S.exc||{};(S.exc[qz.chunk]=S.exc[qz.chunk]||{})[exCid(it)]=1;save()}render();return}   // sınav: işleme test bitince yapılır (examFinish)
   it.pt=applyAnswer(it,ok,it.options[idx],qz,false);
   save();render();
 }
@@ -2106,7 +2107,9 @@ function answerText(){
   it.ua=el.value.trim();it.chosen=0;
   const alt={savour:'savor'};
   it.ok=v===nz(it.correct)||(alt[it.correct]&&v===alt[it.correct]);
-  it.options=[it.correct];it.pt=0;render();
+  it.options=[it.correct];it.pt=0;
+  if(qz.chunk){examOne(it,qz,true,{n:1e9});S.exc=S.exc||{};(S.exc[qz.chunk]=S.exc[qz.chunk]||{})[exCid(it)]=1;save()}
+  render();
 }
 function next(){
   const qz=UI.quiz;
@@ -2446,22 +2449,29 @@ function examItems(key){
   return exGap(u).concat(exWordTest(u),exDef(u),exEx(u),exRead(u),exListen(u),exPh(u));
 }
 function examStart(key){
+  const cm=/^(u\d):all$/.exec(key);
+  if(cm){
+    const u=exU(cm[1]);S.exc=S.exc||{};let dn=S.exc[u.id]||{};
+    const pool=exChunkPool(u);let rem=pool.filter(i=>!dn[exCid(i)]);
+    if(!rem.length){S.exc[u.id]={};dn={};rem=pool;toast('Bu ünitenin tüm sorularını bitirdin, baştan başlıyorsun.')}
+    const items=shuffle(rem).slice(0,20);
+    UI.quiz={mode:'exam',exam:key,chunk:u.id,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false,left:rem.length};
+    UI.tab='exam';lastStudy='exam';try{sessionStorage.setItem('kd-tab','exam')}catch(e){}
+    render();window.scrollTo(0,0);return;
+  }
   const items=examItems(key);
   if(!items.length){toast('Bu sınav için soru bulunamadı.');return}
   UI.quiz={mode:'exam',exam:key,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};
   UI.tab='exam';lastStudy='exam';try{sessionStorage.setItem('kd-tab','exam')}catch(e){}
   render();window.scrollTo(0,0);
 }
-function examSave(qz){
-  S.ex=S.ex||{};S.exq=S.exq||{};const old=S.ex[qz.exam],n=qz.items.length,first=!old||old.n!==n;
-  const right=qz.items.filter(i=>i.ok).length;
-  let allow=first?1e9:Math.max(0,right-old.b);   // ilk çözümde hepsi; sonra yalnızca önceki en iyiden fazla doğrular puan ve ilerleme getirir
-  qz.items.forEach(it=>{
+function examOne(it,qz,first,al){
+  S.exq=S.exq||{};
     const ok=!!it.ok,ua=it.ua!=null?it.ua:it.options[it.chosen];
     const h=exH(it.question+'|'+it.correct),f0=S.exq[h]|0,seen=!!(f0&1),got=!!(f0&2);   // aynı soru başka sınavda da çıksa bir kez sayılır
     EXNOST=!first||seen;
     let grant=false;
-    if(ok){if(!got&&allow>0){grant=true;allow--}EXNOPT=!grant}else EXNOPT=!first||seen;
+    if(ok){if(!got&&al.n>0){grant=true;al.n--}EXNOPT=!grant}else EXNOPT=!first||seen;
     try{
       if(it.noW){
         const lvn='B2',cf=COEF[lvn]||1,d=dayStat(),G=goalEff();
@@ -2483,11 +2493,31 @@ function examSave(qz){
       }
     }finally{CUR_EV=null}
     S.exq[h]=f0|1|(grant?2:0);
-  });
   EXNOPT=false;EXNOST=false;
+}
+function examSave(qz){
+  S.ex=S.ex||{};S.exq=S.exq||{};
+  if(qz.chunk){save();return}   // parçalı ünite sınavı: her cevap anında işlendi
+  const old=S.ex[qz.exam],n=qz.items.length,first=!old||old.n!==n;
+  const right=qz.items.filter(i=>i.ok).length;
+  const al={n:first?1e9:Math.max(0,right-old.b)};   // ilk çözümde hepsi; sonra yalnızca önceki en iyiden fazla doğrular puan ve ilerleme getirir
+  qz.items.forEach(it=>examOne(it,qz,first,al));
   qz.score=qz.items.reduce((t,i)=>t+(i.ok?(i.wt||1):0),0);
   if(!old||old.n!==n||right>old.b||(qz.exam==='mock'&&qz.score>(old.sc||0)))S.ex[qz.exam]=Object.assign({b:Math.max(right,old&&old.n===n?old.b:0),n,d:today()},qz.exam==='mock'?{sc:Math.max(qz.score,old&&old.sc||0)}:{});
   save();
+}
+const exCid=it=>it.noW||it.f>=12?exH(it.question+'|'+it.correct):'w|'+it.w.word+'|'+it.f;
+const EXPOOL={};
+function exChunkPool(u){
+  const hs=w=>{let x=0;for(let i=0;i<w.length;i++)x=(x*31+w.charCodeAt(i))>>>0;return x};
+  const wt=[];
+  exWords(u).forEach(w=>{const fs=applicable(w).filter(f=>f<12);if(!fs.length)return;const f=fs[hs(w.word)%fs.length],it=makeItem(w,f,'exam');if(it)wt.push(it)});
+  return exGap(u).concat(wt,exEx(u),exDef(u),exRead(u),exListen(u),exPh(u));
+}
+function exChunkInfo(u){
+  const m=EXPOOL[u.id]||(EXPOOL[u.id]=exChunkPool(u).map(exCid));
+  const dn=((S.exc||{})[u.id])||{};
+  return{total:m.length,left:m.filter(h=>!dn[h]).length};
 }
 function vExam(){
   const all=window.EXAM||[],ex=S.ex||{};
@@ -2497,7 +2527,7 @@ function vExam(){
   <div class="small"><b>Örnek Vize (100 puan)</b><br>Dinleme 40 puan (8 kısa diyalog + 12 uzun dinleme sorusu, her biri 2 puan), Okuma 40 puan (5 kısa metin, 10 uzun metin, 5 kişi–metin eşleştirme; her biri 2 puan), Kelime bilgisi 20 puan (10 paragraf boşluğu + 10 yazılı boşluk doldurma; her biri 1 puan). Her denemede sorular değişir.</div>
   <button class="btn primary block" data-act="exam-start" data-v="mock">Örnek Vize${ex.mock?`<span class="small muted"> · en iyi ${ex.mock.sc!=null?ex.mock.sc:'?'}/100</span>`:''}</button></div>
   ${all.map(u=>{const ws=exWords(u);return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Ünite ${u.n} · ${esc(u.t)}</b><span class="small muted">${ws.length} kelime</span></div>
-    <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite soruları${best(u.id+':all')}</button>
+    <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite soruları${(()=>{const c=exChunkInfo(u);return`<span class="small muted"> · kalan ${c.left}/${c.total} · sıradaki ${Math.min(20,c.left||c.total)} soru</span>`})()}</button>
     <div class="seg">${EXAM_PART.map(([p,l])=>`<button class="chip" data-act="exam-start" data-v="${u.id}:${p}">${l}${best(u.id+':'+p)}</button>`).join('')}</div>
     <button class="btn" data-act="exam-words" data-v="${u.id}">${UI.exw===u.id?'Kelimeleri gizle':'Kelimeleri gör'}</button>
     ${UI.exw===u.id?ws.map(w=>`<div class="entry"><div class="row" style="justify-content:space-between"><span class="w">${esc(w.word)}</span>${lvTag(w.level)}</div><div class="tr">${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i></div>`:''}</div>`).join(''):''}</div>`}).join('')}
