@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.77.2';
+const APP_VERSION='4.77.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3559,7 +3559,7 @@ function duelHist(){
   const dt=x=>{try{const d=new Date(x);return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}catch(e){return''}};
   const side=(id,sc,st,right,cc,aa,tt,dl)=>{const u=dPeer(id)||{},bg=st==='w'?'background:rgba(59,130,246,.22)':st==='l'?'background:var(--bad-bg)':'background:var(--surface2)';
     const av=`<span style="flex:none;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;overflow:visible"><span style="display:inline-flex;transform:scale(.55);transform-origin:center">${avatar(u.name||'?',u.color,false,u.av,frameFor(id,'auto'),0,0,id)}</span></span>`;
-    const tx=`<div style="min-width:0;flex:1;line-height:1.15"><div class="small" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:${st==='w'?700:500}">${esc(u.name||'Oyuncu')}</div><b class="mono small">${nf(sc||0)}</b>${dl!=null&&rkm?` <b class="mono" style="font-size:.72rem;color:${+dl>0?'#3b82f6':+dl<0?'var(--bad)':'inherit'}">${+dl>0?'+':+dl<0?'−':'±'}${nf(r1(Math.abs(+dl)))}</b>`:''}${aa!=null?`<div class="muted" style="font-size:.7rem">${cc||0}/${aa} doğru · ${aa?(Math.round((+tt||0)/aa/100)/10).toFixed(1):'–'} sn</div>`:''}</div>`;
+    const tx=`<div style="min-width:0;flex:1;line-height:1.15"><div class="small" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:${st==='w'?700:500}">${esc(u.name||'Oyuncu')}</div><b class="mono small">${nf(rkm?Math.max(0,+sc||0):(sc||0))}</b>${dl!=null&&rkm?` <b class="mono" style="font-size:.72rem;color:${+dl>0?'#3b82f6':+dl<0?'var(--bad)':'inherit'}">${+dl>0?'+':+dl<0?'−':'±'}${nf(r1(Math.abs(+dl)))}</b>`:''}${aa!=null?`<div class="muted" style="font-size:.7rem">${cc||0}/${aa} doğru · ${aa?(Math.round((+tt||0)/aa/100)/10).toFixed(1):'–'} sn</div>`:''}</div>`;
     return`<div style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;${bg};flex-direction:${right?'row-reverse':'row'};${right?'text-align:right;':''}">${av}${tx}</div>`};
   const rows=H.map(x=>{const w=x.winner;
     return`<div style="display:flex;align-items:center;gap:6px;padding:3px 0" title="${esc(dt(x.created_at))}">${side(x.p1,x.s1,!w?'d':w===x.p1?'w':'l',false,x.c1,x.a1,x.t1,x.dl1)}<span class="muted" style="font-size:.7rem;flex:none">vs</span>${side(x.p2,x.s2,!w?'d':w===x.p2?'w':'l',true,x.c2,x.a2,x.t2,x.dl2)}</div>`}).join('');
