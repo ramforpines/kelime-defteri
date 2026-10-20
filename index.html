@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.72.0';
+const APP_VERSION='4.72.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1923,11 +1923,13 @@ function rwShow(r){
     RWR.cur=null;save();
     setTimeout(()=>{try{rwPump()}catch(e){}},400);
   };
-  d.querySelector('.rw-b').addEventListener('click',close);
-  let ok=false;setTimeout(()=>{ok=true},1200);
+  const bt=d.querySelector('.rw-b');
+  let ok=false;
+  bt.disabled=true;bt.style.opacity='.55';   // ödül ekranı ilk 1 saniye kapatılamaz (yanlışlıkla geçilmesin)
+  bt.addEventListener('click',()=>{if(ok)close()});
+  setTimeout(()=>{ok=true;bt.disabled=false;bt.style.opacity='';try{bt.focus()}catch(e){}},1000);
   d.addEventListener('click',e=>{if(ok&&e.target===d)close()});
   document.body.appendChild(d);
-  try{d.querySelector('.rw-b').focus()}catch(e){}
 }
 setInterval(()=>{try{if(sb)rwCheck();rwPump()}catch(e){}},3000);
 /* ---------- test akışı ---------- */
