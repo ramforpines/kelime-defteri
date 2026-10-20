@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.77.0';
+const APP_VERSION='4.77.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -774,7 +774,7 @@ function mergeStates(a,b){
     if(x.ev||y.ev)z=mergeDay(x,y);else if((y.a|0)>(x.a|0))z=y;else return;
     m.tp=Math.max(0,(m.tp||0)+nt(z)-nt(x));m.days[k]=z});   // gün başka cihazdan alınırsa/birleşirse farkı toplam puana da yansıt   // gün başka cihazdan alınırsa farkı toplam puana da yansıt
   Object.keys(ot.lv||{}).forEach(k=>{const x=m.lv[k],y=ot.lv[k];m.lv[k]=x?[Math.max(x[0]|0,y[0]|0),Math.max(x[1]|0,y[1]|0)]:y});
-  m.dl=Object.assign({},ot.dl||{},m.dl||{});Object.keys(ot.dl||{}).forEach(k=>{const x=m.dl[k],y=ot.dl[k];if(x&&y){x.s=x.s||y.s;x.p=x.p||y.p}});
+  m.dl=Object.assign({},ot.dl||{},m.dl||{});Object.keys(ot.dl||{}).forEach(k=>{const x=m.dl[k],y=ot.dl[k];if(x&&y){x.s=x.s||y.s;x.p=x.p||y.p;x.rf=x.rf||y.rf}});
   {const ex=Object.assign({},ot.ex||{});Object.keys(m.ex||{}).forEach(k=>{const a=m.ex[k],b=ex[k];ex[k]=!b||(a.b|0)>(b.b|0)||((a.b|0)===(b.b|0)&&(a.d||'')>(b.d||''))?a:b});m.ex=ex}
   {const c=JSON.parse(JSON.stringify(ot.exc||{}));Object.keys(m.exc||{}).forEach(k=>{c[k]=Object.assign(c[k]||{},m.exc[k])});m.exc=c}
   {const q=Object.assign({},ot.exq||{});Object.keys(m.exq||{}).forEach(k=>{q[k]=(q[k]|0)|(m.exq[k]|0)});m.exq=q}
@@ -3195,6 +3195,18 @@ function duelApply(rows){
   (rows||[]).forEach(d=>{
     const e=S.dl[d.id]||(S.dl[d.id]={});
     if(d.mode==='ranked'){
+      if(d.status==='done'&&!e.rf){
+        // hatalı sonuç: iki tarafın da skoru 0 ya da altı (kimse puan almadı) ama puan geçişi yapılmış → iade
+        const m0=d.p1===CLOUD.uid?d.dl1:d.dl2;
+        if(m0!=null&&+m0!==0&&+d.s1<=0&&+d.s2<=0){
+          e.rf=1;e.s=1;
+          if(e.p){const v=Math.round(+m0*10)/10,dy=dayStat();
+            S.tp=Math.max(0,(S.tp||0)-v);dy.adj=(dy.adj||0)-v;evAdd(dy,'dr|'+d.id+'|rf',{t:'a',pts:-v});
+            delete DSTAT[CLOUD.uid];loadWins().then(()=>render());
+            ch=true;msg='Hatalı dereceli maç iade edildi: '+(v>0?'−':'+')+nf(r1(Math.abs(v)))+' puan'}
+          else e.p=1;
+          return}
+      }
       if(d.status==='done'&&!e.p){
         const mine=d.p1===CLOUD.uid?d.dl1:d.dl2;
         if(mine!=null){e.p=1;e.s=1;const v=Math.round(+mine*10)/10,dy=dayStat();

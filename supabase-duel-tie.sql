@@ -59,3 +59,8 @@ begin
   update public.duels set status = 'done', done_at = now(), winner = w, pay1 = p1v, pay2 = p2v where id = did;
 end $$;
 revoke all on function public.duel_settle(uuid) from public, anon, authenticated;
+
+-- Geçmiş hatalı maçlar: iki tarafın da skoru 0 ya da altındaysa galibiyet sayılmaz (dereceli galibiyet sayacı ve liste).
+-- dl1/dl2 bilerek korunur: uygulama bunlardan iade miktarını hesaplayıp kullanıcının puanına geri yazar.
+update public.duels set winner = null
+where mode = 'ranked' and status = 'done' and winner is not null and s1 <= 0 and s2 <= 0;
