@@ -430,7 +430,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.79.1';
+const APP_VERSION='4.80.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2919,8 +2919,9 @@ function vRank(){
     const per=R.per==='ranked'&&drkLocked()?'day':R.per;
     if(per==='ranked'&&!drkLocked()){body=rankedBoardHtml('all')}else{
     const rows=rankData().map(r=>Object.assign(r,{x:r[per]}));
-    const ranked=rows.filter(r=>r.x.p>0).sort((a,b)=>b.x.p-a.x.p||b.x.n-a.x.n);
-    ranked.forEach((r,i)=>{r.rank=(i>0&&ranked[i-1].x.p===r.x.p)?ranked[i-1].rank:i+1});
+    const lgm=per==='all'?leagueMap():null,lgOf=r=>lgm?(lgm[r.id]|0):0;   // tüm zamanlar: önce (şartlar dahil) lig, sonra puan
+    const ranked=rows.filter(r=>r.x.p>0).sort((a,b)=>lgOf(b)-lgOf(a)||b.x.p-a.x.p||b.x.n-a.x.n);
+    ranked.forEach((r,i)=>{r.rank=(i>0&&ranked[i-1].x.p===r.x.p&&lgOf(ranked[i-1])===lgOf(r))?ranked[i-1].rank:i+1});
     const acc=r=>r.x.n?Math.round(r.x.c/r.x.n*100):0;
     const wt=weekTop();
     const row=r=>`<div class="rk ${r.me?'me':''} ${r.rank&&r.rank<=3?'top':''}${flCls(r.id)}${isKing(r.id)?' king kv':''}" ${lgAttr(r.id)} data-pc="${esc(r.id)}"><span class="pos">${r.rank||'–'}</span>${avatar(r.name,r.color,false,r.av,frameFor(r.id,r.fr),wt[r.id],0,r.id)}<div class="nm">${esc(r.name)}${r.me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400;line-height:1.35"><div>${r.x.n} soru</div><div>%${acc(r)} doğruluk</div>${r.st?`<div>🔥 ${r.st} gün seri</div>`:''}</div></div><div class="val">${nf(Math.round(r.x.p*10)/10)}<small>puan</small></div>${kingFlag(r.id)}${flagHtml(r.id)}</div>`;
