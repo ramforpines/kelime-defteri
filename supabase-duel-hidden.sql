@@ -1,4 +1,4 @@
--- Dereceli salon: bekleyenler listelenmez, yalnızca kuyrukta (Dereceli rakip bul) arayanlar 'Maç arıyor' olarak, isimsiz görünür.
+-- Dereceli salon: kuyrukta arayanlar 'Maç arıyor', lobide bekleyenler 'Lobidekiler' olarak, ikisi de isimsiz (yalnızca id/lig) görünür.
 -- Supabase SQL Editor'da bir kez çalıştırın.
 
 drop function if exists public.duel_lobby();
@@ -22,6 +22,14 @@ begin
         from public.profiles p left join public.scores s on s.user_id = p.user_id
         where p.user_id <> uid and p.duel_seen > now() - interval '12 seconds' and p.duel_mode = m
           and (p.approved or exists(select 1 from public.admins a where a.user_id = p.user_id))), '[]'::jsonb) end,
+    'wait', case when m = 'ranked' then
+        coalesce((select jsonb_agg(jsonb_build_object('id', p.user_id) order by p.duel_seen)
+          from public.profiles p
+          where p.user_id <> uid and p.duel_seen > now() - interval '12 seconds' and p.duel_mode = 'ranked'
+            and (p.approved or exists(select 1 from public.admins a where a.user_id = p.user_id))
+            and not exists(select 1 from public.duel_queue q where q.user_id = p.user_id and q.joined_at > now() - interval '8 seconds')
+            and not public.duel_busy(p.user_id)), '[]'::jsonb)
+      else '[]'::jsonb end,
     'duels', coalesce((select jsonb_agg(jsonb_build_object('id', t.id, 'a', public.duel_person(t.p1), 'b', public.duel_person(t.p2),
           'a1', t.a1, 'a2', t.a2, 'qn', t.qn, 's1', t.s1, 's2', t.s2, 'mode', t.mode) order by t.created_at desc)
         from (select * from public.duels d where d.status = 'active' and d.mode = m and now() < d.start_at + make_interval(secs => d.qn * d.per_q + 15)

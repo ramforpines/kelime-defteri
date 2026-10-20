@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.76.0';
+const APP_VERSION='4.76.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3394,7 +3394,7 @@ function dHudHtml(){
   <div class="dprog"><div class="bar"><i style="width:${Math.round(m.a/n*100)}%"></i></div><div class="bar opp"><i style="width:${Math.round(o.a/n*100)}%"></i></div></div>`;
 }
 /* ---------- düello salonu + teklif (15 sn) ---------- */
-const LOBBY={on:[],duels:[],err:'',sig:'',busy:false,tick:0};
+const LOBBY={on:[],wait:[],duels:[],err:'',sig:'',busy:false,tick:0};
 let INV=null;
 const duelLobbyView=()=>UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby'&&!UI.quiz;
 const peerSet=u=>{if(u&&u.id)CHAT.peers[u.id]=Object.assign(CHAT.peers[u.id]||{},{id:u.id,name:u.name,un:u.un,color:u.color|0,av:u.av|0,fr:u.fr||'',ad:!!u.ad})};
@@ -3405,9 +3405,9 @@ async function lobbyLoad(){
     if(r.error||!r.data){LOBBY.err=/duel_lobby|PGRST202|42883|schema cache/i.test(String(r.error&&(r.error.message||r.error.code)||''))?'setup':'err';if(duelLobbyView())render();return}
     LOBBY.err='';const d=r.data;
     (d.online||[]).forEach(peerSet);(d.duels||[]).forEach(x=>{peerSet(x.a);peerSet(x.b)});if(d.inbox)peerSet(d.inbox.from);if(d.outbox)peerSet(d.outbox.to);
-    LOBBY.on=d.online||[];LOBBY.duels=d.duels||[];
+    LOBBY.on=d.online||[];LOBBY.wait=d.wait||[];LOBBY.duels=d.duels||[];
     lobbyInvites(d);
-    const sig=JSON.stringify([LOBBY.on.map(x=>[x.id,x.st,x.low]),LOBBY.duels.map(x=>[x.id,x.a1,x.a2])]);
+    const sig=JSON.stringify([LOBBY.on.map(x=>[x.id,x.st,x.low]),(LOBBY.wait||[]).map(x=>x.id),LOBBY.duels.map(x=>[x.id,x.a1,x.a2])]);
     if(sig!==LOBBY.sig){LOBBY.sig=sig;if(duelLobbyView()&&!INV)render()}
   }catch(e){LOBBY.err='err'}finally{LOBBY.busy=false}
 }
@@ -3526,6 +3526,7 @@ function lobbyCard(){
   const dl=x=>`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="gap:6px;min-width:0">${avatar(x.a.name,x.a.color,false,x.a.av,frameFor(x.a.id,'auto'),0,0,x.a.id)}<b class="small" style="overflow-wrap:anywhere">${esc(x.a.name)}</b></div><span class="mono muted small">${x.mode==='ranked'?'🏅':'⚔'} ${x.a1}/${x.qn} · ${x.a2}/${x.qn}</span><div class="row" style="gap:6px;min-width:0"><b class="small" style="overflow-wrap:anywhere">${esc(x.b.name)}</b>${avatar(x.b.name,x.b.color,false,x.b.av,frameFor(x.b.id,'auto'),0,0,x.b.id)}</div></div></div>`;
   return`<div class="card stack"><h2>Düello salonu</h2>
    <div class="stack" style="gap:6px"><span class="small muted">${DUEL.sub==='ranked'?'Maç arayanlar':'Düello sekmesindekiler'} (${LOBBY.on.length})</span>${LOBBY.on.length?LOBBY.on.map(row).join(''):(DUEL.sub==='ranked'?'<div class="small muted">Şu an dereceli maç arayan yok.</div>':'<div class="small muted">Şu an düello sekmesinde başka kimse yok.</div>')}</div>
+   ${DUEL.sub==='ranked'?`<div class="stack" style="gap:6px"><span class="small muted">Lobidekiler (${(LOBBY.wait||[]).length})</span>${(LOBBY.wait||[]).length?LOBBY.wait.map(u=>`<div class="entry"><b>Gizli kullanıcı</b><br><span class="small muted">Lig: ${esc(lgName(u.id))} ligi</span></div>`).join(''):'<div class="small muted">Lobide bekleyen kimse yok.</div>'}</div>`:''}
    <div class="stack" style="gap:6px"><span class="small muted">Şu an oynanan düellolar (${LOBBY.duels.length})</span>${LOBBY.duels.length?LOBBY.duels.map(dl).join(''):'<div class="small muted">Şu an süren düello yok.</div>'}</div></div>`;
 }
 function duelHist(){
