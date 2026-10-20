@@ -439,7 +439,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.83.5';
+const APP_VERSION='4.83.6';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3212,6 +3212,18 @@ function chatOpen(tab){
   if(tab==='chat'){UI.chat.q='';chatLoad()}
 }
 setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false)return;if(UI.tab==='chat')chatLoad()},4000);
+let usrBusy=false;
+setInterval(async()=>{
+  if(document.hidden||usrBusy||!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine||UI.tab!=='chat'||UI.chat.view!=='usr'||!CLOUD.lbReady)return;
+  usrBusy=true;
+  try{
+    const r=await sb.from('scores').select('user_id,updated_at').limit(1000);
+    if(r.error||!Array.isArray(r.data))return;
+    const m=new Map(r.data.map(x=>[x.user_id,x.updated_at]));let ch=false;
+    CLOUD.lb.forEach(x=>{const u=m.get(x.id);if(u&&u!==x.updated_at){x.updated_at=u;ch=true}});
+    if(ch&&UI.tab==='chat'&&UI.chat.view==='usr'&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render();
+  }catch(e){}finally{usrBusy=false}
+},10000);
 setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||UI.tab==='chat')return;chatLoad()},12000);
 // ---- 1v1 Düello ----
 const DQ_N=20,DQ_T=15;
