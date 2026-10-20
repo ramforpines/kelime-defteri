@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.76.3';
+const APP_VERSION='4.76.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3302,7 +3302,7 @@ async function duelFind(){
 }
 async function duelCancel(){
   const was=DUEL.phase;dReset();DUEL.longWait=false;render();
-  if(sb&&CLOUD.uid&&was==='search'){try{await sb.rpc('duel_cancel')}catch(e){}}
+  if(sb&&CLOUD.uid&&was==='search'){try{await sb.rpc('duel_cancel')}catch(e){}LOBBY.busy=false;lobbyLoad()}
 }
 async function duelFetch(){
   if(!DUEL.id||DUEL.bot)return;
@@ -3646,7 +3646,7 @@ document.addEventListener('click',async e=>{
     case'inv-send':invSend(g('data-u'));break;
     case'duel-bot':if(DUEL.phase==='search'){try{sb.rpc('duel_cancel')}catch(e){}}duelStartBot();break;
     case'duel-opt':duelAnswer(+g('data-v'));break;
-    case'duel-exit':dReset();render();break;
+    case'duel-exit':dReset();render();lobbyLoad();break;
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
     case'start-review':startQuiz('review',false);break;
