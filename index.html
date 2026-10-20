@@ -168,6 +168,7 @@ nav .nbd{position:absolute;top:2px;right:6px;font-style:normal;background:var(--
 .cm .ct{font-size:.66rem;color:var(--muted);display:flex;gap:8px;justify-content:flex-end}
 .cm .ct button{border:0;background:none;color:var(--muted);padding:0}
 .cdt{flex:none;align-self:center;font-size:.68rem;color:var(--muted)}
+.unr{flex:none;align-self:stretch;display:flex;align-items:center;gap:8px;font-size:.7rem;font-weight:700;color:var(--bad,#d33);margin:6px 0}.unr:before,.unr:after{content:'';flex:1;height:1px;background:currentColor;opacity:.5}
 .cfm{display:flex;gap:8px;margin-top:8px}.cfm input{flex:1}
 nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 nav button[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
@@ -429,7 +430,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.78.0';
+const APP_VERSION='4.78.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3083,12 +3084,18 @@ function chatMsgHtml(m,prev){
   const adm=isAdm(id),g=adm?'admin':(leagueMap()[id]|0),th=adm||g>=6;
   let hd='';
   if(UI.chat.view==='pub'){const r=chatPeer(id),un=r.un||(me?CLOUD.username:'');hd=`<div class="cn row" data-pc="${esc(id)}" style="gap:6px">${avatar(r.name||m.sname,r.color,false,r.av,'')}<span>${esc(m.sname||r.name||'Kullanıcı')}${un?` <span class="cu">@${esc(un)}</span>`:''}</span></div>`}
-  return sep+`<div class="cm ${me?'me':''}" ${th?`data-lg="${g}"`:''}>${hd}<div class="cb">${esc(m.body)}</div><div class="ct"><span>${tm}</span>${can?`<button data-act="chat-del" data-id="${m.id}" aria-label="Sil">sil</button>`:''}</div></div>`;
+  const unr=UI.chat.view==='pub'&&UI.chat.divMid===m.id?'<div class="unr">Okunmamış mesajlar</div>':'';
+  return sep+unr+`<div class="cm ${me?'me':''}" ${th?`data-lg="${g}"`:''}>${hd}<div class="cb">${esc(m.body)}</div><div class="ct"><span>${tm}</span>${can?`<button data-act="chat-del" data-id="${m.id}" aria-label="Sil">sil</button>`:''}</div></div>`;
 }
+function chatSnap(){UI.chat.div=chatSeen().pub||0;UI.chat.divMid=null;UI.chat.divLock=false}
 function chatPaint(){
   const el=document.getElementById('chatlist');
   if(!el){if(UI.tab==='chat'&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||''))render();return}
   const ms=chatMsgs(),C=UI.chat;
+  if(C.div===undefined)chatSnap();
+  if(C.view==='pub'&&!C.divLock){
+    const f=ms.find(m=>m.id>C.div&&m.user_id!==CLOUD.uid&&m.id>0);if(f)C.divMid=f.id;
+    if(CHAT.ready&&ms.length)C.divLock=true}
   let near;
   if(!el.dataset.init){near=C.nb!==false}else near=el.scrollHeight-el.scrollTop-el.clientHeight<90;
   const want=new Set(ms.map(m=>String(m.id)));
@@ -3101,7 +3108,7 @@ function chatPaint(){
     el.insertBefore(w,cur);changed=true;
   });
   if(!ms.length&&!el.querySelector('.empty'))el.innerHTML='<div class="empty">Henüz mesaj yok. İlk mesajı sen yaz.</div>';
-  if(!el.dataset.init){el.dataset.init='1';if(near||C.st==null)el.scrollTop=el.scrollHeight;else el.scrollTop=C.st}
+  if(!el.dataset.init){el.dataset.init='1';const du=el.querySelector('.unr');if(du&&C.view==='pub')el.scrollTop=Math.max(0,du.getBoundingClientRect().top-el.getBoundingClientRect().top+el.scrollTop-24);else if(near||C.st==null)el.scrollTop=el.scrollHeight;else el.scrollTop=C.st}
   else if(changed&&near)el.scrollTop=el.scrollHeight;
   const last=ms.filter(m=>m.id>0).reduce((a,m)=>Math.max(a,m.id),0);
   if(C.view==='pub')chatMark('pub',last);else if(C.peer)ms.forEach(m=>{if(m.user_id===C.peer&&m.id>0)chatMark('u'+m.user_id,m.id)});
@@ -3638,6 +3645,7 @@ function vDuel(){
   return`<div class="top"><h1>Düello</h1></div><div class="stack${rkv?' vlv pg':''}">${P==='lobby'?seg:''}${body}</div>`;
 }
 function setTab(t){
+  if(t==='chat'&&UI.tab!=='chat')chatSnap();
   if(duelLock())return;
   if(t==='study')t=lastStudy;
   if(t==='quiz'&&UI.quiz&&UI.quiz.done)UI.quiz=null;
@@ -3668,7 +3676,7 @@ document.addEventListener('click',async e=>{
   if(el.hasAttribute('data-set')){const k=g('data-set'),v=g('data-v');S.set[k]=k==='count'?+v:k==='level'?lvToggle(S.set.level,v):k==='type'?mtToggle(S.set.type,v,POSG):v;save();render();return}
   if(el.hasAttribute('data-f')){const fk=g('data-f');UI.dict[fk]=fk==='level'?lvToggle(UI.dict.level,g('data-v')):fk==='pos'?mtToggle(UI.dict.pos,g('data-v'),POSG):g('data-v');UI.dict.limit=40;render();return}
   switch(g('data-act')){
-    case'chat-view':UI.chat.view=g('data-v');UI.chat.peer=null;UI.chat.q='';UI.chat.draft='';render();chatPaint();if(UI.chat.view==='usr')refreshBoard();break;
+    case'chat-view':UI.chat.view=g('data-v');if(g('data-v')==='pub')chatSnap();UI.chat.peer=null;UI.chat.q='';UI.chat.draft='';render();chatPaint();if(UI.chat.view==='usr')refreshBoard();break;
     case'chat-open':UI.card=null;UI.chat.view='dm';UI.chat.peer=g('data-v');UI.chat.draft='';UI.chat.q='';if(UI.tab!=='chat'){setTab('chat')}else{render();chatPaint()}break;
     case'chat-back':UI.chat.peer=null;render();break;
     case'chat-send':chatSend();break;
