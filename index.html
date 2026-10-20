@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.77.4';
+const APP_VERSION='4.78.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3002,7 +3002,14 @@ const CHAT={peers:{},found:null,fq:'',pub:[],dm:[],tmp:[],ready:false,err:'',bus
 UI.chat={view:'pub',peer:null,draft:'',q:''};
 function chatSeen(){try{return JSON.parse(localStorage.getItem('kd-chat-'+CLOUD.uid)||'{}')}catch(e){return{}}}
 function chatMark(k,id){try{const s=chatSeen();if((s[k]||0)<id){s[k]=id;localStorage.setItem('kd-chat-'+CLOUD.uid,JSON.stringify(s))}}catch(e){}}
-function chatUnread(peer){
+function chatUnreadPub(){
+  if(!CLOUD.uid||!CHAT.ready)return 0;
+  if(UI.tab==='chat'&&UI.chat.view==='pub')return 0;
+  const k=chatSeen().pub||0;
+  return CHAT.pub.filter(m=>m.user_id!==CLOUD.uid&&m.id>k).length;
+}
+const chatUnread=peer=>peer?chatUnreadDm(peer):chatUnreadDm()+chatUnreadPub();
+function chatUnreadDm(peer){
   if(!CLOUD.uid)return 0;
   const s=chatSeen();let n=0;
   CHAT.dm.forEach(m=>{if(m.to_user===CLOUD.uid&&(!peer||m.user_id===peer)&&m.id>(s['u'+m.user_id]||0)&&!(UI.tab==='chat'&&UI.chat.view==='dm'&&UI.chat.peer===m.user_id))n++});
@@ -3055,6 +3062,7 @@ async function chatLoad(wait){
     const now=Date.now();
     if(!CHAT.ready||now-(CHAT.dmFull||0)>300000){CHAT.dm=await chatFetchDm(0);CHAT.dmFull=now}
     else{const add=await chatFetchDm(CHAT.dm.length?CHAT.dm[CHAT.dm.length-1].id:0);if(add.length)CHAT.dm=CHAT.dm.concat(add)}
+    if(!CHAT.ready&&chatSeen().pub==null){const lastP=CHAT.pub.reduce((a,m)=>Math.max(a,m.id),0);if(lastP)chatMark('pub',lastP)}   // ilk açılışta eski mesajlar okunmuş sayılır
     CHAT.ready=true;CHAT.err='';
   }catch(e){CHAT.err=String(e&&e.message||e).indexOf('chat_messages')>-1?'setup':'err'}
   CHAT.busy=false;
@@ -3120,8 +3128,8 @@ function vChatUsers(){
 function vChat(){
   const C=UI.chat;
   if(CHAT.err==='setup')return`<div class="top"><h1>Sohbet</h1></div><div class="card">Sohbet henüz kurulmadı. Yönetici, <b>supabase-chat.sql</b> dosyasını Supabase SQL Editor'da bir kez çalıştırmalı.</div>`;
-  const du=chatUnread();
-  const seg=`<div class="seg"><button class="chip" aria-pressed="${C.view==='pub'}" data-act="chat-view" data-v="pub">Genel</button><button class="chip" aria-pressed="${C.view==='dm'}" data-act="chat-view" data-v="dm">Özel${du?' ('+du+')':''}</button><button class="chip" aria-pressed="${C.view==='usr'}" data-act="chat-view" data-v="usr">Kullanıcılar</button></div>`;
+  const du=chatUnreadDm(),pu=chatUnreadPub();
+  const seg=`<div class="seg"><button class="chip" aria-pressed="${C.view==='pub'}" data-act="chat-view" data-v="pub">Genel${pu?' <i class="nbd">'+pu+'</i>':''}</button><button class="chip" aria-pressed="${C.view==='dm'}" data-act="chat-view" data-v="dm">Özel${du?' ('+du+')':''}</button><button class="chip" aria-pressed="${C.view==='usr'}" data-act="chat-view" data-v="usr">Kullanıcılar</button></div>`;
   let body='';
   if(C.view==='usr'){body=vChatUsers()}
   else if(C.view==='dm'&&!C.peer){
@@ -3174,7 +3182,7 @@ function chatOpen(tab){
   if(tab==='chat'){UI.chat.q='';chatLoad()}
 }
 setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false)return;if(UI.tab==='chat')chatLoad()},4000);
-setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||UI.tab==='chat')return;chatLoad()},45000);
+setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||UI.tab==='chat')return;chatLoad()},12000);
 // ---- 1v1 Düello ----
 const DQ_N=20,DQ_T=15;
 const DUEL={sub:'classic',phase:'lobby',id:null,d:null,off:0,qs:null,idx:0,tq:0,sel:null,bot:null,opp:'',err:'',rec:null,find:0,findT:null,poll:null,tick:null,busy:false,me:{s:0,c:0,t:0}};
