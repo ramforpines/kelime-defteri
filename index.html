@@ -77,7 +77,7 @@ h3{font-size:1rem}
 /* nav */
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:10;
   padding:6px max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px))}
-nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:1px}
+nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1px}
 nav button{position:relative;border:0;background:none;border-radius:10px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.68rem;padding:0;font-weight:600;color:var(--muted)}
 .pbar{display:flex;align-items:center;gap:12px;padding:8px 12px;margin-bottom:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;cursor:pointer}
 .pbar .pn{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.25}.pbar .pn b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pbar .pr{display:flex;gap:6px}
@@ -152,6 +152,10 @@ nav button{position:relative;border:0;background:none;border-radius:10px;min-hei
 @keyframes bfall{0%{opacity:0;transform:translateY(0) scale(.2)}12%{opacity:1;transform:translateY(0) scale(1)}28%{opacity:1;transform:translateY(5px) scale(1.05,1.25)}100%{opacity:0;transform:translateY(330px) scale(.9,1.5)}}
 @media (prefers-reduced-motion:reduce){.frm.bld .wob,.frm.bld .fl,.frm.bld .emb,.frm.bld .hg{animation:none}.frm.bld .bd{animation:none;opacity:0}}
 .rk[data-lg="admin"],.pbar[data-lg="admin"],.cm[data-lg="admin"]{z-index:3}
+#chatfab{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 78px);z-index:9;width:52px;height:52px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink,#fff);display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer;padding:0}
+#chatfab[hidden]{display:none}
+#chatfab svg{width:26px;height:26px}
+#chatfab .nbd{position:absolute;top:-3px;right:-3px;font-style:normal;background:var(--bad);color:#fff;border-radius:9px;padding:1px 6px;font-size:.68rem;font-weight:700}
 nav .nbd{position:absolute;top:2px;right:6px;font-style:normal;background:var(--bad);color:#fff;border-radius:8px;padding:0 5px;font-size:.62rem}
 .chatlist{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;height:calc(100vh - 330px);min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
 .dhud{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -439,7 +443,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.84.1';
+const APP_VERSION='4.85.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1443,7 +1447,7 @@ function vHelp(){
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün kelimeleri, bu haftaki sıran, dünün ve geçen haftanın lideri.',
     '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b>, <b>İngilizce Vize</b> (ders kitabı üniteleri: kelimeler, dinleme, okuma ve Örnek Vize), <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
-    '<b>Sıra</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte). <b>Ben → Nasıl kullanılır?</b>: bu sayfa.',
+    '<b>Sıra</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: Bugün, Sıra ve Ben → Profil ekranlarında sağ altta duran mesaj balonuna dokununca açılır; genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte) vardır, sağ üstteki <b>Çıkış</b> ile kapanır. Okunmamış mesaj sayısı balonun üstünde görünür. <b>Ben → Nasıl kullanılır?</b>: bu sayfa.',
     '<b>Ben</b>: Profil, İstatistik (öğrenilen kelimeler en altında), Ayarlar (geri bildirim en altında) ve Nasıl kullanılır? sayfası. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
   ${sec('🚀 Hızlı başlangıç',li([
     '<b>Bugün</b> sekmesinde günün hedefini ve "Bugünün testini başlat" düğmesini görürsün. Her gün birkaç test çözmen yeter.',
@@ -2183,14 +2187,24 @@ const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
 const savedWords=()=>Object.keys(S.sav||{}).filter(k=>S.sav[k]>0&&BYWORD.has(k)).sort((a,b)=>S.sav[b]-S.sav[a]).map(k=>BYWORD.get(k));
 let lastStudy='quiz';
-const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıra'],['chat','Sohbet'],['me','Ben']];
+const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıra'],['me','Ben']];
 function studySeg(){
   if(UI.quiz)return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
   return`<div class="seg" style="margin-bottom:12px">${STUDY.map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
 }
 function renderNav(){
-  $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}${k==='chat'&&chatUnread()?` <i class="nbd">${chatUnread()}</i>`:''}</span></button>`).join('');
+  $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}</span></button>`).join('');
+  fabUpdate();
+}
+function fabUpdate(){
+  let b=document.getElementById('chatfab');
+  if(!b){b=document.createElement('button');b.id='chatfab';b.type='button';b.setAttribute('data-act','chat-fab');b.setAttribute('aria-label','Sohbeti aç');document.body.appendChild(b)}
+  const on=!!CLOUD.uid&&CLOUD.approved!==false&&!duelLock()&&(UI.tab==='today'||UI.tab==='rank'||(UI.tab==='me'&&UI.me==='prof'));
+  b.hidden=!on;
+  const n=on?chatUnread():0;
+  const h='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-8l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" fill="currentColor"/></svg>'+(n?'<i class="nbd">'+(n>99?'99+':n)+'</i>':'');
+  if(b.dataset.h!==h){b.dataset.h=h;b.innerHTML=h}
 }
 function lvTag(l){return l?`<span class="lv lv-${esc(l)}">${esc(l)}</span>`:''}
 function profBar(){
@@ -2203,13 +2217,13 @@ function profBar(){
 const duelLock=()=>!DUEL.bot&&!!DUEL.id&&['count','play','wait'].includes(DUEL.phase);
 function render(){
   const app=$('#app');
-  if(!AUTH.ready){$('nav').hidden=true;app.innerHTML='<div class="empty">Yükleniyor…</div>';return}
-  if(!CLOUD.uid){$('nav').hidden=true;app.innerHTML=vLogin();return}
-  if(CLOUD.approved===false){$('nav').hidden=true;app.innerHTML=vPending();return}
+  if(!AUTH.ready){fabUpdate();$('nav').hidden=true;app.innerHTML='<div class="empty">Yükleniyor…</div>';return}
+  if(!CLOUD.uid){fabUpdate();$('nav').hidden=true;app.innerHTML=vLogin();return}
+  if(CLOUD.approved===false){fabUpdate();$('nav').hidden=true;app.innerHTML=vPending();return}
   const dlk=duelLock();
   if(dlk){UI.tab='quiz';UI.qmode='duel';UI.quiz=null;UI.card=null}
   $('nav').hidden=dlk;
-  if(!dlk)renderNav();
+  if(!dlk)renderNav();else fabUpdate();
   let h='';
   if(UI.tab==='today')h=vToday();
   else if(UI.tab==='dict')h=vDict();
@@ -3157,7 +3171,7 @@ function vChatUsers(){
 }
 function vChat(){
   const C=UI.chat;
-  if(CHAT.err==='setup')return`<div class="top"><h1>Sohbet</h1></div><div class="card">Sohbet henüz kurulmadı. Yönetici, <b>supabase-chat.sql</b> dosyasını Supabase SQL Editor'da bir kez çalıştırmalı.</div>`;
+  if(CHAT.err==='setup')return`<div class="top" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><h1>Sohbet</h1><button class="btn" data-act="chat-exit">Çıkış</button></div><div class="card">Sohbet henüz kurulmadı. Yönetici, <b>supabase-chat.sql</b> dosyasını Supabase SQL Editor'da bir kez çalıştırmalı.</div>`;
   const du=chatUnreadDm(),pu=chatUnreadPub();
   const seg=`<div class="seg"><button class="chip" aria-pressed="${C.view==='pub'}" data-act="chat-view" data-v="pub">Genel${pu?' <i class="nbd">'+pu+'</i>':''}</button><button class="chip" aria-pressed="${C.view==='dm'}" data-act="chat-view" data-v="dm">Özel${du?' ('+du+')':''}</button><button class="chip" aria-pressed="${C.view==='usr'}" data-act="chat-view" data-v="usr">Kullanıcılar</button></div>`;
   let body='';
@@ -3177,7 +3191,7 @@ function vChat(){
     body=hd+`<div class="chatlist" id="chatlist" role="log" aria-live="polite">${CHAT.ready?'':'<div class="empty">Yükleniyor…</div>'}</div>
     <div class="cfm"><input id="chin" class="nameinp" ${CLOUD.admin?'':'maxlength="500"'} placeholder="${C.view==='pub'?'Herkese yaz…':'Mesaj yaz…'}" value="${esc(C.draft)}" autocomplete="off" enterkeyhint="send"><button class="btn primary" data-act="chat-send">Gönder</button></div>`;
   }
-  return`<div class="top"><h1>Sohbet</h1></div><div class="stack">${seg}${body}</div>`;
+  return`<div class="top" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><h1>Sohbet</h1><button class="btn" data-act="chat-exit">Çıkış</button></div><div class="stack">${seg}${body}</div>`;
 }
 async function chatSend(){
   const inp=document.getElementById('chin'),C=UI.chat;
@@ -3700,6 +3714,7 @@ function vDuel(){
 function setTab(t){
   if(t==='chat'&&UI.tab!=='chat')chatSnap();
   if(duelLock())return;
+  if(t==='chat'&&UI.tab!=='chat')UI.chatBack={tab:UI.tab,me:UI.me};
   if(t==='study')t=lastStudy;
   if(t==='quiz'&&UI.quiz&&UI.quiz.done)UI.quiz=null;
   UI.tab=t;try{sessionStorage.setItem('kd-tab',t)}catch(e){}
@@ -3729,6 +3744,8 @@ document.addEventListener('click',async e=>{
   if(el.hasAttribute('data-set')){const k=g('data-set'),v=g('data-v');S.set[k]=k==='count'?+v:k==='level'?lvToggle(S.set.level,v):k==='type'?mtToggle(S.set.type,v,POSG):v;save();render();return}
   if(el.hasAttribute('data-f')){const fk=g('data-f');UI.dict[fk]=fk==='level'?lvToggle(UI.dict.level,g('data-v')):fk==='pos'?mtToggle(UI.dict.pos,g('data-v'),POSG):g('data-v');UI.dict.limit=40;render();return}
   switch(g('data-act')){
+    case'chat-fab':setTab('chat');break;
+    case'chat-exit':{const b=UI.chatBack||{tab:'today'};UI.chat.peer=null;if(b.me)UI.me=b.me;setTab(b.tab&&b.tab!=='chat'?b.tab:'today');break}
     case'chat-view':UI.chat.view=g('data-v');if(g('data-v')==='pub')chatSnap();UI.chat.peer=null;UI.chat.q='';UI.chat.draft='';render();chatPaint();if(UI.chat.view==='usr')refreshBoard();break;
     case'chat-open':UI.card=null;UI.chat.view='dm';UI.chat.peer=g('data-v');UI.chat.draft='';UI.chat.q='';if(UI.tab!=='chat'){setTab('chat')}else{render();chatPaint()}break;
     case'chat-back':UI.chat.peer=null;render();break;
