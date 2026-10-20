@@ -78,6 +78,10 @@ h3{font-size:1rem}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:10;
   padding:6px max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px))}
 nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1px}
+nav .in.adm5{grid-template-columns:1fr 1fr 74px 1fr 1fr;align-items:end}
+nav button.duelb{min-height:50px;margin-top:-30px;gap:0}
+nav button.duelb img{width:62px;height:62px;border-radius:14px;border:2px solid #c9992a;box-shadow:0 4px 12px rgba(0,0,0,.45);display:block;background:#000}
+nav button.duelb span{margin-top:2px}
 nav button{position:relative;border:0;background:none;border-radius:10px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.68rem;padding:0;font-weight:600;color:var(--muted)}
 .pbar{display:flex;align-items:center;gap:12px;padding:8px 12px;margin-bottom:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;cursor:pointer}
 .pbar .pn{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.25}.pbar .pn b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pbar .pr{display:flex;gap:6px}
@@ -443,7 +447,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.85.1';
+const APP_VERSION='4.86.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2191,10 +2195,14 @@ const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıralamalar'],['
 function studySeg(){
   if(UI.quiz)return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
-  return`<div class="seg" style="margin-bottom:12px">${STUDY.map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
+  return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>!(CLOUD.admin&&x[0]==='duel')).map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
 }
 function renderNav(){
-  $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}</span></button>`).join('');
+  const adm=!!CLOUD.admin,inDuel=UI.tab==='quiz'&&UI.qmode==='duel';
+  const nv=$('#nav');nv.classList.toggle('adm5',adm);
+  const btn=([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab)&&!(adm&&inDuel):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}</span></button>`;
+  const duel=`<button class="duelb" data-act="qmode" data-v="duel" aria-label="Düello" ${inDuel?'aria-current="page"':''}><img src="duel-swords.svg" alt="" width="62" height="62"><span>Düello</span></button>`;
+  nv.innerHTML=adm?TABS.slice(0,2).map(btn).join('')+duel+TABS.slice(2).map(btn).join(''):TABS.map(btn).join('');
   fabUpdate();
 }
 function fabUpdate(){
