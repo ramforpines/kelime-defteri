@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.77.3';
+const APP_VERSION='4.77.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3283,6 +3283,8 @@ function dStop(){clearTimeout(DUEL.findT);clearInterval(DUEL.poll);clearInterval
 function dReset(){dStop();Object.assign(DUEL,{phase:'lobby',id:null,d:null,qs:null,idx:0,sel:null,bot:null,err:'',find:0,busy:false,me:{s:0,c:0,t:0}})}
 async function duelRecord(){
   if(!sb||!CLOUD.uid)return;
+  if(DUEL.recBusy){DUEL.recAgain=true;return}
+  DUEL.recBusy=true;
   try{
     let r=await sb.from('duels').select('id,p1,p2,winner,s1,s2,c1,c2,a1,a2,t1,t2,created_at,mode,dl1,dl2').eq('status','done').order('created_at',{ascending:false}).limit(200);
     if(r.error)r=await sb.from('duels').select('id,p1,p2,winner,s1,s2,c1,c2,a1,a2,t1,t2,created_at').eq('status','done').order('created_at',{ascending:false}).limit(200);
@@ -3295,7 +3297,11 @@ async function duelRecord(){
      DUEL.recR={w:rw,l:rl,d:rd,net:Math.round(LR.reduce((a,x)=>a+(+(x.p1===CLOUD.uid?x.dl1:x.dl2)||0),0)*10)/10,last:LR.slice(0,5).map(x=>!x.winner?'D':x.winner===CLOUD.uid?'W':'L')}}
     DUEL.recErr='';
   }catch(e){DUEL.rec=null;DUEL.recErr=/duels|42P01|PGRST205|schema cache/i.test(String(e&&(e.message||e.code)||''))?'setup':'err'}
-  if(UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')render();
+  DUEL.recBusy=false;
+  const hs=JSON.stringify([(DUEL.hist||[]).slice(0,12).map(x=>x.id),DUEL.rec,DUEL.recR]);
+  const chg=hs!==DUEL.recSig;DUEL.recSig=hs;
+  if(chg&&UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')render();
+  if(DUEL.recAgain){DUEL.recAgain=false;duelRecord()}
 }
 async function duelFind(){
   if(!sb||!CLOUD.uid)return;
@@ -3430,7 +3436,9 @@ async function lobbyLoad(){
     if(r.error||!r.data){LOBBY.err=/duel_lobby|PGRST202|42883|schema cache/i.test(String(r.error&&(r.error.message||r.error.code)||''))?'setup':'err';if(duelLobbyView())render();return}
     LOBBY.err='';const d=r.data;
     (d.online||[]).forEach(peerSet);(d.duels||[]).forEach(x=>{peerSet(x.a);peerSet(x.b)});if(d.inbox)peerSet(d.inbox.from);if(d.outbox)peerSet(d.outbox.to);
+    const prevIds=LOBBY.duels.map(x=>x.id);
     LOBBY.on=d.online||[];LOBBY.wait=d.wait||[];LOBBY.duels=d.duels||[];
+    if(prevIds.some(id=>!LOBBY.duels.some(x=>x.id===id))&&duelLobbyView()){duelRecord();setTimeout(()=>{if(duelLobbyView())duelRecord()},2500)}   // biten maç geçmişe 1 sn içinde düşsün
     lobbyInvites(d);
     const sig=JSON.stringify([LOBBY.on.map(x=>[x.id,x.st,x.low]),(LOBBY.wait||[]).map(x=>x.id),LOBBY.duels.map(x=>[x.id,x.a1,x.a2])]);
     if(sig!==LOBBY.sig){LOBBY.sig=sig;if(duelLobbyView()&&!INV)render()}
