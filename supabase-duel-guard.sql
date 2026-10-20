@@ -1,9 +1,10 @@
 -- Dosya: supabase-duel-guard.sql
--- Kelime Defteri: dereceli düelloda uygulamadan ayrılma (hile) koruması. ŞİMDİLİK YALNIZCA YÖNETİCİ İÇİN ÇALIŞIR.
+-- Kelime Defteri: dereceli düelloda uygulamadan ayrılma (hile) koruması. ŞİMDİLİK YALNIZCA YÖNETİCİ VE TEST HESABI (kullanici52541) İÇİN ÇALIŞIR.
 -- SQL Editor'da bir kez çalıştır (önce supabase-admin.sql ve dereceli düello dosyaları çalışmış olmalı). Birden çok kez çalıştırılabilir.
 --  * duels.status artık 'void' (iptal) değeri de alabilir; iptal edilen maç puan, geçmiş ve galibiyet sayısına girmez.
 --  * duel_flags: ayrılma/odak kaybı kayıtları (yalnızca yönetici fonksiyonlarıyla okunur).
---  * duel_guard: istemci bildirir; yönetici değilse hiçbir şey yapmaz.
+--  * duel_guard: istemci bildirir; yönetici ya da test hesabı değilse hiçbir şey yapmaz.
+--  * Herkese açmak için duel_guard_user() fonksiyonunu 'select true' yap.
 --  * duel_flag_list: yönetici listesi.
 
 alter table public.duels drop constraint if exists duels_status_check;
@@ -24,6 +25,14 @@ create index if not exists duel_flags_user_idx on public.duel_flags(user_id, cre
 alter table public.duel_flags enable row level security;
 revoke all on public.duel_flags from anon, authenticated;
 
+create or replace function public.duel_guard_user() returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.is_admin()
+      or coalesce((select lower(split_part(u.email, '@', 1)) = any (array['kullanici52541']) from auth.users u where u.id = auth.uid()), false)
+$$;
+revoke all on function public.duel_guard_user() from public, anon;
+grant execute on function public.duel_guard_user() to authenticated;
+
 create or replace function public.duel_guard(did uuid, p_kind text, p_q int default null, p_away int default null) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare uid uuid := auth.uid(); d public.duels; fid bigint; wk int;
@@ -32,8 +41,8 @@ begin
   select * into d from public.duels where id = did for update;
   if not found or uid not in (d.p1, d.p2) then raise exception 'not allowed'; end if;
   if p_kind not in ('hide','blur','blur2') then raise exception 'bad kind'; end if;
-  -- şimdilik yalnızca yönetici: diğer kullanıcılar için kayıt da iptal de yok
-  if not public.is_admin() then return jsonb_build_object('status', d.status, 'voids', 0); end if;
+  -- şimdilik yalnızca yönetici ve test hesabı: diğer kullanıcılar için kayıt da iptal de yok
+  if not public.duel_guard_user() then return jsonb_build_object('status', d.status, 'voids', 0); end if;
   if p_away is not null then
     select max(id) into fid from public.duel_flags where duel_id = did and user_id = uid and kind = p_kind and away_ms is null;
     if fid is not null then update public.duel_flags set away_ms = p_away where id = fid; end if;
