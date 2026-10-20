@@ -430,7 +430,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.78.1';
+const APP_VERSION='4.79.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1505,7 +1505,7 @@ function vHelp(){
     '<b>Dereceli birincilik ödülleri</b>: Sıra → Dereceli düello → <b>Tüm zamanlar</b> tablosunda 1. olan kişi (puanı artıdaysa) şunları kazanır: avatarı ve çerçevesinin yerine geçen <b>havlayan köpek</b> ("HAV!"), <b>kızıl kadife</b> profil satırı, kartı ve çubuğu, ve taç ile "1" taşıyan <b>altın sancak</b>. Bunlar sıralamada, profil kartında ve sohbette her yerde görünür. Birincilik başkasına geçince hepsi de yeni birinciye geçer. Köpek avatar listesinde kilitlidir; seçilemez, yalnızca birinciye otomatik verilir. Tüm profil özellikleri ve nasıl kazanıldıkları Ben → Profil → <b>Profil özellikleri</b> bölümünde.',
     '<b>Dereceli sıralama ve profil</b>: Sıralama → <b>Dereceli düello</b> tablosu, yalnızca dereceli maçlardan kazanılan ve kaybedilen puanların toplamını gösterir (galibiyet, beraberlik, mağlubiyet, doğru oranı ve ortalama cevap süresiyle). Profil kartındaki Düello kutusunda klasik ve dereceli istatistikler ayrı yazar.',
     
-    '<b>Klasik bahis</b>: herkes '+DSTAKE+' puan koyar (havuz '+DSTAKE*2+'). 5 puan kesilir, kalan 35 puanın 25\'ini kazanan alır, 10\'u maç puanlarına göre paylaşılır. Beraberlikte 35 puan yarı yarıya bölünür.',
+    '<b>Klasik bahis</b>: herkes '+DSTAKE+' puan koyar (havuz '+DSTAKE*2+'). Sistem havuza <b>5 puan ekler</b>, dağıtılacak toplam <b>45 puan</b> olur: 30\'unu kazanan alır, 15\'i maç puanlarına göre paylaşılır (kazananın maç skoru ÷ iki oyuncunun toplam skoru kadar pay kazanana, kalanı kaybedene). Beraberlikte 45 puan yarı yarıya (22,5 + 22,5) bölünür.',
     'Düellodaki sorular normal test gibi sayılır: bilinenler bilinenlere, yanlışlar yanlışlara gider. Bu sorulardan gelen test puanı yarıya iner. Düello kazancı günlük soru puanı sınırına girmez.',
     'Düello bitince sonuç ekranında doğru sayını ve süreni görürsün. Profil kartında düello sayın, kazanma oranın ve G-M-B (galibiyet-mağlubiyet-beraberlik) istatistiğin yer alır.']))}
   ${sec('💬 Sohbet',li([
