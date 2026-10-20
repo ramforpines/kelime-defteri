@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.74.1';
+const APP_VERSION='4.75.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3422,7 +3422,7 @@ function lobbyInvites(d){
   }
   if(INV&&INV.dir==='out'){
     if(ob&&ob.id===INV.id&&ob.status==='pending'&&ob.left_ms>0){INV.exp=Date.now()+ob.left_ms;return}
-    const nm=INV.who.name,st=ob&&ob.id===INV.id?ob.status:'expired',did=ob&&ob.duel_id;
+    const nm=INV.mode==='ranked'?'Rakip':INV.who.name,st=ob&&ob.id===INV.id?ob.status:'expired',did=ob&&ob.duel_id;
     invClose();
     if(st==='accepted'&&did){duelStart(did);return}
     toast(st==='declined'?nm+' teklifi reddetti.':st==='cancelled'?'Teklif iptal edildi.':'Teklif kabul edilmedi, süre doldu. Tekrar gönderebilirsin.');
@@ -3445,8 +3445,9 @@ function invShow(){
   if(!document.getElementById('dvcss')){const s=document.createElement('style');s.id='dvcss';s.textContent=invCss();document.head.appendChild(s)}
   const o=document.createElement('div');o.id='dvov';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Düello teklifi');
   const w=INV.who,incoming=INV.dir==='in',rkm=INV.mode==='ranked',need=rkm?DRK_MIN:DSTAKE,low=incoming&&(S.tp||0)<need,rg=rkm&&incoming?dRng(S.tp||0,+w.ap||0):null;
-  o.innerHTML=`<div class="dvb${rkm?' vlv':''}">${avatar(w.name,w.color,true,w.av,frameFor(w.id,'auto'),0,0,w.id)}
-   <div class="dvt">${incoming?`${esc(w.name)} seni ${rkm?'dereceli ':''}düelloya davet ediyor`:`${esc(w.name)} adlı kullanıcıya ${rkm?'dereceli düello ':''}teklifi gönderildi`}</div>
+  const wn=rkm?lgName(w.id)+' ligi':esc(w.name);
+  o.innerHTML=`<div class="dvb${rkm?' vlv':''}">${rkm?'':avatar(w.name,w.color,true,w.av,frameFor(w.id,'auto'),0,0,w.id)}
+   <div class="dvt">${incoming?`${rkm?'Bir rakip':wn} seni ${rkm?'dereceli ':''}düelloya davet ediyor${rkm?` (${wn})`:''}`:`${rkm?'Seçtiğin rakibe ('+wn+')':wn+' adlı kullanıcıya'} ${rkm?'dereceli düello ':''}teklifi gönderildi`}</div>
    <div class="muted small">${incoming?(rkm?`20 soru, soru başına ${DQ_T} sn. Kazanırsan en fazla +${nf(r1(rg.win))}, kaybedersen en fazla −${nf(r1(rg.lose))} puan (yaklaşık).`:`20 soru, soru başına ${DQ_T} sn. Bahis: ${DSTAKE} puan.`):'Cevap bekleniyor…'}</div>
    <div class="dvbar"><i id="dvbi"></i></div><div class="mono" style="font-size:1.4rem" id="dvsec"></div>
    ${incoming?`${low?`<div class="small" style="color:var(--bad)">Düelloya girmek için en az ${need} puanın olmalı.</div>`:''}<div class="dvr"><button class="btn primary" data-inv="yes" ${low?'disabled':''}>Kabul et</button><button class="btn danger" data-inv="no">Reddet</button></div>`
@@ -3512,17 +3513,20 @@ setInterval(()=>{
   LOBBY.tick++;
   if(INV||(duelLobbyView()&&LOBBY.tick%2===0))lobbyLoad();
 },1500);
+const lgName=id=>{try{return LEAGUES[leagueMap()[id]|0].n}catch(e){return'Lig'}};
 function lobbyCard(){
   if(!sb)return'';
   if(LOBBY.err==='setup')return`<div class="card"><div class="fb bad">Düello salonu henüz kurulmadı. Yönetici <b>supabase-invite.sql</b> dosyasını Supabase SQL Editor'da bir kez çalıştırmalı.</div></div>`;
   const lab={free:['Boşta','ok'],invite:['Teklif bekliyor',''],duel:['Maçta','warn']};
   const row=u=>{
     const rkm=DUEL.sub==='ranked',lw=rkm?u.lowr:u.low,can=u.st==='free'&&!lw&&!INV&&(S.tp||0)>=(rkm?DRK_MIN:DSTAKE),l=lab[u.st]||lab.free;
+    if(rkm)return`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div style="min-width:0"><b>${esc(lgName(u.id))} ligi</b><br><span class="badge ${u.st==='free'&&!lw?'ok':l[1]}">${u.st==='free'?(lw?'Puanı yetersiz':'Maç arıyor'):l[0]}</span></div>
+    <button class="btn primary" data-act="inv-send" data-u="${esc(u.id)}" ${can?'':'disabled'}>Dereceli teklif</button></div></div>`;
     return`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="min-width:0;gap:10px">${avatar(u.name,u.color,false,u.av,frameFor(u.id,'auto'),0,0,u.id)}<div style="min-width:0"><b class="w" style="overflow-wrap:anywhere">${esc(u.name)}</b> <span class="muted small">@${esc(u.un)}</span><br><span class="badge ${l[1]}">${lw&&u.st==='free'?'Puanı yetersiz':l[0]}</span></div></div>
     <button class="btn primary" data-act="inv-send" data-u="${esc(u.id)}" ${can?'':'disabled'}>${rkm?'Dereceli teklif':'Düello teklifi'}</button></div></div>`};
-  const dl=x=>`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="gap:6px;min-width:0">${avatar(x.a.name,x.a.color,false,x.a.av,frameFor(x.a.id,'auto'),0,0,x.a.id)}<b class="small" style="overflow-wrap:anywhere">${esc(x.a.name)}</b></div><span class="mono muted small">${x.mode==='ranked'?'🏅':'⚔'} ${x.a1}/${x.qn} · ${x.a2}/${x.qn}</span><div class="row" style="gap:6px;min-width:0"><b class="small" style="overflow-wrap:anywhere">${esc(x.b.name)}</b>${avatar(x.b.name,x.b.color,false,x.b.av,frameFor(x.b.id,'auto'),0,0,x.b.id)}</div></div></div>`;
+  const dl=x=>x.mode==='ranked'||DUEL.sub==='ranked'?`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><b class="small">${esc(lgName(x.a.id))}</b><span class="mono muted small">🏅 ${x.a1}/${x.qn} · ${x.a2}/${x.qn}</span><b class="small">${esc(lgName(x.b.id))}</b></div></div>`:`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="gap:6px;min-width:0">${avatar(x.a.name,x.a.color,false,x.a.av,frameFor(x.a.id,'auto'),0,0,x.a.id)}<b class="small" style="overflow-wrap:anywhere">${esc(x.a.name)}</b></div><span class="mono muted small">${x.mode==='ranked'?'🏅':'⚔'} ${x.a1}/${x.qn} · ${x.a2}/${x.qn}</span><div class="row" style="gap:6px;min-width:0"><b class="small" style="overflow-wrap:anywhere">${esc(x.b.name)}</b>${avatar(x.b.name,x.b.color,false,x.b.av,frameFor(x.b.id,'auto'),0,0,x.b.id)}</div></div></div>`;
   return`<div class="card stack"><h2>Düello salonu</h2>
-   <div class="stack" style="gap:6px"><span class="small muted">Düello sekmesindekiler (${LOBBY.on.length})</span>${LOBBY.on.length?LOBBY.on.map(row).join(''):'<div class="small muted">Şu an düello sekmesinde başka kimse yok.</div>'}</div>
+   <div class="stack" style="gap:6px"><span class="small muted">${DUEL.sub==='ranked'?'Dereceli sekmesindekiler':'Düello sekmesindekiler'} (${LOBBY.on.length})</span>${LOBBY.on.length?LOBBY.on.map(row).join(''):'<div class="small muted">Şu an düello sekmesinde başka kimse yok.</div>'}</div>
    <div class="stack" style="gap:6px"><span class="small muted">Şu an oynanan düellolar (${LOBBY.duels.length})</span>${LOBBY.duels.length?LOBBY.duels.map(dl).join(''):'<div class="small muted">Şu an süren düello yok.</div>'}</div></div>`;
 }
 function duelHist(){
