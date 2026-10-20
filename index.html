@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.76.4';
+const APP_VERSION='4.77.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2178,13 +2178,16 @@ function profBar(){
   let lg='';try{lg=LEAGUES[leagueMap()[id]|0].n}catch(e){}
   return`<div class="pbar${flCls(id)}${isKing(id)?' king kv':''}" ${lgAttr(id)} data-pc="${esc(id)}" role="button" aria-label="Profil kartım">${avatar(name,color,false,av,fr,0,0,id)}<div class="pn"><b>${esc(name)}</b>${CLOUD.username?`<span class="muted small">@${esc(CLOUD.username)}</span>`:''}</div><div class="pr">${st?`<span class="badge">🔥 ${st}</span>`:''}${lg?`<span class="badge">${esc(lg)}</span>`:''}</div>${kingFlag(id)}${flagHtml(id)}</div>`;
 }
+const duelLock=()=>!DUEL.bot&&!!DUEL.id&&['count','play','wait'].includes(DUEL.phase);
 function render(){
   const app=$('#app');
   if(!AUTH.ready){$('nav').hidden=true;app.innerHTML='<div class="empty">Yükleniyor…</div>';return}
   if(!CLOUD.uid){$('nav').hidden=true;app.innerHTML=vLogin();return}
   if(CLOUD.approved===false){$('nav').hidden=true;app.innerHTML=vPending();return}
-  $('nav').hidden=false;
-  renderNav();
+  const dlk=duelLock();
+  if(dlk){UI.tab='quiz';UI.qmode='duel';UI.quiz=null;UI.card=null}
+  $('nav').hidden=dlk;
+  if(!dlk)renderNav();
   let h='';
   if(UI.tab==='today')h=vToday();
   else if(UI.tab==='dict')h=vDict();
@@ -2197,7 +2200,7 @@ function render(){
   else if(UI.tab==='chat')h=vChat();
   else if(UI.tab==='help')h=`<div class="top"><h1>Nasıl kullanılır?</h1></div><div class="stack">${vHelp()}</div>`;
   else h=vMe();
-  if(isStudy(UI.tab)){lastStudy=UI.tab;h=studySeg()+h}
+  if(isStudy(UI.tab)){lastStudy=UI.tab;if(!dlk)h=studySeg()+h}
   const fa=document.activeElement,fid=fa&&fa.id&&/^(chin|chq)$/.test(fa.id)?fa.id:null,fs=fid?[fa.selectionStart,fa.selectionEnd]:null;
   const ol=document.getElementById('chatlist');if(ol&&ol.dataset.init){UI.chat.st=ol.scrollTop;UI.chat.nb=ol.scrollHeight-ol.scrollTop-ol.clientHeight<90}
   app.innerHTML=profBar()+h+vCard();
@@ -3606,6 +3609,7 @@ function vDuel(){
   return`<div class="top"><h1>Düello</h1></div><div class="stack${rkv?' vlv pg':''}">${P==='lobby'?seg:''}${body}</div>`;
 }
 function setTab(t){
+  if(duelLock())return;
   if(t==='study')t=lastStudy;
   if(t==='quiz'&&UI.quiz&&UI.quiz.done)UI.quiz=null;
   UI.tab=t;try{sessionStorage.setItem('kd-tab',t)}catch(e){}
@@ -3617,6 +3621,7 @@ document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-tab],[data-act],[data-opt],[data-f],[data-set],[data-me],[data-say],[data-rb],[data-rp],[data-rm],[data-ra],[data-sw],[data-adf],[data-av],[data-fr],[data-pc],[data-lk]');
   if(!el)return;
   const g=a=>el.getAttribute(a);
+  if(duelLock()&&!/^duel-/.test(g('data-act')||'')){return}
   if(g('data-tab')){setTab(g('data-tab'));return}
   if(g('data-say')!==null&&el.hasAttribute('data-say')){say(g('data-say'),g('data-pron'));return}
   if(el.hasAttribute('data-opt')){answer(+g('data-opt'));return}
