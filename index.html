@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.77.1';
+const APP_VERSION='4.77.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3287,8 +3287,9 @@ async function duelRecord(){
     let r=await sb.from('duels').select('id,p1,p2,winner,s1,s2,c1,c2,a1,a2,t1,t2,created_at,mode,dl1,dl2').eq('status','done').order('created_at',{ascending:false}).limit(200);
     if(r.error)r=await sb.from('duels').select('id,p1,p2,winner,s1,s2,c1,c2,a1,a2,t1,t2,created_at').eq('status','done').order('created_at',{ascending:false}).limit(200);
     if(r.error)throw r.error;
-    const L0=r.data||[],L=L0.filter(x=>x.mode!=='ranked'),LR=L0.filter(x=>x.mode==='ranked');let w=0,l=0,dr=0;
-    try{const h=await sb.rpc('duel_history',{n:100});if(!h.error&&h.data){DUEL.all=h.data;DUEL.allOk=true}else DUEL.allOk=false}catch(e){DUEL.allOk=false}L.forEach(x=>{if(!x.winner)dr++;else if(x.winner===CLOUD.uid)w++;else l++});
+    const bugD=x=>x.mode==='ranked'&&+x.s1<=0&&+x.s2<=0&&(x.winner||+x.dl1||+x.dl2)?Object.assign({},x,{winner:null,dl1:0,dl2:0}):x;   // iki tarafın da skoru 0 ya da altı: beraberlik, puan geçişi yok
+    const L0=(r.data||[]).map(bugD),L=L0.filter(x=>x.mode!=='ranked'),LR=L0.filter(x=>x.mode==='ranked');let w=0,l=0,dr=0;
+    try{const h=await sb.rpc('duel_history',{n:100});if(!h.error&&h.data){DUEL.all=h.data.map(bugD);DUEL.allOk=true}else DUEL.allOk=false}catch(e){DUEL.allOk=false}L.forEach(x=>{if(!x.winner)dr++;else if(x.winner===CLOUD.uid)w++;else l++});
     DUEL.hist=DUEL.allOk?DUEL.all:L0.slice(0,50);DUEL.rec={w,l,d:dr,last:L.slice(0,5).map(x=>!x.winner?'D':x.winner===CLOUD.uid?'W':'L')};
     {const rw=LR.filter(x=>x.winner===CLOUD.uid).length,rl=LR.filter(x=>x.winner&&x.winner!==CLOUD.uid).length,rd=LR.filter(x=>!x.winner).length;
      DUEL.recR={w:rw,l:rl,d:rd,net:Math.round(LR.reduce((a,x)=>a+(+(x.p1===CLOUD.uid?x.dl1:x.dl2)||0),0)*10)/10,last:LR.slice(0,5).map(x=>!x.winner?'D':x.winner===CLOUD.uid?'W':'L')}}
