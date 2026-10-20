@@ -164,7 +164,7 @@ nav .nbd{position:absolute;top:2px;right:6px;font-style:normal;background:var(--
 .cm{flex:none;max-width:84%;align-self:flex-start;background:var(--surface2);border-radius:12px;padding:6px 10px;overflow-wrap:anywhere}
 .cm.me{align-self:flex-end;background:var(--accent-soft)}
 .cm .cn{font-size:.72rem;font-weight:700;color:var(--muted);cursor:pointer}
-.cm .cb{white-space:pre-wrap;font-size:.92rem}
+.cm .cb{white-space:pre-wrap;font-size:.92rem;overflow-wrap:anywhere}
 .cm .ct{font-size:.66rem;color:var(--muted);display:flex;gap:8px;justify-content:flex-end}
 .cm .ct button{border:0;background:none;color:var(--muted);padding:0}
 .cdt{flex:none;align-self:center;font-size:.68rem;color:var(--muted)}
@@ -430,7 +430,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.83.1';
+const APP_VERSION='4.83.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1513,7 +1513,7 @@ function vHelp(){
     'Düellodaki sorular normal test gibi sayılır: bilinenler bilinenlere, yanlışlar yanlışlara gider. Bu sorulardan gelen test puanı yarıya iner. Düello kazancı günlük soru puanı sınırına girmez.',
     'Düello bitince sonuç ekranında doğru sayını ve süreni görürsün. Profil kartında düello sayın, kazanma oranın ve G-M-B (galibiyet-mağlubiyet-beraberlik) istatistiğin yer alır.']))}
   ${sec('💬 Sohbet',li([
-    '<b>Genel sohbet</b>: herkesin gördüğü ortak odadır. Dakikada en fazla 5 mesaj gönderebilirsin (yöneticiler için sınır yoktur); mesaj en çok 500 karakterdir.',
+    '<b>Genel sohbet</b>: herkesin gördüğü ortak odadır. Dakikada en fazla 5 mesaj gönderebilirsin (yöneticiler için sınır yoktur); mesaj en çok 500 karakterdir (yöneticiler için bu da yoktur).',
     '<b>Özel mesaj</b>: birine yazmak için kullanıcı adını ya da adını ara, ya da profil kartından "Mesaj gönder"e bas. Okunmamış mesajlar bildirim sayısıyla görünür: Sohbet düğmesinde özel ve genel mesajların toplamı, sohbetin içinde Özel ve Genel sekmelerinde ayrı ayrı. Genel sohbeti açınca, son çıkışından sonra gelen ilk mesajın üstünde "Okunmamış mesajlar" çizgisi görünür ve liste oraya kayar.',
     'Kendi mesajını silebilirsin. Hakaret, spam ve rahatsız edici içerik yasaktır; yönetici gerekli gördüğünde mesajları silebilir ve hesabı kısıtlayabilir.']))}
   ${sec('✉ Geri bildirim',li([
@@ -3165,7 +3165,7 @@ function vChat(){
   }else{
     const hd=C.view==='dm'?(()=>{const r=chatPeer(C.peer);return`<div class="row" style="gap:10px"><button class="chip" data-act="chat-back">‹ Geri</button><span class="row" data-pc="${esc(C.peer)}" style="gap:10px;cursor:pointer">${avatar(r.name,r.color,false,r.av,frameFor(C.peer,r.fr),0,0,C.peer)}<b>${esc(r.name)}</b></span></div>`})():'';
     body=hd+`<div class="chatlist" id="chatlist" role="log" aria-live="polite">${CHAT.ready?'':'<div class="empty">Yükleniyor…</div>'}</div>
-    <div class="cfm"><input id="chin" class="nameinp" maxlength="500" placeholder="${C.view==='pub'?'Herkese yaz…':'Mesaj yaz…'}" value="${esc(C.draft)}" autocomplete="off" enterkeyhint="send"><button class="btn primary" data-act="chat-send">Gönder</button></div>`;
+    <div class="cfm"><input id="chin" class="nameinp" ${CLOUD.admin?'':'maxlength="500"'} placeholder="${C.view==='pub'?'Herkese yaz…':'Mesaj yaz…'}" value="${esc(C.draft)}" autocomplete="off" enterkeyhint="send"><button class="btn primary" data-act="chat-send">Gönder</button></div>`;
   }
   return`<div class="top"><h1>Sohbet</h1></div><div class="stack">${seg}${body}</div>`;
 }
@@ -3181,7 +3181,7 @@ async function chatSend(){
     if(recent>=5&&!CLOUD.admin){toast('Genel sohbette dakikada en fazla 5 mesaj yazabilirsin.');return}
   }
   CHAT.sending=true;
-  const tmp={id:-Date.now(),user_id:CLOUD.uid,to_user:dm?C.peer:null,sname:S.prof.name||CLOUD.defName,body:v.slice(0,500),created_at:new Date().toISOString()};
+  const tmp={id:-Date.now(),user_id:CLOUD.uid,to_user:dm?C.peer:null,sname:S.prof.name||CLOUD.defName,body:CLOUD.admin?v:v.slice(0,500),created_at:new Date().toISOString()};
   (CHAT.tmp=CHAT.tmp||[]).push(tmp);
   C.draft='';if(inp){inp.value='';}
   C.nb=true;chatPaint();const el0=document.getElementById('chatlist');if(el0)el0.scrollTop=el0.scrollHeight;
