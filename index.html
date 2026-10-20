@@ -430,7 +430,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.82.1';
+const APP_VERSION='4.83.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3309,6 +3309,24 @@ function dOppId(){const d=DUEL.d;if(!d)return null;if(DUEL.bot)return'bot';retur
 function dPeer(id){return id==='bot'?{id:'bot',name:'Bot Kemal',color:3,av:36,fr:''}:chatPeer(id)}
 function dStop(){clearTimeout(DUEL.findT);clearInterval(DUEL.poll);clearInterval(DUEL.tick);DUEL.findT=DUEL.poll=DUEL.tick=null}
 function dReset(){dStop();Object.assign(DUEL,{phase:'lobby',id:null,d:null,qs:null,idx:0,sel:null,bot:null,err:'',find:0,busy:false,me:{s:0,c:0,t:0}})}
+const bugD=x=>x.mode==='ranked'&&+x.s1<=0&&+x.s2<=0&&(x.winner||+x.dl1||+x.dl2)?Object.assign({},x,{winner:null,dl1:0,dl2:0}):x;   // iki tarafın da skoru 0 ya da altı: beraberlik, puan geçişi yok
+DUEL.hp={classic:{rows:[],done:false,busy:false},ranked:{rows:[],done:false,busy:false}};DUEL.hpOk=null;
+async function histPage(mode,reset){
+  const st=DUEL.hp[mode];if(!sb||!CLOUD.uid||st.busy||(!reset&&st.done)||DUEL.hpOk===false)return;
+  st.busy=true;const el0=document.getElementById('dhl'),sc0=el0?el0.scrollTop:0;
+  try{
+    const r=await sb.rpc('duel_history_page',{p_mode:mode,p_off:reset?0:st.rows.length,p_n:50});
+    if(r.error)throw r.error;
+    const got=(r.data||[]).map(bugD);DUEL.hpOk=true;
+    if(reset){const last=got.length?got[got.length-1].created_at:null,ids=new Set(got.map(x=>x.id));
+      st.rows=got.concat(last&&got.length>=50?st.rows.filter(x=>!ids.has(x.id)&&x.created_at<last):[]);if(got.length<50)st.done=true}
+    else{const ids=new Set(st.rows.map(x=>x.id));st.rows=st.rows.concat(got.filter(x=>!ids.has(x.id)));if(got.length<50)st.done=true}
+  }catch(e){if(/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||'')))DUEL.hpOk=false}
+  st.busy=false;
+  if(DUEL.hpOk){DUEL.hist=DUEL.hp.classic.rows.concat(DUEL.hp.ranked.rows);DUEL.allOk=true;
+    if(UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby'){render();const el=document.getElementById('dhl');if(el)el.scrollTop=sc0}}
+}
+document.addEventListener('scroll',e=>{const t=e.target;if(t&&t.id==='dhl'&&t.scrollHeight-t.scrollTop-t.clientHeight<140)histPage(DUEL.sub==='ranked'?'ranked':'classic')},true);
 async function duelRecord(){
   if(!sb||!CLOUD.uid)return;
   if(DUEL.recBusy){DUEL.recAgain=true;return}
@@ -3317,13 +3335,13 @@ async function duelRecord(){
     let r=await sb.from('duels').select('id,p1,p2,winner,s1,s2,c1,c2,a1,a2,t1,t2,created_at,mode,dl1,dl2').eq('status','done').order('created_at',{ascending:false}).limit(200);
     if(r.error)r=await sb.from('duels').select('id,p1,p2,winner,s1,s2,c1,c2,a1,a2,t1,t2,created_at').eq('status','done').order('created_at',{ascending:false}).limit(200);
     if(r.error)throw r.error;
-    const bugD=x=>x.mode==='ranked'&&+x.s1<=0&&+x.s2<=0&&(x.winner||+x.dl1||+x.dl2)?Object.assign({},x,{winner:null,dl1:0,dl2:0}):x;   // iki tarafın da skoru 0 ya da altı: beraberlik, puan geçişi yok
     const L0=(r.data||[]).map(bugD),L=L0.filter(x=>x.mode!=='ranked'),LR=L0.filter(x=>x.mode==='ranked');let w=0,l=0,dr=0;
     try{const h=await sb.rpc('duel_history',{n:100});if(!h.error&&h.data){DUEL.all=h.data.map(bugD);DUEL.allOk=true}else DUEL.allOk=false}catch(e){DUEL.allOk=false}L.forEach(x=>{if(!x.winner)dr++;else if(x.winner===CLOUD.uid)w++;else l++});
     DUEL.hist=DUEL.allOk?DUEL.all:L0.slice(0,50);DUEL.rec={w,l,d:dr,last:L.slice(0,5).map(x=>!x.winner?'D':x.winner===CLOUD.uid?'W':'L')};
     {const rw=LR.filter(x=>x.winner===CLOUD.uid).length,rl=LR.filter(x=>x.winner&&x.winner!==CLOUD.uid).length,rd=LR.filter(x=>!x.winner).length;
      DUEL.recR={w:rw,l:rl,d:rd,net:Math.round(LR.reduce((a,x)=>a+(+(x.p1===CLOUD.uid?x.dl1:x.dl2)||0),0)*10)/10,last:LR.slice(0,5).map(x=>!x.winner?'D':x.winner===CLOUD.uid?'W':'L')}}
     DUEL.recErr='';
+    if(DUEL.hpOk!==false){await Promise.all([histPage('classic',true),histPage('ranked',true)])}
   }catch(e){DUEL.rec=null;DUEL.recErr=/duels|42P01|PGRST205|schema cache/i.test(String(e&&(e.message||e.code)||''))?'setup':'err'}
   DUEL.recBusy=false;
   const hs=JSON.stringify([(DUEL.hist||[]).slice(0,12).map(x=>x.id),DUEL.rec,DUEL.recR]);
@@ -3599,7 +3617,7 @@ function duelHist(){
     return`<div style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;${bg};flex-direction:${right?'row-reverse':'row'};${right?'text-align:right;':''}">${av}${tx}</div>`};
   const rows=H.map(x=>{const w=x.winner;
     return`<div style="display:flex;align-items:center;gap:6px;padding:3px 0" title="${esc(dt(x.created_at))}">${side(x.p1,x.s1,!w?'d':w===x.p1?'w':'l',false,x.c1,x.a1,x.t1,x.dl1)}<span class="muted" style="font-size:.7rem;flex:none">vs</span>${side(x.p2,x.s2,!w?'d':w===x.p2?'w':'l',true,x.c2,x.a2,x.t2,x.dl2)}</div>`}).join('');
-  return`<div class="card stack" style="gap:8px"><h2>${rkm?'Dereceli maç geçmişi':'Maç geçmişi'}</h2>${H.length?`<div style="max-height:330px;overflow-y:auto;overscroll-behavior:contain">${rows}</div><div class="small muted">Son ${H.length} maç${DUEL.allOk?' (tüm oyuncular)':' (yalnızca senin maçların; tüm maçlar için supabase-duel-ranked.sql çalıştırılmalı)'} · <span style="color:#3b82f6">mavi</span> kazanan, <span style="color:var(--bad)">kırmızı</span> kaybeden, gri beraberlik · her maçta toplanan maç puanı${rkm?' ve lige yansıyan puan değişimi':''}.</div>`:`<div class="small muted">Henüz tamamlanmış ${rkm?'dereceli ':''}düello yok.</div>`}</div>`;
+  return`<div class="card stack" style="gap:8px"><h2>${rkm?'Dereceli maç geçmişi':'Maç geçmişi'}</h2>${H.length?`<div id="dhl" style="max-height:330px;overflow-y:auto;overscroll-behavior:contain">${rows}${DUEL.hpOk&&!DUEL.hp[rkm?'ranked':'classic'].done?'<div class="small muted" style="text-align:center;padding:8px">Daha eskileri yükleniyor…</div>':''}</div><div class="small muted">${H.length} maç${DUEL.hpOk?(DUEL.hp[rkm?'ranked':'classic'].done?' (tümü yüklendi)':' (aşağı kaydırdıkça eskileri yüklenir)'):''}${DUEL.allOk?' (tüm oyuncular)':' (yalnızca senin maçların; tüm maçlar için supabase-duel-ranked.sql çalıştırılmalı)'} · <span style="color:#3b82f6">mavi</span> kazanan, <span style="color:var(--bad)">kırmızı</span> kaybeden, gri beraberlik · her maçta toplanan maç puanı${rkm?' ve lige yansıyan puan değişimi':''}.</div>`:`<div class="small muted">Henüz tamamlanmış ${rkm?'dereceli ':''}düello yok.</div>`}</div>`;
 }
 function vDuel(){
   const P=DUEL.phase,d=DUEL.d,n=DQ_N;
