@@ -429,7 +429,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.75.0';
+const APP_VERSION='4.75.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3524,7 +3524,7 @@ function lobbyCard(){
     <button class="btn primary" data-act="inv-send" data-u="${esc(u.id)}" ${can?'':'disabled'}>Dereceli teklif</button></div></div>`;
     return`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="min-width:0;gap:10px">${avatar(u.name,u.color,false,u.av,frameFor(u.id,'auto'),0,0,u.id)}<div style="min-width:0"><b class="w" style="overflow-wrap:anywhere">${esc(u.name)}</b> <span class="muted small">@${esc(u.un)}</span><br><span class="badge ${l[1]}">${lw&&u.st==='free'?'Puanı yetersiz':l[0]}</span></div></div>
     <button class="btn primary" data-act="inv-send" data-u="${esc(u.id)}" ${can?'':'disabled'}>${rkm?'Dereceli teklif':'Düello teklifi'}</button></div></div>`};
-  const dl=x=>x.mode==='ranked'||DUEL.sub==='ranked'?`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><b class="small">${esc(lgName(x.a.id))}</b><span class="mono muted small">🏅 ${x.a1}/${x.qn} · ${x.a2}/${x.qn}</span><b class="small">${esc(lgName(x.b.id))}</b></div></div>`:`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="gap:6px;min-width:0">${avatar(x.a.name,x.a.color,false,x.a.av,frameFor(x.a.id,'auto'),0,0,x.a.id)}<b class="small" style="overflow-wrap:anywhere">${esc(x.a.name)}</b></div><span class="mono muted small">${x.mode==='ranked'?'🏅':'⚔'} ${x.a1}/${x.qn} · ${x.a2}/${x.qn}</span><div class="row" style="gap:6px;min-width:0"><b class="small" style="overflow-wrap:anywhere">${esc(x.b.name)}</b>${avatar(x.b.name,x.b.color,false,x.b.av,frameFor(x.b.id,'auto'),0,0,x.b.id)}</div></div></div>`;
+  const dl=x=>`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><div class="row" style="gap:6px;min-width:0">${avatar(x.a.name,x.a.color,false,x.a.av,frameFor(x.a.id,'auto'),0,0,x.a.id)}<b class="small" style="overflow-wrap:anywhere">${esc(x.a.name)}</b></div><span class="mono muted small">${x.mode==='ranked'?'🏅':'⚔'} ${x.a1}/${x.qn} · ${x.a2}/${x.qn}</span><div class="row" style="gap:6px;min-width:0"><b class="small" style="overflow-wrap:anywhere">${esc(x.b.name)}</b>${avatar(x.b.name,x.b.color,false,x.b.av,frameFor(x.b.id,'auto'),0,0,x.b.id)}</div></div></div>`;
   return`<div class="card stack"><h2>Düello salonu</h2>
    <div class="stack" style="gap:6px"><span class="small muted">${DUEL.sub==='ranked'?'Dereceli sekmesindekiler':'Düello sekmesindekiler'} (${LOBBY.on.length})</span>${LOBBY.on.length?LOBBY.on.map(row).join(''):'<div class="small muted">Şu an düello sekmesinde başka kimse yok.</div>'}</div>
    <div class="stack" style="gap:6px"><span class="small muted">Şu an oynanan düellolar (${LOBBY.duels.length})</span>${LOBBY.duels.length?LOBBY.duels.map(dl).join(''):'<div class="small muted">Şu an süren düello yok.</div>'}</div></div>`;
