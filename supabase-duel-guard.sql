@@ -8,7 +8,7 @@
 --  * duel_flag_list: yönetici listesi.
 
 alter table public.duels drop constraint if exists duels_status_check;
-alter table public.duels add constraint duels_status_check check (status in ('active','done','void'));
+alter table public.duels add constraint duels_status_check check (status in ('active','done','void','test'));
 alter table public.duels add column if not exists void_reason text;
 alter table public.duels add column if not exists void_by uuid;
 

@@ -447,7 +447,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.87.1';
+const APP_VERSION='4.88.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3367,6 +3367,7 @@ function dOpp(){
 }
 function dOppId(){const d=DUEL.d;if(!d)return null;if(DUEL.bot)return'bot';return dIsP1()?d.p2:d.p1}
 function dPeer(id){return id==='bot'?{id:'bot',name:'Bot Kemal',color:3,av:36,fr:''}:chatPeer(id)}
+const dFin=d=>!!d&&(d.status==='done'||d.status==='test');
 function dStop(){clearTimeout(DUEL.findT);clearInterval(DUEL.poll);clearInterval(DUEL.tick);DUEL.findT=DUEL.poll=DUEL.tick=null}
 /* ---------- hile koruması: dereceli düelloda uygulamadan ayrılma (ŞİMDİLİK YALNIZCA YÖNETİCİ) ---------- */
 DUEL.g={hide:0,blur:0,nb:0,saw:false};
@@ -3503,7 +3504,7 @@ async function duelStart(id){
   DUEL.qs=seededQs(d.seed,d.qn);
   duelApply([d]);
   const m=dMine();DUEL.idx=Math.min(m.a,d.qn);DUEL.sel=null;
-  DUEL.phase=d.status==='void'?'void':d.status==='done'?'result':(DUEL.idx>=d.qn?'wait':'count');
+  DUEL.phase=d.status==='void'?'void':dFin(d)?'result':(DUEL.idx>=d.qn?'wait':'count');
   DUEL.tq=0;DUEL.g={hide:0,blur:0,nb:0,saw:false};DUEL.voids=null;
   duelLoops();render();
 }
@@ -3525,7 +3526,7 @@ function duelLoops(){
     await duelFetch();
     if(DUEL.d&&DUEL.d.status==='void'){duelVoid();return}
     duelHud();
-    if(DUEL.d&&DUEL.d.status==='done'&&DUEL.phase!=='result'&&(DUEL.phase==='wait'||dNow()>new Date(DUEL.d.start_at).getTime()+DQ_N*DQ_T*1000))duelEnd();
+    if(dFin(DUEL.d)&&DUEL.phase!=='result'&&(DUEL.phase==='wait'||dNow()>new Date(DUEL.d.start_at).getTime()+DQ_N*DQ_T*1000))duelEnd();
   },1500);
   DUEL.tick=setInterval(duelTick,100);
 }
@@ -3553,7 +3554,7 @@ function duelAnswer(i){
   const it=DUEL.qs[DUEL.idx],ok=i>=0&&it.options[i]===it.correct;
   const ms=Math.min(DQ_T*1000,Math.max(300,Date.now()-DUEL.tq));
   DUEL.sel=i;DUEL.lastOk=ok;
-  if(i>=0){try{applyAnswer(Object.assign(it,{kind:S.learned[it.w.word]?'dup':'new'}),ok,it.options[i],{right:0,wrong:[],learnedNow:[]},true);save()}catch(e){}}
+  if(i>=0&&!(!DUEL.bot&&grdUser())){try{applyAnswer(Object.assign(it,{kind:S.learned[it.w.word]?'dup':'new'}),ok,it.options[i],{right:0,wrong:[],learnedNow:[]},true);save()}catch(e){}}
   const pts=ok?dPts(it.w.level,ms):dPen(it.w.level,i<0);
   const idx=DUEL.idx;
   if(DUEL.bot){const d=DUEL.d;d.a1++;d.s1+=pts;if(ok)d.c1++;d.t1+=ms}
@@ -3565,7 +3566,7 @@ function duelAnswer(i){
   setTimeout(()=>{
     if(DUEL.phase!=='play')return;
     DUEL.idx++;DUEL.sel=null;
-    if(DUEL.idx>=DQ_N){DUEL.phase='wait';render();if(DUEL.bot)return;duelFetch().then(()=>{if(DUEL.d&&DUEL.d.status==='done')duelEnd()})}
+    if(DUEL.idx>=DQ_N){DUEL.phase='wait';render();if(DUEL.bot)return;duelFetch().then(()=>{if(dFin(DUEL.d))duelEnd()})}
     else{DUEL.tq=Date.now();render()}
   },ok?700:1300);
 }
@@ -3790,13 +3791,13 @@ function vDuel(){
     body=`<div class="card stack" style="text-align:center"><h1 style="margin:0">${draw?'🤝 Berabere':win?'🏆 Kazandın!':'😤 Kaybettin'}</h1>
       <div id="dhud">${dHudHtml()}</div>
       <div class="kp"><div><b>${m.c}/${n}</b><span>doğru</span></div><div><b>${avg||'–'}</b><span>ort. süre (sn)</span></div><div><b>${o.c}/${n}</b><span>rakip doğru</span></div></div>
-      ${DUEL.bot?'<div class="muted small">Alıştırma maçı kayda geçmez, puan bahsi yoktur.</div>':d.mode==='ranked'?(()=>{const dl=d.p1===CLOUD.uid?d.dl1:d.dl2;if(dl==null)return'<div class="muted small">Puan değişimi hesaplanıyor…</div>';const v=+dl,od=d.p1===CLOUD.uid?d.dl2:d.dl1,tr=Math.max(Math.abs(v),Math.abs(+od||0)),tx=v>0?Math.round((tr-v)*10)/10:0;return`<div class="kp" style="grid-template-columns:repeat(2,1fr)"><div><b style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(r1(Math.abs(v)))}</b><span>dereceli puan</span></div><div><b>${nf(r1(S.tp||0))}</b><span>yeni toplam</span></div></div><div class="muted small">${draw?'Berabere kaldınız, kimse puan kaybetmedi.':`Geçen puan: ${nf(r1(tr))}${tx>0?` · kesinti: ${nf(r1(tx))}`:''}`}</div>`})():(()=>{const pay=d.pay1==null?null:(d.p1===CLOUD.uid?d.pay1:d.pay2);return pay==null?'<div class="muted small">Puan dağıtımı hesaplanıyor…</div>':`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>−${DSTAKE}</b><span>bahis</span></div><div><b>+${nf(r1(+pay))}</b><span>kazanç</span></div><div><b>${(+pay-DSTAKE)>=0?'+':'−'}${nf(r1(Math.abs(+pay-DSTAKE)))}</b><span>net puan</span></div></div>`})()}
+      ${d.status==='test'?'<div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)">🧪 <b>Test maçı:</b> kayda geçmedi. Puan, geçmiş, galibiyet sayısı ve doğru/yanlış istatistiğine işlenmedi.</div>':DUEL.bot?'<div class="muted small">Alıştırma maçı kayda geçmez, puan bahsi yoktur.</div>':d.mode==='ranked'?(()=>{const dl=d.p1===CLOUD.uid?d.dl1:d.dl2;if(dl==null)return'<div class="muted small">Puan değişimi hesaplanıyor…</div>';const v=+dl,od=d.p1===CLOUD.uid?d.dl2:d.dl1,tr=Math.max(Math.abs(v),Math.abs(+od||0)),tx=v>0?Math.round((tr-v)*10)/10:0;return`<div class="kp" style="grid-template-columns:repeat(2,1fr)"><div><b style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(r1(Math.abs(v)))}</b><span>dereceli puan</span></div><div><b>${nf(r1(S.tp||0))}</b><span>yeni toplam</span></div></div><div class="muted small">${draw?'Berabere kaldınız, kimse puan kaybetmedi.':`Geçen puan: ${nf(r1(tr))}${tx>0?` · kesinti: ${nf(r1(tx))}`:''}`}</div>`})():(()=>{const pay=d.pay1==null?null:(d.p1===CLOUD.uid?d.pay1:d.pay2);return pay==null?'<div class="muted small">Puan dağıtımı hesaplanıyor…</div>':`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>−${DSTAKE}</b><span>bahis</span></div><div><b>+${nf(r1(+pay))}</b><span>kazanç</span></div><div><b>${(+pay-DSTAKE)>=0?'+':'−'}${nf(r1(Math.abs(+pay-DSTAKE)))}</b><span>net puan</span></div></div>`})()}
       <button class="btn primary block" data-act="duel-find">Yeni rakip bul</button>
       <button class="btn block" data-act="duel-exit">Çık</button></div>`;
   }
   const inGame=['count','play','wait'].includes(P);
   const rkv=DUEL.sub==='ranked'||(d&&d.mode==='ranked'&&P!=='lobby');
-  return`<div class="top"><h1>Düello</h1></div><div class="stack${rkv?' vlv pg':''}">${P==='lobby'?seg:''}${body}</div>`;
+  return`<div class="top"><h1>Düello</h1></div><div class="stack${rkv?' vlv pg':''}">${P==='lobby'?seg:''}${P==='lobby'&&grdUser()?'<div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)">🧪 <b>Test modu:</b> şimdilik yalnızca yönetici ve test hesabıyla düello oynayabilirsin. Bu maçlar kayda geçmez, puan ve istatistiğe işlenmez. Diğer kullanıcılar seni göremez, sana teklif gönderemez.</div>':''}${body}</div>`;
 }
 function setTab(t){
   if(t==='chat'&&UI.tab!=='chat')chatSnap();
