@@ -430,7 +430,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.81.0';
+const APP_VERSION='4.82.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -518,7 +518,10 @@ const flagOne=(f,fi)=>{const d0=flagPath(0),an=REDM?'':`<animate attributeName="
 const flagHtml=(id,f0)=>f0?flagOne(f0,0):flagsOf(id).map((f,i)=>flagOne(f,i)).join('');
 const flCls=id=>{const n=flagsOf(id).length;return n?' hasfl'+(n>1?' hasfl'+n:''):''};
 const kingId=()=>{const c=RKB.per.all,r=c&&c.rows&&c.rows[0];return r&&+r.net>0?r.user_id:null};
-const isKing=id=>!!id&&id===kingId();
+const kingPos=id=>{if(!id)return 0;const c=RKB.per.all,rs=c&&c.rows;if(!rs)return 0;for(let i=0;i<3&&i<rs.length;i++)if(rs[i].user_id===id&&+rs[i].net>0)return i+1;return 0};
+const isKing=id=>kingPos(id)>0;   // dereceli düello ilk 3: kızıl kadife + Fatih flaması (köpek yalnızca 1.)
+const isDog=id=>kingPos(id)===1;
+const KPOSN=['','birincisi','ikincisi','üçüncüsü'];
 const lgAttr=id=>isKing(id)?'':`data-lg="${isAdm(id)?'admin':(leagueMap()[id]|0)}"`;
 const myLeague=()=>leagueMap()[CLOUD.uid]|0;
 const normFrame=f=>(f==='none'||LGIDX.has(f))?f:'auto';
@@ -1484,7 +1487,7 @@ function vHelp(){
     '<b>Sıra</b> sekmesinde Günlük, Haftalık ve Tüm zamanlar tablolarını görürsün. Günlük puan her gün gece yarısı sıfırlanır.',
     'Her ligin kendine ait profil çerçevesi vardır. Ben → Profil\'den adını, avatarını ve çerçevenin görünümünü seçebilirsin. Seçtiğin çerçeve ulaştığın ligi geçemez. <b>Miğfer avatarları</b>: Platin, Zümrüt, Elmas, Ustalık, Büyükustalık ve Şampiyonluk liglerine ulaşanlar o ligin renginde bir miğfer avatarı kazanır (Ben → Profil → Avatar). Diğer kullanıcılar için kilitlidir. Ligin düşerse üstteki miğferler yeniden kilitlenir.',
     '<b>Gün Lideri / Hafta Lideri</b>: bir günü ya da haftayı sıralamada birinci bitiren kişi bu unvanı kazanır. Profil kartında "3 x Gün Lideri", "2 x Hafta Lideri" gibi sayaçlar görünür; Bugün ekranında da dünün ve geçen haftanın lideri puanıyla gösterilir. Sayım yönetici bu özelliği açtığı günden itibaren tutulur.',
-    '<b>Ödül bildirimi</b>: Yeni bir rozet, lig çerçevesi, avatar, flama ya da dereceli düello birinciliği (köpek, kadife, sancak) kazandığın anda ekranın ortasında, parlayan bir kart açılır. Kartta ödülün ne olduğu, neden kazandığın ve ne kadar süre geçerli olduğu yazar. Test veya düello sürerken kart bekler, bitince açılır. Bir ödül sana bir kez gösterilir.',
+    '<b>Ödül bildirimi</b>: Yeni bir rozet, lig çerçevesi, avatar, flama ya da dereceli düello ilk üçü (köpek, kadife, Fatih flaması) kazandığın anda ekranın ortasında, parlayan bir kart açılır. Kartta ödülün ne olduğu, neden kazandığın ve ne kadar süre geçerli olduğu yazar. Test veya düello sürerken kart bekler, bitince açılır. Bir ödül sana bir kez gösterilir.',
     '<b>Dünün birincisi</b>: günlük sıralamada bir önceki günün birincisi, ertesi gün boyunca profil satırında ve kartında altın defne dallı flama taşır; ertesi gün kalkar.',
     '<b>Geçen haftanın birincisi</b>: haftalık sıralamada bir önceki haftanın birincisi, yeni hafta boyunca (bir hafta) profil satırında ve kartında dört yapraklı yoncalı altın flama taşır; hafta bitince kalkar. Hem dünün hem geçen haftanın birincisiysen iki flama yan yana görünür (haftanın birincisi önde, dünün birincisi arkada).',
     '<b>Flama</b>: yönetici bazı kullanıcılara özel flama verir (ör. Test eden yapımcı). Flama profil satırının ve kartının sağında sallanır; üzerine gelince ne olduğunu görürsün.',
@@ -1503,7 +1506,7 @@ function vHelp(){
     '<b>Dereceli düello — eşleşme</b>: Rastgele eşleşme aynı veya komşu ligdekilerle yapılır (lig, galibiyet şartı dahil etkin ligindir); kişi seçerek teklif gönderilemez. Dereceli galibiyetlerin lig şartına sayılır: rakibinin ligi seninkinden en çok 2 lig farklıysa galibiyet sayılır. Aynı kişiyle 24 saatte en çok 3 dereceli maç oynanır. Maçı yarıda bırakırsan cevaplanmayan her soru −100 sayılır. Dereceli puanların genel günlük, haftalık ve toplam puana da işlenir.',
     '<b>Dereceli salon</b>: Maçtan önce kimsenin adı görünmez. Salonda <b>Maç arayanlar</b> (Dereceli rakip bul\'a basanlar) ve <b>Lobidekiler</b> (sekmede bekleyenler) listelenir; her satırda yalnızca "Gizli kullanıcı" ve ligi (ör. Altın ligi) yazar. Süren maçlarda ise oyuncu adları görünür. Rakibini maç başlayınca öğrenirsin.',
     '<b>Dereceli ödül</b>: Dereceli düelloda <b>1 galibiyet</b> alan herkes profil resimlerinde <b>Düello Ejderi</b> avatarını açar. Galibiyet sayın sunucudan okunur, gerçek ve geçerli galibiyetler sayılır.',
-    '<b>Dereceli birincilik ödülleri</b>: Sıra → Dereceli düello → <b>Tüm zamanlar</b> tablosunda 1. olan kişi (puanı artıdaysa) şunları kazanır: avatarı ve çerçevesinin yerine geçen <b>havlayan köpek</b> ("HAV!"), <b>kızıl kadife</b> profil satırı, kartı ve çubuğu, ve taç ile "1" taşıyan <b>altın sancak</b>. Bunlar sıralamada, profil kartında ve sohbette her yerde görünür. Birincilik başkasına geçince hepsi de yeni birinciye geçer. Köpek avatar listesinde kilitlidir; seçilemez, yalnızca birinciye otomatik verilir. Tüm profil özellikleri ve nasıl kazanıldıkları Ben → Profil → <b>Profil özellikleri</b> bölümünde.',
+    '<b>Dereceli birincilik ödülleri</b>: Sıra → Dereceli düello → <b>Tüm zamanlar</b> tablosunda ilk üçe giren (puanı artıdaki) kişiler <b>kızıl kadife</b> profil satırı, kartı ve çubuğu ile tacın üstünde sıra numarası (1, 2 ya da 3) yazan <b>Fatih flaması</b> kazanır. <b>Birinci</b> ayrıca avatarı ve çerçevesinin yerine geçen <b>havlayan köpeği</b> ("HAV!") alır. Bunlar sıralamada, profil kartında ve sohbette her yerde görünür. Sıralama değişince ödüller de yeni sahiplerine geçer. Köpek avatar listesinde kilitlidir; seçilemez, yalnızca birinciye otomatik verilir. Tüm profil özellikleri ve nasıl kazanıldıkları Ben → Profil → <b>Profil özellikleri</b> bölümünde.',
     '<b>Dereceli sıralama ve profil</b>: Sıralama → <b>Dereceli düello</b> tablosu, yalnızca dereceli maçlardan kazanılan ve kaybedilen puanların toplamını gösterir (galibiyet, beraberlik, mağlubiyet, doğru oranı ve ortalama cevap süresiyle). Profil kartındaki Düello kutusunda klasik ve dereceli istatistikler ayrı yazar.',
     
     '<b>Klasik bahis</b>: herkes '+DSTAKE+' puan koyar (havuz '+DSTAKE*2+'). Sistem havuza <b>5 puan ekler</b>, dağıtılacak toplam <b>45 puan</b> olur: 25\'ini kazanan alır, 20\'si maç puanlarına göre paylaşılır (kazananın maç skoru ÷ iki oyuncunun toplam skoru kadar pay kazanana, kalanı kaybedene). Beraberlikte 45 puan yarı yarıya (22,5 + 22,5) bölünür.',
@@ -1916,17 +1919,22 @@ function rwCheck(){
   if(!(S.rwd._>0)){
     if(!rwReady())return;
     cs.forEach(c=>{rwMarkOne(c.id);(c.cover||[]).forEach(rwMarkOne)});
-    S.rwd._=Date.now();S.rwd.kingOn=isKing(CLOUD.uid)?Date.now():-Date.now();save();return;
+    S.rwd._=Date.now();[1,2,3].forEach(q=>{S.rwd[q===1?'kingOn':'kingOn'+q]=kingPos(CLOUD.uid)===q?Date.now():-Date.now()});save();return;
   }
   cs.forEach(c=>{
     if(!rwReady()&&c.id.indexOf('b:')!==0)return;
     if(!rwSeen(c.id)&&!RWR.q.some(x=>x.id===c.id)&&!(RWR.cur&&RWR.cur.id===c.id))RWR.q.push(c);
   });
   if(rwReady()){
-    const king=isKing(CLOUD.uid),on=S.rwd.kingOn>0;
-    if(king&&!on&&!RWR.q.some(x=>x.id==='king')&&!(RWR.cur&&RWR.cur.id==='king')){
-      RWR.q.push({id:'king',kicker:'Dereceli düello birincisi',title:'Birincisin!',desc:'Dereceli düello tablosunda (Tüm zamanlar) 1. oldun. Avatarın ve çerçevenin yerine havlayan köpek, kızıl kadife profil ve altın sancak artık sende. Birinciliği kaybedersen hepsi yeni birinciye geçer.',when:'Birinciliğin sürdüğü kadar',obj:dogAvatar(true,false)+kingFlag('x',true),cls:'king'});
-    }else if(!king&&on){S.rwd.kingOn=-Date.now();save()}
+    const kp=kingPos(CLOUD.uid);
+    [1,2,3].forEach(q=>{
+      const key=q===1?'kingOn':'kingOn'+q,id=q===1?'king':'king'+q,on=S.rwd[key]>0;
+      if(kp===q&&!on&&!RWR.q.some(x=>x.id===id)&&!(RWR.cur&&RWR.cur.id===id)){
+        RWR.q.push(q===1
+          ?{id,kicker:'Dereceli düello birincisi',title:'Birincisin!',desc:'Dereceli düello tablosunda (Tüm zamanlar) 1. oldun. Avatarın ve çerçevenin yerine havlayan köpek, kızıl kadife profil ve Fatih flaması artık sende. Birinciliği kaybedersen hepsi yeni birinciye geçer.',when:'Birinciliğin sürdüğü kadar',obj:dogAvatar(true,false)+kingFlag('x',true,1),cls:'king'}
+          :{id,kicker:'Dereceli düello '+KPOSN[q],title:q+'. oldun!',desc:'Dereceli düello tablosunda (Tüm zamanlar) '+q+'. oldun. Kızıl kadife profil ve içinde "'+q+'" yazan Fatih flaması artık sende. Sıran değişirse flaman da sıranla birlikte değişir.',when:'Sıralamada kaldığın sürece',obj:kingFlag('x',true,q),cls:'king'});
+      }else if(kp!==q&&on){S.rwd[key]=-Date.now();save()}
+    });
   }
 }
 function rwMarkOne(id){if(!S.rwd)S.rwd={};S.rwd[id]=Date.now()}
@@ -1951,7 +1959,7 @@ function rwShow(r){
   const close=()=>{
     d.remove();
     rwMarkOne(r.id);(r.cover||[]).forEach(rwMarkOne);
-    if(r.id==='king')S.rwd.kingOn=Date.now();
+    if(/^king[23]?$/.test(r.id))S.rwd[r.id==='king'?'kingOn':'kingOn'+r.id.slice(4)]=Date.now();
     RWR.cur=null;save();
     setTimeout(()=>{try{rwPump()}catch(e){}},400);
   };
@@ -2750,7 +2758,8 @@ function frameSVG(k){
   return`<svg class="frm" viewBox="-100 -100 200 200" aria-hidden="true" style="--gc:${P.c}"><defs>${defs}</defs>${b}</svg>`;
 }
 let kflN=0;
-function kingFlag(id,force){
+function kingFlag(id,force,pos){
+  pos=pos||kingPos(id)||1;
   if(!force&&!isKing(id))return'';
   const u='kf'+(++kflN),wv=(s,p)=>Math.sin(s*4.6-p)*4.2*s+Math.sin(s*8-2*p)*1.3*s,K=8;
   const path=p=>{const n=10,L=[],R=[];for(let i=0;i<=n;i++){const s=i/n,y=5+s*80,w=wv(s,p);L.push((7+w).toFixed(1)+' '+y.toFixed(1));R.push((37+w).toFixed(1)+' '+y.toFixed(1))}
@@ -2758,12 +2767,12 @@ function kingFlag(id,force){
   const vals=[],ems=[];for(let k=0;k<=K;k++){const p=k/K*Math.PI*2;vals.push(path(p));ems.push((wv(.4,p)).toFixed(1)+' 0')}
   const an=REDM?'':`<animate attributeName="d" dur="3.2s" repeatCount="indefinite" values="${vals.join(';')}"/>`;
   const ae=REDM?'':`<animateTransform attributeName="transform" type="translate" dur="3.2s" repeatCount="indefinite" values="${ems.join(';')}"/>`;
-  return`<span class="kfl" role="img" tabindex="0" aria-label="Dereceli düello birincisi" data-tip="Dereceli düello birincisi"><svg viewBox="-4 -2 52 100"><defs>
+  return`<span class="kfl" role="img" tabindex="0" aria-label="Fatih flaması · Dereceli düello ${KPOSN[pos]}" data-tip="Fatih flaması · Dereceli düello ${KPOSN[pos]}"><svg viewBox="-4 -2 52 100"><defs>
 <linearGradient id="${u}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff2b0"/><stop offset=".5" stop-color="#e0b52a"/><stop offset="1" stop-color="#8a6510"/></linearGradient>
 <linearGradient id="${u}c" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d0183a"/><stop offset="1" stop-color="#6e0a1c"/></linearGradient></defs>
 <path d="${vals[0]}" fill="url(#${u}c)" stroke="#f3d27a" stroke-width="1.4" stroke-linejoin="round">${an}</path>
-<g>${ae}<g transform="translate(22 43)"><path d="M-9 4 L-10 -6 L-5 -1 L0 -9 L5 -1 L10 -6 L9 4Z" fill="url(#${u}g)" stroke="#7a5a18" stroke-width=".8"/><rect x="-9" y="5" width="18" height="3" rx="1" fill="url(#${u}g)" stroke="#7a5a18" stroke-width=".6"/><circle cx="0" cy="-10" r="1.6" fill="#fff2b0"/><circle cx="-10" cy="-7" r="1.3" fill="#fff2b0"/><circle cx="10" cy="-7" r="1.3" fill="#fff2b0"/>
-<text x="0" y="26" text-anchor="middle" font-family="Georgia,serif" font-weight="800" font-size="17" fill="#f3d27a" stroke="#4a0a18" stroke-width="2" paint-order="stroke">1</text></g></g>
+<g>${ae}<g transform="translate(22 54)"><path d="M-9 4 L-10 -6 L-5 -1 L0 -9 L5 -1 L10 -6 L9 4Z" fill="url(#${u}g)" stroke="#7a5a18" stroke-width=".8"/><rect x="-9" y="5" width="18" height="3" rx="1" fill="url(#${u}g)" stroke="#7a5a18" stroke-width=".6"/><circle cx="0" cy="-10" r="1.6" fill="#fff2b0"/><circle cx="-10" cy="-7" r="1.3" fill="#fff2b0"/><circle cx="10" cy="-7" r="1.3" fill="#fff2b0"/>
+<text x="0" y="-16" text-anchor="middle" font-family="Georgia,serif" font-weight="800" font-size="17" fill="#f3d27a" stroke="#4a0a18" stroke-width="2" paint-order="stroke">${pos}</text></g></g>
 <rect x="2" y="-1" width="38" height="5" rx="2.5" fill="url(#${u}g)" stroke="#6a4a10" stroke-width=".6"/><circle cx="2" cy="1.5" r="3.4" fill="url(#${u}g)" stroke="#6a4a10" stroke-width=".6"/><circle cx="42" cy="1.5" r="3.4" fill="url(#${u}g)" stroke="#6a4a10" stroke-width=".6"/>
 </svg></span>`;
 }
@@ -2798,7 +2807,7 @@ function dogAvatar(lg,xl){
 </svg></span></span>`;
 }
 const avatar=(name,color,lg,av,fr,crown,xl,uid)=>{
-  if(uid&&isKing(uid))return dogAvatar(lg,xl);
+  if(uid&&isDog(uid))return dogAvatar(lg,xl);
   const e=(av|0)>0&&AVATARS[(av|0)-1];
   const sz=xl?' xl':lg?' lg':'';
   const cr=crown?`<span class="crown" aria-hidden="true">${['🥇','🥈','🥉'][crown-1]}</span>`:'';
@@ -2867,10 +2876,10 @@ function profFeatures(){
   const avl=n=>`<span class="avw"><span class="av em svgav">${avSvg(n)}</span></span>`;
   const m4=menu('Profil rengi menüsü',[
     tile(true,'Normal',`<div class="pfvl pfn"><span class="av sm" style="background:#475569"></span><b>Ad</b></div>`,'Normal profil: herkesin varsayılan görünümü. Sende açık.'),
-    tile(king,'Kırmızı kadife',kv,how(king,'Kırmızı kadife','birincinin satırı, profil kartı ve profil çubuğu kızıl kadife ve altın yazıyla görünür.','Dereceli düello birincisi ol. Birincilikle birlikte gelir, kaybedince kalkar.')),
+    tile(king,'Kırmızı kadife',kv,how(king,'Kırmızı kadife','dereceli düello ilk üçündekilerin satırı, profil kartı ve profil çubuğu kızıl kadife ve altın yazıyla görünür.','Dereceli düello tablosunda (Tüm zamanlar) ilk üçe gir. Sıralamayla birlikte gelir, ilk üçten çıkınca kalkar.')),
     tile(adm,'Yönetici',`<div class="pfvl" style="background:#1f2937;border-color:#ef4444"><span class="av sm" style="background:#475569"></span><b>Ad</b></div>`,adm?'Yönetici profili: yönetici hesaplarına otomatik verilir. Sende açık.':'Yönetici profili: yalnızca yöneticilere ayrılmıştır.')]);
   const m5=menu('Flama menüsü',[
-    tile(king,'Altın sancak',kingFlag('x',true),how(king,'Altın sancak ve "HAV!"','birincinin satırında ve kartında taç ve "1" taşıyan kırmızı sancak dalgalanır, köpek "HAV!" diye havlar.','Dereceli düello birincisi ol. Birincilikle birlikte gelir, kaybedince kalkar.'),true),
+    tile(king,'Fatih flaması',kingFlag('x',true,kingPos(CLOUD.uid)||1),how(king,'Fatih flaması','dereceli düello ilk üçündekilerin satırında ve kartında, tacın üstünde sıra numarası (1, 2 ya da 3) yazan kırmızı flama dalgalanır. Yalnızca birinci ayrıca havlayan köpeği ve "HAV!" sesini alır.','Dereceli düello tablosunda (Tüm zamanlar) ilk üçe gir. Sıralamayla birlikte gelir, ilk üçten çıkınca kalkar.'),true),
     tile(dayc,'Dünün birincisi',flagHtml('x',AUTOFLAG),how(dayc,'Dünün birincisi flaması','altın defne dallı flama; önceki günün günlük birincisine ertesi gün boyunca verilir.','Günlük sıralamayı birinci bitir. Flama ertesi gün gelir ve bir gün kalır.'),true),
     tile(weekc,'Haftanın birincisi',flagHtml('x',WEEKFLAG),how(weekc,'Geçen haftanın birincisi flaması','dört yapraklı yoncalı altın flama; geçen haftayı sıralamada birinci bitirene yeni hafta boyunca verilir.','Haftalık sıralamayı birinci bitir. Flama ertesi hafta gelir ve bir hafta kalır.'),true),
     tile(sp,'Test eden yapımcı',flagHtml('x',BYFLAG.get('maker')),how(sp,'Özel flama','yönetici tarafından seçilmiş kişilere verilen özel flama.','yönetici verir; başvuruyla ya da puanla kazanılmaz.'),true)]);
@@ -2956,11 +2965,11 @@ const RKB={per:{},busy:false};
 async function rkbLoad(per,force){
   if(!sb||!CLOUD.uid||RKB.busy)return;
   const c=RKB.per[per];if(c&&!force&&Date.now()-c.t<30000)return;
-  RKB.busy=true;const k0=kingId();
+  RKB.busy=true;const k0=[1,2,3].map(q=>{const r=RKB.per.all&&RKB.per.all.rows&&RKB.per.all.rows[q-1];return r&&+r.net>0?r.user_id:''}).join('|');
   try{const r=await sb.rpc('duel_rank',{p_per:per});if(r.error)throw r.error;RKB.per[per]={t:Date.now(),rows:r.data||[]}}
   catch(e){RKB.per[per]={t:Date.now(),rows:[],err:/PGRST202|42883|schema cache|does not exist/i.test(String((e&&(e.message||e.code))||''))?'setup':'err'}}
   finally{RKB.busy=false}
-  if((UI.tab==='rank'&&UI.rank.mode==='ranked')||k0!==kingId())render();
+  if((UI.tab==='rank'&&UI.rank.mode==='ranked')||k0!==[1,2,3].map(q=>{const r=RKB.per.all&&RKB.per.all.rows&&RKB.per.all.rows[q-1];return r&&+r.net>0?r.user_id:''}).join('|'))render();
 }
 function rankedBoardHtml(per){
   const c=RKB.per[per];if(!c)rkbLoad(per);
