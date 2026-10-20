@@ -287,6 +287,15 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .kfl svg{display:block;width:100%;height:100%;overflow:visible}
 .kv{position:relative}
 .rk.king .val{padding-right:30px}.rk.king{padding-right:10px}.rk.king .kfl{right:6px}
+.rk{grid-template-columns:22px 48px 1fr auto;column-gap:5px}
+.rk .pos{font-size:1rem}
+.rk .vw{display:flex;align-items:center;align-self:stretch;justify-content:flex-end;gap:2px}
+.rk .fls{display:flex;align-items:flex-start;gap:1px;align-self:flex-start;margin-top:-11px;margin-left:-8px;flex:none}
+.rk .fls .flg,.rk .fls .kfl{position:relative;right:auto;top:0;flex:none}
+.rk .fls .kfl{width:30px;height:66px}
+.rk.hasfl,.rk.hasfl2,.rk.hasfl3,.rk.king{padding-right:12px!important;margin-bottom:0}
+.rk.king .val{padding-right:0}.rk.king{min-height:68px}
+
 .pbar.king{padding-right:62px}
 .king .flg{right:calc(60px + var(--i,0)*26px)}
 .sheet.king .kfl{right:22px;top:0;width:44px;height:96px}
@@ -430,7 +439,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.83.4';
+const APP_VERSION='4.83.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -516,6 +525,7 @@ const flagOne=(f,fi)=>{const d0=flagPath(0),an=REDM?'':`<animate attributeName="
   if(f.auto)return`<span class="flg ${f.id}" style="--i:${fi|0}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><linearGradient id="flgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2a8"/><stop offset=".45" stop-color="#ffc928"/><stop offset="1" stop-color="#e08a00"/></linearGradient></defs><path d="${d0}" fill="url(#flgd)" stroke="#7a4b00" stroke-width="1.6" stroke-linejoin="round">${an}</path><g fill="#2f5d1f" stroke="#1d3d12" stroke-width=".5"><path d="M17 20 C17.8 25 17.8 38 17 62" fill="none" stroke="#1d3d12" stroke-width="1.3" stroke-linecap="round"/><ellipse cx="17" cy="21" rx="1.9" ry="4.6"/><ellipse cx="12.4" cy="30" rx="4.6" ry="1.9" transform="rotate(35 12.4 30)"/><ellipse cx="21.6" cy="30" rx="4.6" ry="1.9" transform="rotate(-35 21.6 30)"/><ellipse cx="12.4" cy="38" rx="4.6" ry="1.9" transform="rotate(35 12.4 38)"/><ellipse cx="21.6" cy="38" rx="4.6" ry="1.9" transform="rotate(-35 21.6 38)"/><ellipse cx="12.4" cy="46" rx="4.6" ry="1.9" transform="rotate(35 12.4 46)"/><ellipse cx="21.6" cy="46" rx="4.6" ry="1.9" transform="rotate(-35 21.6 46)"/><ellipse cx="12.4" cy="54" rx="4.6" ry="1.9" transform="rotate(35 12.4 54)"/><ellipse cx="21.6" cy="54" rx="4.6" ry="1.9" transform="rotate(-35 21.6 54)"/></g></svg></span>`;
   return`<span class="flg ${f.id}" style="--i:${fi|0}" role="img" tabindex="0" aria-label="${esc(f.n)}" data-tip="${esc(f.n)}"><svg viewBox="0 0 34 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><defs><pattern id="flgp" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="6" fill="#ffd000"/><rect y="6" width="12" height="6" fill="#111"/></pattern></defs><path d="${d0}" fill="url(#flgp)" stroke="#111" stroke-width="1.6" stroke-linejoin="round">${an}</path></svg></span>`};
 const flagHtml=(id,f0)=>f0?flagOne(f0,0):flagsOf(id).map((f,i)=>flagOne(f,i)).join('');
+const flsHtml=id=>{const k=isKing(id),n=flagsOf(id).length;return k||n?`<span class="fls">${kingFlag(id)}${flagHtml(id)}</span>`:''};
 const flCls=id=>{const n=flagsOf(id).length;return n?' hasfl'+(n>1?' hasfl'+n:''):''};
 const kingId=()=>{const c=RKB.per.all,r=c&&c.rows&&c.rows[0];return r&&+r.net>0?r.user_id:null};
 const kingPos=id=>{if(!id)return 0;const c=RKB.per.all,rs=c&&c.rows;if(!rs)return 0;for(let i=0;i<3&&i<rs.length;i++)if(rs[i].user_id===id&&+rs[i].net>0)return i+1;return 0};
@@ -2936,7 +2946,7 @@ function vRank(){
     ranked.forEach((r,i)=>{r.rank=(i>0&&ranked[i-1].x.p===r.x.p&&lgOf(ranked[i-1])===lgOf(r))?ranked[i-1].rank:i+1});
     const acc=r=>r.x.n?Math.round(r.x.c/r.x.n*100):0;
     const wt=weekTop();
-    const row=r=>`<div class="rk ${r.me?'me':''} ${r.rank&&r.rank<=3?'top':''}${flCls(r.id)}${isKing(r.id)?' king kv':''}" ${lgAttr(r.id)} data-pc="${esc(r.id)}"><span class="pos">${r.rank||'–'}</span>${avatar(r.name,r.color,false,r.av,frameFor(r.id,r.fr),wt[r.id],0,r.id)}<div class="nm">${esc(r.name)}${r.me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400;line-height:1.35"><div>${r.x.n} soru</div><div>%${acc(r)} doğruluk</div>${r.st?`<div>🔥 ${r.st} gün seri</div>`:''}</div></div><div class="val">${nf(Math.round(r.x.p*10)/10)}<small>puan</small></div>${kingFlag(r.id)}${flagHtml(r.id)}</div>`;
+    const row=r=>`<div class="rk ${r.me?'me':''} ${r.rank&&r.rank<=3?'top':''}${flCls(r.id)}${isKing(r.id)?' king kv':''}" ${lgAttr(r.id)} data-pc="${esc(r.id)}"><span class="pos">${r.rank||'–'}</span>${avatar(r.name,r.color,false,r.av,frameFor(r.id,r.fr),wt[r.id],0,r.id)}<div class="nm">${esc(r.name)}${r.me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400;line-height:1.35"><div>${r.x.n} soru</div><div>%${acc(r)} doğruluk</div>${r.st?`<div>🔥 ${r.st} gün seri</div>`:''}</div></div><div class="vw">${flsHtml(r.id)}<div class="val">${nf(Math.round(r.x.p*10)/10)}<small>puan</small></div></div></div>`;
     const TOPN={day:10,week:20,all:30}[per]||10,top=ranked.slice(0,TOPN);
     const me=rows.find(r=>r.me);
     let mine='';
@@ -2977,7 +2987,7 @@ function rankedBoardHtml(per){
   rows.forEach((r,i)=>{r.rank=(i>0&&+rows[i-1].net===+r.net)?rows[i-1].rank:i+1});
   const wt=weekTop(),TOPN={day:10,week:20,all:30}[per]||10,top=rows.slice(0,TOPN);
   const row=r=>{const acc=r.a?Math.round(r.c/r.a*100):0,avg=r.a?(Math.round(r.t/r.a/100)/10).toFixed(1):'–',v=+r.net||0,me=r.user_id===CLOUD.uid,u=r.name||'Oyuncu';
-    return`<div class="rk ${me?'me':''} ${r.rank<=3?'top':''}${flCls(r.user_id)}${isKing(r.user_id)?' king kv':''}" ${lgAttr(r.user_id)} data-pc="${esc(r.user_id)}"><span class="pos">${r.rank}</span>${avatar(u,r.color|0,false,r.av|0,frameFor(r.user_id,r.fr||''),wt[r.user_id],0,r.user_id)}<div class="nm">${esc(u)}${me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">G ${r.w} · B ${r.d} · M ${r.l} · %${acc} doğru · ${avg} sn</div></div><div class="val" style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(Math.round(Math.abs(v)*10)/10)}<small>puan</small></div>${kingFlag(r.user_id)}${flagHtml(r.user_id)}</div>`};
+    return`<div class="rk ${me?'me':''} ${r.rank<=3?'top':''}${flCls(r.user_id)}${isKing(r.user_id)?' king kv':''}" ${lgAttr(r.user_id)} data-pc="${esc(r.user_id)}"><span class="pos">${r.rank}</span>${avatar(u,r.color|0,false,r.av|0,frameFor(r.user_id,r.fr||''),wt[r.user_id],0,r.user_id)}<div class="nm">${esc(u)}${me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400">G ${r.w} · B ${r.d} · M ${r.l} · %${acc} doğru · ${avg} sn</div></div><div class="vw">${flsHtml(r.user_id)}<div class="val" style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(Math.round(Math.abs(v)*10)/10)}<small>puan</small></div></div></div>`};
   const mine=rows.find(r=>r.user_id===CLOUD.uid);
   const extra=mine&&!top.includes(mine)?`<div class="gap" aria-hidden="true">···</div>${row(mine)}`:'';
   return`<div class="vlv">${rkSeg('ranked')}
