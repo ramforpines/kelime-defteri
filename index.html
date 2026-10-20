@@ -439,7 +439,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.84.0';
+const APP_VERSION='4.84.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1443,8 +1443,8 @@ function vHelp(){
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün kelimeleri, bu haftaki sıran, dünün ve geçen haftanın lideri.',
     '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b>, <b>İngilizce Vize</b> (ders kitabı üniteleri: kelimeler, dinleme, okuma ve Örnek Vize), <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
-    '<b>Sıra</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte). <b>Kullanım</b>: bu sayfa.',
-    '<b>Ben</b>: Profil, İstatistik (öğrenilen kelimeler en altında) ve Ayarlar (geri bildirim en altında). Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
+    '<b>Sıra</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte). <b>Ben → Nasıl kullanılır?</b>: bu sayfa.',
+    '<b>Ben</b>: Profil, İstatistik (öğrenilen kelimeler en altında), Ayarlar (geri bildirim en altında) ve Nasıl kullanılır? sayfası. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
   ${sec('🚀 Hızlı başlangıç',li([
     '<b>Bugün</b> sekmesinde günün hedefini ve "Bugünün testini başlat" düğmesini görürsün. Her gün birkaç test çözmen yeter.',
     '<b>Çalışma → Test</b> bölümünden soru sayısını (10–40), seviyeyi (A1–C2; B1 ve B2 gibi birden fazlasını aynı anda seçebilirsin) ve kelime türünü (birden fazla seçebilirsin) seçip istediğin zaman test çözebilirsin.',
@@ -2183,7 +2183,7 @@ const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
 const savedWords=()=>Object.keys(S.sav||{}).filter(k=>S.sav[k]>0&&BYWORD.has(k)).sort((a,b)=>S.sav[b]-S.sav[a]).map(k=>BYWORD.get(k));
 let lastStudy='quiz';
-const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıra'],['chat','Sohbet'],['help','Kullanım'],['me','Ben']];
+const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıra'],['chat','Sohbet'],['me','Ben']];
 function studySeg(){
   if(UI.quiz)return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
@@ -2220,7 +2220,6 @@ function render(){
   else if(UI.tab==='saved')h=vSaved();
   else if(UI.tab==='rank')h=vRank();
   else if(UI.tab==='chat')h=vChat();
-  else if(UI.tab==='help')h=`<div class="top"><h1>Nasıl kullanılır?</h1></div><div class="stack">${vHelp()}</div>`;
   else h=vMe();
   if(isStudy(UI.tab)){lastStudy=UI.tab;if(!dlk)h=studySeg()+h}
   const fa=document.activeElement,fid=fa&&fa.id&&/^(chin|chq)$/.test(fa.id)?fa.id:null,fs=fid?[fa.selectionStart,fa.selectionEnd]:null;
@@ -2641,7 +2640,7 @@ function vReview(){
 }
 function vMe(){
   const fu=fbUnread();
-  const seg=[['prof','Profil'],['stats','İstatistik'],['set','Ayarlar'+(fu?' ('+fu+')':'')]];
+  const seg=[['prof','Profil'],['stats','İstatistik'],['set','Ayarlar'+(fu?' ('+fu+')':'')],['help','Nasıl kullanılır?']];
   const nM=fbNew(),nR=repOpen(),nU=UI.adm.loaded?UI.adm.list.filter(u=>!u.approved).length:0;
   const subs=[['msg','Mesajlar'+(nM?' ('+nM+')':'')],['live','Anlık duyuru'],['fla','Flamalar'],['rep','Raporlar'+(nR?' ('+nR+')':'')],['adm','Yönetim'+(nU?' ('+nU+')':'')]];
   const inAdm=CLOUD.admin&&subs.some(x=>x[0]===UI.me);
@@ -2649,7 +2648,7 @@ function vMe(){
   if(CLOUD.admin){const t=nM+nR+nU;seg.push(['admin','🛡 Yönetici'+(t?' ('+t+')':'')])}
   let body='';
   if(UI.me==='learned')UI.me='stats';else if(UI.me==='fb')UI.me='set';
-  if(UI.me==='stats')body=vStats()+'<h2 style="margin:10px 2px 0">Öğrenilenler</h2>'+vLearned();else if(UI.me==='prof')body=vProfile();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings()+vFeedback();
+  if(UI.me==='stats')body=vStats()+'<h2 style="margin:10px 2px 0">Öğrenilenler</h2>'+vLearned();else if(UI.me==='help')body=vHelp();else if(UI.me==='prof')body=vProfile();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings()+vFeedback();
   return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${k==='admin'?inAdm:UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${inAdm?`<div class="seg">${subs.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>`:''}${body}</div>`;
 }
 function vStats(){
@@ -3654,12 +3653,12 @@ function vDuel(){
     else if(DUEL.err==='ver')err=`<div class="fb bad">Rakibinle kelime listesi sürümün farklı. Uygulamayı kapatıp yeniden aç.</div>`;
     else if(DUEL.err==='err')err=`<div class="fb bad">Bağlantı sorunu. Biraz sonra tekrar dene.</div>`;
     body=DUEL.sub==='ranked'?`<div class="card stack"><h2>🏅 Dereceli düello</h2>
-      <div class="muted small">Bahis yok: ligine göre puanının bir yüzdesi risktedir. Bronz ligden (${DRK_MIN} puan) itibaren oynanır. Kuralların tamamı <b>Kullanım → Düello</b> bölümünde.</div>
+      <div class="muted small">Bahis yok: ligine göre puanının bir yüzdesi risktedir. Bronz ligden (${DRK_MIN} puan) itibaren oynanır. Kuralların tamamı <b>Ben → Nasıl kullanılır? → Düello</b> bölümünde.</div>
       <div class="kp"><div><b>${nf(r1(S.tp||0))}</b><span>puanın</span></div><div><b>${(LEAGUES[myLeague()]||LEAGUES[0]).n}</b><span>ligin</span></div><div><b>${(S.tp||0)>=DRK_MIN?nf(r1(dRisk(S.tp||0))):'–'}</b><span>riskin${(S.tp||0)>=DRK_MIN?' (%'+nf(Math.round(dRate(S.tp||0)*1000)/10)+')':''}</span></div></div>
       ${DUEL.recR?`<div class="kp"><div><b>${DUEL.recR.w}</b><span>galibiyet</span></div><div><b>${DUEL.recR.l}</b><span>mağlubiyet</span></div><div><b>${DUEL.recR.d}</b><span>beraberlik</span></div></div><div style="width:100%;box-sizing:border-box;text-align:center;padding:14px 10px;border-radius:14px;background:var(--surface2)"><div style="font-size:2.2rem;font-weight:800;line-height:1.1;color:${DUEL.recR.net>0?'var(--ok)':DUEL.recR.net<0?'var(--bad)':'inherit'}">${DUEL.recR.net>0?'+':DUEL.recR.net<0?'−':''}${nf(r1(Math.abs(DUEL.recR.net)))}</div><div class="muted small" style="margin-top:2px">Dereceli puanı</div></div>`:''}
       ${err}
       <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DRK_MIN?'disabled':''}>Dereceli rakip bul</button>${(S.tp||0)<DRK_MIN?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. Dereceli düello Bronz ligden (${DRK_MIN} puan) başlar.</div>`:''}</div>${lobbyCard()}${duelHist()}`:`<div class="card stack"><h2>⚔ Klasik düello</h2>
-      <div class="muted small">Aynı ${n} soruyu çözen iki oyuncudan çok puan toplayan kazanır. Bahis: ${DSTAKE} puan. Kuralların tamamı <b>Kullanım → Düello</b> bölümünde.</div>
+      <div class="muted small">Aynı ${n} soruyu çözen iki oyuncudan çok puan toplayan kazanır. Bahis: ${DSTAKE} puan. Kuralların tamamı <b>Ben → Nasıl kullanılır? → Düello</b> bölümünde.</div>
       ${R?`<div class="kp"><div><b>${R.w}</b><span>galibiyet</span></div><div><b>${R.l}</b><span>mağlubiyet</span></div><div><b>${R.d}</b><span>beraberlik</span></div></div>${R.last.length?`<div class="row" style="gap:6px">${R.last.map(x=>`<span class="badge ${x==='W'?'ok':x==='L'?'warn':''}">${x==='W'?'G':x==='L'?'M':'B'}</span>`).join('')}<span class="muted small">son maçlar</span></div>`:''}`:''}
       ${err}
       <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DSTAKE?'disabled':''}>Rakip bul (${DSTAKE} puan bahis)</button>${(S.tp||0)<DSTAKE?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. En az ${DSTAKE} gerekir.</div>`:''}
