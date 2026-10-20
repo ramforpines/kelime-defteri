@@ -430,7 +430,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.83.0';
+const APP_VERSION='4.83.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1513,7 +1513,7 @@ function vHelp(){
     'Düellodaki sorular normal test gibi sayılır: bilinenler bilinenlere, yanlışlar yanlışlara gider. Bu sorulardan gelen test puanı yarıya iner. Düello kazancı günlük soru puanı sınırına girmez.',
     'Düello bitince sonuç ekranında doğru sayını ve süreni görürsün. Profil kartında düello sayın, kazanma oranın ve G-M-B (galibiyet-mağlubiyet-beraberlik) istatistiğin yer alır.']))}
   ${sec('💬 Sohbet',li([
-    '<b>Genel sohbet</b>: herkesin gördüğü ortak odadır. Dakikada en fazla 5 mesaj gönderebilirsin; mesaj en çok 500 karakterdir.',
+    '<b>Genel sohbet</b>: herkesin gördüğü ortak odadır. Dakikada en fazla 5 mesaj gönderebilirsin (yöneticiler için sınır yoktur); mesaj en çok 500 karakterdir.',
     '<b>Özel mesaj</b>: birine yazmak için kullanıcı adını ya da adını ara, ya da profil kartından "Mesaj gönder"e bas. Okunmamış mesajlar bildirim sayısıyla görünür: Sohbet düğmesinde özel ve genel mesajların toplamı, sohbetin içinde Özel ve Genel sekmelerinde ayrı ayrı. Genel sohbeti açınca, son çıkışından sonra gelen ilk mesajın üstünde "Okunmamış mesajlar" çizgisi görünür ve liste oraya kayar.',
     'Kendi mesajını silebilirsin. Hakaret, spam ve rahatsız edici içerik yasaktır; yönetici gerekli gördüğünde mesajları silebilir ve hesabı kısıtlayabilir.']))}
   ${sec('✉ Geri bildirim',li([
@@ -3178,7 +3178,7 @@ async function chatSend(){
   if(!dm){
     const cut=Date.now()-60000;
     const recent=CHAT.pub.filter(m=>m.user_id===CLOUD.uid&&new Date(m.created_at).getTime()>cut).length+(CHAT.tmp||[]).filter(m=>!m.to_user).length;
-    if(recent>=5){toast('Genel sohbette dakikada en fazla 5 mesaj yazabilirsin.');return}
+    if(recent>=5&&!CLOUD.admin){toast('Genel sohbette dakikada en fazla 5 mesaj yazabilirsin.');return}
   }
   CHAT.sending=true;
   const tmp={id:-Date.now(),user_id:CLOUD.uid,to_user:dm?C.peer:null,sname:S.prof.name||CLOUD.defName,body:v.slice(0,500),created_at:new Date().toISOString()};
