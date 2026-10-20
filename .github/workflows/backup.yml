@@ -1,0 +1,66 @@
+name: Günlük yedek
+
+on:
+  schedule:
+    - cron: '17 1 * * *'   # her gün 04:17 (Türkiye saati)
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gerekli sırlar tanımlı mı
+        env:
+          DB: ${{ secrets.SUPABASE_DB_URL }}
+          PW: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$DB" ] || [ -z "$PW" ]; then
+            echo "::error::SUPABASE_DB_URL ve BACKUP_PASSPHRASE sırları tanımlı değil (BACKUP.md'ye bak)."
+            exit 1
+          fi
+
+      - name: PostgreSQL 17 istemcisini kur
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq curl ca-certificates gnupg
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+
+      - name: Veritabanı dökümü ve kod paketi
+        env:
+          DB: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          D=$(date -u +%Y-%m-%d)
+          mkdir -p out
+          pg_dump "$DB" --format=custom --no-owner --no-privileges \
+            --schema=public --schema=auth --file="out/db-$D.dump"
+          git bundle create "out/kod-$D.bundle" --all
+          tar -C out -czf "yedek-$D.tar.gz" "db-$D.dump" "kod-$D.bundle"
+          echo "D=$D" >> "$GITHUB_ENV"
+
+      - name: Şifrele (depo herkese açık, düz yedek yüklenmez)
+        env:
+          PW: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$PW" \
+            --symmetric --cipher-algo AES256 -o "yedek-$D.tar.gz.gpg" "yedek-$D.tar.gz"
+          rm -f "yedek-$D.tar.gz"
+          ls -l yedek-*.gpg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yedek-${{ env.D }}
+          path: yedek-${{ env.D }}.tar.gz.gpg
+          retention-days: 30
+          if-no-files-found: error
