@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.99.0';
+const APP_VERSION='4.99.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3966,7 +3966,7 @@ function setTab(t){
   if(t==='chat'&&UI.tab!=='chat')chatSnap();
   if(duelLock())return;
   if(t==='chat'&&UI.tab!=='chat')UI.chatBack={tab:UI.tab,me:UI.me};
-  if(t==='study')t=lastStudy;
+  if(t==='study'){t=lastStudy;if(CLOUD.admin&&t==='quiz')UI.qmode='solo'}   // yöneticide düello ortadaki menüden açılır, Çalışma düelloya düşmesin
   if(t==='quiz'&&UI.quiz&&UI.quiz.done)UI.quiz=null;
   UI.tab=t;try{sessionStorage.setItem('kd-tab',t)}catch(e){}
   render();window.scrollTo(0,0);
