@@ -450,7 +450,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.89.0';
+const APP_VERSION='4.90.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3384,9 +3384,9 @@ function txtMask(text,lw,fs,wt){
   lines.forEach((ln,i)=>g.fillText(ln,4,Math.round(fs)+i*lh));
   const r={url:c.toDataURL('image/png'),pad:(h/lw*100).toFixed(2)};TXI.set(key,r);if(TXI.size>400)TXI.delete(TXI.keys().next().value);return r;
 }
-const dImgQ=it=>grdUser()&&!DUEL.bot&&!!DUEL.d&&DUEL.d.mode==='ranked'&&['B2','C1','C2'].includes(it.w.level);
-function dQ(it,text,kind,i){
-  if(!dImgQ(it))return esc(text);
+const dImgQ=(it,rk)=>grdUser()&&!DUEL.bot&&(rk!==undefined?rk:(!!DUEL.d&&DUEL.d.mode==='ranked'))&&['B2','C1','C2'].includes(it.w.level);
+function dQ(it,text,kind,i,rk){
+  if(!dImgQ(it,rk))return esc(text);
   try{const m=kind==='q'?txtMask(text,560,34,700):txtMask(text,470,28,600);
     return`<span class="txi" role="img" aria-label="${kind==='q'?'Soru (görsel)':'Seçenek '+((i|0)+1)}" style="padding-top:${m.pad}%;-webkit-mask-image:url(${m.url});mask-image:url(${m.url})"></span>`}catch(e){return esc(text)}
 }
@@ -3758,7 +3758,80 @@ function duelHist(){
     return`<div style="display:flex;align-items:center;gap:6px;padding:3px 0" title="${esc(dt(x.created_at))}">${side(x.p1,x.s1,!w?'d':w===x.p1?'w':'l',false,x.c1,x.a1,x.t1,x.dl1)}<span class="muted" style="font-size:.7rem;flex:none">vs</span>${side(x.p2,x.s2,!w?'d':w===x.p2?'w':'l',true,x.c2,x.a2,x.t2,x.dl2)}</div>`}).join('');
   return`<div class="card stack" style="gap:8px"><h2>${rkm?'Dereceli maç geçmişi':'Maç geçmişi'}</h2>${H.length?`<div id="dhl" style="max-height:330px;overflow-y:auto;overscroll-behavior:contain">${rows}${DUEL.hpOk&&!DUEL.hp[rkm?'ranked':'classic'].done?'<div class="small muted" style="text-align:center;padding:8px">Daha eskileri yükleniyor…</div>':''}</div><div class="small muted">${H.length} maç${DUEL.hpOk?(DUEL.hp[rkm?'ranked':'classic'].done?' (tümü yüklendi)':' (aşağı kaydırdıkça eskileri yüklenir)'):''}${DUEL.allOk?' (tüm oyuncular)':' (yalnızca senin maçların; tüm maçlar için supabase-duel-ranked.sql çalıştırılmalı)'} · <span style="color:#3b82f6">mavi</span> kazanan, <span style="color:var(--bad)">kırmızı</span> kaybeden, gri beraberlik · her maçta toplanan maç puanı${rkm?' ve lige yansıyan puan değişimi':''}.</div>`:`<div class="small muted">Henüz tamamlanmış ${rkm?'dereceli ':''}düello yok.</div>`}</div>`;
 }
+/* ---------- düello test alanı: tek ekranda iki oyuncu (yalnızca yönetici + test hesabı; sunucuya hiçbir şey yazılmaz) ---------- */
+const LAB={on:false,mode:'ranked',phase:'idle',pl:[{},{}],qs:[],voidBy:-1,vwhy:'',t0:0,tk:null};
+function labInit(){
+  LAB.qs=seededQs(Math.floor(Math.random()*2147480000),DQ_N);
+  LAB.pl=[0,1].map(()=>({idx:0,sel:null,lastOk:null,s:0,c:0,a:0,t:0,tq:0,nb:0,done:false}));
+  LAB.voidBy=-1;LAB.vwhy='';LAB.t0=Date.now()+3000;LAB.phase='count';
+  clearInterval(LAB.tk);LAB.tk=setInterval(labTick,100);render();
+}
+function labStop(){clearInterval(LAB.tk);LAB.tk=null}
+function labTick(){
+  if(!LAB.on){labStop();return}
+  if(UI.tab!=='quiz'||UI.qmode!=='duel')return;
+  if(LAB.phase==='count'){
+    const left=Math.ceil((LAB.t0-Date.now())/1000);
+    if(left<=0){LAB.phase='play';LAB.pl.forEach(p=>p.tq=Date.now());render();return}
+    const el=document.getElementById('labcnt');if(el&&el.textContent!==String(left))el.textContent=left;
+  }else if(LAB.phase==='play'){
+    LAB.pl.forEach((p,i)=>{
+      if(p.done||LAB.phase!=='play')return;
+      const el=Date.now()-p.tq;
+      const f=document.getElementById('lbf'+i);if(f)f.style.width=Math.max(0,100-el/(DQ_T*10))+'%';
+      const t=document.getElementById('lbt'+i);if(t)t.textContent=Math.max(0,Math.ceil((DQ_T*1000-el)/1000));
+      if(p.sel===null&&el>=DQ_T*1000)labAnswer(i,-1);
+    });
+  }
+}
+function labAnswer(i,o){
+  const p=LAB.pl[i];if(LAB.phase!=='play'||p.done||p.sel!==null)return;
+  const it=LAB.qs[p.idx],ok=o>=0&&it.options[o]===it.correct,ms=Math.min(DQ_T*1000,Math.max(300,Date.now()-p.tq));
+  p.sel=o;p.lastOk=ok;p.a++;p.t+=ms;if(ok)p.c++;p.s+=ok?dPts(it.w.level,ms):dPen(it.w.level,o<0);
+  render();
+  setTimeout(()=>{
+    if(LAB.phase!=='play')return;
+    p.idx++;p.sel=null;
+    if(p.idx>=DQ_N)p.done=true;else p.tq=Date.now();
+    if(LAB.pl.every(x=>x.done)){LAB.phase='done';labStop()}
+    render();
+  },ok?700:1300);
+}
+function labVoid(i,why){if(LAB.phase!=='play')return;LAB.phase='void';LAB.voidBy=i;LAB.vwhy=why;labStop();render()}
+function labPanel(i){
+  const p=LAB.pl[i],o=LAB.pl[1-i],rk=LAB.mode==='ranked',nm='Oyuncu '+(i+1),col=i?'#e8742a':'#3a4bd8';
+  let b='';
+  if(LAB.phase==='idle')b='<div class="muted" style="text-align:center;padding:30px 0">Başlat\'a bas.</div>';
+  else if(LAB.phase==='count')b=`<div style="text-align:center;padding:26px 0"><div class="muted">Başlıyor…</div><div class="mono" id="labcnt" style="font-size:3rem;font-weight:800">${Math.max(1,Math.ceil((LAB.t0-Date.now())/1000))}</div></div>`;
+  else if(LAB.phase==='void'){
+    const mine=LAB.voidBy===i,why=LAB.vwhy==='blur2'?'ekran odağını ikinci kez kaybettiğin':'uygulamadan ayrıldığın';
+    b=`<div class="card stack" style="text-align:center"><h2 style="margin:0">⛔ Maç iptal edildi</h2><div class="muted small">${mine?'Maç sırasında '+why+' için düello iptal edildi.':'Rakibin maç sırasında uygulamadan ayrıldı (hile koruması). Düello iptal edildi.'}</div><div class="card" style="background:var(--ok-bg);border-color:transparent"><b style="color:var(--ok)">Puanında değişiklik yok.</b></div></div>`;
+  }else if(LAB.phase==='done'){
+    const win=p.s>o.s||(p.s===o.s&&!rk&&p.t<o.t),draw=p.s===o.s&&(rk||p.t===o.t),avg=p.a?Math.round(p.t/p.a/100)/10:0;
+    b=`<div class="card stack" style="text-align:center"><h2 style="margin:0">${draw?'🤝 Berabere':win?'🏆 Kazandın!':'😤 Kaybettin'}</h2><div class="kp"><div><b>${nf(p.s)}</b><span>puan</span></div><div><b>${p.c}/${DQ_N}</b><span>doğru</span></div><div><b>${avg||'–'}</b><span>ort. sn</span></div></div><div class="muted small">🧪 Test: hiçbir şey kaydedilmedi.</div></div>`;
+  }else if(p.done){
+    b=`<div class="card stack" style="text-align:center"><h2 style="margin:0">Bitirdin</h2><div class="muted">Rakibin bitirmesi bekleniyor…</div><div class="kp"><div><b>${nf(p.s)}</b><span>puan</span></div><div><b>${p.c}/${p.a}</b><span>doğru</span></div></div></div>`;
+  }else{
+    const it=LAB.qs[p.idx],ans=p.sel!==null;
+    b=`<div class="row" style="gap:8px;margin:2px 0 6px"><div class="bar tm" style="flex:1"><i id="lbf${i}" style="width:100%;transition:none"></i></div><b class="mono" id="lbt${i}">${DQ_T}</b><span class="mono muted">${p.idx+1}/${DQ_N}</span></div>
+    <div class="small muted" style="margin-bottom:4px">Puan <b>${nf(p.s)}</b> · Doğru ${p.c}/${p.a} · Rakip ${o.a}/${DQ_N}</div>
+    <div class="card qcard${dImgQ(it,rk)?' noselq':''}"><div class="row" style="margin-bottom:8px"><span class="badge">${FEAT[it.f]}</span>${lvTag(it.w.level)}</div>
+    <h2>${dQ(it,it.question,'q',0,rk)}</h2>
+    <div class="opts">${it.options.map((op,k)=>{let c='';if(ans){if(op===it.correct)c='ok';else if(k===p.sel)c='bad'}return`<button class="opt ${c}" data-act="lab-opt" data-p="${i}" data-v="${k}" ${ans?'disabled':''}><kbd>${k+1}</kbd><span>${dQ(it,op,'o',k,rk)}</span></button>`}).join('')}</div>
+    ${ans?`<div class="fb ${p.lastOk?'ok':'bad'}"><b class="t">${p.sel===-1?'Süre doldu':p.lastOk?'Doğru':'Yanlış'}</b></div>`:''}</div>
+    ${rk?`<div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px"><button class="btn" style="padding:6px 10px;font-size:.78rem" data-act="lab-leave" data-p="${i}">Uygulamadan ayrıldı (simüle)</button><button class="btn" style="padding:6px 10px;font-size:.78rem" data-act="lab-blur" data-p="${i}">Odak kaybı (simüle)${p.nb?' · '+p.nb+'/2':''}</button></div>`:''}`;
+  }
+  return`<div class="card stack" style="border-top:4px solid ${col};gap:8px;min-width:0"><b style="color:${col}">${nm}${i===0?' (sen)':''}</b>${b}</div>`;
+}
+function vLab(){
+  return`<div class="top"><h1>Düello test alanı</h1></div><div class="stack">
+  <div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)">🧪 Tek başına iki oyuncu gibi oyna. Burada hiçbir şey sunucuya yazılmaz; puan, geçmiş ve istatistiğe işlenmez. Sorular iki oyuncuda aynıdır.</div>
+  <div class="seg"><button class="chip" aria-pressed="${LAB.mode!=='ranked'}" data-act="lab-mode" data-v="classic">Klasik</button><button class="chip" aria-pressed="${LAB.mode==='ranked'}" data-act="lab-mode" data-v="ranked">Dereceli</button></div>
+  <div class="row" style="gap:8px"><button class="btn primary" data-act="lab-start">${LAB.phase==='idle'?'Başlat':'Yeniden başlat'}</button><button class="btn" data-act="lab-close">Test alanından çık</button></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px">${labPanel(0)}${labPanel(1)}</div></div>`;
+}
 function vDuel(){
+  if(LAB.on&&grdUser())return vLab();
   const P=DUEL.phase,d=DUEL.d,n=DQ_N;
   const seg=`<div class="seg"><button class="chip" aria-pressed="${DUEL.sub!=='ranked'}" data-act="duel-sub" data-v="classic">Klasik düello</button><button class="chip vlc" aria-pressed="${DUEL.sub==='ranked'}" data-act="duel-sub" data-v="ranked" ${drkLocked()?'disabled title="Şimdilik kilitli"':''}>${drkLocked()?'🔒 ':''}Dereceli düello</button></div>`;
   let body='';
@@ -3820,7 +3893,7 @@ function vDuel(){
   }
   const inGame=['count','play','wait'].includes(P);
   const rkv=DUEL.sub==='ranked'||(d&&d.mode==='ranked'&&P!=='lobby');
-  return`<div class="top"><h1>Düello</h1></div><div class="stack${rkv?' vlv pg':''}">${P==='lobby'?seg:''}${P==='lobby'&&grdUser()?'<div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)">🧪 <b>Test modu:</b> şimdilik yalnızca yönetici ve test hesabıyla düello oynayabilirsin. Bu maçlar kayda geçmez, puan ve istatistiğe işlenmez. Diğer kullanıcılar seni göremez, sana teklif gönderemez.</div>':''}${body}</div>`;
+  return`<div class="top"><h1>Düello</h1></div><div class="stack${rkv?' vlv pg':''}">${P==='lobby'?seg:''}${P==='lobby'&&grdUser()?'<div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)">🧪 <b>Test modu:</b> şimdilik yalnızca yönetici ve test hesabıyla düello oynayabilirsin. Bu maçlar kayda geçmez, puan ve istatistiğe işlenmez. Diğer kullanıcılar seni göremez, sana teklif gönderemez.<div style="margin-top:8px"><button class="btn primary" data-act="lab-open">🧪 Düello test alanı</button></div></div>':''}${body}</div>`;
 }
 function setTab(t){
   if(t==='chat'&&UI.tab!=='chat')chatSnap();
@@ -3870,6 +3943,13 @@ document.addEventListener('click',async e=>{
     case'duel-bot':if(DUEL.phase==='search'){try{sb.rpc('duel_cancel')}catch(e){}}duelStartBot();break;
     case'duel-opt':duelAnswer(+g('data-v'));break;
     case'duel-exit':dReset();render();lobbyLoad();break;
+    case'lab-open':if(grdUser()){LAB.on=true;LAB.phase='idle';render()}break;
+    case'lab-close':LAB.on=false;LAB.phase='idle';labStop();render();lobbyLoad();break;
+    case'lab-start':labInit();break;
+    case'lab-mode':LAB.mode=g('data-v')==='ranked'?'ranked':'classic';LAB.phase='idle';labStop();render();break;
+    case'lab-opt':labAnswer(+g('data-p'),+g('data-v'));break;
+    case'lab-leave':labVoid(+g('data-p'),'hide');break;
+    case'lab-blur':{const i=+g('data-p'),p=LAB.pl[i];if(LAB.phase!=='play')break;p.nb++;if(p.nb>=2)labVoid(i,'blur2');else{toast('⚠️ Oyuncu '+(i+1)+': odağını kaybettin. Tekrarlarsan maç iptal edilir (1/2).');render()}break}
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
     case'start-review':startQuiz('review',false);break;
