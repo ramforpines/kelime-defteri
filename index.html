@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.109.0';
+const APP_VERSION='4.110.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1424,9 +1424,9 @@ function vGuard(){
   let body='';
   if(G.tab==='sum'){
     body=G.sum.length?G.sum.map(x=>`<div class="card stack" style="padding:10px;gap:6px${x.ban_left>0?';border-color:var(--bad)':''}">
-      <div class="row" style="justify-content:space-between;gap:8px"><b>${esc(x.name||'Oyuncu')}${x.un?' <span class="muted small">@'+esc(x.un)+'</span>':''}</b>${x.ban_left>0?`<span class="badge bad">Cezalı: ${Math.ceil(x.ban_left/60)} dk</span>`:x.voids7>0?`<span class="badge warn">7 gün: ${x.voids7} iptal</span>`:''}</div>
+      <div class="row" style="justify-content:space-between;gap:8px"><b>${esc(x.name||'Oyuncu')}${x.un?' <span class="muted small">@'+esc(x.un)+'</span>':''}</b>${x.ban_left>0?`<span class="badge bad">Cezalı: ${Math.ceil(x.ban_left/60)} dk</span>`:x.voids7>0?`<span class="badge warn">15 gün: ${x.voids7} iptal</span>`:''}</div>
       <div class="small">Ayrılma <b>${x.hide}</b> · Kısa <b>${x.hide_short}</b> · Çevrimdışı <b>${x.hide_off}</b> · Odak <b>${x.blur}</b> · Tuzak <b>${x.trap}</b></div>
-      <div class="small muted">İptal: <b>${x.voids}</b> (7 gün: ${x.voids7}) · Kesilen puan: <b>${nf(r1(+x.pen_pts||0))}</b><br>Süre: toplam ${sec(+x.away_total||0)} · en uzun ${sec(+x.away_max||0)} · ortalama ${sec(+x.away_avg||0)}<br>Son kayıt: ${esc(fdt(x.last_at))}</div>
+      <div class="small muted">İptal: <b>${x.voids}</b> (15 gün: ${x.voids7}) · Kesilen puan: <b>${nf(r1(+x.pen_pts||0))}</b><br>Süre: toplam ${sec(+x.away_total||0)} · en uzun ${sec(+x.away_max||0)} · ortalama ${sec(+x.away_avg||0)}<br>Son kayıt: ${esc(fdt(x.last_at))}</div>
       <div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn" style="padding:6px 10px;font-size:.8rem" data-act="grd-sel" data-v="${esc(x.user_id)}">${G.sel===x.user_id?'Kapat':'İşlemler'}</button><button class="btn" style="padding:6px 10px;font-size:.8rem" data-act="grd-ulog" data-v="${esc(x.user_id)}">Ceza kayıtları</button></div>
       ${G.sel===x.user_id?`<div class="card stack" style="gap:8px;background:var(--surface2)">
         <textarea data-grd-f="msg" rows="2" maxlength="300" placeholder="Uyarı mesajı (kullanıcı Düello ekranında görür)" style="width:100%;box-sizing:border-box">${esc(G.msg)}</textarea>
@@ -1436,13 +1436,13 @@ function vGuard(){
   }else if(G.tab==='cases'){
     body=G.cases.length?G.cases.map(x=>`<div class="card stack" style="padding:10px;gap:4px;background:#000;color:#fff;border-color:#000">
       <div class="row" style="justify-content:space-between;gap:8px"><b>${esc(x.by_name||'Oyuncu')} <span style="color:#ff3b30">İPTAL</span> ${esc(x.opp_name||'Oyuncu')}</b>${x.refunded?'<span class="badge ok">İade edildi</span>':x.acked?'<span class="badge ok">Söz verdi</span>':'<span class="badge warn">Söz bekleniyor</span>'}</div>
-      <div class="small" style="color:#ccc">${esc(RS[x.reason]||x.reason||'')} · ${x.lv||'?'}. iptal (7 gün) · skor ${nf(+x.s_by||0)}–${nf(+x.s_opp||0)}<br>Ayrılana: <b style="color:#ff6b60">−${nf(r1(+x.pen||0))}</b> · rakibe <b style="color:#6cb2ff">+${nf(r1(+x.opp_gain||0))}</b> · dereceli cezası ${x.ban_min?mm(+x.ban_min):'–'}<br>${esc(fdt(x.done_at||x.created_at))}</div>
+      <div class="small" style="color:#ccc">${esc(RS[x.reason]||x.reason||'')} · ${x.lv||'?'}. iptal (15 gün) · skor ${nf(+x.s_by||0)}–${nf(+x.s_opp||0)}<br>Ayrılana: <b style="color:#ff6b60">−${nf(r1(+x.pen||0))}</b> · rakibe <b style="color:#6cb2ff">+${nf(r1(+x.opp_gain||0))}</b> · dereceli cezası ${x.ban_min?mm(+x.ban_min):'–'}<br>${esc(fdt(x.done_at||x.created_at))}</div>
       ${x.refunded?'':`<button class="btn" style="padding:6px 10px;font-size:.8rem;align-self:flex-start;background:#fff;color:#111" data-act="grd-refund" data-v="${esc(x.id)}">${G.cf==='rf'+x.id?'Emin misin? Tekrar bas':'Puanı iade et ve cezayı kaldır'}</button>`}</div>`).join(''):(G.loaded&&!G.err?'<div class="empty">İptal edilen maç yok.</div>':'');
   }else if(G.tab==='flags'){
     const ks=[['all','Tümü'],['hide','Ayrılma'],['hide_short','Kısa'],['hide_off','Çevrimdışı'],['blur','Odak'],['trap','Tuzak']];
     const L=G.list.filter(x=>G.kind==='all'||x.kind===G.kind||(G.kind==='blur'&&x.kind==='blur2'));
     body=`<div class="seg" style="flex-wrap:wrap">${ks.map(([k,l])=>`<button class="chip" aria-pressed="${G.kind===k}" data-act="grd-kind" data-v="${k}">${l}</button>`).join('')}</div>`+
-      (L.length?L.map(x=>`<div class="card" style="padding:10px;${x.voided?'border-color:var(--bad)':''}"><div class="row" style="justify-content:space-between;gap:8px"><b>${esc(x.name||'Oyuncu')}${x.un?' <span class="muted small">@'+esc(x.un)+'</span>':''}</b>${x.voided?'<span class="badge bad">Maç iptal</span>':'<span class="badge warn">Kayıt</span>'}</div><div class="small muted">${KL[x.kind]||esc(x.kind)} · Soru ${x.q!=null?(+x.q+1):'?'}${x.away_ms!=null?' · <b>'+sec(+x.away_ms)+'</b>':''}<br>${esc(fdt(x.created_at))} · 7 gün iptal: <b>${x.wk||0}</b></div></div>`).join(''):(G.loaded&&!G.err?'<div class="empty">Kayıt yok.</div>':''));
+      (L.length?L.map(x=>`<div class="card" style="padding:10px;${x.voided?'border-color:var(--bad)':''}"><div class="row" style="justify-content:space-between;gap:8px"><b>${esc(x.name||'Oyuncu')}${x.un?' <span class="muted small">@'+esc(x.un)+'</span>':''}</b>${x.voided?'<span class="badge bad">Maç iptal</span>':'<span class="badge warn">Kayıt</span>'}</div><div class="small muted">${KL[x.kind]||esc(x.kind)} · Soru ${x.q!=null?(+x.q+1):'?'}${x.away_ms!=null?' · <b>'+sec(+x.away_ms)+'</b>':''}<br>${esc(fdt(x.created_at))} · 15 gün iptal: <b>${x.wk||0}</b></div></div>`).join(''):(G.loaded&&!G.err?'<div class="empty">Kayıt yok.</div>':''));
   }else{
     const L=G.ulog?G.plog.filter(x=>x.user_id===G.ulog):G.plog;
     body=(G.ulog?`<div class="row" style="gap:8px;justify-content:space-between"><span class="small muted">Tek kullanıcı süzgeci açık</span><button class="btn" style="padding:6px 10px;font-size:.8rem" data-act="grd-ulog" data-v="">Tümünü göster</button></div>`:'')+
@@ -3620,7 +3620,7 @@ function penCard(){
   const left=Math.ceil((DUEL.penUntil-Date.now())/1000),ban=x.ban?(x.ban>=60?(x.ban/60)+' saat':x.ban+' dakika'):'';
   return`<div class="card stack" style="border-color:var(--bad);background:var(--bad-bg)"><h2 style="margin:0">⚠️ Dereceli düello cezası aldın</h2>
     <div><b>${esc(tm(x.at))}</b> tarihli dereceli maçında (<b>${esc(x.opp||'rakip')}</b> ile) hile şüphesi oluştu ve maç iptal edildi.</div>
-    <div class="small" style="line-height:1.6">• <b>İhlal:</b> ${penKind(x.kind)}<br>• <b>Puan cezası:</b> ${+x.pen>0?'−'+nf(r1(+x.pen))+' puan':'puan kesilmedi'}${+x.gain>0?' (rakibine +'+nf(r1(+x.gain))+' puan verildi)':''}<br>• <b>Dereceli düello cezası:</b> ${ban?ban+(left>0?', '+penFmt(left)+' kaldı':' (süre doldu)'):'yok'}. Klasik düello açık.<br>• Bu, son 7 gündeki <b>${+x.lv||1}. cezandır</b>. Tekrarında ceza büyür.</div>
+    <div class="small" style="line-height:1.6">• <b>İhlal:</b> ${penKind(x.kind)}<br>• <b>Puan cezası:</b> ${+x.pen>0?'−'+nf(r1(+x.pen))+' puan':'puan kesilmedi'}${+x.gain>0?' (rakibine +'+nf(r1(+x.gain))+' puan verildi)':''}<br>• <b>Dereceli düello cezası:</b> ${ban?ban+(left>0?', '+penFmt(left)+' kaldı':' (süre doldu)'):'yok'}. Klasik düello açık.<br>• Bu, son 15 gündeki <b>${+x.lv||1}. cezandır</b>. Tekrarında ceza büyür.</div>
     <div class="small muted">Dereceli düelloda maç sırasında uygulamadan ya da maç ekranından ayrılmak yasaktır. Tespit otomatiktir ve kurallar herkes için aynıdır.</div>${extra}
     <button class="chip" aria-pressed="${!!DUEL.pk}" data-act="duel-pen-chk" style="text-align:left;white-space:normal;height:auto;padding:8px 12px">${DUEL.pk?'☑':'☐'} Dereceli düello kurallarını okudum, anladım. Bundan sonra kurallara uyacağıma söz veriyorum.</button>
     <button class="btn primary block" data-act="duel-pen-ack">Söz veriyorum</button>
@@ -3991,7 +3991,7 @@ function vDuel(){
     const mine=d&&d.void_by===CLOUD.uid,why=d&&d.void_reason==='blur3'?'ekran odağını üçüncü kez kaybettiğin':'uygulamadan ikinci kez ayrıldığın';
     const my=d?+(d.p1===CLOUD.uid?d.dl1:d.dl2)||0:0,lv=d?+d.pen_lv||0:0,pn=d?+(d.p1===CLOUD.uid?d.pen1:d.pen2)||0:0,og=d?+(d.p1===CLOUD.uid?d.dl2:d.dl1)||0:0;
     const card=mine
-      ?`<div class="card" style="background:rgba(214,69,69,.12);border-color:transparent"><b style="color:var(--bad)">${pn?'−'+nf(r1(pn))+' puan kesildi':'Puan kesilmedi'}</b>${lv?` <span class="small">(${lv}. iptal, son 7 gün)</span>`:''}
+      ?`<div class="card" style="background:rgba(214,69,69,.12);border-color:transparent"><b style="color:var(--bad)">${pn?'−'+nf(r1(pn))+' puan kesildi':'Puan kesilmedi'}</b>${lv?` <span class="small">(${lv}. iptal, son 15 gün)</span>`:''}
           ${og>0?`<div class="small" style="margin-top:4px">Rakibine <b>+${nf(r1(og))}</b> puan verildi (kesilen puanın %20'si).</div>`:''}
           ${d&&d.pen_ban?`<div class="small" style="margin-top:4px">Dereceli düello cezası: <b>${d.pen_ban>=60?(d.pen_ban/60)+' saat':d.pen_ban+' dakika'}</b>. Klasik düello açık.</div>`:''}<div class="small muted" style="margin-top:6px">Lobiye döndüğünde ceza kartındaki sözü vermen gerekir.</div></div>`
       :my>0?`<div class="card" style="background:var(--ok-bg);border-color:transparent"><b style="color:var(--ok)">+${nf(r1(my))} puan kazandın.</b><div class="small" style="margin-top:4px">Rakibinin kural ihlali nedeniyle maç iptal edildi; kesilen puanın %20'si sana verildi.</div></div>`

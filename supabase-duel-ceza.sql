@@ -7,8 +7,8 @@
 --   * Ekran odağı kaybı (700 ms üstü): 1. ve 2. uyarı, 3. maç iptal.
 --   * Çevrimdışı ayrılma ve 1 sn'den kısa ayrılma: yalnızca kayıt (hide_off, hide_short). Tuzak düğme: yalnızca kayıt (trap).
 -- İptal olunca:
---   * İptal ettiren: normal yenilgi puanı ×1, ×1,5, ×2 (7 günlük sayaç: 1., 2., 3.+ iptal). Rakibe kaybedilen puanın %20'si verilir.
---   * Dereceli cezası (süre): 3, 5, 15, 30, 60, 360, 720 dk (1.-7.+ iptal, 7 gün içinde). Sunucu join/invite/respond'da kontrol eder.
+--   * İptal ettiren: normal yenilgi puanı ×1, ×1,5, ×2 (15 günlük sayaç: 1., 2., 3.+ iptal). Rakibe kaybedilen puanın %20'si verilir.
+--   * Dereceli cezası (süre): 3, 5, 15, 30, 60, 360, 720 dk (1.-7.+ iptal, 15 gün içinde). Sunucu join/invite/respond'da kontrol eder.
 --   * Ceza kartında kullanıcı kurallara uyacağına söz verir (duel_pen_ack); söz verilmeden dereceli maç aranamaz, teklif gönderilemez/kabul edilemez.
 --   * Klasik düello etkilenmez.
 -- Yönetici: duel_admin_* fonksiyonları (özet, vakalar, ceza kayıtları, uyarı, ceza ver, ceza kaldır, puan iade).
@@ -179,7 +179,7 @@ begin
     end if;
 
     if v_void then
-      select count(*) into v_vc from public.duels where void_by = uid and status = 'void' and id <> did and done_at >= now() - interval '7 days';
+      select count(*) into v_vc from public.duels where void_by = uid and status = 'void' and id <> did and done_at >= now() - interval '15 days';
       v_lv := v_vc + 1;
       v_mult := case when v_lv <= 1 then 1 when v_lv = 2 then 1.5 else 2 end;
       v_sm := greatest(case when uid = d.p1 then d.s1 else d.s2 end, 0);
@@ -204,7 +204,7 @@ begin
     end if;
   end if;
 
-  select count(*) into v_vc from public.duels where void_by = uid and status = 'void' and done_at >= now() - interval '7 days';
+  select count(*) into v_vc from public.duels where void_by = uid and status = 'void' and done_at >= now() - interval '15 days';
   return jsonb_build_object('status', (select status from public.duels where id = did), 'n', v_n, 'warn', v_warn, 'zq', v_zq,
                             'lv', v_lv, 'pen', v_pen, 'opp', v_opp, 'ban', v_ban, 'voids', v_vc);
 end $$;
@@ -388,7 +388,7 @@ begin
   return query
   select f.id, f.user_id, s.name::text, s.un::text, f.kind, f.q, f.away_ms, f.created_at,
          (d.status = 'void' and d.void_by = f.user_id) as voided,
-         (select count(*)::int from public.duels v where v.void_by = f.user_id and v.status = 'void' and v.done_at >= now() - interval '7 days') as wk
+         (select count(*)::int from public.duels v where v.void_by = f.user_id and v.status = 'void' and v.done_at >= now() - interval '15 days') as wk
   from public.duel_flags f
   left join public.scores s on s.user_id = f.user_id
   left join public.duels d on d.id = f.duel_id
@@ -410,7 +410,7 @@ begin
          count(*) filter (where f.kind = 'hide_off')::int, count(*) filter (where f.kind in ('blur','blur2'))::int,
          count(*) filter (where f.kind = 'trap')::int,
          (select count(*)::int from public.duels v where v.void_by = f.user_id and v.status = 'void'),
-         (select count(*)::int from public.duels v where v.void_by = f.user_id and v.status = 'void' and v.done_at >= now() - interval '7 days'),
+         (select count(*)::int from public.duels v where v.void_by = f.user_id and v.status = 'void' and v.done_at >= now() - interval '15 days'),
          coalesce(sum(f.away_ms) filter (where f.kind in ('hide','hide_short','hide_off','blur','blur2')), 0)::bigint,
          coalesce(max(f.away_ms), 0)::int, coalesce(round(avg(f.away_ms))::int, 0), max(f.created_at),
          public.duel_pen_left(f.user_id),
