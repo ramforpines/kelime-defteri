@@ -1,3 +1,4 @@
+-- DİKKAT: Bu dosyanın yerini supabase-duel-ceza.sql aldı. Ceza sistemi kurulduktan sonra bu dosyayı TEKRAR ÇALIŞTIRMA (eski fonksiyonları geri getirir).
 -- Dosya: supabase-duel-guard.sql
 -- Kelime Defteri: dereceli düelloda uygulamadan ayrılma (hile) koruması. ŞİMDİLİK YALNIZCA YÖNETİCİ VE TEST HESABI (kullanici52541) İÇİN ÇALIŞIR.
 -- SQL Editor'da bir kez çalıştır (önce supabase-admin.sql ve dereceli düello dosyaları çalışmış olmalı). Birden çok kez çalıştırılabilir.

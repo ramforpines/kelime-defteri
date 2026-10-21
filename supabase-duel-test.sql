@@ -1,3 +1,4 @@
+-- DİKKAT: Bu dosyanın yerini supabase-duel-ceza.sql aldı. Ceza sistemi kurulduktan sonra bu dosyayı TEKRAR ÇALIŞTIRMA (eski fonksiyonları geri getirir).
 -- Dosya: supabase-duel-test.sql
 -- GEÇİCİ KISITLAMA (ben diyene kadar): yönetici + test hesabı (kullanici52541) yalnızca birbirleriyle düello oynar.
 --  * Diğer kullanıcılarla eşleşemez, teklif gönderemez/alamaz, salonda birbirlerini görmez.
