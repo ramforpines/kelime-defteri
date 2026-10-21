@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.99.1';
+const APP_VERSION='4.100.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2252,12 +2252,12 @@ let lastStudy='quiz';
 const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıralamalar'],['me','Ben']];
 function studySeg(){
   if(UI.quiz)return'';
-  if(CLOUD.admin&&UI.tab==='quiz'&&UI.qmode==='duel')return'';   // yöneticide düello ortadaki ana menüden açılır, çalışma sekmeleri görünmez
+  if(UI.tab==='quiz'&&UI.qmode==='duel')return'';   // düello ortadaki ana menüden açılır, çalışma sekmeleri görünmez
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
-  return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>!(!!CLOUD.admin&&x[0]==='duel')).map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
+  return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='duel').map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
 }
 function renderNav(){
-  const adm=!!CLOUD.admin,inDuel=UI.tab==='quiz'&&UI.qmode==='duel';
+  const adm=true,inDuel=UI.tab==='quiz'&&UI.qmode==='duel';   // ortadaki düello butonu herkeste
   const nv=$('#nav');nv.classList.toggle('adm5',adm);
   const btn=([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab)&&!(adm&&inDuel):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}</span></button>`;
   const duel=`<button class="duelb" data-act="qmode" data-v="duel" aria-label="Düello" ${inDuel?'aria-current="page"':''}><img src="duel-nav.svg" alt="" width="92" height="120"><span>Düello</span></button>`;
@@ -3966,7 +3966,7 @@ function setTab(t){
   if(t==='chat'&&UI.tab!=='chat')chatSnap();
   if(duelLock())return;
   if(t==='chat'&&UI.tab!=='chat')UI.chatBack={tab:UI.tab,me:UI.me};
-  if(t==='study'){t=lastStudy;if(CLOUD.admin&&t==='quiz')UI.qmode='solo'}   // yöneticide düello ortadaki menüden açılır, Çalışma düelloya düşmesin
+  if(t==='study'){t=lastStudy;if(t==='quiz')UI.qmode='solo'}   // düello ortadaki menüden açılır, Çalışma düelloya düşmesin
   if(t==='quiz'&&UI.quiz&&UI.quiz.done)UI.quiz=null;
   UI.tab=t;try{sessionStorage.setItem('kd-tab',t)}catch(e){}
   render();window.scrollTo(0,0);
