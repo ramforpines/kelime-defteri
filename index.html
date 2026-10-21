@@ -78,6 +78,9 @@ h3{font-size:1rem}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:10;
   padding:6px max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px))}
 nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1px}
+/* görsel (maske) soru metni */
+.txi{display:block;width:100%;height:0;background-color:currentColor;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-user-select:none;user-select:none;pointer-events:none}
+.noselq,.noselq *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 nav .in.adm5{grid-template-columns:1fr 1fr 74px 1fr 1fr;align-items:end}
 nav button.duelb{min-height:50px;margin-top:-30px;gap:0}
 nav button.duelb img{width:62px;height:62px;border-radius:14px;border:2px solid #c9992a;box-shadow:0 4px 12px rgba(0,0,0,.45);display:block;background:#000}
@@ -447,7 +450,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.88.2';
+const APP_VERSION='4.89.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3367,6 +3370,26 @@ function dOpp(){
 }
 function dOppId(){const d=DUEL.d;if(!d)return null;if(DUEL.bot)return'bot';return dIsP1()?d.p2:d.p1}
 function dPeer(id){return id==='bot'?{id:'bot',name:'Bot Kemal',color:3,av:36,fr:''}:chatPeer(id)}
+/* ---------- ekran okumayı zorlaştırma: dereceli düello B2/C1/C2 soruları metin yerine görsel maske olarak çizilir (şimdilik yönetici + test hesabı) ---------- */
+const TXI=new Map();
+function txtMask(text,lw,fs,wt){
+  const fam=getComputedStyle(document.body).fontFamily||'sans-serif',key=[text,lw,fs,wt,fam].join('|');
+  if(TXI.has(key))return TXI.get(key);
+  const sc=2,c=document.createElement('canvas'),x=c.getContext('2d'),f=wt+' '+fs+'px '+fam;
+  x.font=f;
+  const lines=[];String(text).split('\n').forEach(par=>{let cur='';par.split(/\s+/).forEach(wd=>{const t=cur?cur+' '+wd:wd;if(cur&&x.measureText(t).width>lw-8){lines.push(cur);cur=wd}else cur=t});lines.push(cur)});
+  const lh=Math.round(fs*1.32),h=lines.length*lh+10;
+  c.width=lw*sc;c.height=h*sc;
+  const g=c.getContext('2d');g.scale(sc,sc);g.font=f;g.fillStyle='#000';g.textBaseline='alphabetic';
+  lines.forEach((ln,i)=>g.fillText(ln,4,Math.round(fs)+i*lh));
+  const r={url:c.toDataURL('image/png'),pad:(h/lw*100).toFixed(2)};TXI.set(key,r);if(TXI.size>400)TXI.delete(TXI.keys().next().value);return r;
+}
+const dImgQ=it=>grdUser()&&!DUEL.bot&&!!DUEL.d&&DUEL.d.mode==='ranked'&&['B2','C1','C2'].includes(it.w.level);
+function dQ(it,text,kind,i){
+  if(!dImgQ(it))return esc(text);
+  try{const m=kind==='q'?txtMask(text,560,34,700):txtMask(text,470,28,600);
+    return`<span class="txi" role="img" aria-label="${kind==='q'?'Soru (görsel)':'Seçenek '+((i|0)+1)}" style="padding-top:${m.pad}%;-webkit-mask-image:url(${m.url});mask-image:url(${m.url})"></span>`}catch(e){return esc(text)}
+}
 const dFin=d=>!!d&&(d.status==='done'||d.status==='test');
 function dStop(){clearTimeout(DUEL.findT);clearInterval(DUEL.poll);clearInterval(DUEL.tick);DUEL.findT=DUEL.poll=DUEL.tick=null}
 /* ---------- hile koruması: dereceli düelloda uygulamadan ayrılma (ŞİMDİLİK YALNIZCA YÖNETİCİ) ---------- */
@@ -3771,9 +3794,9 @@ function vDuel(){
     const it=DUEL.qs[DUEL.idx],ans=DUEL.sel!==null;
     body=`<div id="dhud">${dHudHtml()}</div>
     <div class="row" style="gap:10px;margin:8px 0"><div class="bar tm" style="flex:1"><i id="dtmf" style="width:100%;transition:none"></i></div><b class="mono" id="dtmt">${DQ_T}</b><span class="mono muted">${DUEL.idx+1}/${n}</span></div>
-    <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${FEAT[it.f]}</span>${lvTag(it.w.level)}</div>
-    <h2>${esc(it.question)}</h2>
-    <div class="opts">${it.options.map((o,i)=>{let c='';if(ans){if(o===it.correct)c='ok';else if(i===DUEL.sel)c='bad'}return`<button class="opt ${c}" data-act="duel-opt" data-v="${i}" ${ans?'disabled':''}><kbd>${i+1}</kbd><span>${esc(o)}</span></button>`}).join('')}</div>
+    <div class="card qcard${dImgQ(it)?' noselq':''}"><div class="row" style="margin-bottom:10px"><span class="badge">${FEAT[it.f]}</span>${lvTag(it.w.level)}</div>
+    <h2>${dQ(it,it.question,'q')}</h2>
+    <div class="opts">${it.options.map((o,i)=>{let c='';if(ans){if(o===it.correct)c='ok';else if(i===DUEL.sel)c='bad'}return`<button class="opt ${c}" data-act="duel-opt" data-v="${i}" ${ans?'disabled':''}><kbd>${i+1}</kbd><span>${dQ(it,o,'o',i)}</span></button>`}).join('')}</div>
     ${ans?`<div class="fb ${DUEL.lastOk?'ok':'bad'}"><b class="t">${DUEL.sel===-1?'Süre doldu':DUEL.lastOk?'Doğru':'Yanlış'}</b>${DUEL.lastOk?'':` <span class="small">Doğru cevap: <b>${esc(it.correct)}</b></span>`}</div>`:''}</div>`;
   }else if(P==='wait'){
     body=`<div class="card stack" style="text-align:center"><div id="dhud">${dHudHtml()}</div><h2>Bitirdin</h2><div class="muted">Rakibin bitirmesi bekleniyor…</div></div>`;
