@@ -278,6 +278,7 @@ declare uid uuid := auth.uid(); iid uuid; m text := case when p_mode = 'ranked' 
 begin
   if uid is null or not public.is_approved() or public.is_blocked(uid) then raise exception 'not allowed'; end if;
   if target is null or target = uid then raise exception 'bad target'; end if;
+  if m = 'ranked' then raise exception 'ranked invite closed'; end if;   -- dereceli yalnızca gizli kullanıcılı rastgele eşleşme
   if not public.chat_can_receive(target) then raise exception 'bad target'; end if;
   if m = 'ranked' and public.duel_pen_block(uid) then raise exception 'ranked penalty'; end if;
   if m = 'ranked' and public.duel_pen_block(target) then raise exception 'target penalty'; end if;
