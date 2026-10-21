@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.110.0';
+const APP_VERSION='4.111.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2312,9 +2312,20 @@ function profBar(){
   return`<div class="pbar${flCls(id)}${isKing(id)?' king kv':''}" ${lgAttr(id)} data-pc="${esc(id)}" role="button" aria-label="Profil kartım">${avatar(name,color,false,av,fr,0,0,id)}<div class="pn"><b>${esc(name)}</b>${CLOUD.username?`<span class="muted small">@${esc(CLOUD.username)}</span>`:''}</div><div class="pr">${st?`<span class="badge">🔥 ${st}</span>`:''}${lg?`<span class="badge">${esc(lg)}</span>`:''}</div>${kingFlag(id)}${flagHtml(id)}</div>`;
 }
 const duelLock=()=>!DUEL.bot&&!!DUEL.id&&['count','play','wait'].includes(DUEL.phase);
+const MAINT={on:false,msg:'',adm:false};
+async function maintCheck(){
+  try{const r=await fetch('maintenance.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;
+    const j=await r.json();const on=!!j.on,msg=String(j.msg||'').slice(0,300);
+    if(on!==MAINT.on||msg!==MAINT.msg){MAINT.on=on;MAINT.msg=msg;if(!on)MAINT.adm=false;quietRender2()}
+  }catch(e){}
+}
+const maintBlocked=()=>MAINT.on&&!(CLOUD.uid&&CLOUD.admin)&&!(MAINT.adm&&!CLOUD.uid);
+function vMaint(){return `<div class="empty" style="padding:48px 20px;text-align:center"><div style="font-size:20px;font-weight:700;margin-bottom:10px">Bakımdayız</div><div class="small" style="line-height:1.6;max-width:340px;margin:0 auto">${esc(MAINT.msg||'Sunucu bakımı yapılıyor. Kısa süre sonra tekrar açılacak. Bu sayfayı açık bırakabilirsin, bakım bitince uygulama kendiliğinden açılır.')}</div><div style="margin-top:28px"><button class="btn ghost small" data-act="maint-adm">Yönetici girişi</button></div></div>`}
+setInterval(()=>{if(!document.hidden)maintCheck()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)maintCheck()});maintCheck();
 function render(){
   const app=$('#app');
   if(!AUTH.ready){fabUpdate();$('nav').hidden=true;app.innerHTML='<div class="empty">Yükleniyor…</div>';return}
+  if(maintBlocked()){fabUpdate();$('nav').hidden=true;app.innerHTML=vMaint();return}
   if(!CLOUD.uid){fabUpdate();$('nav').hidden=true;app.innerHTML=vLogin();return}
   if(CLOUD.approved===false){fabUpdate();$('nav').hidden=true;app.innerHTML=vPending();return}
   const dlk=duelLock();
@@ -4064,6 +4075,7 @@ document.addEventListener('click',async e=>{
     case'duel-pen-chk':DUEL.pk=!DUEL.pk;render();break;
     case'duel-pen-ack':penAck();break;
     case'duel-rc-ok':DUEL.rc.splice(+g('data-v'),1);render();break;
+    case'maint-adm':MAINT.adm=true;render();break;
     case'duel-nt-ok':DUEL.nt=DUEL.nt.filter(x=>String(x.id)!==g('data-v'));render();break;
     case'duel-sub':{const nv=g('data-v')==='ranked'&&!drkLocked()?'ranked':'classic';if(g('data-v')==='ranked'&&drkLocked())toast('Dereceli düello şimdilik kilitli.');if(nv!==DUEL.sub){DUEL.sub=nv;LOBBY.on=[];LOBBY.duels=[];LOBBY.sig='';LOBBY.busy=false;lobbyLoad()}render();break}
     case'duel-find':duelFind();break;
