@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.95.0';
+const APP_VERSION='4.95.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3833,11 +3833,44 @@ function duelHist(){
   return`<div class="card stack" style="gap:8px"><h2>${rkm?'Dereceli maç geçmişi':'Maç geçmişi'}</h2>${H.length?`<div id="dhl" style="max-height:330px;overflow-y:auto;overscroll-behavior:contain">${rows}${DUEL.hpOk&&!DUEL.hp[rkm?'ranked':'classic'].done?'<div class="small muted" style="text-align:center;padding:8px">Daha eskileri yükleniyor…</div>':''}</div><div class="small muted">${H.length} maç${DUEL.hpOk?(DUEL.hp[rkm?'ranked':'classic'].done?' (tümü yüklendi)':' (aşağı kaydırdıkça eskileri yüklenir)'):''}${DUEL.allOk?' (tüm oyuncular)':' (yalnızca senin maçların; tüm maçlar için supabase-duel-ranked.sql çalıştırılmalı)'} · <span style="color:#3b82f6">mavi</span> kazanan, <span style="color:var(--bad)">kırmızı</span> kaybeden, gri beraberlik · her maçta toplanan maç puanı${rkm?' ve lige yansıyan puan değişimi':''}.</div>`:`<div class="small muted">Henüz tamamlanmış ${rkm?'dereceli ':''}düello yok.</div>`}</div>`;
 }
 /* ---------- düello test alanı: tek ekranda iki oyuncu (yalnızca yönetici + test hesabı; sunucuya hiçbir şey yazılmaz) ---------- */
-const LAB={on:false,mode:'ranked',phase:'idle',pl:[{},{}],qs:[],voidBy:-1,vwhy:'',t0:0,tk:null};
+const LAB={on:false,mode:'ranked',phase:'idle',pl:[{},{}],qs:[],voidBy:-1,vwhy:'',t0:0,tk:null,pts:[1500,1500],ex:[0,0],res:null};
+const LAB_MULT=lv=>lv<=1?0:lv===2?1:lv===3?1.5:2;
+const LAB_BAN=lv=>lv<=3?0:lv===4?15:lv===5?60:lv===6?180:720;   // dakika
+const labFmtBan=m=>m>=60?(m/60)+' saat':m+' dakika';
+// sonucu hesapla: sunucudaki kuralların aynısı (duel_settle / duel_guard); yalnızca bu ekranda tutulur
+function labResult(){
+  const rk=LAB.mode==='ranked',P=LAB.pl,pt=LAB.pts.slice();let out=[{d:0,note:''},{d:0,note:''}];
+  if(LAB.phase==='void'){
+    const v=LAB.voidBy,o=1-v;LAB.ex[v]++;const lv=LAB.ex[v];
+    if(rk){const mult=LAB_MULT(lv),sm=Math.max(P[v].s,0),so=Math.max(P[o].s,0),share=Math.max(.5,sm+so===0?.5:so/(sm+so));
+      const lk=dRisk(pt[v]),wk=dRisk(pt[o]),base=Math.round(Math.min(lk*share,4*wk)*10)/10,pen=Math.round(base*mult*10)/10,ban=LAB_BAN(lv);
+      out[v]={d:-pen,note:lv+'. ayrılma ('+(mult?'normal yenilgi puanı ×'+String(mult).replace('.',','):'yalnızca uyarı, puan kesilmez')+')'+(ban?' · dereceli mola: '+labFmtBan(ban):'')};
+      out[o]={d:0,note:'Rakip ayrıldı: maç sayılmadı, puan yazılmaz'}}
+    else{out[v]={d:0,note:'Klasik maçta ayrılma cezası yok (yalnızca dereceli)'};out[o]={d:0,note:'Maç iptal, bahis iade'}}
+  }else{
+    const s0=P[0].s,s1=P[1].s;
+    if(rk){let w=s0>s1?0:s1>s0?1:-1;if(Math.max(s0,0)+Math.max(s1,0)===0)w=-1;
+      if(w<0){out=[{d:0,note:'Berabere: puan değişmez'},{d:0,note:'Berabere: puan değişmez'}]}
+      else{const l=1-w,c=Math.max(P[w].s,0),cl=Math.max(P[l].s,0),share=c/(c+cl),lk=dRisk(pt[l]),wk=dRisk(pt[w]);
+        const vt=Math.round(Math.min(lk*share,4*wk)*10)/10,vx=vt<=0?0:Math.min(vt,Math.max(1,Math.round(.05*vt*10)/10));
+        out[w]={d:Math.round((vt-vx)*10)/10,note:'Kazandın: rakibin riskinden pay'+(vx?' (komisyon −'+nf(r1(vx))+')':'')};out[l]={d:-vt,note:'Kaybettin: riskinden pay kesildi'}}}
+    else{const tie=s0===s1,w=s0>s1?0:s1>s0?1:P[0].t<P[1].t?0:P[1].t<P[0].t?1:-1;
+      if(w<0){out=[{d:22.5-DSTAKE,note:'Berabere: bahis iadesi'},{d:22.5-DSTAKE,note:'Berabere: bahis iadesi'}]}
+      else{const tot=Math.max(s0,0)+Math.max(s1,0),sw=Math.max(P[w].s,0),pw=Math.round((25+(tot===0?10:20*sw/tot))*10)/10;
+        out[w]={d:Math.round((pw-DSTAKE)*10)/10,note:'Kazandın: ödül '+nf(pw)+' − bahis '+DSTAKE};out[1-w]={d:Math.round((45-pw-DSTAKE)*10)/10,note:'Kaybettin: ödül '+nf(Math.round((45-pw)*10)/10)+' − bahis '+DSTAKE}}}
+  }
+  LAB.res=out.map((x,i)=>({d:x.d,note:x.note,before:LAB.pts[i],after:Math.max(0,Math.round((LAB.pts[i]+x.d)*10)/10)}));
+  LAB.res.forEach((x,i)=>{LAB.pts[i]=x.after});
+}
+function labResCard(i){
+  const x=LAB.res&&LAB.res[i];if(!x)return'';
+  const sg=x.d>0?'+':x.d<0?'−':'',cl=x.d>0?'var(--ok)':x.d<0?'var(--bad)':'inherit';
+  return`<div class="card" style="background:var(--surface2);border-color:transparent"><div class="small muted">Puan değişimi (test)</div><div class="mono" style="font-size:1.5rem;font-weight:800;color:${cl}">${sg}${nf(r1(Math.abs(x.d)))}</div><div class="small">${nf(r1(x.before))} → <b>${nf(r1(x.after))}</b></div><div class="small muted" style="margin-top:4px">${esc(x.note)}</div></div>`
+}
 function labInit(){
   LAB.qs=seededQs(Math.floor(Math.random()*2147480000),DQ_N);
   LAB.pl=[0,1].map(()=>({idx:0,sel:null,lastOk:null,s:0,c:0,a:0,t:0,tq:0,nb:0,done:false}));
-  LAB.voidBy=-1;LAB.vwhy='';LAB.t0=Date.now()+3000;LAB.phase='count';
+  LAB.voidBy=-1;LAB.vwhy='';LAB.res=null;LAB.t0=Date.now()+3000;LAB.phase='count';
   clearInterval(LAB.tk);LAB.tk=setInterval(labTick,100);render();
 }
 function labStop(){clearInterval(LAB.tk);LAB.tk=null}
@@ -3867,11 +3900,12 @@ function labAnswer(i,o){
     if(LAB.phase!=='play')return;
     p.idx++;p.sel=null;
     if(p.idx>=DQ_N)p.done=true;else p.tq=Date.now();
-    if(LAB.pl.every(x=>x.done)){LAB.phase='done';labStop()}
+    if(LAB.pl.every(x=>x.done)){LAB.phase='done';labStop();labResult()}
     render();
   },ok?700:1300);
 }
-function labVoid(i,why){if(LAB.phase!=='play')return;LAB.phase='void';LAB.voidBy=i;LAB.vwhy=why;labStop();render()}
+function labVoid(i,why){if(LAB.phase!=='play')return;LAB.phase='void';LAB.voidBy=i;LAB.vwhy=why;labStop();labResult();render()}
+document.addEventListener('change',e=>{const t=e.target;if(t&&t.getAttribute&&t.getAttribute('data-lab-pt')!==null){const i=+t.getAttribute('data-lab-pt');LAB.pts[i]=Math.max(0,+t.value||0)}});
 function labPanel(i){
   const p=LAB.pl[i],o=LAB.pl[1-i],rk=LAB.mode==='ranked',nm='Oyuncu '+(i+1),col=i?'#e8742a':'#3a4bd8';
   let b='';
@@ -3879,10 +3913,10 @@ function labPanel(i){
   else if(LAB.phase==='count')b=`<div style="text-align:center;padding:26px 0"><div class="muted">Başlıyor…</div><div class="mono" id="labcnt" style="font-size:3rem;font-weight:800">${Math.max(1,Math.ceil((LAB.t0-Date.now())/1000))}</div></div>`;
   else if(LAB.phase==='void'){
     const mine=LAB.voidBy===i,why=LAB.vwhy==='blur2'?'ekran odağını ikinci kez kaybettiğin':'uygulamadan ayrıldığın';
-    b=`<div class="card stack" style="text-align:center"><h2 style="margin:0">⛔ Maç iptal edildi</h2><div class="muted small">${mine?'Maç sırasında '+why+' için düello iptal edildi.':'Rakibin maç sırasında uygulamadan ayrıldı (hile koruması). Düello iptal edildi.'}</div><div class="card" style="background:var(--ok-bg);border-color:transparent"><b style="color:var(--ok)">Puanında değişiklik yok.</b></div></div>`;
+    b=`<div class="card stack" style="text-align:center"><h2 style="margin:0">⛔ Maç iptal edildi</h2><div class="muted small">${mine?'Maç sırasında '+why+' için düello iptal edildi.':'Rakibin maç sırasında uygulamadan ayrıldı (hile koruması). Düello iptal edildi.'}</div>${labResCard(i)}</div>`;
   }else if(LAB.phase==='done'){
     const win=p.s>o.s||(p.s===o.s&&!rk&&p.t<o.t),draw=p.s===o.s&&(rk||p.t===o.t),avg=p.a?Math.round(p.t/p.a/100)/10:0;
-    b=`<div class="card stack" style="text-align:center"><h2 style="margin:0">${draw?'🤝 Berabere':win?'🏆 Kazandın!':'😤 Kaybettin'}</h2><div class="kp"><div><b>${nf(p.s)}</b><span>puan</span></div><div><b>${p.c}/${DQ_N}</b><span>doğru</span></div><div><b>${avg||'–'}</b><span>ort. sn</span></div></div><div class="muted small">🧪 Test: hiçbir şey kaydedilmedi.</div></div>`;
+    b=`<div class="card stack" style="text-align:center"><h2 style="margin:0">${draw?'🤝 Berabere':win?'🏆 Kazandın!':'😤 Kaybettin'}</h2><div class="kp"><div><b>${nf(p.s)}</b><span>puan</span></div><div><b>${p.c}/${DQ_N}</b><span>doğru</span></div><div><b>${avg||'–'}</b><span>ort. sn</span></div></div>${labResCard(i)}<div class="muted small">🧪 Test: hiçbir şey sunucuya kaydedilmedi.</div></div>`;
   }else if(p.done){
     b=`<div class="card stack" style="text-align:center"><h2 style="margin:0">Bitirdin</h2><div class="muted">Rakibin bitirmesi bekleniyor…</div><div class="kp"><div><b>${nf(p.s)}</b><span>puan</span></div><div><b>${p.c}/${p.a}</b><span>doğru</span></div></div></div>`;
   }else{
@@ -3901,6 +3935,10 @@ function vLab(){
   return`<div class="top"><h1>Düello test alanı</h1></div><div class="stack">
   <div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)">🧪 Tek başına iki oyuncu gibi oyna. Burada hiçbir şey sunucuya yazılmaz; puan, geçmiş ve istatistiğe işlenmez. Sorular iki oyuncuda aynıdır.</div>
   <div class="seg"><button class="chip" aria-pressed="${LAB.mode!=='ranked'}" data-act="lab-mode" data-v="classic">Klasik</button><button class="chip" aria-pressed="${LAB.mode==='ranked'}" data-act="lab-mode" data-v="ranked">Dereceli</button></div>
+  <div class="card stack" style="gap:6px"><div class="small muted">Test puanları (gerçek puanına dokunmaz; her maçtan sonra güncellenir)</div>
+    <div class="row" style="gap:8px;flex-wrap:wrap"><label class="small">Oyuncu 1 <input type="number" min="0" step="50" value="${LAB.pts[0]}" data-lab-pt="0" style="width:90px"></label><label class="small">Oyuncu 2 <input type="number" min="0" step="50" value="${LAB.pts[1]}" data-lab-pt="1" style="width:90px"></label>
+    <button class="btn" style="padding:6px 10px;font-size:.78rem" data-act="lab-reset">Puan ve ayrılma sayaçlarını sıfırla</button></div>
+    <div class="small muted">Ayrılma sayısı: Oyuncu 1 = <b>${LAB.ex[0]}</b>, Oyuncu 2 = <b>${LAB.ex[1]}</b> (7 günlük sayaç gibi çalışır)</div></div>
   <div class="row" style="gap:8px"><button class="btn primary" data-act="lab-start">${LAB.phase==='idle'?'Başlat':'Yeniden başlat'}</button><button class="btn" data-act="lab-close">Test alanından çık</button></div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px">${labPanel(0)}${labPanel(1)}</div></div>`;
 }
@@ -4029,6 +4067,7 @@ document.addEventListener('click',async e=>{
     case'lab-open':if(grdUser()){LAB.on=true;LAB.phase='idle';render()}break;
     case'lab-close':LAB.on=false;LAB.phase='idle';labStop();render();lobbyLoad();break;
     case'lab-start':labInit();break;
+    case'lab-reset':LAB.pts=[1500,1500];LAB.ex=[0,0];LAB.res=null;LAB.phase='idle';labStop();render();break;
     case'lab-mode':LAB.mode=g('data-v')==='ranked'?'ranked':'classic';LAB.phase='idle';labStop();render();break;
     case'lab-opt':labAnswer(+g('data-p'),+g('data-v'));break;
     case'lab-leave':labVoid(+g('data-p'),'hide');break;
