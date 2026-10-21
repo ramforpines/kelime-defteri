@@ -5,7 +5,7 @@
 --  * duel_flags: ayrılma/odak kaybı kayıtları (yalnızca yönetici fonksiyonlarıyla okunur).
 --    Türler: hide (maçı iptal eder), hide_short (1 sn'den kısa, yalnızca kayıt), hide_off (çevrimdışıyken, yalnızca kayıt), blur (uyarı), blur2 (iptal), trap (tuzak düğmeye tıklandı, yalnızca kayıt).
 --  * duel_guard: istemci bildirir; yönetici ya da test hesabı değilse hiçbir şey yapmaz.
---  * Ceza kademesi (7 gün): 1. ayrılma yalnızca uyarı, 2. normal yenilgi puanı, 3. 1,5 katı, 4. 2 katı + 24 saat dereceli mola, 5+ 2 katı + 7 gün mola.
+--  * Ceza kademesi (7 gün): 1. ayrılma yalnızca uyarı, 2. normal yenilgi puanı, 3. 1,5 katı, 4. 2 katı + 15 dk dereceli mola, 5. 1 saat, 6. 3 saat, 7+ hep 2 katı + 12 saat.
 --    Test grubu (yönetici + test hesabı) maçlarında puan kesilmez, yalnızca ne kesileceği gösterilir. Gerek: supabase-duel-test.sql (duel_is_test).
 --  * Herkese açmak için duel_guard_user() fonksiyonunu 'select true' yap.
 --  * duel_flag_list: yönetici listesi.
@@ -87,7 +87,7 @@ begin
       v_base := round(least(v_lk * v_share, 4 * v_ok), 1);
       v_pen := round(v_base * v_mult, 1);
     end if;
-    if v_lv = 4 then v_ban := 86400; elsif v_lv >= 5 then v_ban := 604800; end if;
+    v_ban := case when v_lv <= 3 then 0 when v_lv = 4 then 900 when v_lv = 5 then 3600 when v_lv = 6 then 10800 else 43200 end;   -- mola: 15 dk, 1 sa, 3 sa, en çok 12 sa (7. ve sonrası hep 12 sa)
     if v_ban > 0 then
       insert into public.duel_bans(user_id, until) values (uid, now() + make_interval(secs => v_ban))
       on conflict (user_id) do update set until = excluded.until;
