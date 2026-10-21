@@ -372,7 +372,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 .rw-obj .flg{position:relative!important;top:0!important;right:0!important;width:56px!important;height:165px!important;animation:none!important;filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))}
 .rw-obj .flg::after{display:none}
 .rw-obj .kfl{position:relative;top:0;right:0;width:64px;height:150px;pointer-events:none}.rw-obj .kfl::after{display:none}
-.rw-obj .avw{transform:scale(1.45)}.rw-obj.king .avw{transform:scale(1.3)}
+.rw-obj .avw{transform:scale(1.45)}.rw-obj.avc .avw{transform:scale(2.9)}.rw-obj.king .avw{transform:scale(1.3)}
 @media (prefers-reduced-motion:reduce){.rw-rays,.rw-st,.rw-card,.rw-ov{animation:none!important}}
 .pftl[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft)}.pfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}.pftl{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;padding:6px 4px;border:2px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}.pftl.off{background:var(--accent-soft)}.pftl.off .pfv2{opacity:.5}.pftl .frl{position:absolute;right:4px;top:2px;font-size:.75rem}.pfv2{height:56px;display:flex;align-items:center;justify-content:center;position:relative;width:100%}.pftl.tall .pfv2{height:92px}.pfl{font-size:.68rem;font-weight:600;text-align:center;line-height:1.15}.pfv2 .avw{transform:scale(.9)}.pfv2 .avw.dogw{width:48px;height:48px}.pfv2 .flg,.pfv2 .kfl{position:relative;top:0;right:0;animation:none}.pfv2 .flg{width:23px;height:68px}.pfv2 .kfl::after,.pfv2 .flg::after{display:none}.pfdot{width:30px;height:30px;border-radius:50%;display:block}.pfav{display:grid;grid-template-columns:repeat(2,26px);gap:3px}.pfav .av{width:26px;height:26px}.pfvl{display:flex;align-items:center;gap:4px;width:68px;padding:5px;border-radius:8px;background:radial-gradient(120% 90% at 50% 0%,#8a1830,#3a0814);border:1px solid #d6aa5a;color:#ffe08a;font-size:.62rem}.pfvl i{margin-left:auto;font-style:normal;font-weight:800}.pfvl.pfn{background:var(--surface2,#eef);border-color:var(--line);color:var(--ink)}.pfvl .av.sm{width:16px;height:16px;flex:none}
 .avgrid button{position:relative}.avgrid button .frl{position:absolute;right:2px;bottom:0;font-size:.7rem}
@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.103.0';
+const APP_VERSION='4.103.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1977,12 +1977,12 @@ function rwCands(){
   const lg=LEAGUES[cur];
   out.push({id:'lg:'+cur,cover:LEAGUES.slice(0,cur+1).map((l,i)=>'lg:'+i),kicker:'Yeni çerçeve açıldı',title:lg.n+' çerçevesi',desc:lg.n+' ligine ulaştın. Mevcut ligin ve altındaki liglerin çerçevelerini Ben → Profil → Çerçeve bölümünden seçebilirsin. Ligin düşerse üstteki çerçeveler kilitlenir.',when:'Ligin boyunca geçerli',obj:avatar(nm,col,true,S.prof.av|0,lg.k),cls:'frm'});
   {const bn=badgeN();
-   if(bn>=2)out.push({id:'av:knight',kicker:'Yeni avatar',title:'Karanlık Şövalye avatarı',desc:'2. rozetini kazandın. Avatarı Ben → Profil → Avatar bölümünden seçebilirsin.',when:'Kalıcı',obj:'<span class="avw"><span class="av lg em svgav">'+avSvg(KNIGHT_AV)+'</span></span>',cls:'frm'});
-   if(bn>=3)out.push({id:'av:plasma',kicker:'Yeni avatar',title:'Plazma Kılıcı avatarı',desc:'3. rozetini kazandın. Avatarı Ben → Profil → Avatar bölümünden seçebilirsin.',when:'Kalıcı',obj:'<span class="avw"><span class="av lg em svgav">'+avSvg(PLASMA_AV)+'</span></span>',cls:'frm'})}
+   if(bn>=2)out.push({id:'av:knight',kicker:'Yeni avatar',title:'Karanlık Şövalye avatarı',desc:'2. rozetini kazandın. Avatarı Ben → Profil → Avatar bölümünden seçebilirsin.',when:'Kalıcı',obj:'<span class="avw"><span class="av lg em svgav">'+avSvg(KNIGHT_AV)+'</span></span>',cls:'avc'});
+   if(bn>=3)out.push({id:'av:plasma',kicker:'Yeni avatar',title:'Plazma Kılıcı avatarı',desc:'3. rozetini kazandın. Avatarı Ben → Profil → Avatar bölümünden seçebilirsin.',when:'Kalıcı',obj:'<span class="avw"><span class="av lg em svgav">'+avSvg(PLASMA_AV)+'</span></span>',cls:'avc'})}
   const w=myWinsN();
-  if(w!==null&&w>=1)out.push({id:'av:dragon',kicker:'Yeni avatar',title:'Düello Ejderi avatarı',desc:'Dereceli düelloda ilk galibiyetini aldın. Avatarı Ben → Profil → Avatar bölümünden seçebilirsin.',when:'Kalıcı',obj:'<span class="avw"><span class="av lg em svgav">'+avSvg(DRAGON_AV)+'</span></span>',cls:'frm'});
+  if(w!==null&&w>=1)out.push({id:'av:dragon',kicker:'Yeni avatar',title:'Düello Ejderi avatarı',desc:'Dereceli düelloda ilk galibiyetini aldın. Avatarı Ben → Profil → Avatar bölümünden seçebilirsin.',when:'Kalıcı',obj:'<span class="avw"><span class="av lg em svgav">'+avSvg(DRAGON_AV)+'</span></span>',cls:'avc'});
   {let hi=-1;HELM_LG.forEach((L,j)=>{if(cur>=L)hi=j});
-   if(hi>=0)out.push({id:'av:helm'+hi,cover:HELM_LG.slice(0,hi+1).map((L,j)=>'av:helm'+j),kicker:'Yeni avatar',title:LEAGUES[HELM_LG[hi]].n+' miğferi avatarı',desc:LEAGUES[HELM_LG[hi]].n+' ligine ulaştın. Miğfer avatarını (ve altındaki liglerin miğferlerini) Ben → Profil → Avatar bölümünden seçebilirsin. Ligin düşerse üstteki miğferler kilitlenir.',when:'Ligin boyunca geçerli',obj:'<span class="avw"><span class="av lg em svgav">'+avSvg(HELM_AV+hi)+'</span></span>',cls:'frm'})}
+   if(hi>=0)out.push({id:'av:helm'+hi,cover:HELM_LG.slice(0,hi+1).map((L,j)=>'av:helm'+j),kicker:'Yeni avatar',title:LEAGUES[HELM_LG[hi]].n+' miğferi avatarı',desc:LEAGUES[HELM_LG[hi]].n+' ligine ulaştın. Miğfer avatarını (ve altındaki liglerin miğferlerini) Ben → Profil → Avatar bölümünden seçebilirsin. Ligin düşerse üstteki miğferler kilitlenir.',when:'Ligin boyunca geçerli',obj:'<span class="avw"><span class="av lg em svgav">'+avSvg(HELM_AV+hi)+'</span></span>',cls:'avc'})}
   const fl=flagsOf(CLOUD.uid);
   fl.forEach(f=>{
     if(f.id==='daychamp')out.push({id:'fday:'+today(),kicker:'Yeni flama',title:'Dünün birincisi flaması',desc:'Dün günlük sıralamayı birinci bitirdin. Flama bugün profil satırında ve kartında görünecek.',when:'Süre: 1 gün · yarın gece yarısı kalkar',obj:flagHtml('x',f),cls:'flg1'});
