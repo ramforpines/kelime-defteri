@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.93.0';
+const APP_VERSION='4.94.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3299,6 +3299,13 @@ function duelApply(rows){
           else e.p=1;
           return}
       }
+      if(d.status==='void'&&!e.p){
+        const mine=d.p1===CLOUD.uid?d.dl1:d.dl2;
+        if(mine!=null&&+mine<0){e.p=1;e.s=1;const v=Math.round(+mine*10)/10,dy=dayStat();
+          S.tp=Math.max(0,(S.tp||0)+v);dy.adj=(dy.adj||0)+v;evAdd(dy,'dr|'+d.id,{t:'a',pts:v});
+          delete DSTAT[CLOUD.uid];loadWins().then(()=>render());
+          ch=true;msg='Maçtan ayrılma cezası: −'+nf(r1(Math.abs(v)))+' puan'}
+        return}
       if(d.status==='done'&&!e.p){
         const mine=d.p1===CLOUD.uid?d.dl1:d.dl2;
         if(mine!=null){e.p=1;e.s=1;const v=Math.round(+mine*10)/10,dy=dayStat();
@@ -3504,9 +3511,15 @@ async function duelRecord(){
   if(chg&&UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')softRender();
   if(DUEL.recAgain){DUEL.recAgain=false;duelRecord()}
 }
+async function banCheck(){
+  if(!grdUser()||!sb)return false;
+  try{const r=await sb.rpc('duel_ban_left');const sec=r&&!r.error?+r.data||0:0;
+    if(sec>0){const hh=Math.floor(sec/3600),mm=Math.ceil(sec%3600/60);toast('⛔ Maçtan ayrıldığın için dereceli düello molasındasın: '+(hh?hh+' sa ':'')+mm+' dk kaldı. Klasik düello açık.');return true}}catch(e){}
+  return false}
 async function duelFind(){
   if(!sb||!CLOUD.uid)return;
   if(drkLocked()&&DUEL.sub==='ranked'){DUEL.sub='classic';render();return}
+  if(DUEL.sub==='ranked'&&await banCheck())return;
   const need=DUEL.sub==='ranked'?DRK_MIN:DSTAKE;
   if((S.tp||0)<need){toast('Düelloya girmek için en az '+need+' puanın olmalı.');return}
   dReset();DUEL.phase='search';DUEL.find=Date.now();render();
@@ -3714,6 +3727,7 @@ async function invSend(target){
   if(INV||!sb||!CLOUD.uid)return;
   if(drkLocked()&&DUEL.sub==='ranked'){DUEL.sub='classic';render();return}
   const rkm=DUEL.sub==='ranked',need=rkm?DRK_MIN:DSTAKE;
+  if(rkm&&await banCheck())return;
   if((S.tp||0)<need){toast('Teklif için en az '+need+' puanın olmalı.');return}
   const who=LOBBY.on.find(x=>x.id===target);if(!who)return;
   try{
@@ -3865,7 +3879,7 @@ function vDuel(){
       <div class="kp"><div><b>${nf(r1(S.tp||0))}</b><span>puanın</span></div><div><b>${(LEAGUES[myLeague()]||LEAGUES[0]).n}</b><span>ligin</span></div><div><b>${(S.tp||0)>=DRK_MIN?nf(r1(dRisk(S.tp||0))):'–'}</b><span>riskin${(S.tp||0)>=DRK_MIN?' (%'+nf(Math.round(dRate(S.tp||0)*1000)/10)+')':''}</span></div></div>
       ${DUEL.recR?`<div class="kp"><div><b>${DUEL.recR.w}</b><span>galibiyet</span></div><div><b>${DUEL.recR.l}</b><span>mağlubiyet</span></div><div><b>${DUEL.recR.d}</b><span>beraberlik</span></div></div><div style="width:100%;box-sizing:border-box;text-align:center;padding:14px 10px;border-radius:14px;background:var(--surface2)"><div style="font-size:2.2rem;font-weight:800;line-height:1.1;color:${DUEL.recR.net>0?'var(--ok)':DUEL.recR.net<0?'var(--bad)':'inherit'}">${DUEL.recR.net>0?'+':DUEL.recR.net<0?'−':''}${nf(r1(Math.abs(DUEL.recR.net)))}</div><div class="muted small" style="margin-top:2px">Dereceli puanı</div></div>`:''}
       ${err}
-      ${grdUser()?'<div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)"><b>⚠️ Hile koruması (yönetici ve test hesabı)</b><div class="muted" style="margin-top:4px">Maç sırasında uygulamadan çıkıp (ana ekran, başka uygulama, kilit ekranı) 1 saniyeden uzun kalırsan maç iptal edilir, puan değişmez. 1 saniyeden kısa ayrılmalar ve internetin kesik olduğu ayrılmalar iptal etmez, yalnızca kaydedilir. Ekran odağını kaybedersen bir kez uyarılırsın, tekrarında maç iptal edilir.</div></div>':''}
+      ${grdUser()?'<div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)"><b>⚠️ Hile koruması (yönetici ve test hesabı)</b><div class="muted" style="margin-top:4px">Maç sırasında uygulamadan çıkıp (ana ekran, başka uygulama, kilit ekranı) 1 saniyeden uzun kalırsan maç iptal edilir, puan değişmez. 1 saniyeden kısa ayrılmalar ve internetin kesik olduğu ayrılmalar iptal etmez, yalnızca kaydedilir. Ayrılma kural ihlalidir (7 gün içinde): 1. seferde uyarı, sonra yenilgi puanı kadar ceza (1x, 1,5x, 2x), 4. seferde 24 saat dereceli mola. Rakibe puan yazılmaz. Ekran odağını kaybedersen bir kez uyarılırsın, tekrarında maç iptal edilir.</div></div>':''}
       <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DRK_MIN?'disabled':''}>Dereceli rakip bul</button>${(S.tp||0)<DRK_MIN?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. Dereceli düello Bronz ligden (${DRK_MIN} puan) başlar.</div>`:''}</div>${lobbyCard()}${duelHist()}`:`<div class="card stack"><h2>⚔ Klasik düello</h2>
       <div class="muted small">Aynı ${n} soruyu çözen iki oyuncudan çok puan toplayan kazanır. Bahis: ${DSTAKE} puan. Kuralların tamamı <b>Ben → Nasıl kullanılır? → Düello</b> bölümünde.</div>
       ${R?`<div class="kp"><div><b>${R.w}</b><span>galibiyet</span></div><div><b>${R.l}</b><span>mağlubiyet</span></div><div><b>${R.d}</b><span>beraberlik</span></div></div>${R.last.length?`<div class="row" style="gap:6px">${R.last.map(x=>`<span class="badge ${x==='W'?'ok':x==='L'?'warn':''}">${x==='W'?'G':x==='L'?'M':'B'}</span>`).join('')}<span class="muted small">son maçlar</span></div>`:''}`:''}
@@ -3896,7 +3910,12 @@ function vDuel(){
     const mine=d&&d.void_by===CLOUD.uid,why=d&&d.void_reason==='blur2'?'ekran odağını ikinci kez kaybettiğin':'uygulamadan ayrıldığın';
     body=`<div class="card stack" style="text-align:center"><h1 style="margin:0">⛔ Maç iptal edildi</h1>
       <div class="muted">${mine?'Maç sırasında '+why+' için düello iptal edildi.':'Rakibin maç sırasında uygulamadan ayrıldı (hile koruması). Düello iptal edildi.'}</div>
-      <div class="card" style="background:var(--ok-bg);border-color:transparent"><b style="color:var(--ok)">Puanında değişiklik yok.</b></div>
+      ${(()=>{if(!mine)return'<div class="card" style="background:var(--ok-bg);border-color:transparent"><b style="color:var(--ok)">Puanında değişiklik yok. Rakibine de puan yazılmadı.</b></div>';
+        const lv=+d.pen_lv||0,pn=+(d.p1===CLOUD.uid?d.pen1:d.pen2)||0;
+        if(!lv)return'<div class="card" style="background:var(--ok-bg);border-color:transparent"><b style="color:var(--ok)">Puanında değişiklik yok.</b></div>';
+        if(!pn)return'<div class="card" style="border-color:#e8b24a;background:rgba(232,178,74,.12)"><b>⚠️ İlk uyarın.</b> Puanın kesilmedi. Bu hafta bir daha ayrılırsan maç yenilgi sayılır ve puan kaybedersin.</div>';
+        const nx=lv===2?'Bir sonraki ayrılmada ceza 1,5 katına çıkar.':lv===3?'Bir sonraki ayrılmada ceza 2 katına çıkar ve 24 saat dereceli düello molası verilir.':lv===4?'24 saat dereceli düello molası başladı.':'7 gün dereceli düello molası başladı.';
+        return`<div class="card" style="background:rgba(214,69,69,.12);border-color:transparent"><b style="color:var(--bad)">${d.pen_t?'🧪 Test: gerçek maçta ':''}−${nf(r1(pn))} puan ${d.pen_t?'kesilirdi':'kesildi'}</b> <span class="small">(${lv}. ayrılma, son 7 gün)</span><div class="small" style="margin-top:4px">${nx}</div></div>`})()}
       ${mine&&DUEL.voids!=null?`<div class="muted small">Bu hafta iptal sayın: <b>${DUEL.voids}</b></div>`:''}
       <button class="btn primary block" data-act="duel-exit">Lobiye dön</button></div>`;
   }else{
