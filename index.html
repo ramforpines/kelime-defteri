@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.101.0';
+const APP_VERSION='4.102.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1123,7 +1123,7 @@ async function onLogin(user){
   if(!S.prof.name)S.prof.name=CLOUD.username;
   render();adShow();
   if(CLOUD.admin){loadUsers();loadAdminStats()}
-  loadAnn();loadLive();loadMyFb();appPing();loadStats();loadFlags();if(CLOUD.admin){loadAdminFb();loadAdminRep()}
+  loadAnn();loadLive();loadMyFb();appPing();loadStats();loadFlags();try{recalcPull()}catch(e){}if(CLOUD.admin){loadAdminFb();loadAdminRep()}
   if(!S.prof.name)S.prof.name=CLOUD.username;
   applyDecay();evalAwards();persistLocal();render();refreshBoard();schedulePush();
   duelSync();
@@ -3608,9 +3608,32 @@ async function banCheck(){
   const left=Math.ceil((DUEL.penUntil-Date.now())/1000);
   if(left>0){toast('⛔ Dereceli düello cezan sürüyor: '+penFmt(left)+' kaldı. Klasik düello açık.',4500);if(UI.tab==='quiz'&&UI.qmode==='duel')render();return true}
   return false}
-DUEL.nt=[];
+DUEL.nt=[];DUEL.rc=[];
+// geriye dönük puan düzeltmesi (dereceli sistem değişikliği): sunucudaki farklar bir kez uygulanır
+async function recalcPull(){
+  if(!sb||!CLOUD.uid||DUEL.rcBusy)return;DUEL.rcBusy=1;
+  try{const r=await sb.rpc('duel_recalc_pull');if(r.error||!Array.isArray(r.data)||!r.data.length)return;
+    if(!S.dl)S.dl={};
+    const ids=[];let sum=0,n=0;
+    r.data.forEach(x=>{
+      const e=S.dl[x.id],dv=Math.round(+x.delta*10)/10,old=!x.done_at||Date.now()-new Date(x.done_at).getTime()>3*864e5;
+      if(e&&e.p||(!e&&old)){
+        if(dv){const dy=dayStat();S.tp=Math.max(0,(S.tp||0)+dv);dy.adj=(dy.adj||0)+dv;evAdd(dy,'dr|'+x.id+'|rc',{t:'a',pts:dv});sum+=dv;n++}
+        ids.push(x.id)}
+      else if(e&&!e.p)ids.push(x.id);   // maç henüz işlenmedi: yeni değer doğrudan işlenecek, fark gerekmez
+    });
+    if(!ids.length)return;
+    const a=await sb.rpc('duel_recalc_ack',{p_ids:ids});if(a.error)throw a.error;
+    if(n){save();delete DSTAT[CLOUD.uid];loadWins().then(()=>render());
+      sum=Math.round(sum*10)/10;DUEL.rc.push({sum,n});
+      toast('Dereceli sistem değişikliği: '+(sum>=0?'+':'−')+nf(r1(Math.abs(sum)))+' puan',5000);
+      if(UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')render()}
+  }catch(e){}finally{DUEL.rcBusy=0}
+}
+const rcCard=()=>DUEL.rc.length?DUEL.rc.map((x,i)=>`<div class="card" style="border-color:#2f9e6b;background:rgba(47,158,107,.12)"><b>Dereceli sistem değişikliği</b><div style="margin-top:4px">Dereceli puan sistemi güncellendi (komisyon kalktı, kazanana lig bonusu eklendi, üst sınır 3 kat oldu). Geçmiş ${x.n} maçın puanı yeni kurala göre yeniden hesaplandı: ${x.sum>=0?`<b>${nf(r1(x.sum))} puan iade edildi</b>`:`<b>${nf(r1(Math.abs(x.sum)))} puan düzeltildi (düşüldü)</b>`}.</div><div style="margin-top:8px"><button class="btn" data-act="duel-rc-ok" data-v="${i}">Tamam</button></div></div>`).join(''):'';
 async function pullNotices(){
   if(!sb||!CLOUD.uid)return;
+  recalcPull();
   try{const r=await sb.rpc('duel_notice_pull');if(r.error||!r.data||!r.data.length)return;
     r.data.forEach(x=>DUEL.nt.push({id:x.id,msg:x.msg}));
     toast('⚠️ Yönetici uyarısı geldi.',4000);if(UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')render()}catch(e){}
@@ -3960,7 +3983,7 @@ function vDuel(){
   }
   const inGame=['count','play','wait'].includes(P);
   const rkv=DUEL.sub==='ranked'||(d&&d.mode==='ranked'&&P!=='lobby');
-  return`<div class="top"><h1>Düello</h1></div><div class="stack${rkv?' vlv pg':''}">${P==='lobby'?seg+penCard()+ntCard():''}${body}</div>`;
+  return`<div class="top"><h1>Düello</h1></div><div class="stack${rkv?' vlv pg':''}">${P==='lobby'?seg+penCard()+rcCard()+ntCard():''}${body}</div>`;
 }
 function setTab(t){
   if(t==='chat'&&UI.tab!=='chat')chatSnap();
@@ -4005,6 +4028,7 @@ document.addEventListener('click',async e=>{
     case'qmode':UI.qmode=g('data-v');if(UI.quiz&&UI.quiz.done)UI.quiz=null;UI.tab='quiz';lastStudy='quiz';try{sessionStorage.setItem('kd-tab','quiz')}catch(e){}window.scrollTo(0,0);if(UI.qmode==='duel'){if(DUEL.phase==='result')dReset();duelRecord();duelSync();lobbyLoad()}render();break;
     case'duel-pen-chk':DUEL.pk=!DUEL.pk;render();break;
     case'duel-pen-ack':penAck();break;
+    case'duel-rc-ok':DUEL.rc.splice(+g('data-v'),1);render();break;
     case'duel-nt-ok':DUEL.nt=DUEL.nt.filter(x=>String(x.id)!==g('data-v'));render();break;
     case'duel-sub':{const nv=g('data-v')==='ranked'&&!drkLocked()?'ranked':'classic';if(g('data-v')==='ranked'&&drkLocked())toast('Dereceli düello şimdilik kilitli.');if(nv!==DUEL.sub){DUEL.sub=nv;LOBBY.on=[];LOBBY.duels=[];LOBBY.sig='';LOBBY.busy=false;lobbyLoad()}render();break}
     case'duel-find':duelFind();break;
