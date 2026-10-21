@@ -3,7 +3,7 @@
 -- SQL Editor'da bir kez çalıştır (önce supabase-admin.sql ve dereceli düello dosyaları çalışmış olmalı). Birden çok kez çalıştırılabilir.
 --  * duels.status artık 'void' (iptal) değeri de alabilir; iptal edilen maç puan, geçmiş ve galibiyet sayısına girmez.
 --  * duel_flags: ayrılma/odak kaybı kayıtları (yalnızca yönetici fonksiyonlarıyla okunur).
---    Türler: hide (maçı iptal eder), hide_short (1 sn'den kısa, yalnızca kayıt), hide_off (çevrimdışıyken, yalnızca kayıt), blur (uyarı), blur2 (iptal).
+--    Türler: hide (maçı iptal eder), hide_short (1 sn'den kısa, yalnızca kayıt), hide_off (çevrimdışıyken, yalnızca kayıt), blur (uyarı), blur2 (iptal), trap (tuzak düğmeye tıklandı, yalnızca kayıt).
 --  * duel_guard: istemci bildirir; yönetici ya da test hesabı değilse hiçbir şey yapmaz.
 --  * Herkese açmak için duel_guard_user() fonksiyonunu 'select true' yap.
 --  * duel_flag_list: yönetici listesi.
@@ -23,7 +23,7 @@ create table if not exists public.duel_flags (
   created_at timestamptz not null default now()
 );
 alter table public.duel_flags drop constraint if exists duel_flags_kind_check;
-alter table public.duel_flags add constraint duel_flags_kind_check check (kind in ('hide','hide_short','hide_off','blur','blur2'));
+alter table public.duel_flags add constraint duel_flags_kind_check check (kind in ('hide','hide_short','hide_off','blur','blur2','trap'));
 create index if not exists duel_flags_user_idx on public.duel_flags(user_id, created_at desc);
 alter table public.duel_flags enable row level security;
 revoke all on public.duel_flags from anon, authenticated;
@@ -43,7 +43,7 @@ begin
   if uid is null then raise exception 'not allowed'; end if;
   select * into d from public.duels where id = did for update;
   if not found or uid not in (d.p1, d.p2) then raise exception 'not allowed'; end if;
-  if p_kind not in ('hide','hide_short','hide_off','blur','blur2') then raise exception 'bad kind'; end if;
+  if p_kind not in ('hide','hide_short','hide_off','blur','blur2','trap') then raise exception 'bad kind'; end if;
   -- şimdilik yalnızca yönetici ve test hesabı: diğer kullanıcılar için kayıt da iptal de yok
   if not public.duel_guard_user() then return jsonb_build_object('status', d.status, 'voids', 0); end if;
   if p_away is not null then
