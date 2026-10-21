@@ -447,7 +447,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.88.0';
+const APP_VERSION='4.88.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1465,7 +1465,7 @@ function vHelp(){
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün kelimeleri, bu haftaki sıran, dünün ve geçen haftanın lideri.',
     '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b>, <b>İngilizce Vize</b> (ders kitabı üniteleri: kelimeler, dinleme, okuma ve Örnek Vize), <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
-    '<b>Sıralamalar</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: Bugün, Sıralamalar ve Ben → Profil ekranlarında sağ altta duran mesaj balonuna dokununca açılır; genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte) vardır, sağ üstteki <b>Sohbetten çık</b> ile kapanır. Okunmamış mesaj sayısı balonun üstünde görünür. <b>Ben → Nasıl kullanılır?</b>: bu sayfa.',
+    '<b>Sıralamalar</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: Bugün, Çalışma, Sıralamalar ve Ben → Profil ekranlarında sağ altta duran mesaj balonuna dokununca açılır; genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte) vardır, sağ üstteki <b>Sohbetten çık</b> ile kapanır. Okunmamış mesaj sayısı balonun üstünde görünür. <b>Ben → Nasıl kullanılır?</b>: bu sayfa.',
     '<b>Ben</b>: Profil, İstatistik (öğrenilen kelimeler en altında), Ayarlar (geri bildirim en altında) ve Nasıl kullanılır? sayfası. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
   ${sec('🚀 Hızlı başlangıç',li([
     '<b>Bugün</b> sekmesinde günün hedefini ve "Bugünün testini başlat" düğmesini görürsün. Her gün birkaç test çözmen yeter.',
@@ -2222,7 +2222,7 @@ function renderNav(){
 function fabUpdate(){
   let b=document.getElementById('chatfab');
   if(!b){b=document.createElement('button');b.id='chatfab';b.type='button';b.setAttribute('data-act','chat-fab');b.setAttribute('aria-label','Sohbeti aç');document.body.appendChild(b)}
-  const on=!!CLOUD.uid&&CLOUD.approved!==false&&!duelLock()&&(UI.tab==='today'||UI.tab==='rank'||(UI.tab==='me'&&UI.me==='prof'));
+  const on=!!CLOUD.uid&&CLOUD.approved!==false&&!duelLock()&&(UI.tab==='today'||UI.tab==='rank'||(UI.tab==='me'&&UI.me==='prof')||(isStudy(UI.tab)&&!UI.quiz&&!(UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase!=='lobby')));
   b.hidden=!on;
   const n=on?chatUnread():0;
   const h='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-8l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" fill="currentColor"/></svg>'+(n?'<i class="nbd">'+(n>99?'99+':n)+'</i>':'');
