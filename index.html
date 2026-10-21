@@ -82,10 +82,10 @@ nav .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(
 .txi{display:block;width:100%;height:0;background-color:currentColor;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-user-select:none;user-select:none;pointer-events:none}
 .trapw{position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;opacity:0}
 .noselq,.noselq *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-nav .in.adm5{grid-template-columns:1fr 1fr 74px 1fr 1fr;align-items:end}
-nav button.duelb{min-height:50px;margin-top:-30px;gap:0}
-nav button.duelb img{width:62px;height:62px;border-radius:14px;border:2px solid #c9992a;box-shadow:0 4px 12px rgba(0,0,0,.45);display:block;background:#000}
-nav button.duelb span{margin-top:2px}
+nav .in.adm5{grid-template-columns:1fr 1fr 100px 1fr 1fr;align-items:end}
+nav button.duelb{min-height:50px;gap:0;overflow:visible}
+nav button.duelb img{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);width:92px;height:120px;display:block;pointer-events:none}
+nav button.duelb span{position:absolute;left:0;right:0;bottom:6px;margin:0;font-size:.62rem;font-weight:800;color:#3a1200;text-shadow:0 0 3px #ffd24d,0 0 6px #ffb030;pointer-events:none}
 nav button{position:relative;border:0;background:none;border-radius:10px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.68rem;padding:0;font-weight:600;color:var(--muted)}
 .pbar{display:flex;align-items:center;gap:12px;padding:8px 12px;margin-bottom:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;cursor:pointer}
 .pbar .pn{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.25}.pbar .pn b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pbar .pr{display:flex;gap:6px}
@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.98.2';
+const APP_VERSION='4.99.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2260,7 +2260,7 @@ function renderNav(){
   const adm=!!CLOUD.admin,inDuel=UI.tab==='quiz'&&UI.qmode==='duel';
   const nv=$('#nav');nv.classList.toggle('adm5',adm);
   const btn=([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab)&&!(adm&&inDuel):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}</span></button>`;
-  const duel=`<button class="duelb" data-act="qmode" data-v="duel" aria-label="Düello" ${inDuel?'aria-current="page"':''}><img src="duel-swords.svg" alt="" width="62" height="62"><span>Düello</span></button>`;
+  const duel=`<button class="duelb" data-act="qmode" data-v="duel" aria-label="Düello" ${inDuel?'aria-current="page"':''}><img src="duel-nav.svg" alt="" width="92" height="120"><span>Düello</span></button>`;
   nv.innerHTML=adm?TABS.slice(0,2).map(btn).join('')+duel+TABS.slice(2).map(btn).join(''):TABS.map(btn).join('');
   fabUpdate();
 }
