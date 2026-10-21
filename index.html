@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.112.0';
+const APP_VERSION='4.112.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3655,23 +3655,23 @@ async function recalcPull(){
   if(!sb||!CLOUD.uid||DUEL.rcBusy)return;DUEL.rcBusy=1;
   try{const r=await sb.rpc('duel_recalc_pull');if(r.error||!Array.isArray(r.data)||!r.data.length)return;
     if(!S.dl)S.dl={};
-    const ids=[];let sum=0,n=0;
+    const ids=[];let sum=0,n=0;const G={};
     r.data.forEach(x=>{
       const e=S.dl[x.id],dv=Math.round(+x.delta*10)/10,old=!x.done_at||Date.now()-new Date(x.done_at).getTime()>3*864e5;
       if(e&&e.p||(!e&&old)){
-        if(dv){const dy=dayStat();S.tp=Math.max(0,(S.tp||0)+dv);dy.adj=(dy.adj||0)+dv;evAdd(dy,'dr|'+x.id+'|rc',{t:'a',pts:dv});sum+=dv;n++}
+        if(dv){const dy=dayStat();S.tp=Math.max(0,(S.tp||0)+dv);dy.adj=(dy.adj||0)+dv;evAdd(dy,'dr|'+x.id+'|rc',{t:'a',pts:dv});sum+=dv;n++;const k=String(x.note||'').slice(0,300),g=G[k]||(G[k]={sum:0,n:0});g.sum+=dv;g.n++}
         ids.push(x.id)}
       else if(e&&!e.p)ids.push(x.id);   // maç henüz işlenmedi: yeni değer doğrudan işlenecek, fark gerekmez
     });
     if(!ids.length)return;
     const a=await sb.rpc('duel_recalc_ack',{p_ids:ids});if(a.error)throw a.error;
     if(n){save();delete DSTAT[CLOUD.uid];loadWins().then(()=>render());
-      sum=Math.round(sum*10)/10;DUEL.rc.push({sum,n});
-      toast('Dereceli sistem değişikliği: '+(sum>=0?'+':'−')+nf(r1(Math.abs(sum)))+' puan',5000);
+      sum=Math.round(sum*10)/10;Object.keys(G).forEach(k=>DUEL.rc.push({sum:Math.round(G[k].sum*10)/10,n:G[k].n,note:k}));
+      toast((Object.keys(G).every(k=>k)?'Dereceli puan düzeltmesi: ':'Dereceli sistem değişikliği: ')+(sum>=0?'+':'−')+nf(r1(Math.abs(sum)))+' puan',5000);
       if(UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')render()}
   }catch(e){}finally{DUEL.rcBusy=0}
 }
-const rcCard=()=>DUEL.rc.length?DUEL.rc.map((x,i)=>`<div class="card" style="border-color:#2f9e6b;background:rgba(47,158,107,.12)"><b>Dereceli sistem değişikliği</b><div style="margin-top:4px">Dereceli puan sistemi güncellendi (komisyon kalktı, kazanana lig bonusu eklendi, üst sınır 3 kat oldu). Geçmiş ${x.n} maçın puanı yeni kurala göre yeniden hesaplandı: ${x.sum>=0?`<b>${nf(r1(x.sum))} puan iade edildi</b>`:`<b>${nf(r1(Math.abs(x.sum)))} puan düzeltildi (düşüldü)</b>`}.</div><div style="margin-top:8px"><button class="btn" data-act="duel-rc-ok" data-v="${i}">Tamam</button></div></div>`).join(''):'';
+const rcCard=()=>DUEL.rc.length?DUEL.rc.map((x,i)=>x.note?`<div class="card" style="border-color:#2f9e6b;background:rgba(47,158,107,.12)"><b>Dereceli puan düzeltmesi</b><div style="margin-top:4px">${esc(x.note)} <b>Toplam: ${x.sum>=0?'+':'−'}${nf(r1(Math.abs(x.sum)))} puan</b>.</div><div style="margin-top:8px"><button class="btn" data-act="duel-rc-ok" data-v="${i}">Tamam</button></div></div>`:`<div class="card" style="border-color:#2f9e6b;background:rgba(47,158,107,.12)"><b>Dereceli sistem değişikliği</b><div style="margin-top:4px">Dereceli puan sistemi güncellendi (komisyon kalktı, kazanana lig bonusu eklendi, üst sınır 3 kat oldu). Geçmiş ${x.n} maçın puanı yeni kurala göre yeniden hesaplandı: ${x.sum>=0?`<b>${nf(r1(x.sum))} puan iade edildi</b>`:`<b>${nf(r1(Math.abs(x.sum)))} puan düzeltildi (düşüldü)</b>`}.</div><div style="margin-top:8px"><button class="btn" data-act="duel-rc-ok" data-v="${i}">Tamam</button></div></div>`).join(''):'';
 async function pullNotices(){
   if(!sb||!CLOUD.uid)return;
   recalcPull();
