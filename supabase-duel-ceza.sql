@@ -225,8 +225,9 @@ begin
   if idx <> mine or idx >= d.qn then return; end if;
   m := least(greatest(coalesce(ms, 0), 300), d.per_q * 1000);
   l := least(greatest(coalesce(lv, 1), 1), 1.85);
-  pts := case when ok then round(100 * l * (1 + 0.5 * (1 - (least(greatest(m, 2000), 6000) - 2000)::numeric / 4000)))::int
-              else -round(75 * l * (case when coalesce("to", false) then 0.5 else 1 end))::int end;
+  -- doğru ve yanlış aynı hesap: 100 × seviye × hız çarpanı (yanlışta eksi). Süre dolması: en yavaş cevap (hız çarpanı 1,00)
+  if not ok and coalesce("to", false) then m := d.per_q * 1000; end if;
+  pts := round(100 * l * (1 + 0.5 * (1 - (least(greatest(m, 2000), 6000) - 2000)::numeric / 4000)))::int * (case when ok then 1 else -1 end);
   zq := case when uid = d.p1 then d.zq1 else d.zq2 end;
   if ok and zq is not null and zq = idx then pts := 0; end if;
   if uid = d.p1 then
