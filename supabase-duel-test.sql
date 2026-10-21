@@ -158,7 +158,7 @@ end $$;
 create or replace function public.duel_settle(did uuid) returns void
 language plpgsql security definer set search_path = public as $$
 declare d public.duels; w uuid; tot int; pw numeric(6,1); sw int; p1v numeric(6,1); p2v numeric(6,1); expired boolean; both_done boolean;
-        v_c1 numeric; v_c2 numeric; v_share numeric; v_lk numeric; v_wk numeric; v_t numeric; v_tx numeric;
+        v_c1 numeric; v_c2 numeric; v_share numeric; v_lk numeric; v_wk numeric; v_t numeric; v_tx numeric; v_st text := 'done';
 begin
   select * into d from public.duels where id = did for update;
   if not found or d.status <> 'active' then return; end if;
@@ -173,19 +173,16 @@ begin
     select * into d from public.duels where id = did;
   end if;
 
-  -- test grubu (yönetici + test hesabı) kendi aralarında oynadıkları maçlar: kayda geçmez, puan/istatistik işlenmez
-  if public.duel_is_test(d.p1) and public.duel_is_test(d.p2) then
-    w := case when d.s1 > d.s2 then d.p1 when d.s2 > d.s1 then d.p2 else null end;
-    update public.duels set status = 'test', done_at = now(), winner = w, pay1 = 0, pay2 = 0, dl1 = 0, dl2 = 0 where id = did;
-    return;
-  end if;
+  -- test grubu (yönetici + test hesabı) kendi aralarında oynadıkları maçlar: durum 'test' olur; puan/istatistik işlenmez,
+  -- ama gerçek maçta ne olacağı (dl1/dl2, pay1/pay2) hesaplanıp test geçmişinde gösterilir
+  if public.duel_is_test(d.p1) and public.duel_is_test(d.p2) then v_st := 'test'; end if;
 
   if d.mode = 'ranked' then
     w := case when d.s1 > d.s2 then d.p1 when d.s2 > d.s1 then d.p2 else null end;
     -- iki tarafın da puanı (negatifler 0 sayılır) 0 ise kimse bir şey kazanmadı: berabere, puan değişmez
     if greatest(d.s1, 0) + greatest(d.s2, 0) = 0 then w := null; end if;
     if w is null then
-      update public.duels set status = 'done', done_at = now(), winner = null, dl1 = 0, dl2 = 0 where id = did;
+      update public.duels set status = v_st, done_at = now(), winner = null, dl1 = 0, dl2 = 0 where id = did;
       return;
     end if;
     v_c1 := greatest(d.s1, 0); v_c2 := greatest(d.s2, 0);
@@ -195,7 +192,7 @@ begin
     v_t := round(least(v_lk * v_share, 4 * v_wk), 1);
     v_tx := least(v_t, greatest(1, round(0.05 * v_t, 1)));
     if v_t <= 0 then v_tx := 0; end if;
-    update public.duels set status = 'done', done_at = now(), winner = w,
+    update public.duels set status = v_st, done_at = now(), winner = w,
       dl1 = case when w = p1 then v_t - v_tx else -v_t end,
       dl2 = case when w = p2 then v_t - v_tx else -v_t end
     where id = did;
@@ -217,7 +214,7 @@ begin
     pw := round(25 + case when tot = 0 then 10 else 20.0 * sw / tot end, 1);
     if w = d.p1 then p1v := pw; p2v := 45 - pw; else p2v := pw; p1v := 45 - pw; end if;
   end if;
-  update public.duels set status = 'done', done_at = now(), winner = w, pay1 = p1v, pay2 = p2v where id = did;
+  update public.duels set status = v_st, done_at = now(), winner = w, pay1 = p1v, pay2 = p2v where id = did;
 end $$;
 
 revoke all on function public.duel_join(int, text) from public, anon;

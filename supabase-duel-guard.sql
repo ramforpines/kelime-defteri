@@ -121,3 +121,23 @@ begin
 end $$;
 revoke all on function public.duel_flag_list(int) from public, anon;
 grant execute on function public.duel_flag_list(int) to authenticated;
+
+
+-- test geçmişi: test maçları (varsayımsal puanlar) ve test grubundaki ayrılma cezaları. Yalnızca yönetici + test hesabı.
+create or replace function public.duel_test_history(n int default 60)
+returns table(id uuid, p1 uuid, p2 uuid, n1 text, n2 text, s1 numeric, s2 numeric, winner uuid, mode text, status text, created_at timestamptz,
+              dl1 numeric, dl2 numeric, pay1 numeric, pay2 numeric, pen_lv int, pen1 numeric, pen2 numeric, void_by uuid)
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.duel_guard_user() then raise exception 'not allowed'; end if;
+  return query
+  select d.id, d.p1, d.p2, a.name::text, b.name::text, d.s1::numeric, d.s2::numeric, d.winner, d.mode, d.status, d.created_at,
+         d.dl1::numeric, d.dl2::numeric, d.pay1::numeric, d.pay2::numeric, d.pen_lv, d.pen1, d.pen2, d.void_by
+  from public.duels d
+  left join public.scores a on a.user_id = d.p1
+  left join public.scores b on b.user_id = d.p2
+  where auth.uid() in (d.p1, d.p2) and (d.status = 'test' or (d.status = 'void' and d.pen_t))
+  order by d.created_at desc limit least(greatest(coalesce(n, 60), 1), 200);
+end $$;
+revoke all on function public.duel_test_history(int) from public, anon;
+grant execute on function public.duel_test_history(int) to authenticated;

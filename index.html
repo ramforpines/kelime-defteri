@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.94.1';
+const APP_VERSION='4.95.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3285,6 +3285,7 @@ function duelApply(rows){
   if(!S.dl)S.dl={};
   let ch=false,msg='';
   (rows||[]).forEach(d=>{
+    if(d.status==='test')return;   // test maçları gerçek puana asla işlenmez
     const e=S.dl[d.id]||(S.dl[d.id]={});
     if(d.mode==='ranked'){
       if(d.status==='done'&&!e.rf){
@@ -3506,6 +3507,7 @@ async function duelRecord(){
     if(DUEL.hpOk!==false){await Promise.all([histPage('classic',true),histPage('ranked',true)])}
   }catch(e){DUEL.rec=null;DUEL.recErr=/duels|42P01|PGRST205|schema cache/i.test(String(e&&(e.message||e.code)||''))?'setup':'err'}
   DUEL.recBusy=false;
+  if(grdUser())testLoad();
   const hs=JSON.stringify([(DUEL.hist||[]).slice(0,12).map(x=>x.id),DUEL.rec,DUEL.recR]);
   const chg=hs!==DUEL.recSig;DUEL.recSig=hs;
   if(chg&&UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')softRender();
@@ -3779,6 +3781,46 @@ function lobbyCard(){
    ${DUEL.sub==='ranked'?`<div class="stack" style="gap:6px"><span class="small muted">Lobidekiler (${(LOBBY.wait||[]).length})</span>${(LOBBY.wait||[]).length?LOBBY.wait.map(u=>`<div class="entry"><b>Gizli kullanıcı</b><br><span class="small muted">Lig: ${esc(lgName(u.id))} ligi</span></div>`).join(''):'<div class="small muted">Lobide bekleyen kimse yok.</div>'}</div>`:''}
    <div class="stack" style="gap:6px"><span class="small muted">Şu an oynanan düellolar (${LOBBY.duels.length})</span>${LOBBY.duels.length?LOBBY.duels.map(dl).join(''):'<div class="small muted">Şu an süren düello yok.</div>'}</div></div>`;
 }
+DUEL.tv=false;DUEL.th={rows:[],ok:null,busy:false};
+async function testLoad(){
+  if(!sb||!CLOUD.uid||!grdUser()||DUEL.th.busy)return;
+  DUEL.th.busy=true;
+  try{const r=await sb.rpc('duel_test_history',{n:60});if(r.error)throw r.error;DUEL.th.rows=r.data||[];DUEL.th.ok=true}
+  catch(e){DUEL.th.ok=false}
+  DUEL.th.busy=false;
+  if(DUEL.tv&&UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')softRender();
+}
+function dTestVal(x,me){
+  // bu test maçında benim için varsayımsal puan değişimi ve ceza
+  const p1=x.p1===me,rk=x.mode==='ranked';
+  if(x.status==='void'){const pn=+(p1?x.pen1:x.pen2)||0;return{pen:x.void_by===me?pn:0,lv:x.void_by===me?+x.pen_lv||0:0,pts:x.void_by===me?-pn:0,void:true,mine:x.void_by===me}}
+  if(rk){const v=+(p1?x.dl1:x.dl2)||0;return{pts:v,pen:0,lv:0}}
+  const pay=+(p1?x.pay1:x.pay2);return{pts:isFinite(pay)?Math.round((pay-DSTAKE)*10)/10:0,pen:0,lv:0}
+}
+function dTestNote(d){
+  const me=CLOUD.uid,v=dTestVal(d,me),sg=n=>(n>0?'+':n<0?'−':'')+nf(r1(Math.abs(n)));
+  return`<div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)">🧪 <b>Test maçı:</b> gerçek puanına, geçmişine ve istatistiğine işlenmedi.<div style="margin-top:4px">${d.mode==='ranked'?'Gerçek dereceli maçta':'Gerçek klasik maçta'} puan değişimin: <b>${sg(v.pts)}</b></div><div class="muted" style="margin-top:2px">Tüm test maçları: <b>🧪 Test</b> sekmesinde.</div></div>`
+}
+function testHist(){
+  const me=CLOUD.uid,R=DUEL.th.rows||[];
+  const dt=x=>{try{const d=new Date(x);return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}catch(e){return''}};
+  const sg=n=>(n>0?'+':n<0?'−':'')+nf(r1(Math.abs(n)));
+  let net=0,pen=0,cnt=0;
+  const rows=R.map(x=>{const v=dTestVal(x,me),p1=x.p1===me,opp=p1?x.n2:x.n1,w=x.winner;cnt++;
+    let res,cl='',pts='';
+    if(x.status==='void'){res=v.mine?'⛔ Ayrıldın (iptal)':'⛔ Rakip ayrıldı (iptal)';cl='color:var(--bad)';
+      if(v.mine){pen+=-v.pts;pts=v.pen?`<b style="color:var(--bad)">${sg(v.pts)}</b> <span class="small muted">(${v.lv}. ayrılma${v.pen?'':' · yalnızca uyarı'})</span>`:`<span class="small muted">${v.lv}. ayrılma · yalnızca uyarı, puan yok</span>`}
+      else pts='<span class="small muted">puan değişimi yok</span>'}
+    else{res=!w?'🤝 Berabere':w===me?'🏆 Kazandın':'😤 Kaybettin';cl=!w?'':w===me?'color:var(--ok)':'color:var(--bad)';net+=v.pts;pts=`<b class="mono" style="color:${v.pts>0?'var(--ok)':v.pts<0?'var(--bad)':'inherit'}">${sg(v.pts)}</b>`}
+    return`<div class="entry"><div class="row" style="justify-content:space-between;gap:8px"><b style="${cl}">${res}</b><span class="small muted">${esc(dt(x.created_at))}</span></div>
+      <div class="small">${x.mode==='ranked'?'Dereceli':'Klasik'} · ${esc(opp||'Rakip')} · ${nf(Math.max(0,+(p1?x.s1:x.s2)||0))}–${nf(Math.max(0,+(p1?x.s2:x.s1)||0))} · varsayımsal puan: ${pts}</div></div>`}).join('');
+  return`<div class="card stack" style="gap:8px"><h2>🧪 Test maçları</h2>
+    <div class="muted small">Bu maçlar gerçek puanına işlenmez. Aşağıda gerçek maçta olacak puan değişimleri ve ayrılma cezaları görünür (varsayımsal).</div>
+    ${DUEL.th.ok===false?'<div class="fb bad">Test geçmişi yüklenemedi. <b>supabase-duel-guard.sql</b> ve <b>supabase-duel-test.sql</b> dosyalarını yeniden çalıştır.</div>':''}
+    ${cnt?`<div class="kp"><div><b>${cnt}</b><span>test maçı</span></div><div><b>${sg(Math.round(net*10)/10)}</b><span>maç puanı (net)</span></div><div><b>${pen?'−'+nf(r1(pen)):'0'}</b><span>ayrılma cezası</span></div></div>`:''}
+    ${cnt?`<div style="max-height:420px;overflow-y:auto;overscroll-behavior:contain">${rows}</div>`:DUEL.th.ok===null?'<div class="muted small">Yükleniyor…</div>':'<div class="muted small">Henüz test maçı yok.</div>'}
+    <button class="btn" data-act="duel-tv">Yenile</button></div>`
+}
 function duelHist(){
   const rkm=DUEL.sub==='ranked',H=DUEL.hist&&DUEL.hist.filter(x=>(x.mode==='ranked')===rkm);if(!H)return'';
   const dt=x=>{try{const d=new Date(x);return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}catch(e){return''}};
@@ -3865,7 +3907,7 @@ function vLab(){
 function vDuel(){
   if(LAB.on&&grdUser())return vLab();
   const P=DUEL.phase,d=DUEL.d,n=DQ_N;
-  const seg=`<div class="seg"><button class="chip" aria-pressed="${DUEL.sub!=='ranked'}" data-act="duel-sub" data-v="classic">Klasik düello</button><button class="chip vlc" aria-pressed="${DUEL.sub==='ranked'}" data-act="duel-sub" data-v="ranked" ${drkLocked()?'disabled title="Şimdilik kilitli"':''}>${drkLocked()?'🔒 ':''}Dereceli düello</button></div>`;
+  const seg=`<div class="seg"><button class="chip" aria-pressed="${DUEL.sub!=='ranked'&&!DUEL.tv}" data-act="duel-sub" data-v="classic">Klasik düello</button><button class="chip vlc" aria-pressed="${DUEL.sub==='ranked'&&!DUEL.tv}" data-act="duel-sub" data-v="ranked" ${drkLocked()?'disabled title="Şimdilik kilitli"':''}>${drkLocked()?'🔒 ':''}Dereceli düello</button>${grdUser()?`<button class="chip" aria-pressed="${!!DUEL.tv}" data-act="duel-tv">🧪 Test</button>`:''}</div>`;
   let body='';
   if(P==='lobby'){
     const R=DUEL.rec;
@@ -3925,13 +3967,14 @@ function vDuel(){
     body=`<div class="card stack" style="text-align:center"><h1 style="margin:0">${draw?'🤝 Berabere':win?'🏆 Kazandın!':'😤 Kaybettin'}</h1>
       <div id="dhud">${dHudHtml()}</div>
       <div class="kp"><div><b>${m.c}/${n}</b><span>doğru</span></div><div><b>${avg||'–'}</b><span>ort. süre (sn)</span></div><div><b>${o.c}/${n}</b><span>rakip doğru</span></div></div>
-      ${d.status==='test'?'<div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)">🧪 <b>Test maçı:</b> kayda geçmedi. Puan, geçmiş, galibiyet sayısı ve doğru/yanlış istatistiğine işlenmedi.</div>':DUEL.bot?'<div class="muted small">Alıştırma maçı kayda geçmez, puan bahsi yoktur.</div>':d.mode==='ranked'?(()=>{const dl=d.p1===CLOUD.uid?d.dl1:d.dl2;if(dl==null)return'<div class="muted small">Puan değişimi hesaplanıyor…</div>';const v=+dl,od=d.p1===CLOUD.uid?d.dl2:d.dl1,tr=Math.max(Math.abs(v),Math.abs(+od||0)),tx=v>0?Math.round((tr-v)*10)/10:0;return`<div class="kp" style="grid-template-columns:repeat(2,1fr)"><div><b style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(r1(Math.abs(v)))}</b><span>dereceli puan</span></div><div><b>${nf(r1(S.tp||0))}</b><span>yeni toplam</span></div></div><div class="muted small">${draw?'Berabere kaldınız, kimse puan kaybetmedi.':`Geçen puan: ${nf(r1(tr))}${tx>0?` · kesinti: ${nf(r1(tx))}`:''}`}</div>`})():(()=>{const pay=d.pay1==null?null:(d.p1===CLOUD.uid?d.pay1:d.pay2);return pay==null?'<div class="muted small">Puan dağıtımı hesaplanıyor…</div>':`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>−${DSTAKE}</b><span>bahis</span></div><div><b>+${nf(r1(+pay))}</b><span>kazanç</span></div><div><b>${(+pay-DSTAKE)>=0?'+':'−'}${nf(r1(Math.abs(+pay-DSTAKE)))}</b><span>net puan</span></div></div>`})()}
+      ${d.status==='test'?dTestNote(d):DUEL.bot?'<div class="muted small">Alıştırma maçı kayda geçmez, puan bahsi yoktur.</div>':d.mode==='ranked'?(()=>{const dl=d.p1===CLOUD.uid?d.dl1:d.dl2;if(dl==null)return'<div class="muted small">Puan değişimi hesaplanıyor…</div>';const v=+dl,od=d.p1===CLOUD.uid?d.dl2:d.dl1,tr=Math.max(Math.abs(v),Math.abs(+od||0)),tx=v>0?Math.round((tr-v)*10)/10:0;return`<div class="kp" style="grid-template-columns:repeat(2,1fr)"><div><b style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(r1(Math.abs(v)))}</b><span>dereceli puan</span></div><div><b>${nf(r1(S.tp||0))}</b><span>yeni toplam</span></div></div><div class="muted small">${draw?'Berabere kaldınız, kimse puan kaybetmedi.':`Geçen puan: ${nf(r1(tr))}${tx>0?` · kesinti: ${nf(r1(tx))}`:''}`}</div>`})():(()=>{const pay=d.pay1==null?null:(d.p1===CLOUD.uid?d.pay1:d.pay2);return pay==null?'<div class="muted small">Puan dağıtımı hesaplanıyor…</div>':`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>−${DSTAKE}</b><span>bahis</span></div><div><b>+${nf(r1(+pay))}</b><span>kazanç</span></div><div><b>${(+pay-DSTAKE)>=0?'+':'−'}${nf(r1(Math.abs(+pay-DSTAKE)))}</b><span>net puan</span></div></div>`})()}
       <button class="btn primary block" data-act="duel-find">Yeni rakip bul</button>
       <button class="btn block" data-act="duel-exit">Çık</button></div>`;
   }
+  if(P==='lobby'&&DUEL.tv&&grdUser())body=testHist();
   const inGame=['count','play','wait'].includes(P);
-  const rkv=DUEL.sub==='ranked'||(d&&d.mode==='ranked'&&P!=='lobby');
-  return`<div class="top"><h1>Düello</h1></div><div class="stack${rkv?' vlv pg':''}">${P==='lobby'?seg:''}${P==='lobby'&&grdUser()?'<div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)">🧪 <b>Test modu:</b> şimdilik yalnızca yönetici ve test hesabıyla düello oynayabilirsin. Bu maçlar kayda geçmez, puan ve istatistiğe işlenmez. Diğer kullanıcılar seni göremez, sana teklif gönderemez.<div style="margin-top:8px"><button class="btn primary" data-act="lab-open">🧪 Düello test alanı</button></div></div>':''}${body}</div>`;
+  const rkv=(DUEL.sub==='ranked'&&!(DUEL.tv&&P==='lobby'))||(d&&d.mode==='ranked'&&P!=='lobby');
+  return`<div class="top"><h1>Düello</h1></div><div class="stack${rkv?' vlv pg':''}">${P==='lobby'?seg:''}${P==='lobby'&&grdUser()?'<div class="card small" style="border-color:#e8b24a;background:rgba(232,178,74,.12)">🧪 <b>Test modu:</b> şimdilik yalnızca yönetici ve test hesabıyla düello oynayabilirsin. Bu maçlar gerçek puan ve istatistiğine işlenmez, ama puan değişimleri ve cezalar <b>🧪 Test</b> sekmesinde varsayımsal olarak görünür. Diğer kullanıcılar seni göremez, sana teklif gönderemez.<div style="margin-top:8px"><button class="btn primary" data-act="lab-open">🧪 Düello test alanı</button></div></div>':''}${body}</div>`;
 }
 function setTab(t){
   if(t==='chat'&&UI.tab!=='chat')chatSnap();
@@ -3974,7 +4017,8 @@ document.addEventListener('click',async e=>{
     case'chat-send':chatSend();break;
     case'chat-del':{const id=+g('data-id');const adm=CHAT.pub.some(m=>m.id===id&&m.user_id!==CLOUD.uid);const r=adm?await sb.rpc('admin_delete_chat',{mid:id}):await sb.from('chat_messages').delete().eq('id',id);if(r.error)toast('Silinemedi.');else{CHAT.pub=CHAT.pub.filter(m=>m.id!==id);CHAT.dm=CHAT.dm.filter(m=>m.id!==id);chatPaint()}break}
     case'qmode':UI.qmode=g('data-v');if(UI.quiz&&UI.quiz.done)UI.quiz=null;UI.tab='quiz';lastStudy='quiz';try{sessionStorage.setItem('kd-tab','quiz')}catch(e){}window.scrollTo(0,0);if(UI.qmode==='duel'){if(DUEL.phase==='result')dReset();duelRecord();duelSync();lobbyLoad()}render();break;
-    case'duel-sub':{const nv=g('data-v')==='ranked'&&!drkLocked()?'ranked':'classic';if(g('data-v')==='ranked'&&drkLocked())toast('Dereceli düello şimdilik kilitli.');if(nv!==DUEL.sub){DUEL.sub=nv;LOBBY.on=[];LOBBY.duels=[];LOBBY.sig='';LOBBY.busy=false;lobbyLoad()}render();break}
+    case'duel-tv':DUEL.tv=true;testLoad();render();break;
+    case'duel-sub':{DUEL.tv=false;const nv=g('data-v')==='ranked'&&!drkLocked()?'ranked':'classic';if(g('data-v')==='ranked'&&drkLocked())toast('Dereceli düello şimdilik kilitli.');if(nv!==DUEL.sub){DUEL.sub=nv;LOBBY.on=[];LOBBY.duels=[];LOBBY.sig='';LOBBY.busy=false;lobbyLoad()}render();break}
     case'duel-find':duelFind();break;
     case'duel-cancel':duelCancel();break;
     case'inv-send':invSend(g('data-u'));break;
