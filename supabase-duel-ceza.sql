@@ -226,9 +226,10 @@ begin
   m := least(greatest(coalesce(ms, 0), 300), d.per_q * 1000);
   l := least(greatest(coalesce(lv, 1), 1), 1.85);
   if d.mode = 'ranked' then
-    -- dereceli: doğru ve yanlış aynı hesap: 100 × seviye × hız çarpanı (yanlışta eksi). Süre dolması: en yavaş cevap (hız 1,00)
+    -- dereceli: doğru = 100 × seviye × hız çarpanı; yanlış = bu puanın %66'sı kadar eksi. Süre dolması: en yavaş cevap (hız 1,00)
     if not ok and coalesce("to", false) then m := d.per_q * 1000; end if;
-    pts := round(100 * l * (1 + 0.5 * (1 - (least(greatest(m, 2000), 6000) - 2000)::numeric / 4000)))::int * (case when ok then 1 else -1 end);
+    pts := round(100 * l * (1 + 0.5 * (1 - (least(greatest(m, 2000), 6000) - 2000)::numeric / 4000)))::int;
+    if not ok then pts := -round(pts * 0.66)::int; end if;
   else
     -- klasik: eski kural (doğru hız bonuslu, yanlış −75 × seviye, süre dolması yarısı)
     pts := case when ok then round(100 * l * (1 + 0.5 * (1 - (least(greatest(m, 2000), 6000) - 2000)::numeric / 4000)))::int
@@ -530,7 +531,7 @@ begin
   if not (both_done or expired) then return; end if;
   if expired and not both_done then
     update public.duels set
-      s1 = s1 - 100 * greatest(qn - a1, 0), s2 = s2 - 100 * greatest(qn - a2, 0),
+      s1 = s1 - (case when mode = 'ranked' then 200 else 100 end) * greatest(qn - a1, 0), s2 = s2 - (case when mode = 'ranked' then 200 else 100 end) * greatest(qn - a2, 0),
       a1 = greatest(a1, qn), a2 = greatest(a2, qn)
     where id = did;
     select * into d from public.duels where id = did;
