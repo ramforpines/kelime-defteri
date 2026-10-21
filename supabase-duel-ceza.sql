@@ -9,6 +9,7 @@
 -- İptal olunca:
 --   * İptal ettiren: normal yenilgi puanı ×1, ×1,5, ×2 (7 günlük sayaç: 1., 2., 3.+ iptal). Rakibe kaybedilen puanın %20'si verilir.
 --   * Dereceli cezası (süre): 3, 5, 15, 30, 60, 360, 720 dk (1.-7.+ iptal, 7 gün içinde). Sunucu join/invite/respond'da kontrol eder.
+--   * Ceza kartında kullanıcı kurallara uyacağına söz verir (duel_pen_ack); söz verilmeden dereceli maç aranamaz, teklif gönderilemez/kabul edilemez.
 --   * Klasik düello etkilenmez.
 -- Yönetici: duel_admin_* fonksiyonları (özet, vakalar, ceza kayıtları, uyarı, ceza ver, ceza kaldır, puan iade).
 
@@ -28,6 +29,7 @@ alter table public.duels add column if not exists pen2 numeric;
 alter table public.duels add column if not exists pen_t boolean;
 alter table public.duels add column if not exists pen_ban int;     -- dakika
 alter table public.duels add column if not exists pen_rf boolean;  -- yönetici puan iadesi yaptı
+alter table public.duels add column if not exists pen_ack timestamptz;  -- ceza alan kullanıcının kurallara uyacağına söz verdiği an
 alter table public.duels add column if not exists zq1 int;         -- uyarı alınan ayrılmada 0 puan sayılan soru
 alter table public.duels add column if not exists zq2 int;
 alter table public.duels add column if not exists dl1 numeric(9,1);
@@ -97,6 +99,48 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.duel_ban_left() from public, anon;
 grant execute on function public.duel_ban_left() to authenticated;
+
+-- dereceliye girişi engelleyen durum: ceza süresi sürüyor VEYA ceza kartındaki söz henüz verilmedi
+create or replace function public.duel_pen_block(u uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.duel_pen_left(u) > 0
+      or exists(select 1 from public.duels d where d.void_by = u and d.status = 'void' and d.pen_lv is not null
+                and d.pen_ack is null and coalesce(d.pen_rf, false) = false and coalesce(d.pen_t, false) = false)
+$$;
+revoke all on function public.duel_pen_block(uuid) from public, anon, authenticated;
+
+-- ceza kartı bilgileri: kalan süre ve söz verilmemiş cezalar
+create or replace function public.duel_pen_info() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare uid uuid := auth.uid(); items jsonb;
+begin
+  if uid is null then raise exception 'not allowed'; end if;
+  select coalesce(jsonb_agg(jsonb_build_object('id', d.id, 'at', coalesce(d.done_at, d.created_at), 'opp', o.name,
+           'kind', d.void_reason, 'pen', coalesce(case when uid = d.p1 then d.pen1 else d.pen2 end, 0),
+           'gain', coalesce(case when uid = d.p1 then d.dl2 else d.dl1 end, 0), 'ban', d.pen_ban, 'lv', d.pen_lv) order by d.done_at desc), '[]'::jsonb)
+    into items
+  from public.duels d
+  left join public.scores o on o.user_id = (case when uid = d.p1 then d.p2 else d.p1 end)
+  where d.void_by = uid and d.status = 'void' and d.pen_lv is not null and d.pen_ack is null
+        and coalesce(d.pen_rf, false) = false and coalesce(d.pen_t, false) = false;
+  return jsonb_build_object('left', public.duel_pen_left(uid), 'until', (select b.until from public.duel_bans b where b.user_id = uid), 'items', items);
+end $$;
+revoke all on function public.duel_pen_info() from public, anon;
+grant execute on function public.duel_pen_info() to authenticated;
+
+-- söz ver: kullanıcının tüm bekleyen cezaları onaylanır
+create or replace function public.duel_pen_ack() returns int
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := auth.uid(); n int;
+begin
+  if uid is null then raise exception 'not allowed'; end if;
+  update public.duels set pen_ack = now() where void_by = uid and status = 'void' and pen_lv is not null and pen_ack is null;
+  get diagnostics n = row_count;
+  if n > 0 then insert into public.duel_penalties(user_id, kind, note) values (uid, 'user_ack', 'Kurallara uyacağına söz verdi'); end if;
+  return n;
+end $$;
+revoke all on function public.duel_pen_ack() from public, anon;
+grant execute on function public.duel_pen_ack() to authenticated;
 
 -- 3) Ayrılma / odak kaybı bildirimi
 drop function if exists public.duel_guard(uuid, text, int, int);
@@ -204,7 +248,7 @@ begin
   perform public.duel_settle(id) from public.duels where status = 'active' and (p1 = uid or p2 = uid);
   select id into did from public.duels where status = 'active' and (p1 = uid or p2 = uid) order by created_at desc limit 1;
   if did is not null then delete from public.duel_queue where user_id = uid; return did; end if;
-  if m = 'ranked' and public.duel_pen_left(uid) > 0 then
+  if m = 'ranked' and public.duel_pen_block(uid) then
     delete from public.duel_queue where user_id = uid;
     raise exception 'ranked penalty';
   end if;
@@ -216,7 +260,7 @@ begin
       and (m = 'classic' or (
             abs(public.duel_elg(q.user_id) - public.duel_elg(uid)) <= 1
             and coalesce((select ap from public.scores where user_id = q.user_id), 0) >= 200
-            and public.duel_pen_left(q.user_id) = 0
+            and not public.duel_pen_block(q.user_id)
             and public.duel_pair_ok(uid, q.user_id)))
     order by q.joined_at limit 1 for update skip locked;
   if opp is null then
@@ -235,8 +279,8 @@ begin
   if uid is null or not public.is_approved() or public.is_blocked(uid) then raise exception 'not allowed'; end if;
   if target is null or target = uid then raise exception 'bad target'; end if;
   if not public.chat_can_receive(target) then raise exception 'bad target'; end if;
-  if m = 'ranked' and public.duel_pen_left(uid) > 0 then raise exception 'ranked penalty'; end if;
-  if m = 'ranked' and public.duel_pen_left(target) > 0 then raise exception 'target penalty'; end if;
+  if m = 'ranked' and public.duel_pen_block(uid) then raise exception 'ranked penalty'; end if;
+  if m = 'ranked' and public.duel_pen_block(target) then raise exception 'target penalty'; end if;
   perform public.duel_settle(id) from public.duels where status = 'active' and (p1 in (uid, target) or p2 in (uid, target));
   if coalesce((select ap from public.scores where user_id = uid), 0) < need then raise exception 'low points'; end if;
   if coalesce((select ap from public.scores where user_id = target), 0) < need then raise exception 'target low'; end if;
@@ -267,7 +311,7 @@ begin
     update public.duel_invites set status = 'cancelled' where id = inv;
     return jsonb_build_object('status', 'old');
   end if;
-  if i.mode = 'ranked' and (public.duel_pen_left(uid) > 0 or public.duel_pen_left(i.from_user) > 0) then
+  if i.mode = 'ranked' and (public.duel_pen_block(uid) or public.duel_pen_block(i.from_user)) then
     update public.duel_invites set status = 'cancelled' where id = inv;
     return jsonb_build_object('status', 'penalty');
   end if;
@@ -372,9 +416,10 @@ revoke all on function public.duel_admin_summary() from public, anon;
 grant execute on function public.duel_admin_summary() to authenticated;
 
 -- iptal edilen maçlar
+drop function if exists public.duel_admin_cases(int);
 create or replace function public.duel_admin_cases(n int default 60)
 returns table(id uuid, created_at timestamptz, done_at timestamptz, by_id uuid, by_name text, by_un text, opp_id uuid, opp_name text, s_by numeric, s_opp numeric,
-              reason text, lv int, pen numeric, opp_gain numeric, ban_min int, refunded boolean)
+              reason text, lv int, pen numeric, opp_gain numeric, ban_min int, refunded boolean, acked timestamptz)
 language plpgsql stable security definer set search_path = public as $$
 begin
   if not public.is_admin() then raise exception 'not allowed'; end if;
@@ -383,7 +428,7 @@ begin
          case when d.void_by = d.p1 then d.p2 else d.p1 end, b.name::text,
          case when d.void_by = d.p1 then d.s1 else d.s2 end::numeric, case when d.void_by = d.p1 then d.s2 else d.s1 end::numeric,
          d.void_reason, d.pen_lv, coalesce(case when d.void_by = d.p1 then d.pen1 else d.pen2 end, 0),
-         coalesce(case when d.void_by = d.p1 then d.dl2 else d.dl1 end, 0), d.pen_ban, coalesce(d.pen_rf, false)
+         coalesce(case when d.void_by = d.p1 then d.dl2 else d.dl1 end, 0), d.pen_ban, coalesce(d.pen_rf, false), d.pen_ack
   from public.duels d
   left join public.scores a on a.user_id = d.void_by
   left join public.scores b on b.user_id = (case when d.void_by = d.p1 then d.p2 else d.p1 end)
