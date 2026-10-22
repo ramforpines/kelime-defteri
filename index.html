@@ -484,7 +484,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.139.7';
+const APP_VERSION='4.139.8';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -811,12 +811,12 @@ async function rqApply(){
         while(e<d){if(dayC(e)<gn||(S.rqr||{})[e])used++;e=addDays(e,1)}
         if(used<restQuota()){(S.rqr||(S.rqr={}))[d]=1;rn++;m=0}
       }
-      for(let i=0;i<m&&(S.tp||0)>0;i++){const cut=dRisk(S.tp)/2;if(!(cut>0))break;S.tp-=cut;total+=cut;miss++;evAdd(dayStat(),'rq|'+d+'|'+i,{t:'a',pts:-cut});(S.rpen||(S.rpen=[])).push({d,amt:r1(cut)});if(S.rpen.length>10)S.rpen.shift()}
+      for(let i=0;i<m&&(S.tp||0)>0;i++){const cut=dRisk(S.tp)/2;if(!(cut>0))break;S.tp-=cut;total+=cut;miss++;evAdd(dayStat(),'rq|'+d+'|'+i,{t:'n',pts:-cut});(S.rpen||(S.rpen=[])).push({d,amt:r1(cut)});if(S.rpen.length>10)S.rpen.shift()}
       d=addDays(d,1);
     }
     S.rqc=y;
     if(rn>0)setTimeout(()=>toast(rn+' gün zorunlu dereceli maç için izin günün olarak sayıldı, kesinti yok.'),500);
-    if(total>0){const dz=dayStat();dz.adj=(dz.adj||0)-total;setTimeout(()=>toast(miss+' zorunlu dereceli maç oynanmadı: −'+nf(r1(total))+' puan kesildi.'),900)}
+    if(total>0){setTimeout(()=>toast(miss+' zorunlu dereceli maç oynanmadı: −'+nf(r1(total))+' puan kesildi.'),900)}
     save();render();
   }catch(e){}finally{RQ.busy=false}
 }
