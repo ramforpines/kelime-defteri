@@ -479,7 +479,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.118.0';
+const APP_VERSION='4.119.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1829,6 +1829,40 @@ function cloze(w){
   if(String(w.ex).trim().split(/\s+/).length<6)return null;
   return w.ex.replace(re,(m,pre)=>pre+'_____');
 }
+/* Boşluk doldurma çeldiricileri: boşluğa gelecek türe uyan (fiil / isim), anlamca biraz yakın ama eş anlamlı olmayan kelimeler */
+const CZ_VERB=new Set('to will would can could must should may might shall do does did not i you he she it we they who which'.split(' '));
+const CZ_NOUN=new Set('the a an his her their my our your its this that these those some any no many much every each of in on at for with by from'.split(' '));
+function czSlot(w){
+  const base=w.word.replace(/\s*\([^)]*\)/g,'').replace(/\.+$/,'').split('/')[0].trim();if(!base||!w.ex)return'';
+  const re=new RegExp('(^|[^A-Za-z])'+base.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+')+'[A-Za-z]*','i'),m=w.ex.match(re);if(!m)return'';
+  const bf=w.ex.slice(0,m.index+m[1].length).trim().split(/\s+/).pop().toLowerCase().replace(/[^a-z]/g,'');
+  return CZ_VERB.has(bf)?'verb':CZ_NOUN.has(bf)?'noun':'';
+}
+const czToks=x=>String(x||'').toLowerCase().split(/[^a-z]+/).filter(a=>a.length>=4&&!STOPT.has(a));
+function czSet(w){return w._czs||(w._czs=new Set(czToks(w.def)))}
+function clozeDistractors(t){
+  const slot=czSlot(t);if(!slot)return null;
+  const nt=wtoks(t).length,T=czSet(t),tw=t.word.toLowerCase(),tl=String(t.level||'').toUpperCase(),LV=['A1','A2','B1','B2','C1','C2'],ti=LV.indexOf(tl);
+  const tex=new Set(czToks(t.ex));
+  const sc=[];
+  for(const r of W){
+    if(r===t||r.word.toLowerCase()===tw||wtoks(r).length!==nt||related(t,r)||closedClass(r)||posKey(r)==='number')continue;
+    const pr=String(r.pos||'').toLowerCase();
+    if(!(slot==='verb'?(/(^|, )verb|phrasal/.test(pr)):/(^|, )noun/.test(pr)))continue;
+    if(slot==='verb'&&nt===1&&/^(noun)/.test(pr)&&!/verb/.test(pr))continue;
+    if(/\//.test(r.word))continue;
+    const R=czSet(r);let ov=0;R.forEach(a=>{if(T.has(a)||tex.has(a))ov++});
+    const ratio=T.size&&R.size?ov/Math.min(T.size,R.size):0;
+    if(ratio>0.6)continue;   // tanımları neredeyse aynıysa ikisi de uyabilir
+    if(trOverlap(t.tr,r.tr))continue;
+    const ri=LV.indexOf(String(r.level||'').toUpperCase()),dl=ti<0||ri<0?2:Math.abs(ti-ri);
+    sc.push({r,s:Math.min(ov,3)*3+(dl===0?2:dl===1?1:0)+Math.random()*2});
+  }
+  sc.sort((a,b)=>b.s-a.s);
+  const pool=shuffle(sc.slice(0,12).map(a=>a.r)),out=[],used={};
+  for(const r of pool){const k=r.word.toLowerCase();if(used[k])continue;used[k]=1;out.push(r.word);if(out.length===3)break}
+  return out.length===3?out:null;
+}
 /* ---------- yeni türlere özel soru biçimleri ---------- */
 const STOPT=new Set('the a an of to in on at for and or is are was were be been it its this that with as by from your you my his her their our someone something one up out off'.split(' '));
 const PREPS=['on','in','at','for','of','to','with','from','about','by','into','over','against','up','out','off','after','through'];
@@ -1994,7 +2028,7 @@ function buildQuestion(t,k,opts){
     const c=cloze(t);if(!c)return null;
     q='Boşluğa hangi kelime/ifade gelmeli?\n"'+c+'"';correct=t.word;
     if(closedClass(t)==='ortho')d=orthoDistractors(t.word);
-    else d=pickDistractors(t,r=>r.word,r=>!related(t,r)&&closedClass(r)!=='ortho'&&!(posKey(r)==='number'));
+    else d=clozeDistractors(t)||pickDistractors(t,r=>r.word,r=>!related(t,r)&&closedClass(r)!=='ortho'&&!(posKey(r)==='number'));
   }else if(k===4){
     if(!has(t.syn))return null;
     q='"'+t.word+'" kelimesinin eş anlamlısı hangisidir?';correct=t.syn;
