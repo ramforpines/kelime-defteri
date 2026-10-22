@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.116.2';
+const APP_VERSION='4.117.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1453,6 +1453,28 @@ function vGuard(){
   ${G.err==='setup'?'<div class="small" style="color:var(--bad)">supabase-duel-ceza.sql henüz çalıştırılmamış.</div>':G.err?'<div class="small" style="color:var(--bad)">Liste alınamadı.</div>':''}
   ${body}</div>`;
 }
+const REPM={};
+function repOwner(t){
+  t=String(t||'').trim();if(!t)return[];
+  if(REPM[t])return REPM[t];
+  const lc=t.toLowerCase(),pt=x=>String(x||'').toLowerCase().split(/[;,]/).map(a=>a.trim()).filter(Boolean),out=[];
+  for(const w of W){
+    let k='';
+    if(String(w.word).toLowerCase()===lc)k='kelime';
+    else if(String(w.def).toLowerCase()===lc)k='tanım';
+    else if(String(w.tr).toLowerCase()===lc||pt(w.tr).indexOf(lc)!==-1)k='Türkçe';
+    else if(has(w.syn)&&(String(w.syn).toLowerCase()===lc||pt(w.syn).indexOf(lc)!==-1))k='eş anlam';
+    else if(has(w.ant)&&(String(w.ant).toLowerCase()===lc||pt(w.ant).indexOf(lc)!==-1))k='zıt anlam';
+    if(k){out.push({w:w.word,k});if(out.length>=3)break}
+  }
+  return REPM[t]=out;
+}
+const repOwnTxt=t=>{const o=repOwner(t);return o.length?o.map(a=>'<b>'+esc(a.w)+'</b> ('+a.k+')').join(', '):'<span class="muted">kayıtta yok</span>'};
+function repRec(word){
+  const w=W.find(r=>String(r.word).toLowerCase()===String(word||'').toLowerCase());if(!w)return'';
+  const p=[['Türkçe',w.tr],['Tanım',w.def],['Eş',w.syn],['Zıt',w.ant]].filter(a=>has(a[1])).map(a=>a[0]+': '+esc(a[1]));
+  return`<div class="small" style="margin-top:6px;overflow-wrap:anywhere"><b>Kayıt:</b> ${p.join(' · ')}</div>`;
+}
 function vReports(){
   const A=UI.arp;
   const list=A.list.filter(x=>A.filter==='all'||x.status==='open');
@@ -1465,9 +1487,11 @@ function vReports(){
     return`<div class="entry"><div class="row" style="justify-content:space-between;align-items:flex-start"><div style="min-width:0"><b style="overflow-wrap:anywhere">${esc(x.word)}</b> <span class="badge">${esc(FEAT[x.feat]||x.feat||'')}</span></div><span class="badge ${x.status==='open'?'bad':'ok'}">${x.cnt} rapor${x.status==='fixed'?' · düzeltildi':x.status==='dismissed'?' · reddedildi':''}</span></div>
     <div style="margin-top:8px;overflow-wrap:anywhere;white-space:pre-wrap">${esc(x.question)}</div>
     <div class="small" style="margin-top:6px">${opts.map(o=>o===x.correct?`<b style="color:var(--ok)">✓ ${esc(o)}</b>`:esc(o)).join(' · ')}</div>
+    ${repRec(x.word)}
+    <div class="small" style="margin-top:6px;overflow-wrap:anywhere"><b>Şıkların sahibi:</b><br>${opts.map(o=>(o===x.correct?'✓ ':'')+esc(o)+' → '+repOwnTxt(o)).join('<br>')}</div>
     <div class="small muted" style="margin-top:6px">${Object.keys(rs).map(k=>(RPR[k]||k)+': '+rs[k]).join(' · ')}</div>
     ${(()=>{const rp=Array.isArray(x.reporters)?x.reporters:null;if(!rp)return notes.length?`<div class="small" style="margin-top:6px;overflow-wrap:anywhere">${notes.slice(0,5).map(n=>'“'+esc(n)+'”').join('<br>')}</div>`:'';
-      return`<div class="small" style="margin-top:8px;overflow-wrap:anywhere">${rp.slice(0,8).map(q=>`<div style="margin-bottom:4px"><b>${esc(q.name||q.un||'?')}</b>${q.un?` <span class="muted">@${esc(q.un)}</span>`:''} · ${esc(RPR[q.reason]||q.reason||'')}${q.replied?' · <span class="muted">✓ yanıtlandı</span>':' · <span class="badge bad">yeni</span>'}${q.picked?` · işaretlediği: <i>${esc(q.picked)}</i>`:''}${q.note?`<br>“${esc(q.note)}”`:''}</div>`).join('')}${rp.length>8?`<div class="muted">+${rp.length-8} kişi daha</div>`:''}</div>`})()}
+      return`<div class="small" style="margin-top:8px;overflow-wrap:anywhere">${rp.slice(0,8).map(q=>`<div style="margin-bottom:4px"><b>${esc(q.name||q.un||'?')}</b>${q.un?` <span class="muted">@${esc(q.un)}</span>`:''} · ${esc(RPR[q.reason]||q.reason||'')}${q.replied?' · <span class="muted">✓ yanıtlandı</span>':' · <span class="badge bad">yeni</span>'}${q.picked?` · işaretlediği: <i>${esc(q.picked)}</i> → ${repOwnTxt(q.picked)}`:''}${q.note?`<br>“${esc(q.note)}”`:''}</div>`).join('')}${rp.length>8?`<div class="muted">+${rp.length-8} kişi daha</div>`:''}</div>`})()}
     ${(x.answers||[]).map((a,ai)=>{const id=x.qkey+RSEP+ai;return A.edit[id]?`<div class="card" style="margin-top:10px"><div class="small muted">Yanıtı düzenle · ${a.n} kişiye gitmişti</div><textarea class="nameinp" data-arr="${esc(id)}" rows="2" maxlength="1000" style="margin-top:6px">${esc(A.reply[id]!=null?A.reply[id]:a.reply)}</textarea>
       <div class="row" style="margin-top:6px;flex-wrap:wrap"><button class="btn primary" data-act="arp-edit-save" data-k="${esc(x.qkey)}" data-i="${ai}" ${A.busy?'disabled':''}>Yanıtı güncelle</button><button class="btn" data-act="arp-edit-no" data-k="${esc(x.qkey)}" data-i="${ai}">Vazgeç</button></div></div>`
       :`<div class="card" style="margin-top:10px"><div class="small muted">Gönderdiğin yanıt · ${a.n} kişi · ${fdt(a.at)}</div><div style="overflow-wrap:anywhere;white-space:pre-wrap">${esc(a.reply)}</div>
