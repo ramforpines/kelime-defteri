@@ -480,7 +480,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.137.0';
+const APP_VERSION='4.138.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2023,7 +2023,7 @@ function applicable(w){
   if(cloze(w))f.push(3);
   if(has(w.syn))f.push(4);
   if(has(w.ant))f.push(5);
-  if(w.v2&&w.v3&&!/\s/.test(str(w.word)))f.push(6);   // çok sözcüklü fiil kalıplarında (speak up...) V2/V3 sorusu üretilmez; özellik listede kalırsa kelime hiç öğrenilemezdi
+  if(w.v2&&w.v3&&verbParts(w)&&verbQuestion(w))f.push(6);   // fiil kalıplarında (speak up) V2/V3 biçimleri kalıpla uyumluysa sorulur; üretilemeyen özellik listede kalırsa kelime hiç öğrenilemezdi
   const g=posGroup(w);
   if(g==='proverb'&&wtoks(w).length>=5)f.push(7);
   if(MULTI.indexOf(g)!==-1&&blankIdx(w).length)f.push(8);
@@ -2130,19 +2130,28 @@ function regularEd(b){
   if(/^[^aeiou]*[aeiou][^aeiouwxy]$/.test(b)&&b.length<=4)return b+b.slice(-1)+'ed';
   return b+'ed';
 }
-function verbQuestion(t){
-  const base=t.word.toLowerCase().trim();
-  if(/\s/.test(base))return null;
+function verbParts(t){   // tek fiil ya da fiil kalıbı (speak up): baş fiil + kalıbın geri kalanı; V2/V3 biçimleri aynı kalıpla bitmiyorsa null
+  const base=t.word.toLowerCase().trim().replace(/\s+/g,' ');
+  const b=base.split(' '),tail=b.slice(1).join(' ');
   const v2=altForms(t.v2),v3=altForms(t.v3);
   if(!v2.length||!v3.length)return null;
-  const correct=v2[0]+' - '+v3[0];
+  if(b.length===1)return{head:base,tail:'',v2,v3};
+  const cut=x=>{x=x.toLowerCase().replace(/\s+/g,' ');const k=x.split(' ');return(x.endsWith(' '+tail)&&k.length===b.length)?k[0]:null};
+  const h2=v2.map(cut),h3=v3.map(cut);
+  if(h2.some(x=>!x)||h3.some(x=>!x))return null;
+  return{head:b[0],tail,v2:h2,v3:h3};
+}
+function verbQuestion(t){
+  const vp=verbParts(t);if(!vp)return null;
+  const base=vp.head,v2=vp.v2,v3=vp.v3,sfx=vp.tail?' '+vp.tail:'';
+  const correct=v2[0]+sfx+' - '+v3[0]+sfx;
   const ok={};v2.forEach(a=>v3.forEach(b=>{ok[(a+' - '+b).toLowerCase()]=1}));
   const A=v2[0],B=v3[0],R=regularEd(base);
   const cands=[B+' - '+A,A+' - '+A,B+' - '+B,base+' - '+B,A+' - '+base,base+' - '+A,B+' - '+base,R+' - '+R,R+' - '+B,A+' - '+R,base+' - '+R,R+' - '+base];
   const used={},uniq=[];
   cands.forEach(c=>{const key=c.toLowerCase();if(ok[key]||used[key])return;const p=c.split(' - ');if(p[0].toLowerCase()===base&&p[1].toLowerCase()===base)return;used[key]=1;uniq.push(c)});
   if(uniq.length<3)return null;
-  const d=shuffle(uniq.slice(0,6)).concat(shuffle(uniq.slice(6))).slice(0,3);
+  const d=(shuffle(uniq.slice(0,6)).concat(shuffle(uniq.slice(6)))).slice(0,3).map(c=>{const p=c.split(' - ');return p[0]+sfx+' - '+p[1]+sfx});
   return{question:'"'+t.word+'" fiilinin 2. ve 3. halleri (V2 - V3) hangisidir?',correct,distractors:d};
 }
 function buildQuestion(t,k,opts){
@@ -2304,7 +2313,7 @@ function whyText(it){
     if(f===5&&has(w.ant))return`${B(w.word)} (${esc(tr)}) ile ${B(w.ant)} anlam bakımından ters yönde. Burada kesin bir zıtlıktan çok, şıklar arasında en çok tersine düşeni arıyorsun. Diğer şıkların anlamı aşağıda yazıyor.`;
     if(f===6){
       const v2=altForms(w.v2),v3=altForms(w.v3);if(!v2.length||!v3.length)return'';
-      const irr=v2[0].toLowerCase()!==regularEd(String(w.word).toLowerCase().trim()).toLowerCase();
+      const vp=verbParts(w),irr=!!vp&&vp.v2[0].toLowerCase()!==regularEd(vp.head).toLowerCase();
       return`${B(w.word)} fiilinin 2. hali ${B(v2.join(' / '))}, 3. hali ${B(v3.join(' / '))}.`+(irr?' Bu fiil düzensiz; sonuna -ed eklemek yerine biçimini ezberlemek gerekir.':'')+' Sıra önemli: önce V2, sonra V3.';
     }
     if(f===7)return`Atasözünün tamamı: “${esc(w.word)}” (${esc(tr)}). İki yarı birlikte bu anlamı verir; diğer şıklar başka atasözlerinin ikinci yarısı, bu anlamı vermez.`;
