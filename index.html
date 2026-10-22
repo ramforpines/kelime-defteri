@@ -404,7 +404,6 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <div id="toast" class="toast" hidden></div>
 
 <script src="words.js"></script>
-<script src="gloss.js"></script>
 <script src="extr.js"></script>
 <script src="reading.js"></script>
 <script src="reading-tr.js"></script>
@@ -480,7 +479,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.117.1';
+const APP_VERSION='4.118.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
