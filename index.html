@@ -484,7 +484,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.139.8';
+const APP_VERSION='4.140.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -822,7 +822,7 @@ async function rqApply(){
 }
 function myPoints(){
   const t0=today(),wk=weekKey(),D={A:0,C:0,pts:0},W={A:0,C:0,pts:0};
-  const x=S.days[t0];if(x){D.A=x.a||0;D.C=x.c||0;D.pts=Math.max(0,(x.p||0)+(x.adj||0))}
+  const x=S.days[t0];if(x){D.A=x.a||0;D.C=x.c||0;D.pts=Math.max(-6000,(x.p||0)+(x.adj||0))}   // günlük puan eksiye inebilir (dereceli kaybı vb.)
   Object.keys(S.days).forEach(k=>{if(k>=wk){const y=S.days[k];W.A+=y.a||0;W.C+=y.c||0;W.pts+=(y.p||0)+(y.adj||0)}});
   W.pts=Math.max(0,Math.min(W.pts,S.tp||0));   // haftalık puan toplam puanı geçemez
   let A=0,C=0;Object.keys(S.lv).forEach(l=>{C+=S.lv[l][0];A+=S.lv[l][0]+S.lv[l][1]});
@@ -830,7 +830,7 @@ function myPoints(){
 }
 function myScore(){
   const P=myPoints();
-  return{name:S.prof.name,color:S.prof.color,hide:false,dk:today(),da:P.D.A,dc:P.D.C,dp:r1(P.D.pts),wk:weekKey(),wa:P.W.A,wc:P.W.C,wp:r1(P.W.pts),ans:P.T.A,cor:P.T.C,ap:r1(P.T.pts),lrn:learnedCount(),st:streak(),sd:today(),dn:Math.min(3000,(S.days[today()]||{}).n|0),av:Math.min(99,Math.max(0,S.prof.av|0)),fr:normFrame(S.prof.frame),bd:Object.keys(S.bd||{}).filter(k=>BYBADGE.has(k)).join(',')};
+  return{name:S.prof.name,color:S.prof.color,hide:false,dk:today(),da:P.D.A,dc:P.D.C,dp:r1(CLOUD.noNeg?Math.max(0,P.D.pts):P.D.pts),wk:weekKey(),wa:P.W.A,wc:P.W.C,wp:r1(P.W.pts),ans:P.T.A,cor:P.T.C,ap:r1(P.T.pts),lrn:learnedCount(),st:streak(),sd:today(),dn:Math.min(3000,(S.days[today()]||{}).n|0),av:Math.min(99,Math.max(0,S.prof.av|0)),fr:normFrame(S.prof.frame),bd:Object.keys(S.bd||{}).filter(k=>BYBADGE.has(k)).join(',')};
 }
 /* ---------- Supabase: hesap, eşitleme, liderlik tablosu ---------- */
 const SB_URL='https://cqlcrwolgxrrrcyyluin.supabase.co';
@@ -860,6 +860,10 @@ async function pushNow(){
         r=await sb.from('scores').upsert(Object.assign({user_id:CLOUD.uid,updated_at:now},sc));
         if(r.error&&!CLOUD.noExt&&/\b(av|fr|bd|dn)\b|schema cache|column/i.test(String(r.error.message||''))){   // avatar sütunları henüz eklenmemiş
           CLOUD.noExt=true;delete sc.av;delete sc.fr;delete sc.bd;delete sc.dn;
+          r=await sb.from('scores').upsert(Object.assign({user_id:CLOUD.uid,updated_at:now},sc));
+        }
+        if(r.error&&!CLOUD.noNeg&&sc.dp<0&&/check|constraint|dp/i.test(String(r.error.message||''))){   // sunucu henüz eksi günlük puanı kabul etmiyor (supabase-dp-neg.sql çalıştırılmamış)
+          CLOUD.noNeg=true;sc.dp=0;
           r=await sb.from('scores').upsert(Object.assign({user_id:CLOUD.uid,updated_at:now},sc));
         }
         if(r.error)throw r.error;
@@ -3373,7 +3377,7 @@ function vRank(){
     if(per==='ranked'&&!drkLocked()){body=rankedBoardHtml('all')}else{
     const rows=rankData().map(r=>Object.assign(r,{x:r[per]}));
     const lgm=per==='all'?leagueMap():null,lgOf=r=>lgm?(lgm[r.id]|0):0;   // tüm zamanlar: önce (şartlar dahil) lig, sonra puan
-    const ranked=rows.filter(r=>r.x.p>0).sort((a,b)=>lgOf(b)-lgOf(a)||b.x.p-a.x.p||b.x.n-a.x.n);
+    const ranked=rows.filter(r=>r.x.p>0||(per==='day'&&r.x.p<0)).sort((a,b)=>lgOf(b)-lgOf(a)||b.x.p-a.x.p||b.x.n-a.x.n);
     ranked.forEach((r,i)=>{r.rank=(i>0&&ranked[i-1].x.p===r.x.p&&lgOf(ranked[i-1])===lgOf(r))?ranked[i-1].rank:i+1});
     const acc=r=>r.x.n?Math.round(r.x.c/r.x.n*100):0;
     const wt=weekTop();
