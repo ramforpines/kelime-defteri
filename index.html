@@ -480,7 +480,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.132.0';
+const APP_VERSION='4.133.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2882,20 +2882,39 @@ function exChunkPool(u){
   exWords(u).forEach(w=>{const fs=applicable(w).filter(f=>f<12);if(!fs.length)return;const f=fs[hs(w.word)%fs.length],it=makeItem(w,f,'exam');if(it)wt.push(it)});
   return exGap(u).concat(wt,exEx(u),exDef(u),exRead(u),exListen(u),exPh(u));
 }
-function exChunkInfo(u){
-  const m=EXPOOL[u.id]||(EXPOOL[u.id]=exChunkPool(u).map(exCid));
+const EXKEY='kd-expool';
+function exCacheKey(){return APP_VERSION+'|'+W.length}
+(function(){try{const c=JSON.parse(localStorage.getItem(EXKEY)||'null');if(c&&c.k===exCacheKey()&&c.m)Object.assign(EXPOOL,c.m)}catch(e){}})();
+function exCacheSave(){try{localStorage.setItem(EXKEY,JSON.stringify({k:exCacheKey(),m:EXPOOL}))}catch(e){}}
+function exChunkInfo(u,lazy){
+  let m=EXPOOL[u.id];
+  if(!m){if(lazy)return null;m=EXPOOL[u.id]=exChunkPool(u).map(exCid);exCacheSave()}
   const dn=((S.exc||{})[u.id])||{};
   return{total:m.length,left:m.filter(h=>!dn[h]).length};
 }
+function exInfoText(c){return` · kalan ${c.left}/${c.total} · sıradaki ${Math.min(20,c.left||c.total)} soru`}
+let exInfoBusy=false;
+function exInfoFill(){
+  if(exInfoBusy)return;exInfoBusy=true;
+  const step=()=>{
+    const el=document.querySelector('[data-exinfo]');
+    if(!el||UI.tab!=='exam'||UI.quiz){exInfoBusy=false;return}
+    const u=exU(el.getAttribute('data-exinfo'));
+    const c=exChunkInfo(u);el.textContent=exInfoText(c);el.removeAttribute('data-exinfo');
+    setTimeout(step,60);
+  };
+  setTimeout(step,80);
+}
 function vExam(){
   const all=window.EXAM||[],ex=S.ex||{};
+  if(all.some(u=>!EXPOOL[u.id]))setTimeout(exInfoFill,0);
   const best=k=>ex[k]?`<span class="small muted"> · en iyi ${ex[k].b}/${ex[k].n}</span>`:'';
   return`<div class="top"><h1>İngilizce Vize</h1></div><div class="stack">
   <div class="card stack"><div class="muted small">Ders kitabındaki ünitelerin kelimeleri ve alıştırmaları. Her ünitede boşluk doldurma, kelime testi, örnek cümle, tanım eşleştirme, okuma (metin + sorular) ve dinleme (ses kaydı + sorular) bölümleri var. Vize normal test gibi puan, günlük hedef, istatistik ve kelime ilerlemesine işlenir; ancak puan ve ilerleme bir sınavın ilk çözümünde verilir. Sonraki çözümlerde yalnızca önceki en iyi sonucundan fazla doğrular için puan ve ilerleme eklenir. Dinleme sorularında ses kaydını istediğin kadar dinleyebilirsin.</div>
   <div class="small"><b>Örnek Vize (100 puan)</b><br>Dinleme 40 puan (8 kısa diyalog + 12 uzun dinleme sorusu, her biri 2 puan), Okuma 40 puan (5 kısa metin, 10 uzun metin, 5 kişi–metin eşleştirme; her biri 2 puan), Kelime bilgisi 20 puan (10 paragraf boşluğu + 10 yazılı boşluk doldurma; her biri 1 puan). Her denemede sorular değişir.</div>
   <button class="btn primary block" data-act="exam-start" data-v="mock">Örnek Vize${ex.mock?`<span class="small muted"> · en iyi ${ex.mock.sc!=null?ex.mock.sc:'?'}/100</span>`:''}</button></div>
   ${all.map(u=>{const ws=exWords(u);return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Ünite ${u.n} · ${esc(u.t)}</b><span class="small muted">${ws.length} kelime</span></div>
-    <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite soruları${(()=>{const c=exChunkInfo(u);return`<span class="small" style="color:#fff;opacity:1"> · kalan ${c.left}/${c.total} · sıradaki ${Math.min(20,c.left||c.total)} soru</span>`})()}</button>
+    <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite soruları${(()=>{const c=exChunkInfo(u,1);return c?`<span class="small" style="color:#fff;opacity:1">${exInfoText(c)}</span>`:`<span class="small" style="color:#fff;opacity:1" data-exinfo="${u.id}"> · soru sayısı hesaplanıyor…</span>`})()}</button>
     <div class="seg">${EXAM_PART.map(([p,l])=>`<button class="chip" data-act="exam-start" data-v="${u.id}:${p}">${l}${best(u.id+':'+p)}</button>`).join('')}</div>
     <button class="btn" data-act="exam-words" data-v="${u.id}">${UI.exw===u.id?'Kelimeleri gizle':'Kelimeleri gör'}</button>
     ${UI.exw===u.id?ws.map(w=>`<div class="entry"><div class="row" style="justify-content:space-between"><span class="w">${esc(w.word)}</span>${lvTag(w.level)}</div><div class="tr">${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i></div>`:''}</div>`).join(''):''}</div>`}).join('')}
