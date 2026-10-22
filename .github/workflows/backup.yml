@@ -43,7 +43,7 @@ jobs:
         run: |
           D=$(date -u +%Y-%m-%d)
           mkdir -p out
-          pg_dump "$DB" --format=custom --no-owner --no-privileges \
+          /usr/lib/postgresql/17/bin/pg_dump "$DB" --format=custom --no-owner --no-privileges \
             --schema=public --schema=auth --file="out/db-$D.dump"
           git bundle create "out/kod-$D.bundle" --all
           tar -C out -czf "yedek-$D.tar.gz" "db-$D.dump" "kod-$D.bundle"
