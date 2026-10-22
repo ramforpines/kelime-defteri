@@ -429,8 +429,29 @@ function optMean(o){
   if(!w||!w.tr)return null;
   return{nm,tr:String(w.tr).split(/[;,]/).slice(0,2).map(x=>x.trim()).filter(Boolean).join(', ')};
 }
+const OWNM={};
+function optOwner(t){
+  t=String(t||'').trim();if(!t)return[];
+  if(OWNM[t])return OWNM[t];
+  const lc=t.toLowerCase(),pt=x=>String(x||'').toLowerCase().split(/[;,]/).map(a=>a.trim()).filter(Boolean),out=[];
+  for(const w of W){
+    let k='';
+    if(String(w.def).toLowerCase()===lc)k='tanım';
+    else if(String(w.tr).toLowerCase()===lc||pt(w.tr).indexOf(lc)!==-1)k='Türkçe';
+    else if(has(w.syn)&&(String(w.syn).toLowerCase()===lc||pt(w.syn).indexOf(lc)!==-1))k='eş anlam';
+    else if(has(w.ant)&&(String(w.ant).toLowerCase()===lc||pt(w.ant).indexOf(lc)!==-1))k='zıt anlam';
+    if(k){out.push({w:w.word,k});if(out.length>=2)break}
+  }
+  return OWNM[t]=out;
+}
+function optOwners(it){   // şıklar kelime değilse (Türkçe, tanım, eş/zıt anlam...) her şıkkın hangi kelimeye ait olduğunu gösterir
+  if(!it.options||it.options.length<3)return'';
+  const rows=it.options.map((o,i)=>({o,i,m:optOwner(o)}));
+  if(rows.filter(r=>r.m.length).length<3)return'';
+  return`<div class="small" style="margin-top:8px"><b>Şıklar hangi kelimenin?</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m.length?' → '+r.m.map(a=>esc(a.w)+' <span class="muted">('+a.k+')</span>').join(', '):' <span class="muted">(kayıtta yok)</span>'}</div>`).join('')}</div>`;
+}
 function optMeans(it){
-  if(!it.options||optMean(it.correct)===null)return'';
+  if(!it.options||optMean(it.correct)===null)return optOwners(it);
   const rows=it.options.map((o,i)=>({o,i,m:optMean(o)}));
   if(rows.filter(r=>r.m).length<2)return'';
   return`<div class="small" style="margin-top:8px"><b>Şıkların anlamı</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m?' — '+esc(r.m.tr):' <span class="muted">(sözlükte yok)</span>'}</div>`).join('')}</div>`;
@@ -451,7 +472,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.116.2';
+const APP_VERSION='4.117.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1541,7 +1562,7 @@ function vHelp(){
     '<b>Bugünün testi</b>: tekrar zamanı gelen kelimeler ile yeni kelimelerden karışık hazırlanır.',
     '<b>Yeni test</b>: seçtiğin seviye ve türden henüz öğrenmediğin kelimeler gelir.',
     'Bir kelimeden farklı özellikler sorulur: Türkçe karşılık (bazen ters yönde, yani Türkçeden İngilizceye), İngilizce tanım, kelime türü, boşluk doldurma, eş anlam, zıt anlam, V2/V3 (düzensiz fiiller), atasözü, edat kalıbı, ek ve ifade soruları.',
-    'Her sorunun altında doğru cevap, kelimenin okunuşu, Türkçesi, tanımı ve örnek cümlesi gösterilir. Eş/zıt anlam gibi sorularda cevaplayınca şıkların hepsinin anlamı da görünür; yanlış yaptığında işaretlediğin kelimenin ne demek olduğunu böylece öğrenirsin.',
+    'Her sorunun altında doğru cevap, kelimenin okunuşu, Türkçesi, tanımı ve örnek cümlesi gösterilir. Eş/zıt anlam gibi sorularda cevaplayınca şıkların hepsinin anlamı, Türkçe ve tanım sorularında ise her şıkkın hangi kelimeye ait olduğu da görünür; yanlış yaptığında işaretlediğin kelimenin ne demek olduğunu böylece öğrenirsin.',
     'Ek soruları (ör. -less, -ness) kelimeden eki çıkarıp boş bırakır; hangi ekle türetildiğini sen seçersin.',
     'Klavyede 1–4 tuşlarıyla şık seçebilir, Enter veya boşlukla sonraki soruya geçebilirsin.',
     '<b>☆ Kaydet</b>: Test sorusundaki Kaydet düğmesi, sorunun kelimesini <b>Çalışma → Kaydedilenler</b> listesine ekler. Orada kelime sözlükteki gibi (Türkçesi, tanımı, örneği, eş/zıt anlamı) açılır, Dinle ve kayıttan çıkarma düğmeleri vardır. Sözlük\'teki kelimeleri de aynı şekilde kaydedebilirsin. Kaydettiklerin hesabına eşitlenir.',
