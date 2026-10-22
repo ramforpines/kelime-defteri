@@ -484,7 +484,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.140.3';
+const APP_VERSION='4.140.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2306,11 +2306,7 @@ function whyText(it){
   try{
     const w=it.w,f=it.f,B=x=>'<b>'+esc(x)+'</b>',tr=str(w.tr),c=it.correct;
     if(!w||!tr)return'';
-    if(f===0){
-      if(/karşılığı hangi İngilizce/.test(it.question))return`Aradığın anlam “${esc(tr)}”; bunun İngilizcesi ${B(w.word)}..`;
-      return`İngilizce ${B(w.word)} kelimesi Türkçede “${esc(tr)}” demek..`;
-    }
-    if(f===1&&has(w.def))return`${B(w.word)} (${esc(tr)}) kelimesini İngilizce şöyle açıklayabiliriz: “${esc(w.def)}”.`;
+    // f0 (Türkçe) ve f1 (Tanım): açıklama, kelime kartında zaten görünen anlamı tekrar eder; 'Neden?' gösterilmez
     if(f===3){
       const a=(/^(adjective|adverb)$/i.test(posKey(w)))?aaSlot(w):null;
       if(a&&a.kind==='A')return`Boşluktan sonra bir isim geliyor; ismi niteleyen kelime sıfat olur. ${B(w.word)} (${esc(tr)}) bir sıfat, bu yüzden uyuyor. Diğer şıklar zarf ya da isimden önce kullanılmayan sıfatlar.`;
