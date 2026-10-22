@@ -480,7 +480,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.129.0';
+const APP_VERSION='4.130.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1875,7 +1875,8 @@ function clozeDistractors(t){
     if(ratio>0.6||ov>1)continue;   // tanımları benzerse ikisi de uyabilir
     if(trOverlap(t.tr,r.tr))continue;
     const ri=LV.indexOf(String(r.level||'').toUpperCase()),dl=ti<0||ri<0?2:Math.abs(ti-ri);
-    sc.push({r,s:Math.min(ov,3)*3+(dl===0?2:dl===1?1:0)+Math.random()*2});
+    const rt=wtoks(r),tt=wtoks(t),sh=nt===2&&(rt[0].toLowerCase()===tt[0].toLowerCase()||rt[1].toLowerCase()===tt[1].toLowerCase())?3:0;   // ikili kalıpta aynı fiil ya da aynı edatı paylaşanlar: dilbilgisi bilgisi gerektirir
+    sc.push({r,s:Math.min(ov,3)*3+sh+(dl===0?2:dl===1?1:0)+Math.random()*2});
   }
   sc.sort((a,b)=>b.s-a.s);
   const pool=shuffle(sc.slice(0,12).map(a=>a.r)),out=[],used={};
@@ -1885,6 +1886,9 @@ function clozeDistractors(t){
 /* ---------- yeni türlere özel soru biçimleri ---------- */
 const STOPT=new Set('the a an of to in on at for and or is are was were be been it its this that with as by from your you my his her their our someone something one up out off'.split(' '));
 const PREPS=['on','in','at','for','of','to','with','from','about','by','into','over','against','up','out','off','after','through'];
+const PREP_ALT={complain:['of','about'],arrive:['in','at'],agree:['to','with','about'],apologise:['for','to'],apologize:['for','to'],worry:['about','over'],care:['about','for'],argue:['about','with','over'],talk:['about','to','with','of'],think:['of','about'],hear:['of','about','from'],dream:['of','about'],insist:['on','upon'],depend:['on','upon'],differ:['from','in','with'],look:['at','for','into'],speak:['about','to','of','with'],laugh:['at','about'],blame:['for','on'],
+  accuse:['of'],congratulate:['on'],suffer:['from','with','of'],succeed:['in'],participate:['in'],interfere:['with','in'],cope:['with'],deal:['with','in']};
+const PREP_CORE=['on','in','at','for','of','to','with','from','about','by','into'];
 const MULTI=['idiom','collocation','phrase','proverb'];
 const wtoks=w=>String(w.word).trim().split(/\s+/);
 const cleanT=x=>x.replace(/[.,;:!?]+$/,'');
@@ -1948,7 +1952,8 @@ function missingQ(t){
 }
 function prepQ(t){
   const b=prepBlank(t);if(!b)return null;
-  const d=shuffle(PREPS.filter(p=>p!==b.prep)).slice(0,3);
+  const alt=PREP_ALT[wtoks(t)[0].toLowerCase()]||[];
+  const d=shuffle(PREP_CORE.filter(p=>p!==b.prep&&alt.indexOf(p)===-1)).slice(0,3);   // en sık karıştırılan edatlar (on/in/at/for...): 'against', 'through' gibi seyrek edatlar şıkkı ele verir
   return{question:'Doğru edatı seç ('+parts(t.tr)[0]+'):\n"'+b.sentence+'"',correct:b.prep,distractors:d};
 }
 let AFFSET=null;
