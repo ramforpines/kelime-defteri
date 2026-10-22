@@ -44,18 +44,51 @@ $$;
 revoke all on function public.chat_my_ban() from public, anon;
 grant execute on function public.chat_my_ban() to authenticated;
 
--- Yönetici: yasakla (p_min boş ya da 0 = süresiz)
-create or replace function public.admin_chat_ban(target uuid, p_min int default null, p_note text default null) returns void
+-- Yönetici: yasakla (p_min boş ya da 0 = süresiz). p_purge doğruysa kullanıcının genel sohbetteki geçmiş mesajları da silinir; silinen mesaj sayısı döner.
+drop function if exists public.admin_chat_ban(uuid, int, text);
+create or replace function public.admin_chat_ban(target uuid, p_min int default null, p_note text default null, p_purge boolean default true) returns int
 language plpgsql security definer set search_path = public as $$
+declare n int := 0;
 begin
   if not public.is_admin() then raise exception 'not allowed'; end if;
   if exists(select 1 from public.admins where user_id = target) then raise exception 'admin'; end if;
   insert into public.chat_bans(user_id, until, note, by_user)
     values (target, case when coalesce(p_min, 0) > 0 then now() + make_interval(mins => least(p_min, 525600)) end, left(coalesce(p_note, ''), 300), auth.uid())
   on conflict (user_id) do update set until = excluded.until, note = excluded.note, by_user = excluded.by_user, created_at = now();
+  if coalesce(p_purge, true) then
+    delete from public.chat_messages where user_id = target and to_user is null;
+    get diagnostics n = row_count;
+  end if;
+  return n;
 end $$;
-revoke all on function public.admin_chat_ban(uuid, int, text) from public, anon;
-grant execute on function public.admin_chat_ban(uuid, int, text) to authenticated;
+revoke all on function public.admin_chat_ban(uuid, int, text, boolean) from public, anon;
+grant execute on function public.admin_chat_ban(uuid, int, text, boolean) to authenticated;
+
+-- Yönetici: bir kullanıcının genel sohbetteki tüm mesajlarını sil (özel mesajlara dokunmaz); silinen sayı döner
+create or replace function public.admin_chat_purge(target uuid) returns int
+language plpgsql security definer set search_path = public as $$
+declare n int;
+begin
+  if not public.is_admin() then raise exception 'not allowed'; end if;
+  delete from public.chat_messages where user_id = target and to_user is null;
+  get diagnostics n = row_count;
+  return n;
+end $$;
+revoke all on function public.admin_chat_purge(uuid) from public, anon;
+grant execute on function public.admin_chat_purge(uuid) to authenticated;
+
+-- Yönetici: genel sohbetin tamamını temizle (özel mesajlara dokunmaz); silinen sayı döner
+create or replace function public.admin_chat_clear_all() returns int
+language plpgsql security definer set search_path = public as $$
+declare n int;
+begin
+  if not public.is_admin() then raise exception 'not allowed'; end if;
+  delete from public.chat_messages where to_user is null;
+  get diagnostics n = row_count;
+  return n;
+end $$;
+revoke all on function public.admin_chat_clear_all() from public, anon;
+grant execute on function public.admin_chat_clear_all() to authenticated;
 
 -- Yönetici: yasağı kaldır
 create or replace function public.admin_chat_unban(target uuid) returns void
