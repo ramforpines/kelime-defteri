@@ -7,8 +7,8 @@
 --   * Ekran odağı kaybı (700 ms üstü): 1. ve 2. uyarı, 3. maç iptal.
 --   * Çevrimdışı ayrılma ve 1 sn'den kısa ayrılma: yalnızca kayıt (hide_off, hide_short). Tuzak düğme: yalnızca kayıt (trap).
 -- İptal olunca:
---   * İptal ettiren: normal yenilgi puanı ×1, ×1,5, ×2 (15 günlük sayaç: 1., 2., 3.+ iptal). Rakibe kaybedilen puanın %20'si verilir.
---   * Dereceli cezası (süre): 3, 5, 15, 30, 60, 360, 720 dk (1.-7.+ iptal, 15 gün içinde). Sunucu join/invite/respond'da kontrol eder.
+--   * İptal ettiren: ceza puanı ×1 ... ×7 (15 günlük sayaç: n. iptal = ×n, en çok ×7). Rakibe kaybedilen puanın %20'si verilir.
+--   * Dereceli yasak süresi: 100, 200 ... 700 dk (n. iptal = n×100 dk, en çok 700 dk, 15 gün içinde). Sunucu join/invite/respond'da kontrol eder.
 --   * Ceza kartında kullanıcı kurallara uyacağına söz verir (duel_pen_ack); söz verilmeden dereceli maç aranamaz, teklif gönderilemez/kabul edilemez.
 --   * Klasik düello etkilenmez.
 -- Yönetici: duel_admin_* fonksiyonları (özet, vakalar, ceza kayıtları, uyarı, ceza ver, ceza kaldır, puan iade).
@@ -181,7 +181,7 @@ begin
     if v_void then
       select count(*) into v_vc from public.duels where void_by = uid and status = 'void' and id <> did and done_at >= now() - interval '15 days';
       v_lv := v_vc + 1;
-      v_mult := case when v_lv <= 1 then 1 when v_lv = 2 then 1.5 else 2 end;
+      v_mult := least(v_lv, 7);
       v_sm := greatest(case when uid = d.p1 then d.s1 else d.s2 end, 0);
       v_so := greatest(case when uid = d.p1 then d.s2 else d.s1 end, 0);
       v_share := greatest(0.5, case when v_sm + v_so = 0 then 0.5 else v_so / (v_sm + v_so) end);
@@ -190,7 +190,7 @@ begin
       v_base := round(least(v_lk * v_share, 4 * v_ok), 1);
       v_pen := round(v_base * v_mult, 1);
       v_opp := round(v_pen * 0.2, 1);
-      v_ban := case when v_lv <= 1 then 3 when v_lv = 2 then 5 when v_lv = 3 then 15 when v_lv = 4 then 30 when v_lv = 5 then 60 when v_lv = 6 then 360 else 720 end;
+      v_ban := least(v_lv, 7) * 100;
       insert into public.duel_bans(user_id, until, lv, source) values (uid, now() + make_interval(mins => v_ban), v_lv, 'auto')
         on conflict (user_id) do update set until = excluded.until, lv = excluded.lv, source = 'auto';
       update public.duels set status = 'void', void_reason = (case when kd = 'blur' then 'blur3' else 'hide' end), void_by = uid, done_at = now(),
