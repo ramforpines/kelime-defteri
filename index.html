@@ -479,7 +479,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.120.0';
+const APP_VERSION='4.121.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1566,7 +1566,7 @@ function vHelp(){
     'Hesabını ilk açtığında yönetici onayı gerekebilir. Onaylanınca sıralamaya girer, sohbete ve düelloya katılırsın.',
     'İlerlemen hesabına kaydedilir. Telefonda, tabletde ve bilgisayarda aynı kullanıcı adı ve şifreyle girince kaldığın yerden devam edersin.']),true)}
   ${sec('📝 Testler ve soru türleri',li([
-    '<b>Bugünün testi</b>: tekrar zamanı gelen kelimeler ile yeni kelimelerden karışık hazırlanır.',
+    '<b>Bugünün testi</b>: her zaman 20 soru: tekrar zamanı gelen kelimeler, 1 Yanlış defteri sorusu, günün kelimeleri ve yeni kelimelerden karışık hazırlanır. Çalışma ekranındaki soru sayısı bunu etkilemez.',
     '<b>Yeni test</b>: seçtiğin seviye ve türden henüz öğrenmediğin kelimeler gelir.',
     'Bir kelimeden farklı özellikler sorulur: Türkçe karşılık (bazen ters yönde, yani Türkçeden İngilizceye), İngilizce tanım, kelime türü, boşluk doldurma, eş anlam, zıt anlam, V2/V3 (düzensiz fiiller), atasözü, edat kalıbı, ek ve ifade soruları.',
     'Her sorunun altında doğru cevap, kelimenin okunuşu, Türkçesi, tanımı ve örnek cümlesi gösterilir. Eş/zıt anlam gibi sorularda cevaplayınca şıkların hepsinin anlamı, Türkçe ve tanım sorularında ise her şıkkın hangi kelimeye ait olduğu da görünür; yanlış yaptığında işaretlediğin kelimenin ne demek olduğunu böylece öğrenirsin.',
@@ -2226,15 +2226,24 @@ function wlogItems(n){
   }
   return out;
 }
+const TODAY_N=20;   // Bugünün testi her zaman 20 soru (Çalışma'daki soru sayısı ayarından etkilenmez)
 function startQuiz(mode,all){
-  const n=S.set.count;
+  const n=mode==='today'?TODAY_N:S.set.count;
   let items=[];
   if(mode==='wlog'){items=wlogItems(all?9999:n)}
   else if(mode==='review'){items=reviewItems(n,all)}
   else if(mode==='today'){
     const rv=reviewItems(Math.ceil(n/3),false);
     const skip=new Set(rv.map(i=>i.w.word));
-    items=rv.concat(newItems(n-rv.length,S.set.level,skip));
+    // her 20 soruda 1 soru Yanlış defterinden (tekrar sorularında olmayan bir kelimeden)
+    const wl=[];
+    for(let z=0;z<Math.floor(n/20);z++){
+      for(const e of shuffle(S.wlog||[])){
+        const w=BYWORD.get(e.w);if(!w||skip.has(w.word))continue;
+        const it=makeItem(w,e.f,'wlog');if(it){it.lk=e.k;wl.push(it);skip.add(w.word);break}
+      }
+    }
+    items=rv.concat(wl,newItems(n-rv.length-wl.length,S.set.level,skip));
     items=wodPick(items,true);
   }else items=wodPick(newItems(n,S.set.level,new Set()),false);
   items=shuffle(items);
@@ -2448,7 +2457,7 @@ function vToday(){
   <div class="card hero"><div class="ring">${ring(p)}<div class="n"><div>${d.c}/${g}<small>doğru</small></div></div></div>
     <div class="stack"><h2>${left?`Hedefe ${left} doğru cevap kaldı`:'Bugünkü hedef tamam'}</h2>
     <div class="muted small">${due?`${due} kelime tekrar zamanı gelmiş. Bugünün testi bunları öne alır.`:'Tekrar bekleyen kelime yok.'}</div>
-    <button class="btn primary" data-act="start-today">Bugünün testini başlat (${S.set.count} soru)</button></div></div>
+    <button class="btn primary" data-act="start-today">Bugünün testini başlat (${TODAY_N} soru)</button></div></div>
   <div class="kpis"><div class="kpi"><b>${nf(learnedCount())}</b><span>öğrendiğin kelime</span></div><div class="kpi"><b>${nf(W.length-learnedCount())}</b><span>öğrenmediğin kelime</span></div><div class="kpi"><b>${nf(Object.keys(S.wrong).length)}</b><span>tekrar listendeki kelime</span></div></div>
   ${wds.length?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimeleri</span><span class="badge ${wq.left?'':'ok'}">${wq.done}/${wq.total} soru</span></div>
     ${wds.map(wd=>`<div class="stack" style="gap:2px;padding-top:8px;border-top:1px solid var(--line)"><div class="row" style="justify-content:space-between"><span class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span></span>${lvTag(wd.level)}</div><div class="row"><span>${esc(wd.tr)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i>${exTr(wd)}</div></div>`).join('')}
