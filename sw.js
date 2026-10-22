@@ -1,6 +1,6 @@
 /* Kelime Defteri service worker: önce ağ, olmazsa önbellek. Yeni sürüm yüklenince kullanıcılar bir sonraki açılışta güncel dosyaları alır. */
 const CACHE='kd-cache-v1';
-const CORE=['./','index.html','words.js','extr.js','reading.js','reading-tr.js','reading2.js','exam.js','mock.js','supabase.js','manifest.webmanifest','icon-192.png','duel-swords.svg','duel-nav.svg','icon-512.png','apple-touch-icon.png'];
+const CORE=['./','index.html','words.js','extr.js','reading.js','reading-tr.js','reading2.js','reading3.js','exam.js','mock.js','supabase.js','manifest.webmanifest','icon-192.png','duel-swords.svg','duel-nav.svg','icon-512.png','apple-touch-icon.png'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
 });
