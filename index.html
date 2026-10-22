@@ -425,7 +425,11 @@ let LOWBY=null;
 function optMean(o){
   if(!LOWBY){LOWBY=new Map();for(const w of W){const k=String(w.word).trim().toLowerCase();if(!LOWBY.has(k))LOWBY.set(k,w)}}
   const g=x=>LOWBY.get(String(x).trim().toLowerCase());
-  let w=g(o),nm=o;
+  let w=g(o),nm=o,infl='';
+  if(!w){   // çoğul / üçüncü tekil biçim (foundations -> foundation)
+    const x=String(o).trim().toLowerCase();
+    if(/^[a-z]{4,}$/.test(x)){for(const c of [x.replace(/ies$/,'y'),x.replace(/es$/,''),x.replace(/s$/,'')]){if(c!==x&&g(c)){w=g(c);infl=c;break}}}
+  }
   if(!w){const ps=String(o).split(/[;,]/).map(x=>x.trim()).filter(Boolean);if(ps.length>1)for(const x of ps){const h=g(x);if(h){w=h;nm=x;break}}}
   if(!w){   // başlık olmayan kelime: gloss.js'teki Türkçesi
     const GL=window.GLOSS||{},gg=x=>GL[String(x).trim().toLowerCase()];
@@ -435,7 +439,7 @@ function optMean(o){
     return null;
   }
   if(!w.tr)return null;
-  return{nm,tr:String(w.tr).split(/[;,]/).slice(0,2).map(x=>x.trim()).filter(Boolean).join(', ')};
+  return{nm,tr:String(w.tr).split(/[;,]/).slice(0,2).map(x=>x.trim()).filter(Boolean).join(', ')+(infl?' ('+infl+' sözcüğünün çoğul/çekimli biçimi)':'')};
 }
 const OWNM={};
 function optOwner(t){
@@ -480,7 +484,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.139.1';
+const APP_VERSION='4.139.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2307,7 +2311,7 @@ function whyText(it){
       const a=(/^(adjective|adverb)$/i.test(posKey(w)))?aaSlot(w):null;
       if(a&&a.kind==='A')return`Boşluktan sonra bir isim geliyor; ismi niteleyen kelime sıfat olur. ${B(w.word)} (${esc(tr)}) bir sıfat, bu yüzden uyuyor. Diğer şıklar zarf ya da isimden önce kullanılmayan sıfatlar.`;
       if(a&&a.kind==='B')return`Boşluktan sonra bir sıfat geliyor; sıfatı niteleyen kelime zarf olur. ${B(w.word)} (${esc(tr)}) bir zarf, bu yüzden uyuyor. Diğer şıklar sıfat olduğu için bu yerde zarf gibi kullanılmaz.`;
-      return`Cümleye anlam ve yapı bakımından ${B(w.word)} (${esc(tr)}) uyuyor; cümleyi baştan sona okuyup anlamı aramak en güvenli yol.`;
+      return'';
     }
     if(f===4&&has(w.syn))return`${B(w.word)} (${esc(tr)}) ile ${B(w.syn)} anlamca birbirine çok yakın. Burada birebir aynı anlam değil, şıklar arasında en yakın olanı arıyorsun.`;
     if(f===5&&has(w.ant))return`${B(w.word)} (${esc(tr)}) ile ${B(w.ant)} anlam bakımından ters yönde. Burada kesin bir zıtlıktan çok, şıklar arasında en çok tersine düşeni arıyorsun.`;
@@ -2316,11 +2320,9 @@ function whyText(it){
       const vp=verbParts(w),irr=!!vp&&vp.v2[0].toLowerCase()!==regularEd(vp.head).toLowerCase();
       return`${B(w.word)} fiilinin 2. hali ${B(v2.join(' / '))}, 3. hali ${B(v3.join(' / '))}.`+(irr?' Bu fiil düzensiz; sonuna -ed eklemek yerine biçimini ezberlemek gerekir.':'')+' Sıra önemli: önce V2, sonra V3.';
     }
-    if(f===7)return`Atasözünün tamamı: “${esc(w.word)}” (${esc(tr)}). İki yarı birlikte bu anlamı verir; diğer şıklar başka atasözlerinin ikinci yarısı, bu anlamı vermez.`;
-    if(f===8)return`İfadenin tamamı: “${esc(w.word)}” (${esc(tr)}). Eksik kelime ${B(c)}; ifadeyi bütün olarak hatırlamak en kolayı. Diğer şıklar başka ifadelerden alınmış kelimeler.`;
     if(f===9)return`${B(w.word)} (${esc(tr)}) kalıbı ${B(c)} ile kullanılır. Edatlar kalıpla birlikte öğrenilir; diğer seçenekler bu kalıpla kullanılmaz.`;
     if(f===10)return`${B(w.word)} (${esc(tr)}) kelimeye bu anlamı katan ek. Diğer şıklar başka ekler; bu kökle bilinen bir kelime oluşturmazlar.`;
-    if(f===11&&has(w.def))return`Verilen açıklama ${B(w.word)} (${esc(tr)}) ifadesine ait.`;
+
   }catch(e){}
   return'';
 }
