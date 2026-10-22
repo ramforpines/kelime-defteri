@@ -480,7 +480,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.133.0';
+const APP_VERSION='4.134.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -783,6 +783,33 @@ function applyDecay(){
   if(total>0)setTimeout(()=>toast(n+' gün günlük asgari hedefi tutturmadın: −'+nf(r1(total))+' puan kesildi.'),900);
   return total;
 }
+/* günlük zorunlu dereceli maç: Zümrüt 1, Elmas ve üstü 3. Oynanmayan her maç için riskin yarısı kadar ceza */
+const rqReq=()=>{const g=myLeague();return g>=6?3:g>=5?1:0};
+const RQ={today:null,busy:false};
+const localDay=ms=>new Date(ms).toLocaleDateString('sv-SE');
+async function rqApply(){
+  if(RQ.busy||!sb||!CLOUD.uid||CLOUD.approved===false)return;
+  RQ.busy=true;
+  try{
+    const t=today(),y=addDays(t,-1);
+    if(!S.rqc){S.rqc=y;save()}
+    let from=addDays(S.rqc,1);const lim=addDays(t,-14);if(from<lim)from=lim;
+    const since=new Date(addDays(from<t?from:t,0)+'T00:00:00');
+    const r=await sb.rpc('duel_my_ranked_times',{p_since:since.toISOString()});
+    if(r.error||!Array.isArray(r.data))return;
+    const cnt={};r.data.forEach(x=>{const d=localDay(Date.parse(x));cnt[d]=(cnt[d]||0)+1});
+    RQ.today=cnt[t]||0;
+    let total=0,miss=0,d=from;
+    while(d<t){
+      const need=rqReq(),m=Math.max(0,need-(cnt[d]||0));
+      for(let i=0;i<m&&(S.tp||0)>0;i++){const cut=dRisk(S.tp)/2;if(!(cut>0))break;S.tp-=cut;total+=cut;miss++;evAdd(dayStat(),'rq|'+d+'|'+i,{t:'a',pts:-cut});(S.rpen||(S.rpen=[])).push({d,amt:r1(cut)});if(S.rpen.length>10)S.rpen.shift()}
+      d=addDays(d,1);
+    }
+    S.rqc=y;
+    if(total>0){const dz=dayStat();dz.adj=(dz.adj||0)-total;setTimeout(()=>toast(miss+' zorunlu dereceli maç oynanmadı: −'+nf(r1(total))+' puan kesildi.'),900)}
+    save();render();
+  }catch(e){}finally{RQ.busy=false}
+}
 function myPoints(){
   const t0=today(),wk=weekKey(),D={A:0,C:0,pts:0},W={A:0,C:0,pts:0};
   const x=S.days[t0];if(x){D.A=x.a||0;D.C=x.c||0;D.pts=Math.max(0,(x.p||0)+(x.adj||0))}
@@ -862,6 +889,7 @@ function mergeStates(a,b){
   Object.keys(ot.prog||{}).forEach(w=>{if(m.learned[w])return;const x=m.prog[w]||(m.prog[w]=[]);(ot.prog[w]||[]).forEach(f=>{if(x.indexOf(f)===-1)x.push(f)})});
   Object.keys(m.learned).forEach(w=>{delete m.prog[w]});
   const bd=Object.assign({},ot.bd||{}),mb=m.bd||{};Object.keys(mb).forEach(k=>{bd[k]=bd[k]&&bd[k]<mb[k]?bd[k]:mb[k]});m.bd=bd;
+  if(ot.rqc&&(!m.rqc||ot.rqc>m.rqc))m.rqc=ot.rqc;
   m.bs=Math.max(m.bs||0,ot.bs||0);m.br=Math.max(m.br||0,ot.br||0);
   Object.keys(ot.days||{}).forEach(k=>{const x=m.days[k],y=ot.days[k],nt=q=>q?(q.p||0)+(q.adj||0):0;
     if(!x){m.tp=Math.max(0,(m.tp||0)+nt(y));m.days[k]=y;return}
@@ -1193,7 +1221,7 @@ async function onLogin(user){
   if(CLOUD.admin){loadUsers();loadAdminStats()}
   loadAnn();loadLive();loadMyFb();appPing();loadStats();loadFlags();try{recalcPull()}catch(e){}if(CLOUD.admin){loadAdminFb();loadAdminRep()}
   if(!S.prof.name)S.prof.name=CLOUD.username;
-  applyDecay();evalAwards();persistLocal();render();refreshBoard();schedulePush();
+  applyDecay();evalAwards();persistLocal();render();refreshBoard();schedulePush();rqApply();
   duelSync();
 }
 function onLogout(){
@@ -1646,7 +1674,7 @@ function vHelp(){
     '<b>Klasik / Dereceli</b>: Düello bölümünde iki mod vardır. Aşağıdaki bahis düzeni <b>Klasik düello</b>dur. <b>Dereceli düello</b> aşağıda ayrıca anlatılır. İki modda da sorular, doğru ve yanlış puanı, hız çarpanı aynıdır; salon listeleri, maç geçmişi ve istatistikler ayrıdır.',
     '<b>Dereceli düello — risk</b>: Bronz ligden (200 puan) itibaren oynanır, bahis yoktur. Her oyuncunun riski, puanının lig oranı kadarıdır: Bronz %10→9, Gümüş %9→8, Altın %8→7, Platin %7→6, Zümrüt %6→5, Elmas %5→4, Ustalık ve üstü %4 (oran lig içinde doğrusal azalır). Örnek: 200 puanın riski 20, 1.000 puanın riski 80. Puanlar maç başında kaydedilir.',
     '<b>Dereceli düello — puan geçişi</b>: (1) Kaybedenin riski belirlenir (puanının ligine göre %4–10\'u). (2) Kazananın payı = <b>kazananın maç skoru ÷ iki oyuncunun toplam maç skoru</b> (negatif skor 0 sayılır). (3) Kaybeden, <b>riski × bu pay</b> kadar puan kaybeder. Örnek: skorlar 3000 (kazanan) ve 2000 (kaybeden) ise toplam 5000, pay 3000/5000 = 0,6; kaybedenin riski 20 puansa 20 × 0,6 = <b>12 puan</b> kaybeder. (4) Kazanan bu 12 puanı kesintisiz alır ve üstüne, kaybedenin lig oranı kadar (Bronz %10 … Ustalık %4) sistem bonusu eklenir; kaybedenin ligi Bronz ise 12 + 1,2 = <b>+13,2</b>. Bonusu sistem öder, kaybeden yalnızca 12 kaybeder. (5) Kazanan, kendi riskinin 3 katından fazlasını alamaz; fazlası kaybedene iade edilir (bonus bu sınıra dahil değil). Skorlar eşitse beraberliktir, kimse puan kaybetmez. İki oyuncunun da maç skoru 0 ya da altındaysa (ör. ikisi de hiç doğru yapmadıysa) maç yine berabere sayılır, puan değişmez.',
-    '<b>Dereceli düello — eşleşme</b>: Rastgele eşleşme aynı veya komşu ligdekilerle yapılır. Aynı kişiyle 24 saatte en çok 3 dereceli maç oynanır. Dereceli puanların genel günlük, haftalık ve toplam puana da işlenir.',
+    '<b>Dereceli düello — eşleşme</b>: Rastgele eşleşme aynı veya komşu ligdekilerle yapılır. Aynı kişiyle 24 saatte oynanabilecek dereceli maç sayısı lige göre değişir (iki oyuncudan ligi yüksek olana göre): Altın ve altı 3, Platin ve Zümrüt 2, Elmas ve üstü 1. <b>Zorunlu maç</b>: Zümrüt ligindeyken günde 1, Elmas ve üstünde günde 3 dereceli maç oynaman gerekir; oynamadığın her maç için, o maçta riskinin yarısı kadar puan (0 puanlık bir maç oynamış gibi) kesilir. Dereceli puanların genel günlük, haftalık ve toplam puana da işlenir.',
     '<b>Dereceli salon</b>: Maçtan önce kimsenin adı görünmez. Salonda <b>Maç arayanlar</b> (Dereceli rakip bul\'a basanlar) ve <b>Lobidekiler</b> (sekmede bekleyenler) listelenir; her satırda yalnızca "Gizli kullanıcı" ve ligi (ör. Altın ligi) yazar. Süren maçlarda ise oyuncu adları görünür. Rakibini maç başlayınca öğrenirsin.',
     '<b>Dereceli düello — yasaklar ve cezalar</b>: Dereceli düelloda hile yasaktır: maç sırasında uygulamadan ya da maç ekranından ayrılmak, soruları kopyalamak, yapay zeka, ekran görüntüsü, başka kişi ya da başka bir araçtan yardım almak ve benzeri yollar. Kurallara uymayanlar uyarı ve ceza alır: maç iptal edilir, puan kaybedilir ve bir süre dereceli düello oynanamaz. Cezalar otomatik uygulanır; iptal edilen maçlar maç geçmişinde herkese görünür. Klasik düelloda bu kurallar yoktur.',
     '<b>Ceza merdiveni</b>: Dereceli düelloda cezalar, <b>son 15 gün</b> içinde kaç maçının iptal edildiğine göre artar. Puan cezası çarpanla büyür, ayrıca dereceli düello oynayamayacağın süre uzar; cezanın bir bölümü (yüzde 20) rakibine verilir. Süre 15 gün sonra sayaçtan düşer. <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:.9rem;text-align:left"><thead><tr style="border-bottom:1px solid var(--line)"><th style="padding:4px 6px">İptal sırası</th><th style="padding:4px 6px">Puan çarpanı</th><th style="padding:4px 6px">Dereceli yasağı</th></tr></thead><tbody><tr><td>1. iptal</td><td>×1</td><td>100 dk</td></tr><tr><td>2. iptal</td><td>×2</td><td>200 dk</td></tr><tr><td>3. iptal</td><td>×3</td><td>300 dk</td></tr><tr><td>4. iptal</td><td>×4</td><td>400 dk</td></tr><tr><td>5. iptal</td><td>×5</td><td>500 dk</td></tr><tr><td>6. iptal</td><td>×6</td><td>600 dk</td></tr><tr><td>7. ve sonrası iptal</td><td>×7</td><td>700 dk</td></tr></tbody></table>',
@@ -3804,7 +3832,7 @@ function grdWarn(res,kind){
 function duelVoid(){
   if(DUEL.phase==='void')return;
   dStop();DUEL.phase='void';DUEL.sel=null;
-  if(DUEL.d&&DUEL.d.mode==='ranked')duelApply([DUEL.d]);
+  if(DUEL.d&&DUEL.d.mode==='ranked'){duelApply([DUEL.d]);setTimeout(rqApply,3000)}
   render();
   duelRecord();
 }
@@ -4175,7 +4203,7 @@ async function invSend(target){
     INV={dir:'out',id:r.data.id,who,mode:rkm?'ranked':'classic',exp:Date.now()+(r.data.left_ms||15000),tot:15000};invShow();
   }catch(e){
     const m=String(e&&e.message||'');
-    toast(/ranked penalty/i.test(m)?'Dereceli düello cezan sürüyor.':/target penalty/i.test(m)?'Bu kullanıcı şu an dereceli düello oynayamıyor.':/pair limit/i.test(m)?'Bu rakiple 24 saatte en fazla 3 dereceli maç oynayabilirsin.':/low points/i.test(m)?'Teklif için en az '+need+' puanın olmalı.':/target low/i.test(m)?'Rakibin puanı '+(rkm?'dereceli ':'')+'düello için yetersiz.':/busy/i.test(m)&&/target/i.test(m)?'Kullanıcı şu an başka bir düelloda.':/invite busy/i.test(m)?'Şu an başka bir teklif işleniyor. Birkaç saniye sonra dene.':/offline/i.test(m)?'Kullanıcı artık düello sekmesinde değil.':/too many/i.test(m)?'Çok fazla teklif gönderdin, biraz bekle.':/duel_invite|PGRST202|42883|schema cache/i.test(m)?'Düello teklifi henüz kurulmadı (supabase-invite.sql).':'Teklif gönderilemedi.');
+    toast(/ranked penalty/i.test(m)?'Dereceli düello cezan sürüyor.':/target penalty/i.test(m)?'Bu kullanıcı şu an dereceli düello oynayamıyor.':/pair limit/i.test(m)?'Bu rakiple ligine göre 24 saatte oynayabileceğin dereceli maç sayısına ulaştın.':/low points/i.test(m)?'Teklif için en az '+need+' puanın olmalı.':/target low/i.test(m)?'Rakibin puanı '+(rkm?'dereceli ':'')+'düello için yetersiz.':/busy/i.test(m)&&/target/i.test(m)?'Kullanıcı şu an başka bir düelloda.':/invite busy/i.test(m)?'Şu an başka bir teklif işleniyor. Birkaç saniye sonra dene.':/offline/i.test(m)?'Kullanıcı artık düello sekmesinde değil.':/too many/i.test(m)?'Çok fazla teklif gönderdin, biraz bekle.':/duel_invite|PGRST202|42883|schema cache/i.test(m)?'Düello teklifi henüz kurulmadı (supabase-invite.sql).':'Teklif gönderilemedi.');
     lobbyLoad();
   }
 }
@@ -4188,7 +4216,7 @@ async function invAnswer(yes){
     const st=r.data&&r.data.status;
     invClose();
     if(st==='accepted'&&r.data.duel_id){duelStart(r.data.duel_id);return}
-    toast(st==='declined'?'Teklif reddedildi.':st==='expired'?'Teklifin süresi dolmuş.':st==='limit'?'Bu rakiple 24 saatte en fazla 3 dereceli maç oynayabilirsiniz.':st==='penalty'?'Dereceli düello cezası nedeniyle teklif kabul edilemedi.':st==='old'?'Uygulamanı güncelle (sayfayı yenile) ve tekrar dene.':'Düello başlatılamadı.');
+    toast(st==='declined'?'Teklif reddedildi.':st==='expired'?'Teklifin süresi dolmuş.':st==='limit'?'Bu rakiple ligine göre 24 saatte oynayabileceğiniz dereceli maç sayısına ulaştınız.':st==='penalty'?'Dereceli düello cezası nedeniyle teklif kabul edilemedi.':st==='old'?'Uygulamanı güncelle (sayfayı yenile) ve tekrar dene.':'Düello başlatılamadı.');
   }catch(e){invClose();toast('İşlem tamamlanamadı.')}
   if(duelLobbyView())render();lobbyLoad();
 }
@@ -4242,6 +4270,7 @@ function vDuel(){
     else if(DUEL.err==='ver')err=`<div class="fb bad">Rakibinle kelime listesi sürümün farklı. Uygulamayı kapatıp yeniden aç.</div>`;
     else if(DUEL.err==='err')err=`<div class="fb bad">Bağlantı sorunu. Biraz sonra tekrar dene.</div>`;
     body=DUEL.sub==='ranked'?`<div class="card stack"><h2>🏅 Dereceli düello</h2>
+      ${rqReq()?`<div class="row" style="justify-content:space-between"><b>Günlük zorunlu dereceli maç</b><span class="badge ${(RQ.today||0)>=rqReq()?'ok':'warn'}">${Math.min(RQ.today||0,rqReq())}/${rqReq()}</span></div><div class="small muted">${LEAGUES[myLeague()].n} liginde günde ${rqReq()} dereceli maç oynaman gerekir. Oynamadığın her maç için riskinin yarısı kadar puan kesilir (≈ ${nf(r1(dRisk(S.tp||0)/2))} puan).</div>`:''}
       <div class="muted small">Bahis yok: ligine göre puanının bir yüzdesi risktedir. Bronz ligden (${DRK_MIN} puan) itibaren oynanır. Kuralların tamamı <b>Ben → Nasıl kullanılır? → Düello</b> bölümünde.</div>
       <div class="kp"><div><b>${nf(r1(S.tp||0))}</b><span>puanın</span></div><div><b>${(LEAGUES[myLeague()]||LEAGUES[0]).n}</b><span>ligin</span></div><div><b>${(S.tp||0)>=DRK_MIN?nf(r1(dRisk(S.tp||0))):'–'}</b><span>riskin${(S.tp||0)>=DRK_MIN?' (%'+nf(Math.round(dRate(S.tp||0)*1000)/10)+')':''}</span></div></div>
       ${DUEL.recR?`<div class="kp"><div><b>${DUEL.recR.w}</b><span>galibiyet</span></div><div><b>${DUEL.recR.l}</b><span>mağlubiyet</span></div><div><b>${DUEL.recR.d}</b><span>beraberlik</span></div></div><div style="width:100%;box-sizing:border-box;text-align:center;padding:14px 10px;border-radius:14px;background:var(--surface2)"><div style="font-size:2.2rem;font-weight:800;line-height:1.1;color:${DUEL.recR.net>0?'var(--ok)':DUEL.recR.net<0?'var(--bad)':'inherit'}">${DUEL.recR.net>0?'+':DUEL.recR.net<0?'−':''}${nf(r1(Math.abs(DUEL.recR.net)))}</div><div class="muted small" style="margin-top:2px">Dereceli puanı</div></div>`:''}
@@ -4558,7 +4587,7 @@ function maybeNotify(){
   }catch(e){}
 }
 setInterval(maybeNotify,60000);
-document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(pushT);pushNow()}else{if(CLOUD.uid&&CLOUD.approved!==false&&applyDecay()>0)persistLocal();maybeNotify();if(UI.tab==='today')render()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(pushT);pushNow()}else{if(CLOUD.uid&&CLOUD.approved!==false&&applyDecay()>0)persistLocal();rqApply();maybeNotify();if(UI.tab==='today')render()}});
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__bip=e;if(UI.tab==='me'&&UI.me==='set')render()});
 window.addEventListener('online',()=>{schedulePush();refreshBoard()});
 setInterval(()=>{if(!document.hidden&&(UI.tab==='rank'||UI.tab==='today'))refreshBoard()},60000);
