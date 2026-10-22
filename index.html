@@ -479,7 +479,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.123.0';
+const APP_VERSION='4.124.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -711,6 +711,21 @@ function wodPick(items,anyWord){
     out=rest.concat([it]);
   }
   return out;
+}
+// bugünün günün-kelimesi soruları tamamen çözülmüş ve hiçbiri yanlış defterinde değilse kelimeyi öğrenilene ekle (eski sürümde eklenmiyordu)
+function wodBackfill(){
+  try{
+    if(!S.wq||S.wq.d!==today())return;
+    let ch=false;
+    wodWords().forEach(w=>{
+      if(S.learned[w.word])return;
+      const fs=applicable(w);
+      if(!fs.length||!fs.every(f=>S.wq.done.indexOf(w.word+'|'+f)!==-1))return;
+      if((S.wlog||[]).some(e=>e.w===w.word)||S.wrong[w.word])return;
+      S.learned[w.word]={d:today(),l:w.level};delete S.prog[w.word];ch=true;
+    });
+    if(ch)save();
+  }catch(e){}
 }
 const QCAP=700;   // günlük soru puanı üst sınırı (düello puanları bu sınıra girmez)
 let CUR_EV=null;   // o an puanı yazılan cevabın olay kaydı (cihazlar arası birleştirme için)
@@ -2278,7 +2293,7 @@ function applyAnswerCore(it,ok,ua,qz,gate){
   const bw=S.wrong[w.word];
   if(ok){
     qz.right++;
-    if(it.kind==='new'){
+    if(it.kind==='new'||(it.kind==='wod'&&!S.learned[w.word])){
       const p=S.prog[w.word]||(S.prog[w.word]=[]);
       if(p.indexOf(it.f)===-1)p.push(it.f);
       if(applicable(w).every(f=>p.indexOf(f)!==-1)){
@@ -4452,7 +4467,7 @@ window.addEventListener('online',()=>{schedulePush();refreshBoard()});
 setInterval(()=>{if(!document.hidden&&(UI.tab==='rank'||UI.tab==='today'))refreshBoard()},60000);
 setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return;loadMyFb();loadFlags();if(CLOUD.admin)loadAdminFb()},120000);
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
-render();maybeNotify();initAuth();
+wodBackfill();render();maybeNotify();initAuth();
 })();
 </script>
 </body>
