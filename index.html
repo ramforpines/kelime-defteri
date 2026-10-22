@@ -480,7 +480,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.136.1';
+const APP_VERSION='4.136.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2023,7 +2023,7 @@ function applicable(w){
   if(cloze(w))f.push(3);
   if(has(w.syn))f.push(4);
   if(has(w.ant))f.push(5);
-  if(w.v2&&w.v3)f.push(6);
+  if(w.v2&&w.v3&&!/\s/.test(str(w.word)))f.push(6);   // çok sözcüklü fiil kalıplarında (speak up...) V2/V3 sorusu üretilmez; özellik listede kalırsa kelime hiç öğrenilemezdi
   const g=posGroup(w);
   if(g==='proverb'&&wtoks(w).length>=5)f.push(7);
   if(MULTI.indexOf(g)!==-1&&blankIdx(w).length)f.push(8);
