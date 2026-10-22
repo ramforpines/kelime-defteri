@@ -480,7 +480,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.125.0';
+const APP_VERSION='4.126.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -681,10 +681,12 @@ function dueLearned(){const t=today();return Object.keys(S.learned).filter(k=>BY
 /* lige göre yeni soru seviye dağılımı: A1, A2, B1, B2, C1, C2 ağırlıkları */
 const LVW=[[2,4,6,4,2,2],[2,3,6,5,2,2],[1,3,5,6,3,2],[1,2,5,6,3,3],[1,2,4,6,4,3],[1,1,4,6,5,3],[1,1,5,6,4,3],[1,1,4,6,5,3],[1,1,3,6,5,4],[1,1,3,5,5,5]];
 /* günün kelimesi: B1/B2/C1 arasından, gün başına sabit */
+const WOD_BASE=10899;
 let WODP=null;
 function wodWords(){
   // her gün B1, B2 ve C1 seviyelerinden birer kelime (gün başına sabit)
-  if(!WODP)WODP=W.filter(w=>w.level==='B1'||w.level==='B2'||w.level==='C1');
+  // havuz sabit: sözlüğe sonradan eklenen kelimeler (id >= WOD_BASE) havuzu büyütmez, böylece güncelleme günün kelimelerini değiştirmez
+  if(!WODP)WODP=W.filter(w=>w.id<WOD_BASE&&(w.level==='B1'||w.level==='B2'||w.level==='C1'));
   const dn=Math.floor(Date.parse(today()+'T12:00:00')/864e5),out=[];
   ['B1','B2','C1'].forEach((lv,k)=>{const P=WODP.filter(w=>w.level===lv);if(P.length)out.push(P[(dn*7919+k*104729)%P.length])});
   return out;
