@@ -480,7 +480,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.139.0';
+const APP_VERSION='4.139.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2299,18 +2299,18 @@ function whyText(it){
     const w=it.w,f=it.f,B=x=>'<b>'+esc(x)+'</b>',tr=str(w.tr),c=it.correct;
     if(!w||!tr)return'';
     if(f===0){
-      if(/karşılığı hangi İngilizce/.test(it.question))return`Aradığın anlam “${esc(tr)}”; bunun İngilizcesi ${B(w.word)}. Diğer şıklar da İngilizce kelime, ama başka anlamlara geliyor (aşağıda hangisinin ne demek olduğu yazıyor).`;
-      return`İngilizce ${B(w.word)} kelimesi Türkçede “${esc(tr)}” demek. Diğer şıklar başka İngilizce kelimelerin anlamı; aşağıda hangi kelimeye ait olduklarını görebilirsin.`;
+      if(/karşılığı hangi İngilizce/.test(it.question))return`Aradığın anlam “${esc(tr)}”; bunun İngilizcesi ${B(w.word)}..`;
+      return`İngilizce ${B(w.word)} kelimesi Türkçede “${esc(tr)}” demek..`;
     }
-    if(f===1&&has(w.def))return`${B(w.word)} (${esc(tr)}) kelimesini İngilizce şöyle açıklayabiliriz: “${esc(w.def)}”. Diğer şıklar başka kelimelerin tanımı; hangi kelimeye ait olduklarını aşağıda görebilirsin.`;
+    if(f===1&&has(w.def))return`${B(w.word)} (${esc(tr)}) kelimesini İngilizce şöyle açıklayabiliriz: “${esc(w.def)}”.`;
     if(f===3){
       const a=(/^(adjective|adverb)$/i.test(posKey(w)))?aaSlot(w):null;
       if(a&&a.kind==='A')return`Boşluktan sonra bir isim geliyor; ismi niteleyen kelime sıfat olur. ${B(w.word)} (${esc(tr)}) bir sıfat, bu yüzden uyuyor. Diğer şıklar zarf ya da isimden önce kullanılmayan sıfatlar.`;
       if(a&&a.kind==='B')return`Boşluktan sonra bir sıfat geliyor; sıfatı niteleyen kelime zarf olur. ${B(w.word)} (${esc(tr)}) bir zarf, bu yüzden uyuyor. Diğer şıklar sıfat olduğu için bu yerde zarf gibi kullanılmaz.`;
-      return`Cümleye anlam ve yapı bakımından ${B(w.word)} (${esc(tr)}) uyuyor; cümleyi baştan sona okuyup anlamı aramak en güvenli yol. Diğer şıkların ne demek olduğu aşağıda yazıyor.`;
+      return`Cümleye anlam ve yapı bakımından ${B(w.word)} (${esc(tr)}) uyuyor; cümleyi baştan sona okuyup anlamı aramak en güvenli yol.`;
     }
-    if(f===4&&has(w.syn))return`${B(w.word)} (${esc(tr)}) ile ${B(w.syn)} anlamca birbirine çok yakın. Burada birebir aynı anlam değil, şıklar arasında en yakın olanı arıyorsun. Diğer şıkların anlamı aşağıda yazıyor.`;
-    if(f===5&&has(w.ant))return`${B(w.word)} (${esc(tr)}) ile ${B(w.ant)} anlam bakımından ters yönde. Burada kesin bir zıtlıktan çok, şıklar arasında en çok tersine düşeni arıyorsun. Diğer şıkların anlamı aşağıda yazıyor.`;
+    if(f===4&&has(w.syn))return`${B(w.word)} (${esc(tr)}) ile ${B(w.syn)} anlamca birbirine çok yakın. Burada birebir aynı anlam değil, şıklar arasında en yakın olanı arıyorsun.`;
+    if(f===5&&has(w.ant))return`${B(w.word)} (${esc(tr)}) ile ${B(w.ant)} anlam bakımından ters yönde. Burada kesin bir zıtlıktan çok, şıklar arasında en çok tersine düşeni arıyorsun.`;
     if(f===6){
       const v2=altForms(w.v2),v3=altForms(w.v3);if(!v2.length||!v3.length)return'';
       const vp=verbParts(w),irr=!!vp&&vp.v2[0].toLowerCase()!==regularEd(vp.head).toLowerCase();
@@ -2320,7 +2320,7 @@ function whyText(it){
     if(f===8)return`İfadenin tamamı: “${esc(w.word)}” (${esc(tr)}). Eksik kelime ${B(c)}; ifadeyi bütün olarak hatırlamak en kolayı. Diğer şıklar başka ifadelerden alınmış kelimeler.`;
     if(f===9)return`${B(w.word)} (${esc(tr)}) kalıbı ${B(c)} ile kullanılır. Edatlar kalıpla birlikte öğrenilir; diğer seçenekler bu kalıpla kullanılmaz.`;
     if(f===10)return`${B(w.word)} (${esc(tr)}) kelimeye bu anlamı katan ek. Diğer şıklar başka ekler; bu kökle bilinen bir kelime oluşturmazlar.`;
-    if(f===11&&has(w.def))return`Verilen açıklama ${B(w.word)} (${esc(tr)}) ifadesine ait. Diğer şıklar başka ifadeler; her birinin ne demek olduğu aşağıda yazıyor.`;
+    if(f===11&&has(w.def))return`Verilen açıklama ${B(w.word)} (${esc(tr)}) ifadesine ait.`;
   }catch(e){}
   return'';
 }
