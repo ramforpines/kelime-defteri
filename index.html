@@ -484,7 +484,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.139.4';
+const APP_VERSION='4.139.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -3090,7 +3090,7 @@ function vStats(){
   const days=[];for(let i=13;i>=0;i--){const d=addDays(today(),-i);days.push([d,S.days[d]||{a:0,c:0}])}
   const mx=Math.max(5,...days.map(x=>x[1].a));
   const P=myPoints();
-  return`<div class="kpis"><div class="kpi"><b>${nf(r1(P.D.pts))}</b><span>bugün puan</span></div><div class="kpi"><b>${nf(r1(P.W.pts))}</b><span>bu hafta puan</span></div><div class="kpi"><b>${nf(r1(P.T.pts))}</b><span>toplam puan</span></div></div>${(()=>{const dd=S.days[today()]||{},q=r1(dd.q==null?(dd.p||0):dd.q);if(!(q>0))return"";const cp=qCapOf(dd),full=q>=cp;const dif=r1(q-P.D.pts);return`<div class="small muted" style="margin:-4px 0 8px">Günlük soru puanı: <b>${nf(q)}/${nf(r1(cp))}</b>${full?" · sınıra ulaştın, sorulardan yeni puan eklenmez":""}${dif>0.05?` · düello kaybı ve cezalar günlük puanından ${nf(dif)} düşürdü`:""}</div>`})()}<div class="card"><h2 style="margin-bottom:8px">Seviyelere göre ilerleme</h2>${LEVELS.map(l=>{
+  return`<div class="kpis"><div class="kpi"><b>${nf(r1(P.D.pts))}</b><span>bugün puan</span></div><div class="kpi"><b>${nf(r1(P.W.pts))}</b><span>bu hafta puan</span></div><div class="kpi"><b>${nf(r1(P.T.pts))}</b><span>toplam puan</span></div></div><div class="card"><h2 style="margin-bottom:8px">Seviyelere göre ilerleme</h2>${LEVELS.map(l=>{
     const t=tot[l]||0,n=lrn[l]||0,p=t?n/t*100:0,q=S.lv[l]||[0,0],qa=q[0]+q[1];
     return`<div class="lvrow"><span class="lv lv-${l}">${l}</span><div><div class="bar"><i style="width:${p.toFixed(1)}%;background:var(--l-${l})"></i></div>${qa?`<div class="small muted" style="margin-top:3px">Test başarısı %${Math.round(q[0]/qa*100)} (${q[0]} doğru, ${q[1]} yanlış)</div>`:''}</div><span class="num">${n}/${nf(t)}</span></div>`}).join('')}</div>
   <div class="card"><h2>Son 14 gün</h2><div class="muted small">Mavi: doğru, kırmızı: yanlış cevap sayısı</div>
