@@ -451,7 +451,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.113.0';
+const APP_VERSION='4.114.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -1151,7 +1151,7 @@ async function onLogin(user){
 }
 function onLogout(){
   try{dReset()}catch(e){}
-  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.ldDone=false;try{RWR.q=[]}catch(e){}CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;CLOUD.live=null;annPopClose();UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.flags={};CLOUD.flagsErr=false;UI.rep=null;CHAT.myban=null;CHAT.bans={};UI.cban=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.lc={};CLOUD.ld=null;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
+  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.ldDone=false;try{RWR.q=[]}catch(e){}CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;CLOUD.live=null;annPopClose();UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.flags={};CLOUD.flagsErr=false;UI.rep=null;CHAT.myban=null;CHAT.bans={};UI.cban=null;UI.cbp=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.lc={};CLOUD.ld=null;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
 }
 async function initAuth(){
   try{
@@ -2344,7 +2344,7 @@ function render(){
   else if(UI.tab==='chat')h=vChat();
   else h=vMe();
   if(isStudy(UI.tab)){lastStudy=UI.tab;if(!dlk)h=studySeg()+h}
-  const fa=document.activeElement,fid=fa&&fa.id&&/^(chin|chq)$/.test(fa.id)?fa.id:null,fs=fid?[fa.selectionStart,fa.selectionEnd]:null;
+  const fa=document.activeElement,fid=fa&&fa.id&&/^(chin|chq|cbq|cbn)$/.test(fa.id)?fa.id:null,fs=fid?[fa.selectionStart,fa.selectionEnd]:null;
   const ol=document.getElementById('chatlist');if(ol&&ol.dataset.init){UI.chat.st=ol.scrollTop;UI.chat.nb=ol.scrollHeight-ol.scrollTop-ol.clientHeight<90}
   const dh0=document.getElementById('dhl'),dhs=dh0?dh0.scrollTop:0;
   app.innerHTML=profBar()+h+vCard();
@@ -2766,13 +2766,13 @@ function vMe(){
   const fu=fbUnread();
   const seg=[['prof','Profil'],['stats','İstatistik'],['set','Ayarlar'+(fu?' ('+fu+')':'')],['help','Nasıl kullanılır?']];
   const nM=fbNew(),nR=repOpen(),nU=UI.adm.loaded?UI.adm.list.filter(u=>!u.approved).length:0;
-  const subs=[['msg','Mesajlar'+(nM?' ('+nM+')':'')],['live','Anlık duyuru'],['fla','Flamalar'],['rep','Raporlar'+(nR?' ('+nR+')':'')],['grd','Hile şüphesi'],['adm','Yönetim'+(nU?' ('+nU+')':'')]];
+  const subs=[['msg','Mesajlar'+(nM?' ('+nM+')':'')],['live','Anlık duyuru'],['fla','Flamalar'],['rep','Raporlar'+(nR?' ('+nR+')':'')],['grd','Hile şüphesi'],['cban','Sohbet yasağı'],['adm','Yönetim'+(nU?' ('+nU+')':'')]];
   const inAdm=CLOUD.admin&&subs.some(x=>x[0]===UI.me);
   if(inAdm)UI.admSub=UI.me;
   if(CLOUD.admin){const t=nM+nR+nU;seg.push(['admin','🛡 Yönetici'+(t?' ('+t+')':'')])}
   let body='';
   if(UI.me==='learned')UI.me='stats';else if(UI.me==='fb')UI.me='set';
-  if(UI.me==='stats')body=vStats()+'<h2 style="margin:10px 2px 0">Öğrenilenler</h2>'+vLearned();else if(UI.me==='help')body=vHelp();else if(UI.me==='prof')body=vProfile();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='grd'&&CLOUD.admin)body=vGuard();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings()+vFeedback();
+  if(UI.me==='stats')body=vStats()+'<h2 style="margin:10px 2px 0">Öğrenilenler</h2>'+vLearned();else if(UI.me==='help')body=vHelp();else if(UI.me==='prof')body=vProfile();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='grd'&&CLOUD.admin)body=vGuard();else if(UI.me==='cban'&&CLOUD.admin)body=vChatBans();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings()+vFeedback();
   return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${k==='admin'?inAdm:UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${inAdm?`<div class="seg">${subs.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>`:''}${body}</div>`;
 }
 function vStats(){
@@ -3310,22 +3310,38 @@ async function chatBanLoad(){
   if(!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return;
   try{
     if(CLOUD.admin){const r=await sb.rpc('admin_chat_bans');if(r.error||!Array.isArray(r.data))return;
-      const m={};r.data.forEach(x=>{m[x.user_id]={until:x.until,forever:!x.until,note:x.note,name:x.name}});
-      if(JSON.stringify(m)!==JSON.stringify(CHAT.bans)){CHAT.bans=m;if(UI.tab==='chat'&&UI.cban)render()}
+      const m={};r.data.forEach(x=>{m[x.user_id]={until:x.until,forever:!x.until,note:x.note,name:x.name,at:x.created_at}});
+      if(JSON.stringify(m)!==JSON.stringify(CHAT.bans)){CHAT.bans=m;if(UI.tab==='chat'&&UI.cban)render();else if(UI.tab==='me'&&UI.me==='cban')quietRender2()}
     }else{const r=await sb.rpc('chat_my_ban');if(r.error)return;
       const b=r.data||null;if(JSON.stringify(b)!==JSON.stringify(CHAT.myban)){CHAT.myban=b;if(UI.tab==='chat')render()}
       else if(b&&!b.forever&&banLeft(b)<=0){CHAT.myban=null;if(UI.tab==='chat')render()}}
   }catch(e){}
+}
+const CBP=()=>UI.cbp||(UI.cbp={q:'',uid:null,name:'',min:1440,note:''});
+function vChatBans(){
+  const P=CBP(),ids=Object.keys(CHAT.bans);
+  const q=P.q.trim().toLowerCase().replace(/^@/,'');
+  const found=q?CLOUD.lb.filter(r=>r.name&&r.id!==CLOUD.uid&&!isAdm(r.id)&&((r.name||'').toLowerCase().includes(q)||(r.un||'').toLowerCase().includes(q))).slice(0,8):[];
+  const cur=P.uid?CHAT.bans[P.uid]:null;
+  return`<div class="card stack"><b>Sohbet yasakları</b><div class="small muted">Yasaklı kullanıcı genel sohbette ve özel mesajlarda yazamaz, okuyabilir. Yöneticiler yasaklanamaz.</div></div>
+  <div class="card stack"><b>Yeni yasak</b>
+    ${P.uid?`<div class="row" style="justify-content:space-between;gap:8px"><span><b>${esc(P.name)}</b>${cur?` <span class="badge bad">yasaklı: ${esc(banTxt(cur))}</span>`:''}</span><button class="chip" data-act="cbp-clear">Değiştir</button></div>`:
+      `<input id="cbq" class="nameinp" type="search" placeholder="Ad ya da @kullanıcı adı ara" value="${esc(P.q)}" autocomplete="off">${q?(found.length?found.map(r=>`<div class="rk" data-act="cbp-pick" data-uid="${esc(r.id)}" data-n="${esc(r.name)}" style="grid-template-columns:1fr auto"><div class="nm">${esc(r.name)}${r.un?` <span class="small muted">@${esc(r.un)}</span>`:''}</div>${CHAT.bans[r.id]?'<span class="badge bad">yasaklı</span>':''}</div>`).join(''):'<div class="empty">Kullanıcı bulunamadı.</div>'):''}`}
+    <div class="muted small">Süre</div>
+    <div class="seg" style="flex-wrap:wrap">${BAN_OPTS.map(o=>`<button class="chip" aria-pressed="${P.min===o[0]}" data-act="cbp-min" data-v="${o[0]}">${o[1]}</button>`).join('')}</div>
+    <input id="cbn" class="nameinp" maxlength="200" placeholder="Not (kullanıcıya gösterilir, isteğe bağlı)" value="${esc(P.note)}" autocomplete="off">
+    <div class="row" style="gap:8px"><button class="btn primary" data-act="cbp-do" ${P.uid?'':'disabled'}>${cur?'Süreyi güncelle':'Yasakla'}</button></div></div>
+  <div class="card stack"><b>Süren yasaklar (${ids.length})</b>${ids.length?ids.map(id=>{const b=CHAT.bans[id];return`<div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><div><b>${esc(b.name||'Kullanıcı')}</b> <span class="badge bad">${esc(banTxt(b))}</span>${b.note?`<div class="small muted">${esc(b.note)}</div>`:''}${b.at?`<div class="small muted">${esc(fdt(b.at))}</div>`:''}</div><button class="btn" data-act="cbp-un" data-uid="${esc(id)}" data-n="${esc(b.name||'Kullanıcı')}">Kaldır</button></div>`}).join(''):'<div class="empty">Şu an yasaklı kullanıcı yok.</div>'}</div>`;
 }
 function chatBanBox(){
   if(CHAT.myban){const b=CHAT.myban;return`<div class="card" style="border-color:var(--bad)"><b style="color:var(--bad)">Sohbet yasağın var</b><div class="small" style="margin-top:4px">Yönetici sohbette yazmanı kapattı (${esc(banTxt(b))}). Mesajları okuyabilirsin.${b.note?'<br>Not: '+esc(b.note):''}</div></div>`}
   const c=UI.cban;if(!c||!CLOUD.admin)return'';
   const cur=CHAT.bans[c.uid];
   return`<div class="card stack" style="border-color:var(--bad)"><b>Sohbet yasağı: ${esc(c.name)}</b>${cur?`<div class="small" style="color:var(--bad)">Şu an yasaklı (${esc(banTxt(cur))}).</div>`:''}
-    <div class="row" style="gap:6px;flex-wrap:wrap">${BAN_OPTS.map(o=>`<button class="chip${c.min===o[0]?' on':''}" data-act="chat-ban-min" data-v="${o[0]}">${o[1]}</button>`).join('')}</div>
+    <div class="row" style="gap:6px;flex-wrap:wrap">${BAN_OPTS.map(o=>`<button class="chip" aria-pressed="${c.min===o[0]}" data-act="chat-ban-min" data-v="${o[0]}">${o[1]}</button>`).join('')}</div>
     <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn primary" data-act="chat-ban-do">Yasakla</button>${cur?'<button class="btn" data-act="chat-ban-un">Yasağı kaldır</button>':''}<button class="btn" data-act="chat-ban-x">Vazgeç</button></div></div>`;
 }
-setInterval(()=>{if(!document.hidden&&UI.tab==='chat')chatBanLoad()},20000);
+setInterval(()=>{if(!document.hidden&&(UI.tab==='chat'||(UI.tab==='me'&&UI.me==='cban')))chatBanLoad()},20000);
 async function chatSend(){
   const inp=document.getElementById('chin'),C=UI.chat;
   const v=((inp&&inp.value)||C.draft||'').trim();
@@ -4085,7 +4101,7 @@ document.addEventListener('click',async e=>{
   if(el.hasAttribute('data-fr')){syncDraft();UI.draft.frame=g('data-fr');render();return}
   if(el.hasAttribute('data-pc')){UI.card=g('data-pc');render();return}
   if(el.hasAttribute('data-sw')){syncDraft();UI.draft.color=+g('data-sw');render();return}
-  if(el.hasAttribute('data-me')){UI.me=g('data-me');if(UI.me==='admin')UI.me=UI.admSub||'adm';UI.confirmReset=false;render();if(UI.me==='grd')loadGuard();return}
+  if(el.hasAttribute('data-me')){UI.me=g('data-me');if(UI.me==='admin')UI.me=UI.admSub||'adm';UI.confirmReset=false;render();if(UI.me==='grd')loadGuard();if(UI.me==='cban')chatBanLoad();return}
   if(el.hasAttribute('data-set')){const k=g('data-set'),v=g('data-v');S.set[k]=k==='count'?+v:k==='level'?lvToggle(S.set.level,v):k==='type'?mtToggle(S.set.type,v,POSG):v;save();render();return}
   if(el.hasAttribute('data-f')){const fk=g('data-f');UI.dict[fk]=fk==='level'?lvToggle(UI.dict.level,g('data-v')):fk==='pos'?mtToggle(UI.dict.pos,g('data-v'),POSG):g('data-v');UI.dict.limit=40;render();return}
   switch(g('data-act')){
@@ -4095,6 +4111,13 @@ document.addEventListener('click',async e=>{
     case'chat-open':UI.card=null;UI.chat.view='dm';UI.chat.peer=g('data-v');UI.chat.draft='';UI.chat.q='';if(UI.tab!=='chat'){setTab('chat')}else{render();chatPaint()}break;
     case'chat-back':UI.chat.peer=null;render();break;
     case'chat-send':chatSend();break;
+    case'cbp-pick':{const P=CBP();P.uid=g('data-uid');P.name=g('data-n');render();break}
+    case'cbp-clear':{const P=CBP();P.uid=null;P.name='';P.q='';render();break}
+    case'cbp-min':CBP().min=+g('data-v');render();break;
+    case'cbp-do':{const P=CBP();if(!P.uid)break;const r=await sb.rpc('admin_chat_ban',{target:P.uid,p_min:P.min||null,p_note:(P.note||'').trim()||null});
+      if(r.error){toast(/PGRST202|42883|schema cache|does not exist/i.test(String(r.error.message||r.error.code||''))?'Sohbet yasağı için supabase-chat-ban.sql çalıştırılmalı.':'Yasaklanamadı.');break}
+      toast(P.name+' sohbetten yasaklandı.');UI.cbp=null;await chatBanLoad();render();break}
+    case'cbp-un':{const r=await sb.rpc('admin_chat_unban',{target:g('data-uid')});if(r.error){toast('Yasak kaldırılamadı.');break}toast(g('data-n')+' için yasak kaldırıldı.');await chatBanLoad();render();break}
     case'chat-ban-open':UI.cban={uid:g('data-uid'),name:g('data-n'),min:1440};chatBanLoad();render();break;
     case'chat-ban-min':if(UI.cban){UI.cban.min=+g('data-v');render()}break;
     case'chat-ban-x':UI.cban=null;render();break;
@@ -4230,6 +4253,8 @@ document.addEventListener('input',e=>{
   if(e.target.getAttribute&&e.target.getAttribute('data-grd-f')){UI.grd[e.target.getAttribute('data-grd-f')]=e.target.value;return}
   if(e.target.id==='fbq'){UI.fb.draft=e.target.value;return}
   if(e.target.id==='chin'){UI.chat.draft=e.target.value;return}
+  if(e.target.id==='cbn'){CBP().note=e.target.value;return}
+  if(e.target.id==='cbq'){CBP().q=e.target.value;const pos=e.target.selectionStart;render();const n=document.getElementById('cbq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
   if(e.target.id==='chq'){UI.chat.q=e.target.value;chatFind(e.target.value);const pos=e.target.selectionStart;render();const n=document.getElementById('chq');if(n){n.focus();n.setSelectionRange(pos,pos)}return}
   if(e.target.dataset&&e.target.dataset.fid){UI.afb.reply[e.target.dataset.fid]=e.target.value;return}
   if(e.target.id==='annq'){UI.adm.annDraft=e.target.value;return}
