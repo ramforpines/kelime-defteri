@@ -426,9 +426,17 @@ function optMean(o){
   if(!LOWBY){LOWBY=new Map();for(const w of W){const k=String(w.word).trim().toLowerCase();if(!LOWBY.has(k))LOWBY.set(k,w)}}
   const g=x=>LOWBY.get(String(x).trim().toLowerCase());
   let w=g(o),nm=o,infl='';
-  if(!w){   // çoğul / üçüncü tekil biçim (foundations -> foundation)
+  if(!w){   // çekimli biçim: çoğul/üçüncü tekil, karşılaştırma (-er/-est), fiil (-ed/-ing); yalnızca sözlükteki kökün türü uyuyorsa
     const x=String(o).trim().toLowerCase();
-    if(/^[a-z]{4,}$/.test(x)){for(const c of [x.replace(/ies$/,'y'),x.replace(/es$/,''),x.replace(/s$/,'')]){if(c!==x&&g(c)){w=g(c);infl=c;break}}}
+    if(/^[a-z]{4,}$/.test(x)){
+      const C=[],add=(re,rep,pos,kind)=>{if(re.test(x))C.push([x.replace(re,rep),pos,kind])};
+      const NK='çoğul/çekimli biçimi',CK='karşılaştırma biçimi';
+      add(/ies$/,'y',/^(noun|verb)$/,NK);add(/es$/,'',/^(noun|verb)$/,NK);add(/s$/,'',/^(noun|verb)$/,NK);
+      add(/(ier|iest)$/,'y',/^(adjective|adverb)$/,CK);add(/(er|est)$/,'',/^(adjective|adverb)$/,CK);add(/(er|est)$/,'e',/^(adjective|adverb)$/,CK);add(/([a-z])\1(er|est)$/,'$1',/^(adjective|adverb)$/,CK);
+      add(/ied$/,'y',/^verb$/,NK);add(/ed$/,'',/^verb$/,NK);add(/ed$/,'e',/^verb$/,NK);add(/([a-z])\1ed$/,'$1',/^verb$/,NK);
+      add(/ing$/,'',/^verb$/,NK);add(/ing$/,'e',/^verb$/,NK);add(/([a-z])\1ing$/,'$1',/^verb$/,NK);
+      for(const [c,pos,kind] of C){const l=g(c);if(c!==x&&l&&pos.test(posKey(l))){w=l;infl=c+' sözcüğünün '+kind;break}}
+    }
   }
   if(!w){const ps=String(o).split(/[;,]/).map(x=>x.trim()).filter(Boolean);if(ps.length>1)for(const x of ps){const h=g(x);if(h){w=h;nm=x;break}}}
   if(!w){   // başlık olmayan kelime: gloss.js'teki Türkçesi
@@ -439,7 +447,7 @@ function optMean(o){
     return null;
   }
   if(!w.tr)return null;
-  return{nm,tr:String(w.tr).split(/[;,]/).slice(0,2).map(x=>x.trim()).filter(Boolean).join(', ')+(infl?' ('+infl+' sözcüğünün çoğul/çekimli biçimi)':'')};
+  return{nm,tr:String(w.tr).split(/[;,]/).slice(0,2).map(x=>x.trim()).filter(Boolean).join(', ')+(infl?' ('+infl+')':'')};
 }
 const OWNM={};
 function optOwner(t){
@@ -484,7 +492,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.140.4';
+const APP_VERSION='4.140.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
