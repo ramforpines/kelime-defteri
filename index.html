@@ -479,7 +479,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.121.0';
+const APP_VERSION='4.122.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2602,7 +2602,42 @@ const EXAM_PART=[['g','Boşluk doldurma'],['w','Kelime testi'],['e','Örnek cüm
 const exU=id=>(window.EXAM||[]).find(x=>x.id===id);
 const exWords=u=>u.a.concat(u.b.filter(k=>u.a.indexOf(k)===-1)).map(k=>BYWORD.get(k)).filter(Boolean);
 const exNoW=(it,t)=>{it.noW=true;it.w={word:'Vize: '+t,level:'B2',pron:'',tr:'',def:'',ex:''};return it};
-function exOpts(cor,pool,w){
+const exPlural=x=>/[^aeiou]y$/.test(x)?x.slice(0,-1)+'ies':/(s|x|ch|sh)$/.test(x)?x+'es':x+'s';
+function exLemma(cor){   // "priorities" -> priority kaydı (çoğul biçim); yoksa kaydın kendisi
+  let w=BYWORD.get(cor);if(w)return{w,pl:false};
+  const c=cor.toLowerCase();
+  for(const b of [c.replace(/ies$/,'y'),c.replace(/s$/,''),c.replace(/es$/,'')]){if(b!==c&&BYWORD.get(b))return{w:BYWORD.get(b),pl:true}}
+  return{w:null,pl:false};
+}
+// Yanlış şıklar: aynı üniteden kardeş kelimeler + sözlükten aynı türde, seviyece yakın, tanımı örtüşmeyen kelimeler
+const EX_CONFLICT=[['persevere','cope'],['failure','obstacle'],['failure','setback'],['obstacle','setback'],['diagnose','detect'],['diagnose','prevent'],['detect','prevent'],['detect','monitor'],['prevent','monitor'],['spare','donate'],['fulfilling','selfless'],['fulfilling','generous'],['selfless','generous'],['community','charity'],['mindset','resilience'],['remote','overcrowded'],['deliberately','gradually'],['deliberately','constantly'],['preserve','pursue'],['hectic','rewarding'],['hectic','overwhelmed'],['spontaneous','unexpected'],['give up','bounce back'],['give up','cope']];
+const exClash=(a,b)=>{a=a.toLowerCase();b=b.toLowerCase();return EX_CONFLICT.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a))};
+function exDist(cor,unit,strict){
+  const L=exLemma(cor),t=L.w;if(!t)return null;
+  const tk=posKey(t),nt=wtoks(t).length,T=czSet(t),tex=new Set(czToks(t.ex)),tw=t.word.toLowerCase();
+  const LV=['A1','A2','B1','B2','C1','C2'],ti=LV.indexOf(String(t.level||'').toUpperCase());
+  const ok=r=>{
+    if(r===t||r.word.toLowerCase()===tw||exClash(tw,r.word)||posKey(r)!==tk||wtoks(r).length!==nt||(nt>1&&posGroup(r)!==posGroup(t))||/\//.test(r.word)||related(t,r)||closedClass(r)||trOverlap(t.tr,r.tr))return false;
+    const R=czSet(r);let ov=0;R.forEach(a=>{if(T.has(a)||tex.has(a))ov++});
+    if(strict?ov>0:(ov>1||(T.size&&R.size&&ov/Math.min(T.size,R.size)>0.6)))return false;
+    return true;
+  };
+  const sc=r=>{const ri=LV.indexOf(String(r.level||'').toUpperCase()),dl=ti<0||ri<0?2:Math.abs(ti-ri);return(dl===0?2:dl===1?1:0)+Math.random()*2};
+  const sib=shuffle(unit.map(k=>BYWORD.get(k)).filter(r=>r&&ok(r)));
+  const dic=[];for(const r of W)if(ok(r)&&!unit.includes(r.word))dic.push({r,s:sc(r)});
+  dic.sort((a,b)=>b.s-a.s);
+  const dp=shuffle(dic.slice(0,14).map(a=>a.r));
+  const pick=[];const used=new Set([tw]);
+  const add=r=>{const k=r.word.toLowerCase();if(used.has(k)||pick.length>=3)return;used.add(k);pick.push(r)};
+  if(sib.length&&!L.pl)add(sib[0]);   // 1 kardeş (aynı ünite)
+  dp.forEach(add);                    // kalanı sözlükten benzerler
+  if(!L.pl)sib.slice(1).forEach(add);
+  if(pick.length<3)return null;
+  return pick.map(r=>L.pl?exPlural(r.word):r.word);
+}
+function exOpts(cor,pool,w,strict){
+  const d=exDist(cor,pool,strict);
+  if(d)return shuffle([cor].concat(d));
   const g=w?posGroup(w):'',same=[],oth=[];
   shuffle(pool.filter(k=>k!==cor)).forEach(k=>{const x=BYWORD.get(k);(x&&g&&posGroup(x)===g?same:oth).push(k)});
   return shuffle([cor].concat(same.concat(oth).slice(0,3)));
@@ -2617,13 +2652,13 @@ function exWordTest(u){
   const out=[];
   exWords(u).forEach(w=>{
     const fs=shuffle(applicable(w).filter(f=>f<12));
-    for(const f of fs){const it=makeItem(w,f,'exam');if(it){out.push(it);break}}
+    for(const f of fs){const it=makeItem(w,f,'exam');if(it){if(f===3){const d=exDist(w.word,u.a.concat(u.b),false);if(d)it.options=shuffle([w.word].concat(d))}out.push(it);break}}
   });
   return shuffle(out);
 }
 function exDef(u){
   const ws=exWords(u),pool=ws.map(w=>w.word);
-  return shuffle(ws.map(w=>({w,f:13,kind:'exam',question:'Hangi kelime/ifade bu tanıma uyuyor?\n“'+w.def+'”',correct:w.word,options:exOpts(w.word,pool,w),chosen:null})));
+  return shuffle(ws.map(w=>({w,f:13,kind:'exam',question:'Hangi kelime/ifade bu tanıma uyuyor?\n“'+w.def+'”',correct:w.word,options:exOpts(w.word,pool,w,true),chosen:null})));
 }
 function exEx(u){
   const pool=exWords(u).map(w=>w.word),out=[];
