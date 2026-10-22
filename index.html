@@ -484,7 +484,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.140.1';
+const APP_VERSION='4.140.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2443,7 +2443,7 @@ let EXNOPT=false,EXNOST=false;   // sınav tekrarında puan/ilerleme verilmeyen 
 function applyAnswerCore(it,ok,ua,qz,gate){
   const w=it.w,bw0=S.wrong[w.word],p0=S.prog[w.word]||[];
   const elig=!gate||(it.kind==='new'&&!S.learned[w.word]&&p0.indexOf(it.f)===-1)||(!!bw0&&(it.f===0||it.f===1));
-  const ap=(v,k)=>elig&&!EXNOPT?addPts(gate?v*0.5:v,k):0;   // düelloda test puanı yarıya iner
+  const ap=(v,k)=>elig&&!EXNOPT&&it.kind!=='saved'?addPts(gate?v*0.5:v,k):0;   // düelloda test puanı yarıya iner
   const d=dayStat();
   if(!EXNOST){
   if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
@@ -2708,7 +2708,7 @@ function savedList(){
 }
 function vSaved(){
   return`<div class="top"><h1>Kaydedilenler</h1><span class="muted small">${nf(savedWords().length)} kelime</span></div>
-  <div class="stack"><div class="card small muted">Testte ya da Sözlük'te "Kaydet" dediğin kelimeler burada, sözlükteki gibi tüm bilgileriyle durur. Kelimeye dokunup açabilirsin. Kaydettiklerin hesabına eşitlenir.</div>${savedWords().length?`<div class="row"><button class="btn primary" data-act="start-saved">Rastgele ${Math.min(S.set.count,savedWords().length)} soru çöz</button><button class="btn" data-act="start-saved-all">Hepsini çöz (${savedWords().length})</button></div>`:''}<div class="stack" id="dlist">${savedList()}</div></div>`;
+  <div class="stack"><div class="card small muted">Testte ya da Sözlük'te "Kaydet" dediğin kelimeler burada, sözlükteki gibi tüm bilgileriyle durur. Kelimeye dokunup açabilirsin. Kaydettiklerin hesabına eşitlenir.</div>${savedWords().length?`<div class="row"><button class="btn primary" data-act="start-saved">Rastgele ${Math.min(S.set.count,savedWords().length)} soru çöz</button><button class="btn" data-act="start-saved-all">Hepsini çöz (${savedWords().length})</button></div><div class="small muted">Bu test alıştırmadır: puan vermez ve puan düşürmez.</div>`:''}<div class="stack" id="dlist">${savedList()}</div></div>`;
 }
 function vDict(){
   const D=UI.dict;
