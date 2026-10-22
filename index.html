@@ -409,6 +409,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="reading-tr.js"></script>
 <script src="reading2.js"></script>
 <script src="reading3.js"></script>
+<script src="gloss.js"></script>
 <script src="exam.js"></script>
 <script src="mock.js"></script>
 <script src="supabase.js"></script>
@@ -492,7 +493,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.140.5';
+const APP_VERSION='4.140.6';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
