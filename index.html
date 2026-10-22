@@ -484,7 +484,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.139.3';
+const APP_VERSION='4.139.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -758,11 +758,12 @@ function capNote(c){
   const w=(CLOUD.rw||{})[CLOUD.uid]|0,cl=winsCap(w),need=winsReq(cl+1);
   setTimeout(()=>toast('Puanın '+nf(c)+' ile sınırlı: '+(LEAGUES[cl+1]||{n:'sonraki lig'}).n+' için '+need+' dereceli düello galibiyeti gerekiyor (şu an '+w+').'),400);
 }
+function qCapOf(d){return QCAP+Math.max(0,(d.q==null?0:d.q)-(d.p||0))}   // düello kaybı/ceza kadar tavan yükselir: kaybedilen puan testle geri kazanılabilir
 function addPts(delta,kind){
   const d=dayStat(),cur=d.p||0;
   if(d.q==null)d.q=cur;
-  const q1=Math.min(QCAP,Math.max(0,d.q+delta));
-  if(delta>0&&q1<d.q+delta&&!d.qc){d.qc=1;setTimeout(()=>toast('Günlük soru puanı sınırına ('+QCAP+') ulaştın. Düello puanları sınırsız eklenmeye devam eder.'),400)}
+  const q1=Math.min(qCapOf(d),Math.max(0,d.q+delta));
+  if(delta>0&&q1<d.q+delta&&!d.qc){d.qc=1;setTimeout(()=>toast('Günlük soru puanı sınırına ('+QCAP+') ulaştın. Düello kazançları sınırsız eklenmeye devam eder.'),400)}
   const np=Math.max(0,cur+(q1-d.q));let eff=np-cur;
   d.q=q1;d.p=np;const tp0=S.tp||0;if(eff>0)eff=capGain(eff);const tp1=Math.max(0,tp0+eff);S.tp=tp1;if(tp1-tp0!==np-cur)d.p=Math.max(0,d.p+(tp1-tp0-(np-cur)));eff=tp1-tp0;   // toplam sıfırda kırpılırsa günlük puan da aynı kadar kırpılır
   const q=UI.quiz;if(q&&q.pts)q.pts[kind]=(q.pts[kind]||0)+eff;
@@ -883,7 +884,7 @@ function mergeDay(x,y){
   const rx=rem(x),ry=rem(y),R={a:Math.max(rx.a,ry.a),c:Math.max(rx.c,ry.c),p:Math.max(rx.p,ry.p),adj:Math.abs(rx.adj)>=Math.abs(ry.adj)?rx.adj:ry.adj};
   const z=Object.assign({},x,y);
   z.a=R.a+ga.n;z.c=R.c+ga.c;
-  const qp=Math.min(QCAP,Math.max(0,R.p+ga.qs));z.q=qp;z.p=r1(qp+ga.dp);z.adj=r1(R.adj+ga.adj);z.n=Math.max(rx.n,ry.n);
+  const qp=Math.min(QCAP+Math.max(0,-ga.dp),Math.max(0,R.p+ga.qs));z.q=qp;z.p=r1(qp+ga.dp);z.adj=r1(R.adj+ga.adj);z.n=Math.max(rx.n,ry.n);
   const l={};[rx.l,ry.l].forEach(L=>Object.keys(L).forEach(k=>{const o=l[k]||(l[k]=[0,0]);o[0]=Math.max(o[0],L[k][0]);o[1]=Math.max(o[1],L[k][1])}));
   Object.keys(ga.l).forEach(k=>{const o=l[k]||(l[k]=[0,0]);o[0]+=ga.l[k][0];o[1]+=ga.l[k][1]});
   z.l=l;z.ev=U;return z}
@@ -1660,7 +1661,7 @@ function vHelp(){
     '<b>Günün kelimeleri</b>: günde 3 kelime seçilir: B1, B2 ve C1 seviyelerinden birer tane (24 saat aynı kalır). Bu 3 kelimenin tüm soruları, çözdüğün testlerde her 10 soruda 1 tane sorulur (örneğin 20 soruluk testte 2): Bugünün testinde her zaman, kendi kurduğun testte ise kelimeler seçtiğin seviye ve türe uyuyorsa. Günün kelimeleri Bugün ekranında soru ilerlemesiyle görünür; her gün yenilenir.',
     '<b>Soru seviyeleri</b>: Yeni sorular ligine göre karışık gelir. Yeni başlayanda B1 ve B2 ağırlıklıdır, ligin yükseldikçe C1 ve C2 payı artar, A1 ve A2 azalır.',
     '<b>Yanlış cevap cezası</b>: Altın (1000 puan), Platin ve Zümrüt liglerinde yanlış cevap, doğru cevap puanının dörtte birini düşürür. Elmas ve üstünde, doğru bilseydin alacağın puanın tamamını düşürür. Bu yüzden Elmas ve üstünde doğruluğun %50\'nin altına düşerse puanın azalır; emin olmadığın soruda acele etme. Günlük puan sıfırın altına inmez.',
-    '<b>Günlük soru puanı sınırı</b>: Sorulardan, bonuslardan ve tekrar listesinden bir günde en fazla '+QCAP+' puan kazanabilirsin. Düello puanları bu sınıra girmez, sınırsız eklenir.',
+    '<b>Günlük soru puanı sınırı</b>: Sorulardan, bonuslardan ve tekrar listesinden bir günde en fazla '+QCAP+' puan kazanabilirsin. Düello kazançları bu sınıra girmez, sınırsız eklenir. Düelloda kaybettiğin puan kadar sınır yükselir, yani kaybı testle geri kazanabilirsin.',
     '<b>Lig puan tavanı</b>: Dereceli düello galibiyet şartını sağlamadığın için geçemediğin bir ligin puanını aşamazsın; puanın tavanda durur. Dereceli galibiyet sayına göre tavan: 20\'den az galibiyet → 3.499 puan, 20–49 → 5.999, 50–99 → 9.999, 100–199 → 15.999, 200 ve üstü → sınır yok. Şartı sağlayınca tavan yükselir. Tavanın üstünde zaten puanı olanların puanı azaltılmaz. Galibiyet sayın henüz yüklenmediyse tavan uygulanmaz.',
     'Daha ayrıntılı hesap için Sıralamalar sekmesindeki "Puan nasıl hesaplanır?" kutusuna bak.']))}
   ${sec('🏆 Ligler ve sıralama',li([
@@ -1722,7 +1723,7 @@ function vHelp(){
     'Kullanıcı adı ve görünen ad uygunsuz olmamalıdır. Diğer kullanıcılara saygılı davran.',
     'Yönetici kuralları ihlal eden hesapları sıralamadan çıkarabilir, kısıtlayabilir ya da silebilir.']))}
   ${sec('❓ Sık sorulanlar',li([
-    '<b>Puanım neden artmıyor?</b> Sorulardan, bonuslardan ve tekrar listesinden günde en fazla '+QCAP+' puan kazanılır. Sınıra ulaştıysan yarın devam edersin; düello kazançların bu sınırdan bağımsızdır. Dereceli düello galibiyeti şartını sağlamadığın için bir sonraki lige geçemiyorsan puanın o ligin tavanında (ör. 3499) durur.',
+    '<b>Puanım neden artmıyor?</b> Sorulardan, bonuslardan ve tekrar listesinden günde en fazla '+QCAP+' puan kazanılır. Sınıra ulaştıysan yarın devam edersin; düello kazançların bu sınırdan bağımsızdır. Düelloda puan kaybedersen sınır o kadar yükselir, kaybı testle geri kazanabilirsin. Dereceli düello galibiyeti şartını sağlamadığın için bir sonraki lige geçemiyorsan puanın o ligin tavanında (ör. 3499) durur.',
     '<b>Puanım neden düştü?</b> Yüksek liglerde yanlış cevap puan düşürür, günlük asgari hedefi tutturmadığın günlerde puan kesintisi olur, düelloya girince bahis puanı düşer.',
     '<b>Kelime listesi neden güncellendi?</b> Yeni kelimeler eklenir ve hatalar düzeltilir. İlerlemen korunur.',
     '<b>Sorudaki şıklardan ikisi doğru görünüyor.</b> Soru kartındaki ⚑ Bildir düğmesiyle bildir, düzeltelim.',
@@ -3089,7 +3090,7 @@ function vStats(){
   const days=[];for(let i=13;i>=0;i--){const d=addDays(today(),-i);days.push([d,S.days[d]||{a:0,c:0}])}
   const mx=Math.max(5,...days.map(x=>x[1].a));
   const P=myPoints();
-  return`<div class="kpis"><div class="kpi"><b>${nf(r1(P.D.pts))}</b><span>bugün puan</span></div><div class="kpi"><b>${nf(r1(P.W.pts))}</b><span>bu hafta puan</span></div><div class="kpi"><b>${nf(r1(P.T.pts))}</b><span>toplam puan</span></div></div>${(()=>{const dd=S.days[today()]||{},q=r1(dd.q==null?(dd.p||0):dd.q);if(!(q>0))return"";const full=q>=QCAP;const dif=r1(q-P.D.pts);return`<div class="small muted" style="margin:-4px 0 8px">Günlük soru puanı: <b>${nf(q)}/${QCAP}</b>${full?" · sınıra ulaştın, sorulardan yeni puan eklenmez":""}${dif>0.05?` · düello kaybı ve cezalar günlük puanından ${nf(dif)} düşürdü`:""}</div>`})()}<div class="card"><h2 style="margin-bottom:8px">Seviyelere göre ilerleme</h2>${LEVELS.map(l=>{
+  return`<div class="kpis"><div class="kpi"><b>${nf(r1(P.D.pts))}</b><span>bugün puan</span></div><div class="kpi"><b>${nf(r1(P.W.pts))}</b><span>bu hafta puan</span></div><div class="kpi"><b>${nf(r1(P.T.pts))}</b><span>toplam puan</span></div></div>${(()=>{const dd=S.days[today()]||{},q=r1(dd.q==null?(dd.p||0):dd.q);if(!(q>0))return"";const cp=qCapOf(dd),full=q>=cp;const dif=r1(q-P.D.pts);return`<div class="small muted" style="margin:-4px 0 8px">Günlük soru puanı: <b>${nf(q)}/${nf(r1(cp))}</b>${full?" · sınıra ulaştın, sorulardan yeni puan eklenmez":""}${dif>0.05?` · düello kaybı ve cezalar günlük puanından ${nf(dif)} düşürdü`:""}</div>`})()}<div class="card"><h2 style="margin-bottom:8px">Seviyelere göre ilerleme</h2>${LEVELS.map(l=>{
     const t=tot[l]||0,n=lrn[l]||0,p=t?n/t*100:0,q=S.lv[l]||[0,0],qa=q[0]+q[1];
     return`<div class="lvrow"><span class="lv lv-${l}">${l}</span><div><div class="bar"><i style="width:${p.toFixed(1)}%;background:var(--l-${l})"></i></div>${qa?`<div class="small muted" style="margin-top:3px">Test başarısı %${Math.round(q[0]/qa*100)} (${q[0]} doğru, ${q[1]} yanlış)</div>`:''}</div><span class="num">${n}/${nf(t)}</span></div>`}).join('')}</div>
   <div class="card"><h2>Son 14 gün</h2><div class="muted small">Mavi: doğru, kırmızı: yanlış cevap sayısı</div>
@@ -3394,7 +3395,7 @@ function vRank(){
       <div class="muted">Soru türü: Türkçe 1, Tür 1, Tanım 1,1, V2/V3 1,1, Örnek 1,15, Yakın ve karşıt anlam 1,2.</div>
       <div><b>Bonuslar:</b> yeni kelimeyi öğrenmek +2 × seviye katsayısı, tekrar listesinden bir kelimeyi çıkarmak +1 × seviye katsayısı, günlük hedefi tamamlamak +10 ve seri bonusu (en fazla +10).</div>
       <div><b>Altın (1000 puan), Platin ve Zümrüt liglerinde</b> yanlış cevap, doğru cevap puanının dörtte biri kadar puan düşürür. <b>Elmas ve üstü liglerde</b> yanlış cevap, doğru bilseydin alacağın puanın tamamını (seviye × soru türü katsayısı) düşürür. Günlük puan sıfırın altına inmez.</div>
-      <div><b>Günlük sınır:</b> Sorulardan ve bonuslardan bir günde en fazla ${QCAP} puan kazanılır. Düello puanları sınırsız eklenir.</div>
+      <div><b>Günlük sınır:</b> Sorulardan ve bonuslardan bir günde en fazla ${QCAP} puan kazanılır. Düello kazançları sınırsız eklenir; düelloda kaybettiğin puan kadar sınır yükselir.</div>
       <div><b>Günlük asgari hedef:</b> Zümrüt'ün altındaki liglerde 20 doğru, Zümrüt ligindeyken 35, Elmas ve üstünde 50 doğru (gerçek ligine göre; dereceli galibiyet şartı dahil). Tutturmayan her gün için toplam puanından, hangi ligde olursan ol, %5 kesilir.</div></div></details>
     ${!CLOUD.write?'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. Sıraya girmek için sahibinden "Katkıda bulunan" izni iste.</div>':''}
     ${CLOUD.lbErr?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':''}`;
