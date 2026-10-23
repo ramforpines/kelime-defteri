@@ -2726,14 +2726,22 @@ function profBar(){
   return`<div class="pbar${flCls(id)}${isKing(id)?' king kv':''}" ${lgAttr(id)} data-pc="${esc(id)}" role="button" aria-label="Profil kartım">${avatar(name,color,false,av,fr,0,0,id)}<div class="pn"><b>${esc(name)}</b>${CLOUD.username?`<span class="muted small">@${esc(CLOUD.username)}</span>`:''}</div><div class="pr">${st?`<span class="badge">🔥 ${st}</span>`:''}${lg?`<span class="badge">${esc(lg)}</span>`:''}</div>${kingFlag(id)}${flagHtml(id)}</div>`;
 }
 const duelLock=()=>!DUEL.bot&&!!DUEL.id&&['count','play','wait'].includes(DUEL.phase);
-const MAINT={on:false,msg:'',adm:false};
+const MAINT={on:false,msg:'',adm:false,eff:false,daily:['23:59','00:09']};
+/* her gün bakım penceresi (Türkiye saati): 23:59 - 00:09, uygulama kapalı, giriş yapılamaz */
+function dailyWin(){
+  try{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Istanbul',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date()),h=+p.find(x=>x.type==='hour').value%24,m=+p.find(x=>x.type==='minute').value,t=h*60+m;
+    const [a,b]=MAINT.daily.map(x=>{const q=x.split(':');return (+q[0])*60+(+q[1])});
+    return a>b?(t>=a||t<b):(t>=a&&t<b)}catch(e){return false}
+}
 async function maintCheck(){
   try{const r=await fetch('maintenance.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;
     const j=await r.json();const on=!!j.on,msg=String(j.msg||'').slice(0,300);
-    if(on!==MAINT.on||msg!==MAINT.msg){MAINT.on=on;MAINT.msg=msg;if(!on)MAINT.adm=false;quietRender2()}
+    if(Array.isArray(j.daily)&&j.daily.length===2&&j.daily.every(x=>/^\d{1,2}:\d{2}$/.test(x)))MAINT.daily=j.daily;else if(j.daily===false)MAINT.daily=['00:00','00:00'];
+    const eff=on||dailyWin();
+    if(on!==MAINT.on||msg!==MAINT.msg||eff!==MAINT.eff){MAINT.on=on;MAINT.msg=msg;MAINT.eff=eff;if(!eff)MAINT.adm=false;quietRender2()}
   }catch(e){}
 }
-const maintBlocked=()=>MAINT.on&&!(CLOUD.uid&&CLOUD.admin)&&!(MAINT.adm&&!CLOUD.uid);
+const maintBlocked=()=>(MAINT.on||dailyWin())&&!(CLOUD.uid&&CLOUD.admin)&&!(MAINT.adm&&!CLOUD.uid);
 function vMaint(){return `<div class="empty" style="padding:48px 20px;text-align:center"><div style="font-size:20px;font-weight:700;margin-bottom:10px">Bakımdayız</div><div class="small" style="line-height:1.6;max-width:340px;margin:0 auto">${esc(MAINT.msg||'Sunucu bakımı yapılıyor. Kısa süre sonra tekrar açılacak. Bu sayfayı açık bırakabilirsin, bakım bitince uygulama kendiliğinden açılır.')}</div><div style="margin-top:28px"><button class="btn ghost small" data-act="maint-adm">Yönetici girişi</button></div></div>`}
 setInterval(()=>{if(!document.hidden)maintCheck()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)maintCheck()});maintCheck();
 function render(){
