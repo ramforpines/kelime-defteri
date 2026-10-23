@@ -496,7 +496,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.141.1';
+const APP_VERSION='4.141.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2201,9 +2201,8 @@ function senseQ1(t,s,st){
   const ct=trFirst(s.t),others=[t.tr].concat(t.sn.filter(x=>x!==s).map(x=>x.t));
   if(st===0){   // bu cümlede kelime ne anlama gelir
     if(trFirst(t.tr)===ct)return null;   // Türkçesi ilk anlamla aynıysa bu stilde anlamlar ayırt edilemez
-    const own=[];others.forEach(o=>{const x=trFirst(o);if(x&&x!==ct&&!trOv(s.t,o)&&!trOv(ct,x)&&own.indexOf(x)===-1)own.push(x)});
-    const d=shuffle(own).slice(0,2);
-    const more=pickDistractors(t,r=>trFirst(r.tr),r=>r.tr&&trFirst(r.tr)&&!trOv(s.t,r.tr)&&!trClash(t,r)&&!related(t,r),false,1).filter(x=>d.indexOf(x)===-1&&x!==ct&&!trOv(ct,x));
+    const d=[];   // kelimenin diğer anlamları şıkta yer almaz: doğru cevap net kalsın
+    const more=pickDistractors(t,r=>trFirst(r.tr),r=>r.tr&&trFirst(r.tr)&&!trOv(s.t,r.tr)&&!trClash(t,r)&&!related(t,r),false,1).filter(x=>d.indexOf(x)===-1&&x!==ct&&!trOv(ct,x)&&!others.some(o=>trOv(o,x)));
     while(d.length<3&&more.length)d.push(more.shift());
     if(d.length<3)return null;
     return{question:'"'+t.word+'" sözcüğü bu cümlede ne anlama gelir?\n"'+s.e+'"',correct:ct,distractors:d};
