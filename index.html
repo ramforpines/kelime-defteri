@@ -493,7 +493,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.140.6';
+const APP_VERSION='4.140.7';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2439,6 +2439,7 @@ function startQuiz(mode,all){
   }else items=wodPick(newItems(n,S.set.level,new Set()),false);
   items=shuffle(items);
   if(!items.length){toast(mode==='saved'?'Kaydedilen kelimen yok.':mode==='wlog'?'Yanlış defterin boş.':mode==='review'?'Tekrar edilecek kelime yok.':'Bu seviyede soru üretilecek kelime kalmadı.');return}
+  UI.qmode='solo';UI.qhold=null;
   UI.quiz={mode,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};
   UI.tab='quiz';render();
 }
@@ -2921,13 +2922,13 @@ function examStart(key){
     const pool=exChunkPool(u);let rem=pool.filter(i=>!dn[exCid(i)]);
     if(!rem.length){S.exc[u.id]={};dn={};rem=pool;toast('Bu ünitenin tüm sorularını bitirdin, baştan başlıyorsun.')}
     const items=shuffle(rem).slice(0,20);
-    UI.quiz={mode:'exam',exam:key,chunk:u.id,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false,left:rem.length};
+    UI.qmode='solo';UI.quiz={mode:'exam',exam:key,chunk:u.id,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false,left:rem.length};
     UI.tab='exam';lastStudy='exam';try{sessionStorage.setItem('kd-tab','exam')}catch(e){}
     render();window.scrollTo(0,0);return;
   }
   const items=examItems(key);
   if(!items.length){toast('Bu sınav için soru bulunamadı.');return}
-  UI.quiz={mode:'exam',exam:key,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};
+  UI.qmode='solo';UI.quiz={mode:'exam',exam:key,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};
   UI.tab='exam';lastStudy='exam';try{sessionStorage.setItem('kd-tab','exam')}catch(e){}
   render();window.scrollTo(0,0);
 }
@@ -4499,7 +4500,7 @@ document.addEventListener('click',async e=>{
     case'start-review-all':startQuiz('review',true);break;
     case'next':next();break;
     case'ans-text':answerText();break;
-    case'quit':UI.quiz=null;render();break;
+    case'quit':UI.quiz=null;UI.qmode='solo';render();break;
     case'exam-start':examStart(g('data-v'));break;
     case'exam-words':{UI.exw=UI.exw===g('data-v')?null:g('data-v');render();break}
     case'rd-rep':{const R0=UI.rd,P0=R0&&(window.READINGS||[]).find(x=>x.id===R0.id);if(P0){UI.rep={it:rdItem(P0,R0,+g('data-v')),reason:'multi',note:'',busy:false};const y=window.scrollY;render();window.scrollTo(0,y)}break}
@@ -4509,7 +4510,7 @@ document.addEventListener('click',async e=>{
     case'rd-pick':{const v=g('data-v').split(':');if(UI.rd&&!UI.rd.done){UI.rd.pick[+v[0]]=+v[1];const y=window.scrollY;render();window.scrollTo(0,y)}break}
     case'rd-check':rdCheck();window.scrollTo(0,0);break;
     case'rd-retry':if(UI.rd){UI.rd.pick={};UI.rd.done=false;UI.rd.gain=0;UI.rd.rits={};const P1=(window.READINGS||[]).find(x=>x.id===UI.rd.id);if(P1)UI.rd.ord=P1.q.map(q=>shuffle(q.o.map((o,i)=>i)))}render();window.scrollTo(0,0);break;
-    case'again':UI.quiz=null;render();break;
+    case'again':UI.quiz=null;UI.qmode='solo';render();break;
     case'home':UI.quiz=null;setTab('today');break;
     case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=UI.tab==='saved'?savedList():dictList();break}
     case'sv-w':{const w=g('data-w');toggleSaved(w);toast(isSaved(w)?'Kaydedildi.':'Kayıttan çıkarıldı.');if(UI.tab==='saved'&&!isSaved(w))UI.dict.open=null;const dl=$('#dlist');if(dl)dl.innerHTML=UI.tab==='saved'?savedList():dictList();if(UI.tab==='saved'){const t=document.querySelector('.top .muted');if(t)t.textContent=nf(savedWords().length)+' kelime'}break}
