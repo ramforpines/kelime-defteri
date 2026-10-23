@@ -405,6 +405,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 
 <script src="words.js"></script>
 <script src="extr.js"></script>
+<script src="senses.js"></script>
 <script src="reading.js"></script>
 <script src="reading-tr.js"></script>
 <script src="reading2.js"></script>
@@ -418,9 +419,9 @@ const DATA=window.WORDS||[];
 (function(){
 'use strict';
 const LEVELS=['A1','A2','B1','B2','C1','C2'];
-const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu'];
+const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu','2. anlam','3. anlam'];
 const REVERSE_RATE=0.4, STREAK_GOAL=3, INTERVALS=[1,3];
-const W=DATA.map((r,i)=>({id:i,word:r[0],def:r[1],tr:r[2],pos:r[3],ex:r[4],syn:r[5],ant:r[6],level:(r[7]||'').toUpperCase(),pron:r[8],v2:r[9],v3:r[10]}));
+const W=DATA.map((r,i)=>({id:i,word:r[0],def:r[1],tr:r[2],pos:r[3],ex:r[4],syn:r[5],ant:r[6],level:(r[7]||'').toUpperCase(),pron:r[8],v2:r[9],v3:r[10],sn:(window.SENSES&&window.SENSES[r[0]])||[]}));
 const BYWORD=new Map(W.map(w=>[w.word,w]));
 let LOWBY=null;
 function optMean(o){
@@ -461,6 +462,8 @@ function optOwner(t){
     else if(String(w.tr).toLowerCase()===lc||pt(w.tr).indexOf(lc)!==-1)k='Türkçe';
     else if(has(w.syn)&&(String(w.syn).toLowerCase()===lc||pt(w.syn).indexOf(lc)!==-1))k='eş anlam';
     else if(has(w.ant)&&(String(w.ant).toLowerCase()===lc||pt(w.ant).indexOf(lc)!==-1))k='zıt anlam';
+    else if(w.sn.some(z=>String(z.d).toLowerCase()===lc))k='tanım';
+    else if(w.sn.some(z=>pt(z.t).indexOf(lc)!==-1||pt(noPar(z.t)).indexOf(lc)!==-1))k='Türkçe';
     if(k){out.push({w:w.word,k});if(out.length>=2)break}
   }
   return OWNM[t]=out;
@@ -493,7 +496,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.140.7';
+const APP_VERSION='4.141.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -676,7 +679,7 @@ let pushT=null;
 function schedulePush(){if(!CLOUD.uid||CLOUD.approved===false)return;clearTimeout(pushT);pushT=setTimeout(pushNow,5000)}
 const COEF={A1:1,A2:1.05,B1:1.2,B2:1.35,C1:1.65,C2:1.85};
 const r1=x=>Math.round(x*10)/10;
-const TYPEC=[1,1.1,1,1.15,1.2,1.2,1.1,1.15,1.15,1.1,1.15,1.15];   // Türkçe, Tanım, Tür, Örnek, Eş, Zıt, Hal, Atasözü, Eksik kelime, Edat, Ek, İfade
+const TYPEC=[1,1.1,1,1.15,1.2,1.2,1.1,1.15,1.15,1.1,1.15,1.15,1,1,1,1,1,1,1,1,1,1,1.15,1.15];   // Türkçe, Tanım, Tür, Örnek, Eş, Zıt, Hal, Atasözü, Eksik kelime, Edat, Ek, İfade
 const GOAL_MIN=20;
 function reqFor(){const g=myLeague();return g>=6?{n:50,r:.05}:g>=5?{n:35,r:.05}:{n:GOAL_MIN,r:.05}}   // hedef ligine göre
 const goalEff=()=>Math.max(S.set.goal||0,reqFor().n);   // ekrandaki hedef: ayarladığın hedef ya da asgari hedef, hangisi büyükse
@@ -1662,6 +1665,7 @@ function vHelp(){
     'Türkçe karşılığını veya tanımını yanlış bildiğin kelime <b>Tekrar</b> listesine girer.',
     'Listeden çıkması için Türkçe ve Tanım sorularını art arda <b>3 kez</b> doğru bilmen gerekir. İlk doğrudan <b>1 gün</b>, ikinci doğrudan <b>3 gün</b> sonra yeniden sorulur. Yanlış yaparsan sayaç düşer.',
     'Listeden bir kelimeyi tamamen çıkarmak +1 × seviye katsayısı puan verir.',
+    '<b>Çok anlamlı kelimeler</b>: bir kelimenin 2. ve 3. anlamı varsa (Sözlük\'te kelimeyi açınca görürsün) bu anlamlar için de soru çıkar: cümledeki anlam, tanım ya da boşluk doldurma. Kelime, tüm anlamlarının soruları doğru bilinince öğrenilmiş sayılır.',
     '<b>Yanlış defteri</b>: testte yanlış yaptığın tüm sorular tek tek saklanır. Orada tekrar çözüp doğru yaparsan soru defterden çıkar. İstersen "Defterden çıkar" ile elle silebilirsin.']))}
   ${sec('⭐ Puan sistemi',li([
     '<b>Doğru cevap</b> = seviye katsayısı × soru türü katsayısı. Seviye katsayıları: '+LEVELS.map(l=>l+' × '+COEF[l]).join(', ')+'. Örnek cümle, yakın/karşıt anlam gibi türlerin katsayısı biraz daha yüksektir.',
@@ -1822,7 +1826,7 @@ function closedClass(w){
   return'';
 }
 const ORD_CARD={first:'one',second:'two',third:'three',fourth:'four',fifth:'five',sixth:'six',seventh:'seven',eighth:'eight',ninth:'nine',tenth:'ten',eleventh:'eleven',twelfth:'twelve'};
-const SPECIAL_MIS={forty:['fourty','fortey','forthy'],ninety:['ninty','ninetey','nintey'],ninth:['nineth','ninnth','ninht'],eighth:['eigth','eightth','eighht'],eighty:['eightty','eigthy','eihgty'],fifth:['fiveth','fith','fifht'],twelfth:['twelveth','twelth','twelvth'],fourth:['forth','fourtth','fouth'],hundred:['hundread','hundered','hunderd'],hundredth:['hundreth','hundredeth','hundrenth'],thousand:['thousend','thousan','thosand'],thousandth:['thousanth','thousandeth','thosandth'],million:['milion','millon','milllion'],millionth:['milionth','millioneth','millionnth'],billion:['bilion','billon','billian'],trillion:['trilion','trillon','trilllion'],thirty:['thirthy','thirdy','thirti'],fifty:['fivty','fifthy','fifti'],sixty:['sixy','sixti','sixtey'],seventy:['seventi','sevanty','sevnty'],third:['thrid','thirt','therd'],february:['febuary','februry','feburary'],wednesday:['wensday','wendsday','wednsday'],thursday:['thurday','thirsday','thursdey'],tuesday:['tusday','tuseday','tuesdey'],saturday:['saterday','satruday','saturdey'],september:['septembar','septmber','sepember'],december:['decembar','desember','decmber'],november:['novembar','novmber','nowember'],october:['octobar','octobre','ocotber']};
+const SPECIAL_MIS={son:['sun','sonn','sone'],forty:['fourty','fortey','forthy'],ninety:['ninty','ninetey','nintey'],ninth:['nineth','ninnth','ninht'],eighth:['eigth','eightth','eighht'],eighty:['eightty','eigthy','eihgty'],fifth:['fiveth','fith','fifht'],twelfth:['twelveth','twelth','twelvth'],fourth:['forth','fourtth','fouth'],hundred:['hundread','hundered','hunderd'],hundredth:['hundreth','hundredeth','hundrenth'],thousand:['thousend','thousan','thosand'],thousandth:['thousanth','thousandeth','thosandth'],million:['milion','millon','milllion'],millionth:['milionth','millioneth','millionnth'],billion:['bilion','billon','billian'],trillion:['trilion','trillon','trilllion'],thirty:['thirthy','thirdy','thirti'],fifty:['fivty','fifthy','fifti'],sixty:['sixy','sixti','sixtey'],seventy:['seventi','sevanty','sevnty'],third:['thrid','thirt','therd'],february:['febuary','februry','feburary'],wednesday:['wensday','wendsday','wednsday'],thursday:['thurday','thirsday','thursdey'],tuesday:['tusday','tuseday','tuesdey'],saturday:['saterday','satruday','saturdey'],september:['septembar','septmber','sepember'],december:['decembar','desember','decmber'],november:['novembar','novmber','nowember'],october:['octobar','octobre','ocotber']};
 function orthoDistractors(word){
   const w=word.toLowerCase().replace(/[^a-z]/g,'');if(!w)return[];
   const cp=[],pr=[],gn=[];
@@ -2032,6 +2036,7 @@ function affixTok(w){   // önek/sonek: örnek cümlede ekle türetilmiş kelime
     if(pre&&c.length>=a.length+3&&c.startsWith(a))return{tok:t,suf:false,a}}
   return null;
 }
+const isWF=f=>f<12||f>=22;   // kelime özellikleri: 0-11 klasik, 22-23 çok anlamlılık (12-21 okuma/sınav soru türleri)
 function applicable(w){
   if(w._app)return w._app;
   const sk=x=>String(x).toLowerCase().replace(/[^a-zçğıöşü]/g,'').replace(/[aeiıoöuü]/g,'');
@@ -2047,6 +2052,8 @@ function applicable(w){
   if(g==='preposition phrase'&&prepBlank(w))f.push(9);
   if(g==='prefix/suffix'&&affixTok(w))f.push(10);
   if((MULTI.indexOf(g)!==-1||g==='phrasal verb')&&w.def&&wtoks(w).length>=2)f.push(11);
+  if(senseOk(w,0))f.push(22);
+  if(senseOk(w,1))f.push(23);
   return w._app=f;
 }
 function sameGroupWords(t){const g=posGroup(t);return W.filter(r=>r!==t&&posGroup(r)===g)}
@@ -2171,20 +2178,80 @@ function verbQuestion(t){
   const d=(shuffle(uniq.slice(0,6)).concat(shuffle(uniq.slice(6)))).slice(0,3).map(c=>{const p=c.split(' - ');return p[0]+sfx+' - '+p[1]+sfx});
   return{question:'"'+t.word+'" fiilinin 2. ve 3. halleri (V2 - V3) hangisidir?',correct,distractors:d};
 }
+/* ---------- çok anlamlılık: kelimenin 2. ve 3. anlamı (senses.js) ---------- */
+const noPar=x=>str(x).replace(/\s*\([^)]*\)/g,'').trim();
+const trFirst=x=>noPar(parts(x)[0]||'');
+function senseOk(t,n){const s=(t.sn||[])[n];return !!(s&&s.t&&s.d&&s.e&&trFirst(s.t)&&String(s.e).split(/\s+/).length>=6)}
+const trOv=(a,b)=>trOverlap(noPar(a),noPar(b));   // parantez içi açıklamalar karşılaştırmaya girmez
+function trClash(a,b){   // iki kelimenin (ana + ek anlamlarıyla) herhangi bir Türkçe karşılığı çakışıyor mu
+  const A=[a.tr].concat((a.sn||[]).map(s=>s.t)),B=[b.tr].concat((b.sn||[]).map(s=>s.t));
+  return A.some(x=>B.some(y=>trOv(x,y)));
+}
+function defClash(a,b){   // b'nin herhangi bir tanımı a'nın herhangi bir tanımına çok benziyor mu
+  const A=[a.def].concat((a.sn||[]).map(s=>s.d)),B=[b.def].concat((b.sn||[]).map(s=>s.d));
+  return A.some(x=>B.some(y=>similarText(x,y)));
+}
+function senseQ(t,n){
+  if(!senseOk(t,n))return null;
+  const s=t.sn[n];
+  for(const st of shuffle([0,1,2,3])){const r=senseQ1(t,s,st);if(r)return r}
+  return null;
+}
+function senseQ1(t,s,st){
+  const ct=trFirst(s.t),others=[t.tr].concat(t.sn.filter(x=>x!==s).map(x=>x.t));
+  if(st===0){   // bu cümlede kelime ne anlama gelir
+    if(trFirst(t.tr)===ct)return null;   // Türkçesi ilk anlamla aynıysa bu stilde anlamlar ayırt edilemez
+    const own=[];others.forEach(o=>{const x=trFirst(o);if(x&&x!==ct&&!trOv(s.t,o)&&!trOv(ct,x)&&own.indexOf(x)===-1)own.push(x)});
+    const d=shuffle(own).slice(0,2);
+    const more=pickDistractors(t,r=>trFirst(r.tr),r=>r.tr&&trFirst(r.tr)&&!trOv(s.t,r.tr)&&!trClash(t,r)&&!related(t,r),false,1).filter(x=>d.indexOf(x)===-1&&x!==ct&&!trOv(ct,x));
+    while(d.length<3&&more.length)d.push(more.shift());
+    if(d.length<3)return null;
+    return{question:'"'+t.word+'" sözcüğü bu cümlede ne anlama gelir?\n"'+s.e+'"',correct:ct,distractors:d};
+  }
+  if(st===1){   // belirtilen anlamın İngilizce tanımı
+    const own=[];[t.def].concat(t.sn.filter(x=>x!==s).map(x=>x.d)).forEach(x=>{if(x&&!similarText(s.d,x)&&x.toLowerCase()!==s.d.toLowerCase()&&!own.some(y=>y.toLowerCase()===x.toLowerCase()||similarText(y,x)))own.push(x)});
+    const d=shuffle(own).slice(0,2);
+    const more=pickDistractors(t,r=>r.def,r=>r.def&&!similarText(s.d,r.def)&&!defClash(t,r)&&!trClash(t,r)&&!related(t,r),false,2).filter(x=>d.indexOf(x)===-1&&!d.some(y=>similarText(y,x)));
+    while(d.length<3&&more.length)d.push(more.shift());
+    if(d.length<3)return null;
+    return{question:'"'+t.word+'" kelimesinin "'+ct+'" anlamındaki İngilizce tanımı hangisidir?',correct:s.d,distractors:d};
+  }
+  if(st===3){   // bu cümledeki anlama en yakın kelime
+    if(!has(s.s))return null;
+    const cs=toks(s.s);if(!cs.length)return null;
+    const correct=cs[0];
+    const ts=cs.concat([t.word.toLowerCase()]),VS=new Set(validSyn(t));
+    t.sn.forEach(z=>tl(z.s).forEach(x=>{VS.add(x);if(z!==s)ts.push(x)}));
+    cs.forEach(x=>VS.add(x));
+    const own=[];[t.syn].concat(t.sn.filter(x=>x!==s).map(x=>x.s)).forEach(x=>{if(!has(x))return;const c=toks(x)[0];if(c&&ts.indexOf(c)===-1&&cs.indexOf(c)===-1&&own.indexOf(c)===-1)own.push(c)});
+    const ownOk=own.filter(c=>!cs.some(y=>y===c)&&!VS.has(c.toLowerCase()));
+    const d=shuffle(ownOk).slice(0,2);
+    const more=pickDistractors(t,r=>has(r.syn)?toks(r.syn)[0]:'',r=>has(r.syn)&&!tl(r.syn).some(x=>VS.has(x)||cs.indexOf(x)!==-1)&&!related(t,r)&&!trClash(t,r),false,1).filter(x=>x&&d.indexOf(x)===-1&&x!==correct&&!VS.has(x.toLowerCase()));
+    while(d.length<3&&more.length)d.push(more.shift());
+    if(d.length<3)return null;
+    return{question:'"'+t.word+'" sözcüğü bu cümlede hangisine anlamca en yakındır?\n"'+s.e+'"',correct,distractors:d};
+  }
+  // st===2: bu anlamı gösteren örnek cümlede boşluk doldurma
+  const p=Object.assign({},t,{ex:s.e,syn:'',ant:'',tr:s.t,def:s.d,sn:[],_app:null});
+  if(!cloze(p))return null;
+  const b=buildQuestion(p,3);
+  if(!b)return null;
+  return{question:b.question+'\n(Anlamı: '+ct+')',correct:b.correct,distractors:b.distractors};
+}
 function buildQuestion(t,k,opts){
   let q,correct,d;
   if(k===0){
     const tp=parts(t.tr);
     const rev=opts&&opts.reverse!==undefined?opts.reverse:Math.random()<REVERSE_RATE;
     if(rev){
-      const rd=pickDistractors(t,r=>r.word,r=>r.tr&&!trOverlap(t.tr,r.tr)&&!related(t,r),true,1);
+      const rd=pickDistractors(t,r=>r.word,r=>r.tr&&!trClash(t,r)&&!related(t,r),true,1);
       if(rd.length===3)return{question:'"'+t.tr+'" karşılığı hangi İngilizce kelime/ifadedir?',correct:t.word,distractors:rd};
     }
     q='"'+t.word+'" kelimesinin Türkçe karşılığı hangisidir?';correct=t.tr;
-    d=pickDistractors(t,r=>r.tr,r=>r.tr&&!trOverlap(t.tr,r.tr)&&!related(t,r),true,1);
+    d=pickDistractors(t,r=>r.tr,r=>r.tr&&!trClash(t,r)&&!related(t,r),true,1);
   }else if(k===1){
     q='"'+t.word+'" kelimesinin İngilizce tanımı hangisidir?';correct=t.def;
-    d=pickDistractors(t,r=>r.def,r=>r.def&&r.def.toLowerCase()!==t.def.toLowerCase()&&!similarText(t.def,r.def)&&!related(t,r),false,2);
+    d=pickDistractors(t,r=>r.def,r=>r.def&&r.def.toLowerCase()!==t.def.toLowerCase()&&!similarText(t.def,r.def)&&!defClash(t,r)&&!related(t,r),false,2);
   }else if(k===3){
     const c=cloze(t);if(!c)return null;
     q='Boşluğa hangi kelime/ifade gelmeli?\n"'+c+'"';correct=t.word;
@@ -2194,8 +2261,9 @@ function buildQuestion(t,k,opts){
   }else if(k===4){
     if(!has(t.syn))return null;
     q='"'+t.word+'" kelimesine anlamca en yakın olan hangisidir?';correct=t.syn;
-    const ts=toks(t.syn).concat([t.word.toLowerCase()]),VS=validSyn(t);
-    d=pickDistractors(t,r=>r.syn,r=>has(r.syn)&&r.syn.toLowerCase()!==t.syn.toLowerCase()&&r.syn.toLowerCase()!==t.ant.toLowerCase()&&!toks(r.syn).some(x=>ts.indexOf(x)!==-1)&&!tl(r.syn).some(x=>VS.has(x))&&!related(t,r)&&!trOverlap(t.tr,r.tr),false,1);
+    const ts=toks(t.syn).concat([t.word.toLowerCase()]),VS=new Set(validSyn(t));
+    t.sn.forEach(z=>tl(z.s).forEach(x=>{VS.add(x);ts.push(x)}));   // ek anlamların eş anlamlıları da geçerli sayılır, şık olamaz
+    d=pickDistractors(t,r=>r.syn,r=>has(r.syn)&&r.syn.toLowerCase()!==t.syn.toLowerCase()&&r.syn.toLowerCase()!==t.ant.toLowerCase()&&!toks(r.syn).some(x=>ts.indexOf(x)!==-1)&&!tl(r.syn).some(x=>VS.has(x))&&!related(t,r)&&!trClash(t,r),false,1);
   }else if(k===5){
     if(!has(t.ant))return null;
     q='"'+t.word+'" kelimesinin anlamca tersi (karşıt yönü) hangisidir?';correct=t.ant;
@@ -2207,6 +2275,8 @@ function buildQuestion(t,k,opts){
   else if(k===9)return prepQ(t);
   else if(k===10)return affixQ(t);
   else if(k===11)return phraseDefQ(t);
+  else if(k===22)return senseQ(t,0);
+  else if(k===23)return senseQ(t,1);
   else return null;
   if(!correct||!d||d.length<3)return null;
   return{question:q,correct,distractors:d};
@@ -2322,6 +2392,7 @@ function whyText(it){
       if(a&&a.kind==='B')return`Boşluktan sonra bir sıfat geliyor; sıfatı niteleyen kelime zarf olur. ${B(w.word)} (${esc(tr)}) bir zarf, bu yüzden uyuyor. Diğer şıklar sıfat olduğu için bu yerde zarf gibi kullanılmaz.`;
       return'';
     }
+    if((f===22||f===23)&&w.sn[f-22]){const z=w.sn[f-22];return`${B(w.word)} kelimesi bu anlamda <b>${esc(z.t)}</b> demek: ${esc(z.d)}. Aynı kelimenin ilk anlamı ${B(tr)}; kelime cümleye göre farklı anlam taşıyabilir.`}
     if(f===4&&has(w.syn))return`${B(w.word)} (${esc(tr)}) ile ${B(w.syn)} anlamca birbirine çok yakın. Burada birebir aynı anlam değil, şıklar arasında en yakın olanı arıyorsun.`;
     if(f===5&&has(w.ant))return`${B(w.word)} (${esc(tr)}) ile ${B(w.ant)} anlam bakımından ters yönde. Burada kesin bir zıtlıktan çok, şıklar arasında en çok tersine düşeni arıyorsun.`;
     if(f===6){
@@ -2464,7 +2535,7 @@ function applyAnswerCore(it,ok,ua,qz,gate){
   let pt=0;
   if(ok){pt+=ap(bq,'c');const G=goalEff();if(d.c===G)pt+=ap(10+Math.min(streak(),10),'b')}
   else if(myLeague()>=3)pt+=ap(-(myLeague()>=6?1:0.25)*bq,'w');   // Altın–Zümrüt: ¼, Elmas ve üstü: doğru cevap puanının tamamı
-  if(ok){if(it.kind==='wlog')wlogDel(it.lk||(w.word+'|'+it.f))}else if(it.f<12)wlogAdd(it,ua);
+  if(ok){if(it.kind==='wlog')wlogDel(it.lk||(w.word+'|'+it.f))}else if(isWF(it.f))wlogAdd(it,ua);
   if(it.kind==='wod'){const q=wqGet(),k=w.word+'|'+it.f;if(q.done.indexOf(k)===-1)q.done.push(k);S.wod=today()}
   if(it.kind==='lrev'&&S.learned[w.word]){const L=S.learned[w.word];if(ok){L.lr=today();L.n=(L.n|0)+1}else{L.n=Math.max(1,L.n|0);L.lr=addDays(today(),-(LRN_EVERY-7))}}
   const bw=S.wrong[w.word];
@@ -2686,9 +2757,13 @@ function dictFiltered(){
     if(D.status==='Öğrenilen'&&!S.learned[w.word])return false;
     if(D.status==='Öğrenilmeyen'&&S.learned[w.word])return false;
     if(D.status==='Tekrarda'&&!S.wrong[w.word])return false;
-    if(q&&w.word.toLowerCase().indexOf(q)===-1&&w.tr.toLowerCase().indexOf(q)===-1&&w.def.toLowerCase().indexOf(q)===-1)return false;
+    if(q&&w.word.toLowerCase().indexOf(q)===-1&&w.tr.toLowerCase().indexOf(q)===-1&&w.def.toLowerCase().indexOf(q)===-1&&!w.sn.some(z=>z.t.toLowerCase().indexOf(q)!==-1||z.d.toLowerCase().indexOf(q)!==-1))return false;
     return true;
   });
+}
+function exTrT(t){const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
+function senseHtml(w){   // 2. ve 3. anlamlar: Türkçe, tanım, örnek (+çevirisi), eş anlam
+  return(w.sn||[]).map((z,i)=>`<dt>${i+2}. anlam</dt><dd><b>${esc(z.t)}</b>${z.p&&z.p!==w.pos?` <span class="muted small">(${esc(z.p)})</span>`:''}<br><span class="small">${esc(z.d)}</span><br><i>${esc(z.e)}</i>${exTrT(z.e)}${has(z.s)?`<br><span class="small muted">Eş anlam: ${esc(z.s)}</span>`:''}</dd>`).join('');
 }
 function entryHtml(w){
   const open=UI.dict.open===w.word;
@@ -2698,6 +2773,7 @@ function entryHtml(w){
     <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
     ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${exTr(w)}</dd>
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
+      ${senseHtml(w)}
       ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
       <dt></dt><dd class="row" style="gap:8px"><button class="say" data-say="${esc(w.word)}" data-pron="${esc(w.pron)}">Dinle</button><button class="say" data-act="sv-w" data-w="${esc(w.word)}" aria-pressed="${isSaved(w.word)}">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button></dd></dl>`:''}</div>`;
 }
@@ -2843,7 +2919,7 @@ function exGap(u){
 function exWordTest(u){
   const out=[];
   exWords(u).forEach(w=>{
-    const fs=shuffle(applicable(w).filter(f=>f<12));
+    const fs=shuffle(applicable(w).filter(isWF));
     for(const f of fs){const it=makeItem(w,f,'exam');if(it){if(f===3){const d=exDist(w.word,u.a.concat(u.b),false);if(d)it.options=shuffle([w.word].concat(d))}out.push(it);break}}
   });
   return shuffle(out);
@@ -2955,7 +3031,7 @@ function examOne(it,qz,first,al){
         }
         CUR_EV=null;
       }else{
-        it.kind=(ok&&!EXNOPT&&it.f<12)?'new':'exam';
+        it.kind=(ok&&!EXNOPT&&isWF(it.f))?'new':'exam';
         applyAnswer(it,ok,ua,qz,false);
       }
     }finally{CUR_EV=null}
@@ -2973,12 +3049,12 @@ function examSave(qz){
   if(!old||old.n!==n||right>old.b||(qz.exam==='mock'&&qz.score>(old.sc||0)))S.ex[qz.exam]=Object.assign({b:Math.max(right,old&&old.n===n?old.b:0),n,d:today()},qz.exam==='mock'?{sc:Math.max(qz.score,old&&old.sc||0)}:{});
   save();
 }
-const exCid=it=>it.noW||it.f>=12?exH(it.question+'|'+it.correct):'w|'+it.w.word+'|'+it.f;
+const exCid=it=>it.noW||!isWF(it.f)?exH(it.question+'|'+it.correct):'w|'+it.w.word+'|'+it.f;
 const EXPOOL={};
 function exChunkPool(u){
   const hs=w=>{let x=0;for(let i=0;i<w.length;i++)x=(x*31+w.charCodeAt(i))>>>0;return x};
   const wt=[];
-  exWords(u).forEach(w=>{const fs=applicable(w).filter(f=>f<12);if(!fs.length)return;const f=fs[hs(w.word)%fs.length],it=makeItem(w,f,'exam');if(it)wt.push(it)});
+  exWords(u).forEach(w=>{const fs=applicable(w).filter(isWF);if(!fs.length)return;const f=fs[hs(w.word)%fs.length],it=makeItem(w,f,'exam');if(it)wt.push(it)});
   return exGap(u).concat(wt,exEx(u),exDef(u),exRead(u),exListen(u),exPh(u));
 }
 const EXKEY='kd-expool';
@@ -3041,7 +3117,7 @@ function vQuiz(){
     fb=it.noW?`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}</b>${it.ok?'':`<div class="small" style="margin-top:6px">${it.type==='text'?`Senin cevabın: ${esc(it.ua||'')}<br>`:''}Doğru cevap: <b>${esc(it.correct)}</b></div>`}${it.e?`<div class="small muted" style="margin-top:6px">${esc(it.e)}</div>`:''}</div>`
     :`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.cleared?' · tekrar listesinden çıktı':''}${qz.learnedNow.indexOf(w.word)!==-1?' · öğrenildi':''}${it.pt?` · ${it.pt>0?'+':'−'}${nf(Math.round(Math.abs(it.pt)*100)/100)} puan`:''}</b>
       <div><b>${esc(w.word)}</b> <span class="mono muted">${esc(w.pron)}</span> ${lvTag(w.level)}</div>
-      <div>${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i>${exTr(w)}</div>`:''}
+      ${(it.f===22||it.f===23)&&w.sn[it.f-22]?(z=>`<div><span class="muted small">${it.f-20}. anlam:</span> ${esc(z.t)}</div><div class="small muted">${esc(z.d)}</div><div class="small"><i>${esc(z.e)}</i>${exTrT(z.e)}</div><div class="small muted" style="margin-top:4px">İlk anlam: ${esc(w.tr)}</div>`)(w.sn[it.f-22]):`<div>${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i>${exTr(w)}</div>`:''}`}
       ${it.ok?'':`<div class="small" style="margin-top:6px">Doğru cevap: <b>${esc(it.correct)}</b></div>`}${qz.mode==='exam'?'':whyHtml(it)}${optMeans(it)}</div>`;
     nb=`<button class="btn primary block" style="margin-top:12px" data-act="next" id="nextbtn">${qz.i+1>=qz.items.length?'Sonucu gör':'Sonraki soru'}</button>`;
   }
