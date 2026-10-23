@@ -405,6 +405,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 
 <script src="words.js"></script>
 <script src="extr.js"></script>
+<script src="examples.js"></script>
 <script src="senses.js"></script>
 <script src="reading.js"></script>
 <script src="reading-tr.js"></script>
@@ -421,7 +422,7 @@ const DATA=window.WORDS||[];
 const LEVELS=['A1','A2','B1','B2','C1','C2'];
 const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu','2. anlam','3. anlam'];
 const REVERSE_RATE=0.4, STREAK_GOAL=3, INTERVALS=[1,3];
-const W=DATA.map((r,i)=>({id:i,word:r[0],def:r[1],tr:r[2],pos:r[3],ex:r[4],syn:r[5],ant:r[6],level:(r[7]||'').toUpperCase(),pron:r[8],v2:r[9],v3:r[10],sn:(window.SENSES&&window.SENSES[r[0]])||[]}));
+const W=DATA.map((r,i)=>({id:i,word:r[0],def:r[1],tr:r[2],pos:r[3],ex:r[4],syn:r[5],ant:r[6],level:(r[7]||'').toUpperCase(),pron:r[8],v2:r[9],v3:r[10],sn:(window.SENSES&&window.SENSES[r[0]])||[],exs:(window.EXS&&window.EXS[r[0]])||[]}));
 const BYWORD=new Map(W.map(w=>[w.word,w]));
 let LOWBY=null;
 function optMean(o){
@@ -496,9 +497,10 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.141.2';
+const APP_VERSION='4.142.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
+function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
@@ -2768,7 +2770,7 @@ function entryHtml(w){
   return`<div class="entry"><button class="head" data-act="toggle" data-w="${esc(w.word)}" aria-expanded="${open}">
     <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def)}</span></span>
     <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
-    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${exTr(w)}</dd>
+    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${exTr(w)}</dd>${exMore(w)}
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
       ${senseHtml(w)}
       ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
