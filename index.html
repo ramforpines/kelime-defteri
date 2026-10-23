@@ -496,7 +496,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.141.0';
+const APP_VERSION='4.141.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
@@ -2208,13 +2208,11 @@ function senseQ1(t,s,st){
     if(d.length<3)return null;
     return{question:'"'+t.word+'" sözcüğü bu cümlede ne anlama gelir?\n"'+s.e+'"',correct:ct,distractors:d};
   }
-  if(st===1){   // belirtilen anlamın İngilizce tanımı
-    const own=[];[t.def].concat(t.sn.filter(x=>x!==s).map(x=>x.d)).forEach(x=>{if(x&&!similarText(s.d,x)&&x.toLowerCase()!==s.d.toLowerCase()&&!own.some(y=>y.toLowerCase()===x.toLowerCase()||similarText(y,x)))own.push(x)});
-    const d=shuffle(own).slice(0,2);
-    const more=pickDistractors(t,r=>r.def,r=>r.def&&!similarText(s.d,r.def)&&!defClash(t,r)&&!trClash(t,r)&&!related(t,r),false,2).filter(x=>d.indexOf(x)===-1&&!d.some(y=>similarText(y,x)));
-    while(d.length<3&&more.length)d.push(more.shift());
+  if(st===1){   // anlamın İngilizce tanımı (soruda anlam belirtilmez; şıklarda kelimenin başka anlamlarının tanımı bulunmaz)
+    const more=pickDistractors(t,r=>r.def,r=>r.def&&!similarText(s.d,r.def)&&!defClash(t,r)&&!trClash(t,r)&&!related(t,r),false,2).filter(x=>![t.def].concat(t.sn.map(z=>z.d)).some(y=>similarText(y,x)||y.toLowerCase()===x.toLowerCase()));
+    const d=more.slice(0,3);
     if(d.length<3)return null;
-    return{question:'"'+t.word+'" kelimesinin "'+ct+'" anlamındaki İngilizce tanımı hangisidir?',correct:s.d,distractors:d};
+    return{question:'"'+t.word+'" kelimesinin İngilizce tanımı hangisidir?',correct:s.d,distractors:d};
   }
   if(st===3){   // bu cümledeki anlama en yakın kelime
     if(!has(s.s))return null;
