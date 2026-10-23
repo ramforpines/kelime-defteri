@@ -420,7 +420,7 @@ const DATA=window.WORDS||[];
 (function(){
 'use strict';
 const LEVELS=['A1','A2','B1','B2','C1','C2'];
-const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu','2. anlam','3. anlam','Cümlede anlam','Cümle çevirisi','Cümlede yakın anlam','Cümlede karşıt anlam'];
+const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu','2. anlam','3. anlam','Cümlede anlam','Türkçe cümle → İngilizce','Cümlede yakın anlam','Cümlede karşıt anlam'];
 const REVERSE_RATE=0.4, STREAK_GOAL=3, INTERVALS=[1,3];
 const W=DATA.map((r,i)=>({id:i,word:r[0],def:r[1],tr:r[2],pos:r[3],ex:r[4],syn:r[5],ant:r[6],level:(r[7]||'').toUpperCase(),pron:r[8],v2:r[9],v3:r[10],sn:(window.SENSES&&window.SENSES[r[0]])||[],exs:(window.EXS&&window.EXS[r[0]])||[]}));
 const BYWORD=new Map(W.map(w=>[w.word,w]));
@@ -497,7 +497,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.144.0';
+const APP_VERSION='4.145.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2076,20 +2076,69 @@ function ctxMeanQ(t){   // 24: ek örnek cümlede kelimenin anlamı
 }
 let EXSPOOL=null;
 function exPool(){if(EXSPOOL)return EXSPOOL;EXSPOOL=[];for(const r of W){exAlts(r).forEach(e=>{const v=EXTR[exH(e)];if(v)EXSPOOL.push({w:r,e,t:v,n:e.split(/\s+/).length})})}return EXSPOOL}
-function ctxTransQ(t){   // 25: cümlenin Türkçesi (kelimeyi içeren cümle)
-  if(!hasAlt(t))return null;
-  const alts=shuffle(exAlts(t).filter(e=>EXTR[exH(e)]));if(!alts.length)return null;
-  const e=alts[0],c=EXTR[exH(e)],n=e.split(/\s+/).length,P=exPool(),lw=String(t.word).toLowerCase(),out=[],seen=new Set([c]);
-  const ct=new Set(String(c).toLowerCase().split(/[^a-zçğıöşü]+/).filter(x=>x.length>3));
-  for(let i=0;i<400&&out.length<3;i++){
-    const o=P[Math.floor(Math.random()*P.length)];
-    if(o.w===t||seen.has(o.t)||Math.abs(o.n-n)>Math.max(3,n*.4)||o.e.toLowerCase().indexOf(lw)!==-1||related(t,o.w))continue;
-    const ot=o.t.toLowerCase().split(/[^a-zçğıöşü]+/).filter(x=>x.length>3);let ov=0;ot.forEach(x=>{if(ct.has(x))ov++});
-    if(ov>1)continue;
-    seen.add(o.t);out.push(o.t);
+/* 25: Türkçe cümlenin İngilizcesi. Şıklar aynı cümlenin yalnızca hedef kelimesi değişmiş halleri (kelime bilmeden cümleden ayırt edilemez); bazen hedef kelimenin hatalı çekimi de şıktır */
+function inflW(word,suf){
+  word=String(word).trim();if(!suf)return word;
+  const parts=word.split(/\s+/),last=parts.pop();
+  if(!/^[a-z]+$/i.test(last)||last.length<3)return null;
+  const w=last.toLowerCase(),cvc=/[^aeiou][aeiou][^aeiouwxy]$/.test(w)&&w.length<=5;
+  let r=null;
+  if(suf==='s'||suf==='es')r=/(s|x|z|ch|sh|o)$/.test(w)?w+'es':/[^aeiou]y$/.test(w)?w.slice(0,-1)+'ies':w+'s';
+  else if(suf==='ed'||suf==='d'){const e=BYWORD.get(word.toLowerCase());if(cvc||(e&&e.v2))return null;r=/e$/.test(w)?w+'d':/[^aeiou]y$/.test(w)?w.slice(0,-1)+'ied':w+'ed'}
+  else if(suf==='ing'){if(cvc)return null;r=/ie$/.test(w)?w.slice(0,-2)+'ying':/[^e]e$/.test(w)||/[^aeiou]e$/.test(w)&&!/ee$/.test(w)?w.slice(0,-1)+'ing':w+'ing'}
+  return r?parts.concat(r).join(' '):null;
+}
+function clozeDist(p){
+  if(closedClass(p)==='ortho')return null;
+  if(/^(adjective|adverb)$/i.test(posKey(p)))return aaDistractors(p);
+  return clozeDistractors(p)||pickDistractors(p,r=>r.word,r=>!related(p,r)&&closedClass(r)!=='ortho'&&!(posKey(r)==='number'),false,1);
+}
+function aaValidDist(p){   // sıfat/zarf hedefi: aynı yerde dilbilgisi olarak geçerli, anlamca farklı sıfat/zarflar
+  const a=aaSlot(p);if(!a)return null;
+  const pos=a.kind==='A'?'adjective':'adverb',base=String(p.word).toLowerCase(),LV=['A1','A2','B1','B2','C1','C2'],ti=LV.indexOf(String(p.level||'').toUpperCase());
+  const art=a.bf==='a'||a.bf==='an',sc=[];
+  for(const r of W){
+    if(r===p||posKey(r)!==pos||!/^[a-z]{4,}$/i.test(r.word)||r.word.toLowerCase()===base)continue;
+    const x=r.word.toLowerCase();
+    if(!aaPure(r,pos)||aaEntries(x).length!==1)continue;
+    if(pos==='adjective'&&(AA_PRED.includes(x)||/ly$/.test(x)))continue;
+    if(pos==='adverb'&&(AA_ADV.includes(x)||!/ly$/.test(x)))continue;
+    if(art&&(a.bf==='an')!==vowelSnd(x))continue;
+    if(related(p,r)||trClash(p,r)||trOverlap(p.tr,r.tr))continue;
+    const ri=LV.indexOf(String(r.level||'').toUpperCase()),dl=ti<0||ri<0?2:Math.abs(ti-ri);
+    sc.push({w:r.word,s:(dl===0?3:dl===1?2:0)+Math.random()*3});
   }
-  if(out.length<3)return null;
-  return{question:'Bu cümlenin Türkçesi hangisidir?\n"'+e+'"',correct:c,distractors:out,exu:e};
+  sc.sort((u,v)=>v.s-u.s);
+  const out=sc.slice(0,3).map(z=>z.w);return out.length===3?out:null;
+}
+function ctxTransQ(t){
+  const alts=shuffle(exAlts(t).filter(e=>EXTR[exH(e)]));
+  for(const e of alts){
+    const p=exVar(t,e),c=cloze(p);if(!c)continue;
+    const i=c.indexOf('_____'),tail=c.slice(i+5),tok=e.slice(i,e.length-tail.length);
+    if(!tok||c.slice(0,i)!==e.slice(0,i))continue;
+    const base=String(t.word).replace(/\s*\([^)]*\)/g,'').replace(/\.+$/,'').split('/')[0].trim();
+    const suf=tok.toLowerCase().startsWith(base.toLowerCase())?tok.slice(base.length).toLowerCase():null;
+    if(suf===null||['','s','es','ed','d','ing'].indexOf(suf)===-1)continue;
+    const d0=/^(adjective|adverb)$/i.test(posKey(p))?aaValidDist(p):clozeDist(p);if(!d0||d0.length<3)continue;
+    const cap=x=>i===0?x.charAt(0).toUpperCase()+x.slice(1):x;
+    let ds=[];
+    const isPl=x=>/[^s]s$|ies$/i.test(x)&&!/(us|is|ss|ics)$/i.test(x),noun=czSlot(p)==='noun'&&!/^(adjective|adverb)$/i.test(posKey(p)),tpl=noun&&isPl(tok);
+    for(const w of d0){
+      let f=inflW(w,suf);if(!f)continue;
+      if(noun){const wl=/\s/.test(w)?'':w;if(tpl&&!isPl(f))f=inflW(f,'s');else if(!tpl&&isPl(f))continue;if(!f)continue}   // sayı uyumu: çoğul hedefe çoğul, tekile tekil şık
+      if(f.toLowerCase()!==tok.toLowerCase())ds.push(cap(f))}
+    if(suf==='ed'&&!/\b(am|is|are|was|were|be|been|being|has|have|had|get|gets|got)\b/i.test(e)&&Math.random()<.5){   // dilbilgisi: yardımcı fiil yokken -ing hali geçersiz
+      const g=inflW(base,'ing');if(g&&ds.length)ds[ds.length-1]=cap(g)}
+    ds=Array.from(new Set(ds));
+    if(ds.length<3)continue;
+    const fill=x=>{   // a/an uyumu: şıktaki kelimenin ilk sesine göre düzelt
+      let pre=c.slice(0,i);const m=/(^|\s)(a|an)(\s+)$/i.exec(pre);
+      if(m&&x!==tok){const an=vowelSnd(x.replace(/\s.*/,'')),A=m[2][0]==='A'?(an?'An':'A'):(an?'an':'a');pre=pre.slice(0,m.index)+m[1]+A+m[3]}
+      return pre+x+tail};
+    return{question:'Bu Türkçe cümlenin İngilizcesi hangisidir?\n"'+EXTR[exH(e)]+'"',correct:e,distractors:ds.slice(0,3).map(fill),exu:e};
+  }
+  return null;
 }
 function ctxRelQ(t,k){   // 26/27: ek örnek cümlede yakın / karşıt anlam
   if(!hasAlt(t))return null;
@@ -2116,10 +2165,10 @@ function applicable(w){
   if(senseOk(w,1))f.push(23);
   if(hasAlt(w)){
     if(f.indexOf(0)!==-1&&w.tr&&trFirst(w.tr)!==String(w.word).trim().toLowerCase())f.push(24);   // rastgelelik kullanılmaz: düello tohumlu üretimi her istemcide aynı kalsın
-    if(w.exs.some(e=>EXTR[exH(e)]))f.push(25);
     if(has(w.syn))f.push(26);
     if(has(w.ant))f.push(27);
   }
+  if(f.indexOf(3)!==-1&&exAlts(w).some(e=>EXTR[exH(e)]&&cloze(exVar(w,e))))f.push(25);   // Türkçe cümle → doğru İngilizce cümle (hedef kelime farklı şıklar)
   return w._app=f;
 }
 function sameGroupWords(t){const g=posGroup(t);return W.filter(r=>r!==t&&posGroup(r)===g)}
