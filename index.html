@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.147.9';
+const APP_VERSION='4.147.10';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2835,7 +2835,7 @@ setInterval(()=>{const el=document.getElementById('mtleft');if(el)el.textContent
 function vMaint(){
   const daily=!MAINT.on&&dailyWin(),end=MAINT.daily[1].padStart(5,'0'),st=MAINT.daily[0].padStart(5,'0');
   const body=daily
-    ?`<div style="font-size:17px;font-weight:600;margin-bottom:6px">Günlük sunucu bakımı</div>Her gün <b>${st} – ${end}</b> (Türkiye saati) arasında sunucuyu bakıma alıyor, herkesin en güncel sürümle devam etmesini sağlıyoruz.<div style="margin-top:14px;font-size:18px;font-weight:700">Uygulama saat ${end}'da tekrar açılacak</div><div id="mtleft" class="muted" style="margin-top:4px">${maintLeftTxt()}</div><div style="margin-top:12px">Bu sayfayı açık bırakabilirsin; bakım bitince uygulama kendiliğinden açılır. İlerlemen kayıtlı, hiçbir şey kaybolmaz.</div>`
+    ?`<div style="font-size:44px;line-height:1.05;font-weight:900;letter-spacing:1px;margin:0 0 22px;color:#e5484d">SİGARA İÇME MOLASI</div><div style="font-size:17px;font-weight:600;margin-bottom:6px">Günlük sunucu bakımı</div>Her gün <b>${st} – ${end}</b> (Türkiye saati) arasında sunucuyu bakıma alıyor, herkesin en güncel sürümle devam etmesini sağlıyoruz.<div style="margin-top:14px;font-size:18px;font-weight:700">Uygulama saat ${end}'da tekrar açılacak</div><div id="mtleft" class="muted" style="margin-top:4px">${maintLeftTxt()}</div><div style="margin-top:12px">Bu sayfayı açık bırakabilirsin; bakım bitince uygulama kendiliğinden açılır. İlerlemen kayıtlı, hiçbir şey kaybolmaz.</div>`
     :esc(MAINT.msg||'Sunucu bakımı yapılıyor. Kısa süre sonra tekrar açılacak. Bu sayfayı açık bırakabilirsin, bakım bitince uygulama kendiliğinden açılır.');
   return `<div class="empty" style="padding:48px 20px;text-align:center"><div style="font-size:20px;font-weight:700;margin-bottom:10px">Bakımdayız</div><div class="small" style="line-height:1.6;max-width:340px;margin:0 auto">${body}</div><div style="margin-top:28px"><button class="btn ghost small" data-act="maint-adm">Yönetici girişi</button></div></div>`}
 /* günlük bakım saati gelince açık olan herkes anında bakım ekranına düşer (yazı kutusu odakta olsa bile); bakım bitince sayfa yenilenir ve herkes güncel sürümle açılır */
