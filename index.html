@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.146.5';
+const APP_VERSION='4.146.6';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3292,7 +3292,7 @@ function vQuiz(){
     :`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.cleared?' · tekrar listesinden çıktı':''}${qz.learnedNow.indexOf(w.word)!==-1?' · öğrenildi':''}${it.pt?` · ${it.pt>0?'+':'−'}${nf(Math.round(Math.abs(it.pt)*100)/100)} puan`:''}</b>
       <div><b>${esc(w.word)}</b> <span class="mono muted">${esc(w.pron)}</span> ${lvTag(w.level)}</div>
       ${(it.f===22||it.f===23)&&w.sn[it.f-22]?(z=>`<div><span class="muted small">${it.f-20}. anlam:</span> ${esc(z.t)}</div><div class="small muted">${esc(z.d)}</div><div class="small"><i>${esc(z.e)}</i>${exTrT(z.e)}</div><div class="small muted" style="margin-top:4px">İlk anlam: ${esc(w.tr)}</div>`)(w.sn[it.f-22]):`<div>${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${(it.exu||w.ex)?`<div class="small"><i>${esc(it.exu||w.ex)}</i>${exTrT(it.exu||w.ex)}</div>`:''}`}
-      ${it.ok?'':`<div class="small" style="margin-top:6px">Doğru cevap: <b>${esc(it.correct)}</b></div>`}${qz.mode==='exam'?'':whyHtml(it)}${optMeans(it)}</div>`;
+      ${it.ok?'':`<div class="small" style="margin-top:6px">Doğru cevap: <b>${esc(it.correct)}</b></div>`}${whyHtml(it)}${optMeans(it)}</div>`;
     nb=`<button class="btn primary block" style="margin-top:12px" data-act="next" id="nextbtn">${qz.i+1>=qz.items.length?'Sonucu gör':'Sonraki soru'}</button>`;
   }
   return`<div class="qtop"><button class="btn" data-act="quit" aria-label="Testten çık">Çık</button><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span class="mono muted">${qz.i+1}/${qz.items.length}</span></div>
