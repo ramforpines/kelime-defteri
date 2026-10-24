@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.147.14';
+const APP_VERSION='4.148.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -991,7 +991,9 @@ async function syncPull(retry){
   }catch(e){if(!CLOUD.pulled)schedulePull(15000)}
   finally{CLOUD.pulling=false}
 }
-setInterval(()=>{if(!document.hidden&&CLOUD.uid&&CLOUD.pulled)syncPull()},90000);
+/* sunucu yükünü azaltmak için arka plan sorguları seyreltildi; her istemcinin süresi biraz farklı (JIT) olduğundan hepsi aynı anda sorgu atmaz */
+const JIT=ms=>Math.round(ms*(1+Math.random()*.3));
+setInterval(()=>{if(!document.hidden&&CLOUD.uid&&CLOUD.pulled)syncPull()},JIT(150000));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&CLOUD.uid)syncPull()});
 
 /* ---------- uygulama geneli istatistikler + çevrimiçi durumu ---------- */
@@ -1010,8 +1012,8 @@ async function loadAdminStats(){
   try{ const r=await sb.rpc('admin_solved_series',{n:30}); if(r.error||!Array.isArray(r.data))throw 0; A.solved=r.data;A.solvedErr=false }catch(e){A.solvedErr=true}
   A.sbusy=false; if(UI.tab==='me')render();
 }
-setInterval(()=>{if(!document.hidden)appPing()},60000);
-setInterval(()=>{if(!document.hidden&&UI.tab==='today')loadStats()},30000);
+setInterval(()=>{if(!document.hidden)appPing()},JIT(75000));
+setInterval(()=>{if(!document.hidden&&UI.tab==='today')loadStats()},JIT(90000));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){appPing();loadStats()}});
 let POOLN=null;
 /* soru sayısı: tüm sözlüğün soru türlerini cihazda saymak 10+ sn sürüyor; sürüm hazırlanırken sayılıp buraya yazılır (POOL_Q) */
@@ -1132,7 +1134,7 @@ async function checkReset(){
     if(S!==before){try{dReset()}catch(e){}render();schedulePush();toast('İlerlemen sıfırlandı. Yeni başlangıç!')}
   }catch(e){}
 }
-setInterval(()=>{if(!document.hidden)checkReset()},45000);
+setInterval(()=>{if(!document.hidden)checkReset()},JIT(180000));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReset()});
 async function loadAnn(){
   try{
@@ -1152,7 +1154,7 @@ async function loadLive(){
   annPop();
   if(UI.tab==='me'&&UI.me==='live'&&CLOUD.admin&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render();
 }
-setInterval(()=>{if(!document.hidden&&sb&&CLOUD.uid&&navigator.onLine)loadLive()},20000);
+setInterval(()=>{if(!document.hidden&&sb&&CLOUD.uid&&navigator.onLine)loadLive()},JIT(60000));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&sb&&CLOUD.uid)loadLive()});
 /* ---------- duyuru penceresi: her ekranda, herkese, görülene kadar ---------- */
 const ANNP={t:0};
@@ -2847,7 +2849,7 @@ function maintTick(){
     try{if(CLOUD.uid&&!CLOUD.admin){save();pushNow()}}catch(e){}
     try{const a=document.activeElement;if(a&&a.blur)a.blur()}catch(e){}
     render();
-  }else if(!MAINT.on){location.reload()}else render();
+  }else if(!MAINT.on){setTimeout(()=>location.reload(),Math.floor(Math.random()*40000))}else render();   // herkes aynı anda yenilemesin: sunucuya yığılma olmasın
 }
 setInterval(maintTick,1000);document.addEventListener('visibilitychange',maintTick);
 setInterval(()=>{if(!document.hidden)maintCheck()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)maintCheck()});maintCheck();
@@ -3977,7 +3979,7 @@ function chatBanBox(){
     <div class="row"><button class="chip" aria-pressed="${c.purge!==false}" data-act="chat-ban-purge">Geçmiş mesajlarını da sil</button></div>
     <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn primary" data-act="chat-ban-do">Yasakla</button>${cur?'<button class="btn" data-act="chat-ban-un">Yasağı kaldır</button>':''}<button class="btn" data-act="chat-ban-x">Vazgeç</button></div></div>`;
 }
-setInterval(()=>{if(!document.hidden&&(UI.tab==='chat'||(UI.tab==='me'&&UI.me==='cban')))chatBanLoad()},20000);
+setInterval(()=>{if(!document.hidden&&(UI.tab==='chat'||(UI.tab==='me'&&UI.me==='cban')))chatBanLoad()},JIT(45000));
 async function chatSend(){
   const inp=document.getElementById('chin'),C=UI.chat;
   const v=((inp&&inp.value)||C.draft||'').trim();
@@ -4012,7 +4014,7 @@ async function chatSend(){
 function chatOpen(tab){
   if(tab==='chat'){UI.chat.q='';chatLoad();chatBanLoad()}
 }
-setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false)return;if(UI.tab==='chat')chatLoad()},4000);
+setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false)return;if(UI.tab==='chat')chatLoad()},JIT(4000));
 let usrBusy=false;
 setInterval(async()=>{
   if(document.hidden||usrBusy||!sb||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine||UI.tab!=='chat'||UI.chat.view!=='usr'||!CLOUD.lbReady)return;
@@ -4024,8 +4026,8 @@ setInterval(async()=>{
     CLOUD.lb.forEach(x=>{const u=m.get(x.id);if(u&&u!==x.updated_at){x.updated_at=u;ch=true}});
     if(ch&&UI.tab==='chat'&&UI.chat.view==='usr'&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render();
   }catch(e){}finally{usrBusy=false}
-},10000);
-setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||UI.tab==='chat')return;chatLoad()},12000);
+},JIT(30000));
+setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||UI.tab==='chat')return;chatLoad()},JIT(45000));
 // ---- 1v1 Düello ----
 const DQ_N=20,DQ_T=15;
 const DUEL={sub:'classic',phase:'lobby',id:null,d:null,off:0,qs:null,idx:0,tq:0,sel:null,bot:null,opp:'',err:'',rec:null,find:0,findT:null,poll:null,tick:null,busy:false,me:{s:0,c:0,t:0}};
@@ -4617,7 +4619,7 @@ async function invCancel(){
 setInterval(()=>{
   if(document.hidden||!CLOUD.uid||CLOUD.approved===false)return;
   LOBBY.tick++;
-  if(INV||(duelLobbyView()&&(DUEL.sub==='ranked'||LOBBY.tick%3===0)))lobbyLoad();
+  if(INV||(duelLobbyView()&&(LOBBY.tick%(DUEL.sub==='ranked'?2:5)===0)))lobbyLoad();
 },1000);
 const lgName=id=>{try{return LEAGUES[leagueMap()[id]|0].n}catch(e){return'Lig'}};
 function lobbyCard(){
@@ -4981,8 +4983,8 @@ setInterval(maybeNotify,60000);
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(pushT);pushNow()}else{if(CLOUD.uid&&CLOUD.approved!==false&&applyDecay()>0)persistLocal();rqApply();maybeNotify();if(UI.tab==='today')render()}});
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__bip=e;if(UI.tab==='me'&&UI.me==='set')render()});
 window.addEventListener('online',()=>{schedulePush();refreshBoard()});
-setInterval(()=>{if(!document.hidden&&(UI.tab==='rank'||UI.tab==='today'))refreshBoard()},60000);
-setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return;loadMyFb();loadFlags();if(CLOUD.admin)loadAdminFb()},120000);
+setInterval(()=>{if(!document.hidden&&(UI.tab==='rank'||UI.tab==='today'))refreshBoard()},JIT(120000));
+setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return;loadMyFb();loadFlags();if(CLOUD.admin)loadAdminFb()},JIT(240000));
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
 wodBackfill();render();maybeNotify();initAuth();
 })();
