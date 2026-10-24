@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.147.5';
+const APP_VERSION='4.147.6';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2720,7 +2720,7 @@ function answer(idx){
   it.chosen=idx;
   const ok=it.options[idx]===it.correct;
   it.ok=ok;
-  if(qz.mode==='exam'){it.pt=0;if(qz.chunk){examOne(it,qz,true,{n:1e9});S.exc=S.exc||{};(S.exc[qz.chunk]=S.exc[qz.chunk]||{})[exCid(it)]=1;save()}render();return}   // sınav: işleme test bitince yapılır (examFinish)
+  if(qz.mode==='exam'){it.pt=0;if(qz.chunk){const b0=qz.pts.c+qz.pts.b+qz.pts.w;examOne(it,qz,true,{n:1e9});it.pt=qz.pts.c+qz.pts.b+qz.pts.w-b0;S.exc=S.exc||{};(S.exc[qz.chunk]=S.exc[qz.chunk]||{})[exCid(it)]=1;save()}render();return}   // sınav: işleme test bitince yapılır (examFinish)
   it.pt=applyAnswer(it,ok,it.options[idx],qz,false);
   save();render();
 }
@@ -2733,7 +2733,7 @@ function answerText(){
   const alt={savour:'savor'};
   it.ok=v===nz(it.correct)||(alt[it.correct]&&v===alt[it.correct]);
   it.options=[it.correct];it.pt=0;
-  if(qz.chunk){examOne(it,qz,true,{n:1e9});S.exc=S.exc||{};(S.exc[qz.chunk]=S.exc[qz.chunk]||{})[exCid(it)]=1;save()}
+  if(qz.chunk){const b0=qz.pts.c+qz.pts.b+qz.pts.w;examOne(it,qz,true,{n:1e9});it.pt=qz.pts.c+qz.pts.b+qz.pts.w-b0;S.exc=S.exc||{};(S.exc[qz.chunk]=S.exc[qz.chunk]||{})[exCid(it)]=1;save()}
   render();
 }
 function next(){
@@ -3295,7 +3295,7 @@ function vQuiz(){
   const w=it.w;
   let fb='',nb='';
   if(ans){
-    fb=it.noW?`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}</b>${it.ok?'':`<div class="small" style="margin-top:6px">${it.type==='text'?`Senin cevabın: ${esc(it.ua||'')}<br>`:''}Doğru cevap: <b>${esc(it.correct)}</b></div>`}${it.e?`<div class="small muted" style="margin-top:6px">${esc(it.e)}</div>`:''}</div>`
+    fb=it.noW?`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.pt?` · ${it.pt>0?'+':'−'}${nf(Math.round(Math.abs(it.pt)*100)/100)} puan`:''}</b>${it.ok?'':`<div class="small" style="margin-top:6px">${it.type==='text'?`Senin cevabın: ${esc(it.ua||'')}<br>`:''}Doğru cevap: <b>${esc(it.correct)}</b></div>`}${it.e?`<div class="small muted" style="margin-top:6px">${esc(it.e)}</div>`:''}</div>`
     :`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.cleared?' · tekrar listesinden çıktı':''}${qz.learnedNow.indexOf(w.word)!==-1?' · öğrenildi':''}${it.pt?` · ${it.pt>0?'+':'−'}${nf(Math.round(Math.abs(it.pt)*100)/100)} puan`:''}</b>
       <div><b>${esc(w.word)}</b> <span class="mono muted">${esc(w.pron)}</span> ${lvTag(w.level)}</div>
       ${(it.f===22||it.f===23)&&w.sn[it.f-22]?(z=>`<div><span class="muted small">${it.f-20}. anlam:</span> ${esc(z.t)}</div><div class="small muted">${esc(z.d)}</div><div class="small"><i>${esc(z.e)}</i>${exTrT(z.e)}</div><div class="small muted" style="margin-top:4px">İlk anlam: ${esc(w.tr)}</div>`)(w.sn[it.f-22]):`<div>${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${(it.exu||w.ex)?`<div class="small"><i>${esc(it.exu||w.ex)}</i>${exTrT(it.exu||w.ex)}</div>`:''}`}
