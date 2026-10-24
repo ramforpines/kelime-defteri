@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.146.1';
+const APP_VERSION='4.146.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2372,7 +2372,17 @@ function senseQ1(t,s,st){
   if(!b)return null;
   return{question:b.question+'\n(Anlamı: '+ct+')',correct:b.correct,distractors:b.distractors};
 }
+/* Raporlanan hatalı şıklar: bu kelimenin sorularında şık olarak çıkmaz (cümleye de uyabilen şıklar). Kullanıcı raporlarına göre büyür */
+const BAN_OPT={motivation:['guidance','devotion']};
 function buildQuestion(t,k,opts){
+  const ban=BAN_OPT[String(t.word).toLowerCase()];
+  for(let i=0;i<8;i++){
+    const b=buildQuestionRaw(t,k,opts);
+    if(!b||!ban||!b.distractors||!b.distractors.some(x=>ban.indexOf(String(x).toLowerCase())!==-1))return b;
+  }
+  return null;
+}
+function buildQuestionRaw(t,k,opts){
   let q,correct,d,exu;
   if(k===0){
     const tp=parts(t.tr);
