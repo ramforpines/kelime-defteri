@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.146.4';
+const APP_VERSION='4.146.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3198,6 +3198,19 @@ function examOne(it,qz,first,al){
     S.exq[h]=f0|1|(grant?2:0);
   EXNOPT=false;EXNOST=false;
 }
+/* parça sınavlarında (Tanım, Boşluk vb.) ve karışık sınavlarda çözülen sorular, 'tüm ünite' testinin kalan sayısından düşer ve orada tekrar çıkmaz */
+function exMarkDone(qz){
+  try{
+    const id=String(qz.exam||'').split(':')[0];S.exc=S.exc||{};
+    const mark=(uid,items)=>{const m=S.exc[uid]||(S.exc[uid]={});items.forEach(it=>{if(it.chosen!==null||it.ok!=null)m[exCid(it)]=1})};
+    if(exU(id)){mark(id,qz.items);return}
+    if(id==='all'){
+      (window.EXAM||[]).forEach(u=>{
+        const pl=EXPOOL[u.id];if(!pl)return;const set=new Set(pl),m=S.exc[u.id]||(S.exc[u.id]={});
+        qz.items.forEach(it=>{const c=exCid(it);if(set.has(c))m[c]=1})});
+    }
+  }catch(e){}
+}
 function examSave(qz){
   S.ex=S.ex||{};S.exq=S.exq||{};
   if(qz.chunk){save();return}   // parçalı ünite sınavı: her cevap anında işlendi
@@ -3205,6 +3218,7 @@ function examSave(qz){
   const right=qz.items.filter(i=>i.ok).length;
   const al={n:first?1e9:Math.max(0,right-old.b)};   // ilk çözümde hepsi; sonra yalnızca önceki en iyiden fazla doğrular puan ve ilerleme getirir
   qz.items.forEach(it=>examOne(it,qz,first,al));
+  exMarkDone(qz);
   qz.score=qz.items.reduce((t,i)=>t+(i.ok?(i.wt||1):0),0);
   if(!old||old.n!==n||right>old.b||(qz.exam==='mock'&&qz.score>(old.sc||0)))S.ex[qz.exam]=Object.assign({b:Math.max(right,old&&old.n===n?old.b:0),n,d:today()},qz.exam==='mock'?{sc:Math.max(qz.score,old&&old.sc||0)}:{});
   save();
