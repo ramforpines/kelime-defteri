@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.146.6';
+const APP_VERSION='4.146.7';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3202,12 +3202,17 @@ function examOne(it,qz,first,al){
 function exMarkDone(qz){
   try{
     const id=String(qz.exam||'').split(':')[0];S.exc=S.exc||{};
-    const mark=(uid,items)=>{const m=S.exc[uid]||(S.exc[uid]={});items.forEach(it=>{if(it.chosen!==null||it.ok!=null)m[exCid(it)]=1})};
+    const mark=(uid,items)=>{const m=S.exc[uid]||(S.exc[uid]={});items.forEach(it=>{
+      if(it.chosen===null&&it.ok==null)return;
+      m[exCid(it)]=1;
+      if(!it.noW&&it.w&&isWF(it.f)){const pf=exPoolF(it.w);if(pf!==null)m['w|'+it.w.word+'|'+pf]=1}   // kelime testinde soru türü rastgele: havuzdaki karşılığı da çözülmüş sayılır
+    })};
     if(exU(id)){mark(id,qz.items);return}
     if(id==='all'){
       (window.EXAM||[]).forEach(u=>{
         const pl=EXPOOL[u.id];if(!pl)return;const set=new Set(pl),m=S.exc[u.id]||(S.exc[u.id]={});
-        qz.items.forEach(it=>{const c=exCid(it);if(set.has(c))m[c]=1})});
+        qz.items.forEach(it=>{const c=exCid(it);if(set.has(c))m[c]=1;
+          if(!it.noW&&it.w&&isWF(it.f)){const pf=exPoolF(it.w),c2=pf===null?'':'w|'+it.w.word+'|'+pf;if(c2&&set.has(c2))m[c2]=1}})});
     }
   }catch(e){}
 }
@@ -3225,8 +3230,10 @@ function examSave(qz){
 }
 const exCid=it=>it.noW||!isWF(it.f)?exH(it.question+'|'+it.correct):'w|'+it.w.word+'|'+it.f;
 const EXPOOL={};
+const exHs=w=>{let x=0;for(let i=0;i<w.length;i++)x=(x*31+w.charCodeAt(i))>>>0;return x};
+const exPoolF=w=>{const fs=applicable(w).filter(isWF);return fs.length?fs[exHs(w.word)%fs.length]:null};   // ünite havuzunda bu kelimenin soru türü
 function exChunkPool(u){
-  const hs=w=>{let x=0;for(let i=0;i<w.length;i++)x=(x*31+w.charCodeAt(i))>>>0;return x};
+  const hs=exHs;
   const wt=[];
   exWords(u).forEach(w=>{const fs=applicable(w).filter(isWF);if(!fs.length)return;const f=fs[hs(w.word)%fs.length],it=makeItem(w,f,'exam');if(it)wt.push(it)});
   return exGap(u).concat(wt,exEx(u),exDef(u),exRead(u),exListen(u),exPh(u));
