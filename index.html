@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.147.4';
+const APP_VERSION='4.147.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1015,7 +1015,7 @@ setInterval(()=>{if(!document.hidden&&UI.tab==='today')loadStats()},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){appPing();loadStats()}});
 let POOLN=null;
 /* soru sayısı: tüm sözlüğün soru türlerini cihazda saymak 10+ sn sürüyor; sürüm hazırlanırken sayılıp buraya yazılır (POOL_Q) */
-const POOL_Q=70863;
+const POOL_Q=70764;
 function poolCount(){
   if(!POOLN){let r=0;(window.READINGS||[]).forEach(x=>{r+=(x.q||[]).length});POOLN={w:W.length,q:POOL_Q,r}}
   return POOLN;
