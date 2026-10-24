@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.146.0';
+const APP_VERSION='4.146.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1014,21 +1014,12 @@ setInterval(()=>{if(!document.hidden)appPing()},60000);
 setInterval(()=>{if(!document.hidden&&UI.tab==='today')loadStats()},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){appPing();loadStats()}});
 let POOLN=null;
-function poolCount(){   // 11 bin kelimenin soru türlerini saymak ağır: parça parça, boşta hesaplanır; sonuç sürüm başına saklanır
-  if(POOLN)return POOLN;
-  let r=0;(window.READINGS||[]).forEach(x=>{r+=(x.q||[]).length});
-  const ck='kd-pool-'+APP_VERSION+'-'+W.length;
-  try{const c=JSON.parse(localStorage.getItem(ck)||'null');if(c&&c.q>0){POOLN={w:W.length,q:c.q,r};return POOLN}}catch(e){}
-  if(!POOLN_RUN){POOLN_RUN=true;let i=0,q=0;const step=()=>{
-    const t=performance.now();
-    while(i<W.length&&performance.now()-t<12){q+=applicable(W[i]).length;i++}
-    if(i<W.length){(window.requestIdleCallback||setTimeout)(step,30);return}
-    POOLN={w:W.length,q,r};try{localStorage.setItem(ck,JSON.stringify({q}))}catch(e){}
-    try{quietRender2()}catch(e){}
-  };setTimeout(step,3000)}
-  return{w:W.length,q:0,r,pending:true};
+/* soru sayısı: tüm sözlüğün soru türlerini cihazda saymak 10+ sn sürüyor; sürüm hazırlanırken sayılıp buraya yazılır (POOL_Q) */
+const POOL_Q=70863;
+function poolCount(){
+  if(!POOLN){let r=0;(window.READINGS||[]).forEach(x=>{r+=(x.q||[]).length});POOLN={w:W.length,q:POOL_Q,r}}
+  return POOLN;
 }
-let POOLN_RUN=false;
 function statsCard(){
   const s=CLOUD.stats;
   if(!s)return CLOUD.statsErr?'':'';
@@ -1042,7 +1033,7 @@ function statsCard(){
   <div class="kpis">${k(s.solved_today,'bugün çözülen soru')}${k(s.solved_total,'şimdiye kadar çözülen soru')}${k(acc,'% doğru cevap oranı')}</div>
   <div class="kpis">${k(s.learned_today,'bugün öğrenilen kelime')}${k(s.learned_total,'toplam öğrenilen kelime')}${k(s.best_streak,'en uzun seri (gün)')}</div>
   <div class="kpis">${k(s.duels_today,'bugün oynanan düello')}${k(s.duels_total,'şimdiye kadar düello')}${k(s.msgs_today,'bugün sohbet mesajı')}</div>
-  <div class="kpis">${(pc=>k(pc.pending?'…':pc.q,'uygulamadaki soru (kelime testleri)'))(poolCount())}${k(poolCount().w,'uygulamadaki kelime')}${k(poolCount().r,'okuma parçası sorusu')}</div>
+  <div class="kpis">${k(poolCount().q,'uygulamadaki soru (kelime testleri)')}${k(poolCount().w,'uygulamadaki kelime')}${k(poolCount().r,'okuma parçası sorusu')}</div>
   ${s.leader?`<div class="small">🏆 Günün lideri: <b>${esc(s.leader.name)}</b> · ${nf(Math.round(s.leader.pts))} puan</div>`:''}
   ${s.duel_king?`<div class="small">⚔️ En çok düello kazanan: <b>${esc(s.duel_king.name)}</b> · ${s.duel_king.wins} galibiyet</div>`:''}
   <div class="stack" style="gap:4px"><span class="small muted">Lig dağılımı</span>${bars}</div></div>`;
