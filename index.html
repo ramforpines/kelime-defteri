@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.146.2';
+const APP_VERSION='4.146.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2357,6 +2357,7 @@ function senseQ1(t,s,st){
     const ts=cs.concat([t.word.toLowerCase()]),VS=new Set(validSyn(t));
     t.sn.forEach(z=>tl(z.s).forEach(x=>{VS.add(x);if(z!==s)ts.push(x)}));
     cs.forEach(x=>VS.add(x));
+    nb2(Array.from(VS)).forEach(x=>VS.add(x));
     const own=[];[t.syn].concat(t.sn.filter(x=>x!==s).map(x=>x.s)).forEach(x=>{if(!has(x))return;const c=toks(x)[0];if(c&&ts.indexOf(c)===-1&&cs.indexOf(c)===-1&&own.indexOf(c)===-1)own.push(c)});
     const ownOk=own.filter(c=>!cs.some(y=>y===c)&&!VS.has(c.toLowerCase()));
     const d=shuffle(ownOk).slice(0,2);
@@ -2373,7 +2374,7 @@ function senseQ1(t,s,st){
   return{question:b.question+'\n(Anlamı: '+ct+')',correct:b.correct,distractors:b.distractors};
 }
 /* Raporlanan hatalı şıklar: bu kelimenin sorularında şık olarak çıkmaz (cümleye de uyabilen şıklar). Kullanıcı raporlarına göre büyür */
-const BAN_OPT={motivation:['guidance','devotion']};
+const BAN_OPT={motivation:['guidance','devotion'],shift:['vary, oscillate','rotate','suppress, restrain']};
 function buildQuestion(t,k,opts){
   const ban=BAN_OPT[String(t.word).toLowerCase()];
   for(let i=0;i<8;i++){
@@ -2408,6 +2409,7 @@ function buildQuestionRaw(t,k,opts){
     q='"'+t.word+'" kelimesine anlamca en yakın olan hangisidir?';correct=t.syn;
     const ts=toks(t.syn).concat([t.word.toLowerCase()]),VS=new Set(validSyn(t));
     t.sn.forEach(z=>tl(z.s).forEach(x=>{VS.add(x);ts.push(x)}));   // ek anlamların eş anlamlıları da geçerli sayılır, şık olamaz
+    nb2(Array.from(VS)).forEach(x=>VS.add(x));   // ek anlamların eş anlamlılarının komşuları da (shift→change→vary) şık olamaz
     d=pickDistractors(t,r=>r.syn,r=>has(r.syn)&&r.syn.toLowerCase()!==t.syn.toLowerCase()&&r.syn.toLowerCase()!==t.ant.toLowerCase()&&!toks(r.syn).some(x=>ts.indexOf(x)!==-1)&&!tl(r.syn).some(x=>VS.has(x))&&!related(t,r)&&!trClash(t,r),false,1);
   }else if(k===5){
     if(!has(t.ant))return null;
