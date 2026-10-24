@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.147.10';
+const APP_VERSION='4.147.11';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2949,10 +2949,10 @@ function exTrT(t){const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v
 function senseHtml(w){   // 2. ve 3. anlamlar: Türkçe, tanım, örnek (+çevirisi), eş anlam
   return(w.sn||[]).map((z,i)=>`<dt>${i+2}. anlam</dt><dd><b>${esc(z.t)}</b>${z.p&&z.p!==w.pos?` <span class="muted small">(${esc(z.p)})</span>`:''}<br><span class="small">${esc(z.d)}</span><br><i>${esc(z.e)}</i>${exTrT(z.e)}${has(z.s)?`<br><span class="small muted">Eş anlam: ${esc(z.s)}</span>`:''}</dd>`).join('');
 }
-function entryHtml(w){
-  const open=UI.dict.open===w.word;
+function entryHtml(w,fixed){   // fixed: vize kelime listesi, sözlükteki açık kayıtla aynı içerik
+  const open=fixed||UI.dict.open===w.word;
   const st=S.learned[w.word]?'<span class="badge ok">Öğrenildi</span>':S.wrong[w.word]?'<span class="badge bad">Tekrarda</span>':'';
-  return`<div class="entry"><button class="head" data-act="toggle" data-w="${esc(w.word)}" aria-expanded="${open}">
+  return`<div class="entry"><button class="head" ${fixed?'':`data-act="toggle" data-w="${esc(w.word)}" `}aria-expanded="${open}">
     <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def)}</span></span>
     <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
     ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${exTr(w)}</dd>${exMore(w)}
@@ -3319,7 +3319,7 @@ function vExam(){
     <button class="btn primary block" data-act="exam-start" data-v="${u.id}:all">Tüm ünite soruları${(()=>{const c=exChunkInfo(u,1);return c?`<span class="small" style="color:#fff;opacity:1">${exInfoText(c)}</span>`:`<span class="small" style="color:#fff;opacity:1" data-exinfo="${u.id}"> · soru sayısı hesaplanıyor…</span>`})()}</button>
     <div class="seg">${EXAM_PART.map(([p,l])=>`<button class="chip" data-act="exam-start" data-v="${u.id}:${p}">${l}${best(u.id+':'+p)}</button>`).join('')}</div>
     <button class="btn" data-act="exam-words" data-v="${u.id}">${UI.exw===u.id?'Kelimeleri gizle':'Kelimeleri gör'}</button>
-    ${UI.exw===u.id?ws.map(w=>`<div class="entry"><div class="row" style="justify-content:space-between"><span class="w">${esc(w.word)}</span>${lvTag(w.level)}</div><div class="tr">${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${w.ex?`<div class="small"><i>${esc(w.ex)}</i></div>`:''}</div>`).join(''):''}</div>`}).join('')}
+    ${UI.exw===u.id?ws.map(w=>entryHtml(w,true)).join(''):''}</div>`}).join('')}
   </div>`;
 }
 function vQuizSetup(){
