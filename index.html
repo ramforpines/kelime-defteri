@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.147.8';
+const APP_VERSION='4.147.9';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2838,11 +2838,23 @@ function vMaint(){
     ?`<div style="font-size:17px;font-weight:600;margin-bottom:6px">Günlük sunucu bakımı</div>Her gün <b>${st} – ${end}</b> (Türkiye saati) arasında sunucuyu bakıma alıyor, herkesin en güncel sürümle devam etmesini sağlıyoruz.<div style="margin-top:14px;font-size:18px;font-weight:700">Uygulama saat ${end}'da tekrar açılacak</div><div id="mtleft" class="muted" style="margin-top:4px">${maintLeftTxt()}</div><div style="margin-top:12px">Bu sayfayı açık bırakabilirsin; bakım bitince uygulama kendiliğinden açılır. İlerlemen kayıtlı, hiçbir şey kaybolmaz.</div>`
     :esc(MAINT.msg||'Sunucu bakımı yapılıyor. Kısa süre sonra tekrar açılacak. Bu sayfayı açık bırakabilirsin, bakım bitince uygulama kendiliğinden açılır.');
   return `<div class="empty" style="padding:48px 20px;text-align:center"><div style="font-size:20px;font-weight:700;margin-bottom:10px">Bakımdayız</div><div class="small" style="line-height:1.6;max-width:340px;margin:0 auto">${body}</div><div style="margin-top:28px"><button class="btn ghost small" data-act="maint-adm">Yönetici girişi</button></div></div>`}
+/* günlük bakım saati gelince açık olan herkes anında bakım ekranına düşer (yazı kutusu odakta olsa bile); bakım bitince sayfa yenilenir ve herkes güncel sürümle açılır */
+let MWIN=dailyWin();
+function maintTick(){
+  const w=dailyWin();if(w===MWIN)return;
+  MWIN=w;
+  if(w){
+    try{if(CLOUD.uid&&!CLOUD.admin){save();pushNow()}}catch(e){}
+    try{const a=document.activeElement;if(a&&a.blur)a.blur()}catch(e){}
+    render();
+  }else if(!MAINT.on){location.reload()}else render();
+}
+setInterval(maintTick,1000);document.addEventListener('visibilitychange',maintTick);
 setInterval(()=>{if(!document.hidden)maintCheck()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)maintCheck()});maintCheck();
 function render(){
   const app=$('#app');
   if(!AUTH.ready){fabUpdate();$('nav').hidden=true;app.innerHTML='<div class="empty">Yükleniyor…</div>';return}
-  if(maintBlocked()){fabUpdate();$('nav').hidden=true;app.innerHTML=vMaint();return}
+  if(maintBlocked()){fabUpdate();$('nav').hidden=true;app.innerHTML=vMaint();exAudioMount();return}
   if(!CLOUD.uid){fabUpdate();$('nav').hidden=true;app.innerHTML=vLogin();return}
   if(CLOUD.approved===false){fabUpdate();$('nav').hidden=true;app.innerHTML=vPending();return}
   const dlk=duelLock();
