@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.3';
+const APP_VERSION='4.149.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4353,7 +4353,8 @@ async function recalcPull(){
     r.data.forEach(x=>{
       const e=S.dl[x.id],dv=Math.round(+x.delta*10)/10,old=!x.done_at||Date.now()-new Date(x.done_at).getTime()>3*864e5;
       if(e&&e.p||(!e&&old)){
-        if(dv){const dy=dayStat();S.tp=Math.max(0,(S.tp||0)+dv);dy.adj=(dy.adj||0)+dv;evAdd(dy,'dr|'+x.id+'|rc',{t:'a',pts:dv});sum+=dv;n++;const k=String(x.note||'').slice(0,300),g=G[k]||(G[k]={sum:0,n:0});g.sum+=dv;g.n++}
+        if(dv){const dy=dayStat();S.tp=Math.max(0,(S.tp||0)+dv);evAdd(dy,'dr|'+x.id+'|rc',{t:'n',pts:dv});   // geriye dönük düzeltme yalnızca toplam puanı etkiler; bugünün günlük/haftalık puanına yazılmaz
+        sum+=dv;n++;const k=String(x.note||'').slice(0,300),g=G[k]||(G[k]={sum:0,n:0});g.sum+=dv;g.n++}
         ids.push(x.id)}
       else if(e&&!e.p)ids.push(x.id);   // maç henüz işlenmedi: yeni değer doğrudan işlenecek, fark gerekmez
     });
