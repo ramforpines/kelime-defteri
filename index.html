@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.9';
+const APP_VERSION='4.149.10';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4073,7 +4073,7 @@ const dRng=(me,op)=>({win:Math.min(dRisk(op),3*dRisk(me)),lose:Math.min(dRisk(me
 const dLgN=p=>{let k=0;for(let i=0;i<=7;i++)if(p>=LEAGUES[i].min)k=i;return LEAGUES[k].n};
 const dPen=(lv,ms,to,rk)=>rk?-Math.round(0.66*dPenBase(lv,to?DQ_T*1000:ms)):-Math.round(75*(COEF[lv]||1)*(to?0.5:1));   // dereceli: yanlış = doğru puanın %66'sı, eksi işaretli; süre dolması: en yavaş cevap (hız 1,00). klasik: eski kural, −75 × seviye, süre dolması yarısı
 // maç, kendi gününe yazılır (eski maç işleme anındaki güne yığılmasın); olay kaydında varsa tekrar işlenmez
-const dyOf=d=>{const k=d&&d.created_at?new Date(d.created_at).toLocaleDateString('sv-SE'):today();return dayStat(k>today()?today():k)};
+const dyOf=d=>{const ms=d&&d.created_at?Date.parse(d.created_at):0;if(!ms||Date.now()-ms<12*36e5)return dayStat();const k=new Date(ms).toLocaleDateString('sv-SE');return dayStat(k>today()?today():k)};   // 12 saatten yeni maç (gece yarısı geçen maç dahil) bugüne, eski maç kendi gününe
 function duelSeen(id,rk){const o={},A=Object.keys(S.days||{});A.forEach(k=>{const ev=(S.days[k]||{}).ev;if(!ev)return;if(rk){if(ev['dr|'+id]){o.s=1;o.p=1}}else{if(ev['ds|'+id])o.s=1;if(ev['dp|'+id])o.p=1}});return o}
 function duelApply(rows){
   if(!S.dl)S.dl={};
@@ -4146,10 +4146,10 @@ async function fixOldDuelDays(){
     ks.forEach(k=>{const ev=(S.days[k]||{}).ev||{};Object.keys(ev).forEach(x=>{const m=x.match(/^(dr|dp|ds)\|([0-9a-f-]{36})$/);if(m&&ev[x].t!=='n')ids[m[2]]=1})});
     const L=Object.keys(ids);if(!L.length){S.odf=1;save();return}
     const day={};
-    for(let i=0;i<L.length;i+=40){const r=await sb.from('duels').select('id,created_at').in('id',L.slice(i,i+40));if(r.error)return;(r.data||[]).forEach(d=>{day[d.id]=new Date(d.created_at).toLocaleDateString('sv-SE')})}
+    for(let i=0;i<L.length;i+=40){const r=await sb.from('duels').select('id,created_at').in('id',L.slice(i,i+40));if(r.error)return;(r.data||[]).forEach(d=>{day[d.id]=Date.parse(d.created_at)})}
     let n=0;
     ks.forEach(k=>{const dy=S.days[k],ev=dy.ev||{};Object.keys(ev).forEach(x=>{const m=x.match(/^(dr|dp|ds)\|([0-9a-f-]{36})$/),r=ev[x];
-      if(!m||r.t==='n'||!day[m[2]]||day[m[2]]>=k)return;
+      if(!m||r.t==='n'||!day[m[2]]||day[m[2]]>=Date.parse(k+'T00:00:00')-12*36e5)return;
       if(r.t==='p')dy.p=r1((dy.p||0)-r.pts);else if(r.t==='a')dy.adj=r1((dy.adj||0)-r.pts);
       ev[x]={t:'n',pts:r.pts};n++})});
     S.odf=1;save();if(n){delete DSTAT[CLOUD.uid];loadWins().then(()=>render())}
