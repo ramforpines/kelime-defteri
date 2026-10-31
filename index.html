@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.7';
+const APP_VERSION='4.149.8';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2900,6 +2900,16 @@ function reqCard(){
   const q=reqFor(),c=dayStat().c,ok=c>=q.n,RQ=restQuota(),rl=Math.max(0,RQ-missedBefore(today(),q.n)),pen=(S.pen||[]).slice(-1)[0],pn=pen&&pen.d>=addDays(today(),-2)?`<div class="small" style="color:var(--bad)">Son kesinti: ${fmt(pen.d)} günü ${pen.did}/${pen.need} doğru, −${nf(pen.amt)} puan.</div>`:'';
   return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Günlük asgari hedef</b><span class="badge ${ok?'ok':'warn'}">${Math.min(c,q.n)}/${q.n} doğru</span></div><div class="bar" aria-hidden="true"><i style="width:${Math.min(100,c/q.n*100)}%"></i></div><div class="small muted">${ok?'Bugünkü asgari hedefi tamamladın, kesinti olmayacak.':rl>0?'Gün bitmeden '+q.n+' doğru yapmazsan bu haftaki izin günlerinden biri kullanılır, kesinti olmaz.':'Gün bitmeden '+q.n+' doğru yapmazsan toplam puanının %'+(q.r*100)+'\'i kesilir.'}</div><div class="small muted">İzin günü hakkın (bu hafta): ${rl}/${RQ}</div>${pn}</div>`;
 }
+function penHist(){
+  const lim=addDays(today(),-14),L=[];
+  (S.pen||[]).forEach(x=>{if(x.d>=lim)L.push({d:x.d,amt:x.amt,why:'Günlük asgari hedef tutmadı ('+(x.did|0)+'/'+(x.need|0)+' doğru)'})});
+  const R={};(S.rpen||[]).forEach(x=>{if(x.d>=lim){const k=R[x.d]||(R[x.d]={d:x.d,amt:0,n:0});k.amt+=x.amt;k.n++}});
+  Object.keys(R).forEach(k=>L.push({d:k,amt:r1(R[k].amt),why:'Zorunlu dereceli maç eksik ('+R[k].n+' maç)'}));
+  if(!L.length)return'';
+  L.sort((a,b)=>a.d<b.d?1:a.d>b.d?-1:0);
+  const sum=r1(L.reduce((t,x)=>t+x.amt,0));
+  return`<details class="card"><summary><b>Ceza geçmişim</b> <span class="small muted">son 14 gün: −${nf(sum)} puan</span></summary><div class="stack" style="margin-top:8px">${L.slice(0,12).map(x=>`<div class="row small" style="justify-content:space-between;gap:8px"><span>${fmt(x.d)} · ${x.why}</span><b style="color:var(--bad);white-space:nowrap">−${nf(x.amt)}</b></div>`).join('')}<div class="small muted">Cezalar yalnızca toplam puandan düşer; günlük ve haftalık puanını etkilemez. Kesinti, o günün sonunda ertesi gün uygulamaya girdiğinde işlenir.</div></div></details>`;
+}
 function vToday(){
   if(CLOUD.ann&&CLOUD.ann.updated_at!==annSeen()){const u=CLOUD.ann.updated_at;setTimeout(()=>seenSet('ann',u),4000)}
   const d=dayStat(),g=goalEff(),p=g?d.c/g:0;
@@ -2919,7 +2929,7 @@ function vToday(){
   ${wds.length?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimeleri</span><span class="badge ${wq.left?'':'ok'}">${wq.done}/${wq.total} soru</span></div>
     ${wds.map(wd=>`<div class="stack" style="gap:2px;padding-top:8px;border-top:1px solid var(--line)"><div class="row" style="justify-content:space-between"><span class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span></span>${lvTag(wd.level)}</div><div class="row"><span>${esc(wd.tr)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i>${exTr(wd)}</div></div>`).join('')}
     <div class="small muted">${wq.left?'Çözdüğün testlerde her 10 soruda 1 soru bu kelimelerden gelir. Bugün '+wq.left+' soru kaldı.':'Günün kelimelerinin tüm sorularını çözdün.'}</div></div>`:''}
-  ${reqCard()}${profilePrompt()}${myRankLine()}${leadersCard()}
+  ${reqCard()}${penHist()}${profilePrompt()}${myRankLine()}${leadersCard()}
   ${reminderCard()}
   ${statsCard()}
   </div>`;
