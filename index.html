@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.5';
+const APP_VERSION='4.149.6';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4052,19 +4052,22 @@ const dRisk=p=>Math.round(p*dRate(p)*10)/10;   // kaybedenin riski = puan × lig
 const dRng=(me,op)=>({win:Math.min(dRisk(op),3*dRisk(me)),lose:Math.min(dRisk(me),3*dRisk(op))});   // kazanan kendi riskinin 3 katından fazlasını alamaz
 const dLgN=p=>{let k=0;for(let i=0;i<=7;i++)if(p>=LEAGUES[i].min)k=i;return LEAGUES[k].n};
 const dPen=(lv,ms,to,rk)=>rk?-Math.round(0.66*dPenBase(lv,to?DQ_T*1000:ms)):-Math.round(75*(COEF[lv]||1)*(to?0.5:1));   // dereceli: yanlış = doğru puanın %66'sı, eksi işaretli; süre dolması: en yavaş cevap (hız 1,00). klasik: eski kural, −75 × seviye, süre dolması yarısı
+// maç, kendi gününe yazılır (eski maç işleme anındaki güne yığılmasın); olay kaydında varsa tekrar işlenmez
+const dyOf=d=>{const k=d&&d.created_at?new Date(d.created_at).toLocaleDateString('sv-SE'):today();return dayStat(k>today()?today():k)};
+function duelSeen(id,rk){const o={},A=Object.keys(S.days||{});A.forEach(k=>{const ev=(S.days[k]||{}).ev;if(!ev)return;if(rk){if(ev['dr|'+id]){o.s=1;o.p=1}}else{if(ev['ds|'+id])o.s=1;if(ev['dp|'+id])o.p=1}});return o}
 function duelApply(rows){
   if(!S.dl)S.dl={};
   let ch=false,msg='';
   (rows||[]).forEach(d=>{
     if(d.status==='test')return;   // test maçları gerçek puana asla işlenmez
-    const e=S.dl[d.id]||(S.dl[d.id]={});
+    const e=S.dl[d.id]||(S.dl[d.id]=duelSeen(d.id,d.mode==='ranked'));   // S.dl kaybolsa bile olay kaydında varsa maç yeniden işlenmez
     if(d.mode==='ranked'){
       if(d.status==='done'&&!e.rf){
         // hatalı sonuç: iki tarafın da skoru 0 ya da altı (kimse puan almadı) ama puan geçişi yapılmış → iade
         const m0=d.p1===CLOUD.uid?d.dl1:d.dl2;
         if(m0!=null&&+m0!==0&&+d.s1<=0&&+d.s2<=0){
           e.rf=1;e.s=1;
-          if(e.p){const v=Math.round(+m0*10)/10,dy=dayStat();
+          if(e.p){const v=Math.round(+m0*10)/10,dy=dyOf(d);
             S.tp=Math.max(0,(S.tp||0)-v);dy.adj=(dy.adj||0)-v;evAdd(dy,'dr|'+d.id+'|rf',{t:'a',pts:-v});
             delete DSTAT[CLOUD.uid];loadWins().then(()=>render());
             ch=true;msg='Hatalı dereceli maç iade edildi: '+(v>0?'−':'+')+nf(r1(Math.abs(v)))+' puan'}
@@ -4074,7 +4077,7 @@ function duelApply(rows){
       if(d.status==='void'){
         const mine=d.p1===CLOUD.uid?d.dl1:d.dl2,m=Math.round(+mine*10)/10;
         if(mine!=null&&m!==0){
-          const pen=m<0&&d.void_by===CLOUD.uid,dy=dayStat();
+          const pen=m<0&&d.void_by===CLOUD.uid,dy=dyOf(d);
           if(!e.p){e.p=1;e.s=1;
             if(pen&&d.pen_rf){e.rf=1}
             else{
@@ -4088,7 +4091,7 @@ function duelApply(rows){
         return}
       if(d.status==='done'&&!e.p){
         const mine=d.p1===CLOUD.uid?d.dl1:d.dl2;
-        if(mine!=null){e.p=1;e.s=1;const v=Math.round(+mine*10)/10,dy=dayStat();
+        if(mine!=null){e.p=1;e.s=1;const v=Math.round(+mine*10)/10,dy=dyOf(d);
           if(v>0){if(dy.q==null)dy.q=dy.p||0;const g=capGain(v);S.tp=(S.tp||0)+g;dy.p=(dy.p||0)+v;evAdd(dy,'dr|'+d.id,{t:'p',pts:v})}   // toplam puan tavana kısılır, günlük puan kazanılan tutarın tamamını yazar
           else if(v<0){S.tp=Math.max(0,(S.tp||0)+v);dy.adj=(dy.adj||0)+v;evAdd(dy,'dr|'+d.id,{t:'a',pts:v})}
           delete DSTAT[CLOUD.uid];loadWins().then(()=>render());
@@ -4096,13 +4099,13 @@ function duelApply(rows){
       }
       return;
     }
-    if(!e.s){e.s=1;const dy=dayStat();S.tp=Math.max(0,(S.tp||0)-DSTAKE);dy.adj=(dy.adj||0)-DSTAKE;evAdd(dy,'ds|'+d.id,{t:'a',pts:-DSTAKE});ch=true}
+    if(!e.s){e.s=1;const dy=dyOf(d);S.tp=Math.max(0,(S.tp||0)-DSTAKE);dy.adj=(dy.adj||0)-DSTAKE;evAdd(dy,'ds|'+d.id,{t:'a',pts:-DSTAKE});ch=true}
     if(d.status==='done'&&!e.p){
       const mine=d.p1===CLOUD.uid?d.pay1:d.pay2;
-      if(mine!=null){e.p=1;const v0=+mine,v=v0>0?capGain(v0):v0,dy=dayStat();if(dy.q==null)dy.q=dy.p||0;S.tp=(S.tp||0)+v;dy.p=(dy.p||0)+v0;evAdd(dy,'dp|'+d.id,{t:'p',pts:v0});ch=true;msg='Düello: '+(v>=DSTAKE?'+':'')+nf(r1(v-DSTAKE))+' puan (net)'}
+      if(mine!=null){e.p=1;const v0=+mine,v=v0>0?capGain(v0):v0,dy=dyOf(d);if(dy.q==null)dy.q=dy.p||0;S.tp=(S.tp||0)+v;dy.p=(dy.p||0)+v0;evAdd(dy,'dp|'+d.id,{t:'p',pts:v0});ch=true;msg='Düello: '+(v>=DSTAKE?'+':'')+nf(r1(v-DSTAKE))+' puan (net)'}
     }
   });
-  const ks=Object.keys(S.dl);if(ks.length>80){ks.slice(0,ks.length-60).forEach(k=>{delete S.dl[k]})}
+  const ks=Object.keys(S.dl);if(ks.length>300){const keep=new Set((rows||[]).map(x=>x.id));ks.filter(k=>!keep.has(k)).slice(0,ks.length-200).forEach(k=>{delete S.dl[k]})}
   if(ch){save();if(msg)toast(msg);if(UI.tab==='quiz'&&UI.qmode==='duel')render()}
 }
 async function duelSync(){
