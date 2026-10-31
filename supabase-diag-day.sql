@@ -18,3 +18,13 @@ order by e.key;
 select u.state->'pen' as hedef_kesintileri, u.state->'rpen' as dereceli_kesintileri
 from public.profiles p join public.user_state u on u.user_id = p.user_id
 where p.username ilike '%kaan.bozdogan%';
+
+-- 4) Bugünkü düello kalemleri ve maçların gerçek tarihi (eski maç bugüne yazıldıysa created_at bugünden önce görünür)
+select e.key as kalem, e.value->>'t' as tur, e.value->>'pts' as puan,
+       d.mode, d.status, (d.created_at at time zone 'Europe/Istanbul') as mac_zamani
+from public.profiles p
+join public.user_state u on u.user_id = p.user_id
+cross join lateral jsonb_each(coalesce(u.state->'days'->'2026-10-31'->'ev', '{}'::jsonb)) e
+left join public.duels d on d.id::text = split_part(e.key, '|', 2)
+where p.username ilike '%kaan.bozdogan%' and split_part(e.key, '|', 1) in ('dr','dp','ds')
+order by d.created_at;
