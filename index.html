@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.4';
+const APP_VERSION='4.149.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -855,7 +855,15 @@ async function rqApply(){
     save();render();
   }catch(e){}finally{RQ.busy=false}
 }
+/* tek seferlik onarım: geriye dönük dereceli düzeltmeleri (…|rc) eskiden günlük puana (adj) yazılıyordu; artık yalnızca toplam puanı etkiler. Önceki yazılanları günlük/haftalık puandan geri al */
+function fixRcAdj(){
+  if(S.rcf)return;
+  try{Object.keys(S.days||{}).forEach(k=>{const dy=S.days[k],ev=dy&&dy.ev;if(!ev)return;
+    Object.keys(ev).forEach(id=>{const e=ev[id];if(e&&e.t==='a'&&/\|rc$/.test(id)){dy.adj=r1((dy.adj||0)-(+e.pts||0));e.t='n'}})});
+    S.rcf=1;save()}catch(err){}
+}
 function myPoints(){
+  fixRcAdj();
   const t0=today(),wk=weekKey(),D={A:0,C:0,pts:0},W={A:0,C:0,pts:0};
   const x=S.days[t0];if(x){D.A=x.a||0;D.C=x.c||0;D.pts=Math.max(-6000,(x.p||0)+(x.adj||0))}   // günlük puan eksiye inebilir (dereceli kaybı vb.)
   Object.keys(S.days).forEach(k=>{if(k>=wk){const y=S.days[k];W.A+=y.a||0;W.C+=y.c||0;W.pts+=(y.p||0)+(y.adj||0)}});
