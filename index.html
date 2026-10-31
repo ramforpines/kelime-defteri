@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.8';
+const APP_VERSION='4.149.9';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2900,15 +2900,25 @@ function reqCard(){
   const q=reqFor(),c=dayStat().c,ok=c>=q.n,RQ=restQuota(),rl=Math.max(0,RQ-missedBefore(today(),q.n)),pen=(S.pen||[]).slice(-1)[0],pn=pen&&pen.d>=addDays(today(),-2)?`<div class="small" style="color:var(--bad)">Son kesinti: ${fmt(pen.d)} günü ${pen.did}/${pen.need} doğru, −${nf(pen.amt)} puan.</div>`:'';
   return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Günlük asgari hedef</b><span class="badge ${ok?'ok':'warn'}">${Math.min(c,q.n)}/${q.n} doğru</span></div><div class="bar" aria-hidden="true"><i style="width:${Math.min(100,c/q.n*100)}%"></i></div><div class="small muted">${ok?'Bugünkü asgari hedefi tamamladın, kesinti olmayacak.':rl>0?'Gün bitmeden '+q.n+' doğru yapmazsan bu haftaki izin günlerinden biri kullanılır, kesinti olmaz.':'Gün bitmeden '+q.n+' doğru yapmazsan toplam puanının %'+(q.r*100)+'\'i kesilir.'}</div><div class="small muted">İzin günü hakkın (bu hafta): ${rl}/${RQ}</div>${pn}</div>`;
 }
+function penWarn(){
+  const q=reqFor(),c=dayStat().c,tp=S.tp||0,rl=Math.max(0,restQuota()-missedBefore(today(),q.n)),L=[];
+  const izin=rl>0?' (bu hafta '+rl+' izin günü hakkın var; kullanılırsa ceza yok)':'';
+  if(c<q.n)L.push('Bugün '+q.n+' doğru yapmazsan ('+c+'/'+q.n+'): <b>−'+nf(r1(tp*q.r))+' puan</b>'+izin);
+  const need=rqReq();
+  if(need>0&&RQ.today!=null){const m=need-RQ.today;
+    if(m>0){const one=r1(dRisk(tp)/2);L.push('Bugün '+need+' dereceli maç oynamalısın, '+RQ.today+' oynadın. Eksik her maç için <b>−'+nf(one)+' puan</b> (şu an '+m+' maç eksik: −'+nf(r1(one*m))+')'+izin)}}
+  return L.length?`<div class="small" style="margin-bottom:8px;padding:8px;border-radius:8px;background:rgba(232,178,74,.14)"><b>⚠️ Bugün bitmeden:</b><br>${L.join('<br>')}<br><span class="muted">Tutarlar şu anki toplam puanına göre hesaplanır, gece 00:00'da kesinleşir.</span></div>`:'';
+}
 function penHist(){
   const lim=addDays(today(),-14),L=[];
   (S.pen||[]).forEach(x=>{if(x.d>=lim)L.push({d:x.d,amt:x.amt,why:'Günlük asgari hedef tutmadı ('+(x.did|0)+'/'+(x.need|0)+' doğru)'})});
   const R={};(S.rpen||[]).forEach(x=>{if(x.d>=lim){const k=R[x.d]||(R[x.d]={d:x.d,amt:0,n:0});k.amt+=x.amt;k.n++}});
   Object.keys(R).forEach(k=>L.push({d:k,amt:r1(R[k].amt),why:'Zorunlu dereceli maç eksik ('+R[k].n+' maç)'}));
-  if(!L.length)return'';
+  const W=penWarn();
+  if(!L.length)return W?`<div class="card">${W}</div>`:'';
   L.sort((a,b)=>a.d<b.d?1:a.d>b.d?-1:0);
   const sum=r1(L.reduce((t,x)=>t+x.amt,0));
-  return`<details class="card"><summary><b>Ceza geçmişim</b> <span class="small muted">son 14 gün: −${nf(sum)} puan</span></summary><div class="stack" style="margin-top:8px">${L.slice(0,12).map(x=>`<div class="row small" style="justify-content:space-between;gap:8px"><span>${fmt(x.d)} · ${x.why}</span><b style="color:var(--bad);white-space:nowrap">−${nf(x.amt)}</b></div>`).join('')}<div class="small muted">Cezalar yalnızca toplam puandan düşer; günlük ve haftalık puanını etkilemez. Kesinti, o günün sonunda ertesi gün uygulamaya girdiğinde işlenir.</div></div></details>`;
+  return(W?`<div class="card">${W}</div>`:'')+`<details class="card"><summary><b>Ceza geçmişim</b> <span class="small muted">son 14 gün: −${nf(sum)} puan</span></summary><div class="stack" style="margin-top:8px">${L.slice(0,12).map(x=>`<div class="row small" style="justify-content:space-between;gap:8px"><span>${fmt(x.d)} · ${x.why}</span><b style="color:var(--bad);white-space:nowrap">−${nf(x.amt)}</b></div>`).join('')}<div class="small muted">Cezalar yalnızca toplam puandan düşer; günlük ve haftalık puanını etkilemez. Kesinti, o günün sonunda ertesi gün uygulamaya girdiğinde işlenir.</div></div></details>`;
 }
 function vToday(){
   if(CLOUD.ann&&CLOUD.ann.updated_at!==annSeen()){const u=CLOUD.ann.updated_at;setTimeout(()=>seenSet('ann',u),4000)}
