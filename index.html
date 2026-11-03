@@ -450,7 +450,7 @@ function optMean(o){
     return null;
   }
   if(!w.tr)return null;
-  return{nm,tr:String(w.tr).split(/[;,]/).slice(0,2).map(x=>x.trim()).filter(Boolean).join(', ')+(infl?' ('+infl+')':'')};
+  return{nm,sw:w.word,tr:String(w.tr).split(/[;,]/).slice(0,2).map(x=>x.trim()).filter(Boolean).join(', ')+(infl?' ('+infl+')':'')};
 }
 const OWNM={};
 function optOwner(t){
@@ -469,17 +469,18 @@ function optOwner(t){
   }
   return OWNM[t]=out;
 }
+function svBtn(w){return w?` <button class="say" data-act="sv-o" data-w="${esc(w)}" aria-label="Kaydet: ${esc(w)}" style="padding:0 8px">${isSaved(w)?'★ Kayıtlı':'☆ Kaydet'}</button>`:''}
 function optOwners(it){   // şıklar kelime değilse (Türkçe, tanım, eş/zıt anlam...) her şıkkın hangi kelimeye ait olduğunu gösterir
   if(!it.options||it.options.length<3)return'';
   const rows=it.options.map((o,i)=>({o,i,m:optOwner(o)}));
   if(rows.filter(r=>r.m.length).length<3)return'';
-  return`<div class="small" style="margin-top:8px"><b>Şıklar hangi kelimenin?</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m.length?' → '+r.m.map(a=>esc(a.w)+' <span class="muted">('+a.k+')</span>').join(', '):''}</div>`).join('')}</div>`;
+  return`<div class="small" style="margin-top:8px"><b>Şıklar hangi kelimenin?</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m.length?' → '+r.m.map(a=>esc(a.w)+' <span class="muted">('+a.k+')</span>'+svBtn(a.w)).join(', '):''}</div>`).join('')}</div>`;
 }
 function optMeans(it){
   if(!it.options||optMean(it.correct)===null)return optOwners(it);
   const rows=it.options.map((o,i)=>({o,i,m:optMean(o)}));
   if(rows.filter(r=>r.m).length<2)return'';
-  return`<div class="small" style="margin-top:8px"><b>Şıkların anlamı</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m?' — '+esc(r.m.tr):''}</div>`).join('')}</div>`;
+  return`<div class="small" style="margin-top:8px"><b>Şıkların anlamı</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m?' — '+esc(r.m.tr)+svBtn(r.m.sw):''}</div>`).join('')}</div>`;
 }
 
 /* ---------- yardımcılar ---------- */
@@ -498,7 +499,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.24';
+const APP_VERSION='4.149.25';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4893,6 +4894,7 @@ document.addEventListener('click',async e=>{
     case'home':UI.quiz=null;setTab('today');break;
     case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=UI.tab==='saved'?savedList():dictList();break}
     case'sv-w':{const w=g('data-w');toggleSaved(w);toast(isSaved(w)?'Kaydedildi.':'Kayıttan çıkarıldı.');if(UI.tab==='saved'&&!isSaved(w))UI.dict.open=null;const dl=$('#dlist');if(dl)dl.innerHTML=UI.tab==='saved'?savedList():dictList();if(UI.tab==='saved'){const t=document.querySelector('.top .muted');if(t)t.textContent=nf(savedWords().length)+' kelime'}break}
+    case'sv-o':{const w=g('data-w');if(w){toggleSaved(w);toast(isSaved(w)?'Kaydedildi: Çalışma → Kaydedilenler':'Kayıttan çıkarıldı.');render()}break}
     case'sv-q':{const q2=UI.quiz;if(q2){const w=q2.items[q2.i].w.word;toggleSaved(w);toast(isSaved(w)?'Kaydedildi: Çalışma → Kaydedilenler':'Kayıttan çıkarıldı.');render()}break}
     case'more':UI.dict.limit+=40;$('#dlist').innerHTML=dictList();break;
     case'unlearn':{const w=g('data-w');delete S.learned[w];save();render();toast('Kelime tekrar öğrenilecekler arasına alındı.');break}
