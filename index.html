@@ -503,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.150.3';
+const APP_VERSION='4.150.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4272,8 +4272,8 @@ const rkCan=()=>!rkLive()||rkOpenAt(dNow())||!!CLOUD.admin;   // yönetici testi
 function rkBanner(){
   if(!rkLive())return'';
   const n=dNow(),o=rkOpenAt(n);
-  if(o){const c=rkEdge(n,false);return`<div class="fb ok" id="rkbn"><b>🟢 Dereceli pencere AÇIK</b><div class="small">Kapanışa <b id="rkcd">${rkDur(c-n)}</b> (${rkHM(c)}). Başlayan maçlar pencere kapansa da biter.</div></div>`}
-  const x=rkEdge(n,true);return`<div class="fb bad" id="rkbn"><b>🔴 Dereceli düello şu an kapalı</b><div class="small">Sonraki pencere <b>${rkHM(x)}</b> · <b id="rkcd">${rkDur(x-n)}</b> sonra. Klasik düello her zaman açık.${CLOUD.admin?' (Yönetici: pencere dışında da girebilirsin.)':''}</div></div>`}
+  if(o){const c=rkEdge(n,false);return`<div class="fb ok" id="rkbn"><b>🟢 DERECELİ DÜELLO AÇIK</b><div class="small">KAPANIŞA <b id="rkcd">${rkDur(c-n)}</b> (${rkHM(c)})</div></div>`}
+  const x=rkEdge(n,true);return`<div class="fb bad" id="rkbn"><b>🔴 DERECELİ DÜELLO ŞU AN KAPALI</b><div class="small">SONRAKİ PENCERE <b>${rkHM(x)}</b> · <b id="rkcd">${rkDur(x-n)}</b> SONRA</div></div>`}
 const RK={prev:null,warn:null,qc:null,qcT:0};
 function rkTick(){   // saniyede bir: geri sayımı günceller, pencere açılınca/açılmadan önce bildirir
   try{if(!CLOUD.uid||!rkLive())return;
