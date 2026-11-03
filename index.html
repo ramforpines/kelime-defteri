@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.11';
+const APP_VERSION='4.149.12';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2365,7 +2365,7 @@ function senseQ1(t,s,st){
     const more=pickDistractors(t,r=>r.def,r=>r.def&&!similarText(s.d,r.def)&&!defClash(t,r)&&!trClash(t,r)&&!related(t,r),false,2).filter(x=>![t.def].concat(t.sn.map(z=>z.d)).some(y=>similarText(y,x)||y.toLowerCase()===x.toLowerCase()));
     const d=more.slice(0,3);
     if(d.length<3)return null;
-    return{question:'"'+t.word+'" kelimesinin İngilizce tanımı hangisidir?',correct:s.d,distractors:d};
+    return{question:'İngilizce "'+t.word+'" kelimesinin (Türkçe değil) İngilizce tanımı hangisidir?',correct:s.d,distractors:d};
   }
   if(st===3){   // bu cümledeki anlama en yakın kelime
     if(!has(s.s))return null;
@@ -2412,7 +2412,7 @@ function buildQuestionRaw(t,k,opts){
     q='"'+t.word+'" kelimesinin Türkçe karşılığı hangisidir?';correct=t.tr;
     d=pickDistractors(t,r=>r.tr,r=>r.tr&&!trClash(t,r)&&!related(t,r),true,1);
   }else if(k===1){
-    q='"'+t.word+'" kelimesinin İngilizce tanımı hangisidir?';correct=t.def;
+    q='İngilizce "'+t.word+'" kelimesinin (Türkçe değil) İngilizce tanımı hangisidir?';correct=t.def;
     d=pickDistractors(t,r=>r.def,r=>r.def&&r.def.toLowerCase()!==t.def.toLowerCase()&&!similarText(t.def,r.def)&&!defClash(t,r)&&!related(t,r),false,2);
   }else if(k===3){
     const ca=clozeAlt(t);if(!ca)return null;
