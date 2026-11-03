@@ -1,6 +1,6 @@
 -- DERECELİ DÜELLO: saat pencereleri + toplu eşleştirme (5 sn toplama, farklı rakip önceliği, 30 sn kuyruk) + kuyruk sayacı
 -- Supabase SQL Editor'da bir kez çalıştırın. Klasik düello etkilenmez.
--- Devreye girme: yönetici hesapları hemen, diğer herkes 04.11.2026 00:00 (TR) itibarıyla (rk_live fonksiyonundaki tarih).
+-- Devreye girme: yönetici hesapları hemen, diğer herkes 03.11.2026 (hemen) itibarıyla (rk_live fonksiyonundaki tarih).
 -- Yönetici testi için pencere dışında da girebilsin diye rk_cfg'de admin_bypass='on' gelir. Kapatmak için:
 --   update public.rk_cfg set val = 'off' where key = 'admin_bypass';
 
@@ -43,7 +43,7 @@ $$;
 -- 2) devreye girme: yönetici hemen, herkes için 04.11.2026 00:00 TR
 create or replace function public.rk_live() returns boolean
 language sql stable security definer set search_path = public as $$
-  select public.is_admin() or now() >= timestamptz '2026-11-04 00:00:00+03'
+  select public.is_admin() or now() >= timestamptz '2026-11-03 00:00:00+03'
 $$;
 
 -- kullanıcı için dereceli arama şu an açık mı (yönetici testi: admin_bypass)
