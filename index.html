@@ -503,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.26';
+const APP_VERSION='4.149.27';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3013,7 +3013,7 @@ function dictList(){
   const f=dictFiltered(),D=UI.dict;
   const shown=f.slice(0,D.limit);
   return`<div class="muted small" style="margin:2px 2px 0">${nf(f.length)} kelime</div>`+
-    (shown.length?shown.map(entryHtml).join(''):'<div class="empty">Bu filtrelerle kelime bulunamadı.</div>')+
+    (shown.length?shown.map(w=>entryHtml(w)).join(''):'<div class="empty">Bu filtrelerle kelime bulunamadı.</div>')+
     (f.length>shown.length?`<button class="btn block" data-act="more">Daha fazla göster (${nf(f.length-shown.length)})</button>`:'');
 }
 function chips(name,vals,cur){
@@ -3021,7 +3021,7 @@ function chips(name,vals,cur){
 }
 function savedList(){
   const L=savedWords();
-  return`<div class="muted small" style="margin:2px 2px 0">${nf(L.length)} kelime</div>`+(L.length?L.map(entryHtml).join(''):'<div class="empty card">Henüz kaydettiğin kelime yok. Test sorusunda ya da Sözlük\'te bir kelimenin altındaki "Kaydet" düğmesine bas.</div>');
+  return`<div class="muted small" style="margin:2px 2px 0">${nf(L.length)} kelime</div>`+(L.length?L.map(w=>entryHtml(w)).join(''):'<div class="empty card">Henüz kaydettiğin kelime yok. Test sorusunda ya da Sözlük\'te bir kelimenin altındaki "Kaydet" düğmesine bas.</div>');
 }
 function vSaved(){
   return`<div class="top"><h1>Kaydedilenler</h1><span class="muted small">${nf(savedWords().length)} kelime</span></div>
