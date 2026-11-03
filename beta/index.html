@@ -503,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.150.1';
+const APP_VERSION='4.150.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2875,8 +2875,20 @@ async function maintCheck(){
     const j=await r.json();const on=!!j.on,msg=String(j.msg||'').slice(0,300);
     if(Array.isArray(j.daily)&&j.daily.length===2&&j.daily.every(x=>/^\d{1,2}:\d{2}$/.test(x)))MAINT.daily=j.daily;else if(j.daily===false)MAINT.daily=['00:00','00:00'];
     const eff=on||dailyWin();
-    if(on!==MAINT.on||msg!==MAINT.msg||eff!==MAINT.eff){MAINT.on=on;MAINT.msg=msg;MAINT.eff=eff;if(!eff)MAINT.adm=false;quietRender2()}
+    if(on!==MAINT.on||msg!==MAINT.msg||eff!==MAINT.eff){const was=MAINT.eff;MAINT.on=on;MAINT.msg=msg;MAINT.eff=eff;if(!eff)MAINT.adm=false;
+      if(eff&&!was&&maintBlocked())maintKick();                       // bakım başladı: herkesi uygulamadan çıkar
+      else if(!eff&&was&&!dailyWin())setTimeout(()=>location.reload(),Math.floor(Math.random()*20000));   // bakım bitti: zorla yenile, güncel sürümle açılsın
+      else quietRender2()}
   }catch(e){}
+}
+function maintKick(){   // bakım başlayınca: ilerlemeyi kaydet, kuyruktan çık, bildirim gönder, ekranı bakıma düşür
+  try{if(CLOUD.uid&&!CLOUD.admin){save();pushNow()}}catch(e){}
+  try{if(DUEL.phase==='find'||DUEL.find)duelCancel()}catch(e){}
+  try{const a=document.activeElement;if(a&&a.blur)a.blur()}catch(e){}
+  try{if(window.Notification&&Notification.permission==='granted'){const t='Kelime Defteri bakımda',o={body:'Sunucu bakıma alındı, uygulama bakım bitince kendiliğinden açılacak.',tag:'kd-maint',renotify:true};
+    if(navigator.serviceWorker&&navigator.serviceWorker.ready)navigator.serviceWorker.ready.then(r=>r.showNotification(t,o)).catch(()=>{try{new Notification(t,o)}catch(e){}});else new Notification(t,o)}}catch(e){}
+  try{toast('Sunucu bakıma alındı')}catch(e){}
+  render();
 }
 const maintBlocked=()=>(MAINT.on||dailyWin())&&!(CLOUD.uid&&CLOUD.admin)&&!(MAINT.adm&&!CLOUD.uid);
 function maintLeft(){   // günlük bakımın bitmesine kalan dakika (Türkiye saati)
@@ -2903,7 +2915,7 @@ function maintTick(){
   }else if(!MAINT.on){setTimeout(()=>location.reload(),Math.floor(Math.random()*40000))}else render();   // herkes aynı anda yenilemesin: sunucuya yığılma olmasın
 }
 setInterval(maintTick,1000);document.addEventListener('visibilitychange',maintTick);
-setInterval(()=>{if(!document.hidden)maintCheck()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)maintCheck()});maintCheck();
+setInterval(()=>{if(!document.hidden)maintCheck()},10000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)maintCheck()});maintCheck();
 function render(){
   const app=$('#app');
   if(!AUTH.ready){fabUpdate();$('nav').hidden=true;app.innerHTML='<div class="empty">Yükleniyor…</div>';return}
