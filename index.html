@@ -454,7 +454,7 @@ function optMean(o){
     return null;
   }
   if(!w.tr)return null;
-  return{nm,tr:String(w.tr).split(/[;,]/).slice(0,2).map(x=>x.trim()).filter(Boolean).join(', ')+(infl?' ('+infl+')':'')};
+  return{nm,sw:w.word,tr:String(w.tr).split(/[;,]/).slice(0,2).map(x=>x.trim()).filter(Boolean).join(', ')+(infl?' ('+infl+')':'')};
 }
 const OWNM={};
 function optOwner(t){
@@ -473,17 +473,18 @@ function optOwner(t){
   }
   return OWNM[t]=out;
 }
+function svBtn(w){return w?` <button class="say" data-act="sv-o" data-w="${esc(w)}" aria-label="Kaydet: ${esc(w)}" style="padding:0 8px">${isSaved(w)?'★ Kayıtlı':'☆ Kaydet'}</button>`:''}
 function optOwners(it){   // şıklar kelime değilse (Türkçe, tanım, eş/zıt anlam...) her şıkkın hangi kelimeye ait olduğunu gösterir
   if(!it.options||it.options.length<3)return'';
   const rows=it.options.map((o,i)=>({o,i,m:optOwner(o)}));
   if(rows.filter(r=>r.m.length).length<3)return'';
-  return`<div class="small" style="margin-top:8px"><b>Şıklar hangi kelimenin?</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m.length?' → '+r.m.map(a=>esc(a.w)+' <span class="muted">('+a.k+')</span>').join(', '):''}</div>`).join('')}</div>`;
+  return`<div class="small" style="margin-top:8px"><b>Şıklar hangi kelimenin?</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m.length?' → '+r.m.map(a=>esc(a.w)+' <span class="muted">('+a.k+')</span>'+svBtn(a.w)).join(', '):''}</div>`).join('')}</div>`;
 }
 function optMeans(it){
   if(!it.options||optMean(it.correct)===null)return optOwners(it);
   const rows=it.options.map((o,i)=>({o,i,m:optMean(o)}));
   if(rows.filter(r=>r.m).length<2)return'';
-  return`<div class="small" style="margin-top:8px"><b>Şıkların anlamı</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m?' — '+esc(r.m.tr):''}</div>`).join('')}</div>`;
+  return`<div class="small" style="margin-top:8px"><b>Şıkların anlamı</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m?' — '+esc(r.m.tr)+svBtn(r.m.sw):''}</div>`).join('')}</div>`;
 }
 
 /* ---------- yardımcılar ---------- */
@@ -502,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.10';
+const APP_VERSION='4.150.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1239,6 +1240,7 @@ const ADS=[{id:'erol-kafe',name:'Mehmet Erol Kafe',svg:()=>{
 <g class="ad-in" style="--d:1.9s"><rect x="40" y="470" width="280" height="2" fill="#fff" opacity=".0"/></g>
 ${sp(30,150,9,0)}${sp(330,95,8,.6)}${sp(188,150,7,1.1)}${sp(52,330,8,.3)}${sp(320,340,9,.9)}${sp(210,250,6,1.4)}${sp(150,400,7,.5)}${sp(228,395,6,1.7)}${sp(340,230,7,1.2)}${sp(15,260,6,.8)}
 </svg>`}}];
+ADS.push({id:'rk-saat',name:'Dereceli düello saatleri',once:true,html:()=>rkAdHtml()});
 function adCss(){return`
 #adov{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(20,12,6,.62);backdrop-filter:blur(3px);animation:adfade .25s ease both}
 #adov .adb{position:relative;width:min(92vw,400px);max-height:92vh;border-radius:22px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);border:3px solid #ffe29a;background:#fff;animation:adbox .45s cubic-bezier(.2,1.3,.4,1) both}
@@ -1262,17 +1264,47 @@ function adCss(){return`
 @keyframes adsw{0%{transform:translateX(0) skewX(-20deg)}60%,100%{transform:translateX(520px) skewX(-20deg)}}
 @keyframes adfade{from{opacity:0}to{opacity:1}}
 @keyframes adbox{from{opacity:0;transform:scale(.85) translateY(20px)}to{opacity:1;transform:none}}
+#adov .adb.rka{overflow:auto;border-color:#f2c14e;background:#3a0510}
+.rkad{position:relative;padding:20px 14px 14px;text-align:center;color:#fff;font-family:system-ui,'Segoe UI',Arial,sans-serif;background:radial-gradient(120% 60% at 50% 0%,rgba(255,170,90,.35),rgba(0,0,0,0) 70%),linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,0) 22%,rgba(0,0,0,0) 78%,rgba(0,0,0,.55)),repeating-linear-gradient(90deg,#3a0510 0,#8e1226 16px,#4a0713 32px,#a3162c 48px,#4a0713 64px,#8e1226 80px,#3a0510 96px)}
+.rkad img.rka-sw{display:block;width:150px;height:96px;object-fit:cover;object-position:50% 62%;margin:0 auto 10px;border-radius:12px;border:2px solid #f2c14e;box-shadow:0 4px 14px rgba(0,0,0,.6)}
+.rkad h2{margin:0;font:900 1.7rem/1.05 'Arial Black',Impact,system-ui,sans-serif;letter-spacing:1px;background:linear-gradient(#fff0b0,#f2c14e 55%,#b98417);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+.rkad .rka-p{display:inline-block;margin:8px 0 10px;padding:5px 16px;border-radius:99px;background:#c8102e;border:1.5px solid #ffd3da;font:900 .78rem 'Arial Black',system-ui,sans-serif;letter-spacing:2px}
+.rkad .rka-b{margin:0 0 8px;padding:8px 8px 9px;border-radius:11px;background:rgba(20,2,10,.64);border:1px solid rgba(242,193,78,.55)}
+.rkad .rka-b small{display:block;font:800 .62rem system-ui,sans-serif;letter-spacing:2.5px;color:#f2c14e;margin-bottom:3px}
+.rkad .rka-b b{display:block;font:900 1.15rem/1.25 system-ui,sans-serif;white-space:nowrap}
+.rkad .rka-b b.s{font-size:.86rem;white-space:normal}
+.rkad .rka-h{margin:12px 0 7px;font:900 .7rem system-ui,sans-serif;letter-spacing:3px;color:#f2c14e;border-bottom:1px solid rgba(242,193,78,.5);padding-bottom:5px}
+.rkad .rka-g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.rkad .rka-t{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6px 2px 7px;border-radius:10px;background:rgba(20,2,10,.62);border:1px solid rgba(242,193,78,.5);min-width:0}
+.rkad .rka-t .pfv2{height:74px;width:100%;overflow:visible}
+.rkad .rka-t .pfvl{width:62px}
+.rkad .rka-t .pfv2 .kfl{transform:scale(.8)}
+.rkad .rka-t .pfv2 .avw{transform:scale(1.35)}.rkad .rka-t .pfv2 .avw.dogw{transform:scale(1)}
+.rkad .rka-t b{display:block;margin-top:4px;font:900 .56rem/1.15 system-ui,sans-serif;color:#fff;letter-spacing:.2px}
+.rkad .rka-t i{display:block;margin-top:2px;font:800 .54rem/1.15 system-ui,sans-serif;font-style:normal;color:#f2c14e}
+.rkad .rka-s{margin:12px 0 2px;font:900 italic .92rem 'Arial Black',system-ui,sans-serif;letter-spacing:.5px;background:linear-gradient(#fff0b0,#f2c14e 55%,#b98417);-webkit-background-clip:text;background-clip:text;color:transparent}
 @media (prefers-reduced-motion:reduce){.ad-in,.ad-fl,.ad-st,.ad-tw,.ad-bk,.ad-lamp,.ad-sw,#adov .adb{animation:none!important;opacity:1!important}.ad-st{opacity:.5!important}}
 `}
+const RK_AD={from:'2026-11-04',to:'2026-11-06'};   // duyuru: 04-06 Kasım arası her girişte (3 gün); yönetici ilk günü beklemeden hemen görür
+const rkAdDue=()=>{const t=today();return t<=RK_AD.to&&(t>=RK_AD.from||!!CLOUD.admin)};
+function rkAdHtml(){
+  const avl=n=>`<span class="avw"><span class="av em svgav">${avSvg(n)}</span></span>`;
+  const t=(v,a,b)=>`<div class="rka-t"><div class="pfv2" aria-hidden="true">${v}</div><b>${a}</b><i>${b}</i></div>`;
+  return`<div class="rkad"><img class="rka-sw" src="duel-swords.svg" alt=""><h2>DERECELİ DÜELLO</h2><span class="rka-p">⏳ SAAT KISITLI</span>
+  <div class="rka-b"><small>HAFTA İÇİ</small><b>20.30–21.30 · 22.25–23.55</b></div>
+  <div class="rka-b"><small>HAFTA SONU</small><b class="s">14.00'TEN İTİBAREN HER SAAT BAŞI 15 DK</b><b>+ 23.00–23.55</b></div>
+  <div class="rka-h">DERECELİ DÜELLO ÖDÜLLERİ</div>
+  <div class="rka-g">${t(avl(DRAGON_AV),'1 GALİBİYET','DÜELLO EJDERİ')}${t('<div class="pfvl"><span class="av sm" style="background:#475569"></span><b style="margin:0;font-size:.62rem;color:#ffe08a">AD</b><u style="margin-left:auto;text-decoration:none;font-weight:800">1.</u></div>','İLK 3','KIZIL KADİFE')}${t(kingFlag('x',true,1),'İLK 3','FATİH FLAMASI')}${t(dogAvatar(true,false),'1. SIRA','HAVLAYAN KÖPEK')}</div>
+  <div class="rka-s">KILICINI SAVAŞ SAATİNDE ÇEK!</div></div>`}
 const AD={shown:false};
 function adClose(){const o=document.getElementById('adov');if(o)o.remove();document.removeEventListener('keydown',adKey)}
 function adKey(e){if(e.key==='Escape')adClose()}
 function adShow(){
   if(AD.shown||!ADS.length||document.getElementById('adov'))return;AD.shown=true;
-  const a=ADS[0];
+  const a=ADS.find(x=>x.once&&rkAdDue())||ADS.find(x=>!x.once)||ADS[0];
   if(!document.getElementById('adcss')){const s=document.createElement('style');s.id='adcss';s.textContent=adCss();document.head.appendChild(s)}
   const o=document.createElement('div');o.id='adov';o.setAttribute('role','dialog');o.setAttribute('aria-label','Reklam: '+a.name);
-  o.innerHTML=`<div class="adb"><span class="adt">Reklam</span><button class="adx" aria-label="Kapat" type="button">×</button>${a.svg()}<button class="adc" type="button">Kapat ve devam et</button></div>`;
+  o.innerHTML=`<div class="adb${a.once?' rka':''}"><span class="adt">${a.once?'Duyuru':'Reklam'}</span><button class="adx" aria-label="Kapat" type="button">×</button>${a.svg?a.svg():a.html()}<button class="adc" type="button">Kapat ve devam et</button></div>`;
   o.addEventListener('click',e=>{if(e.target===o||e.target.closest('.adx,.adc'))adClose()});
   document.addEventListener('keydown',adKey);
   document.body.appendChild(o);
@@ -1673,7 +1705,7 @@ function vHelp(){
   return`<div class="card stack"><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün kelimeleri, bu haftaki sıran, dünün ve geçen haftanın lideri.',
-    '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b>, <b>İngilizce Vize</b> (ders kitabı üniteleri: kelimeler, dinleme, okuma ve Örnek Vize), <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
+    '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>Okuma</b>, <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
     '<b>Sıralamalar</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: Bugün, Çalışma, Sıralamalar ve Ben → Profil ekranlarında sağ altta duran mesaj balonuna dokununca açılır; genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte) vardır, sağ üstteki <b>Sohbetten çık</b> ile kapanır. Okunmamış mesaj sayısı balonun üstünde görünür. <b>Ben → Nasıl kullanılır?</b>: bu sayfa.',
     '<b>Ben</b>: Profil, İstatistik (öğrenilen kelimeler en altında), Ayarlar (geri bildirim en altında) ve Nasıl kullanılır? sayfası. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
   ${sec('🚀 Hızlı başlangıç',li([
@@ -1698,13 +1730,6 @@ function vHelp(){
     'Çalışma → <b>Okuma</b> bölümünde seviyene uygun kısa İngilizce metinler ve metinle ilgili sorular vardır. Metni oku, tüm soruları cevapla ve "Cevapları kontrol et" ile sonucunu gör; her sorunun açıklaması da gösterilir.',
     'Doğru cevap başına '+RD_PT+' × seviye katsayısı puan kazanırsın. Yüksek liglerde yanlış cevap, testteki gibi puan düşürür. Puan, ceza ve günlük hedef bonusu bir parçanın yalnızca ilk çözümünde işler; tekrar çözümde cevapların yine de istatistiklerine sayılır. Cevapların günlük hedefine, doğruluk oranına, seviye istatistiklerine ve doğru serine eklenir; yalnızca kelime ilerlemeni (öğrenildi ve tekrar listesi) etkilemez.',
     'Metinlerdeki zor kelimeler için "Yardımcı kelimeler" kutusuna bakabilirsin.']))}
-  ${sec('📘 İngilizce Vize',li([
-    'Çalışma → <b>İngilizce Vize</b> herkese açıktır. Ders kitabının 6 ünitesini (kelimeler, dinleme, okuma, kalıp ifadeler) ve <b>Örnek Vize</b>yi içerir.',
-    '<b>Ünite bölümleri</b>: Boşluk doldurma, Kelime testi, Örnek cümle, Tanım → kelime, Okuma, Dinleme ve Kalıp ifadeler ayrı ayrı çözülür. <b>Kelimeleri gör</b> ile ünitenin kelime listesine bakabilirsin.',
-    '<b>Tüm ünite soruları</b>: ünitenin sorularını <b>20\'şer soruluk parçalar</b> halinde verir. Çözdüğün soru anında kaydedilir; testi yarıda bıraksan bile o soru, ünitedeki tüm sorular bitene kadar bir daha karşına çıkmaz. Hepsi bitince tur baştan başlar. Düğmede kalan soru sayısı yazar.',
-    '<b>Örnek Vize</b> (100 puan): Dinleme 40 (8 kısa diyalog + 2 uzun konuşma, her biri 6 soru), Okuma 40 (5 kısa metin, 10 soruluk uzun metin, 5 kişi–metin eşleştirme), Kelime 20 (10 paragraf boşluğu + 10 yazılı boşluk doldurma). Sonuç ekranında bölüm puanlarını görürsün.',
-    '<b>Puan ve ilerleme</b>: Normal test gibi işler. Bir soru <b>ilk çözümünde</b> puan, ilerleme ve istatistik getirir; aynı soruyu başka bir vizede ya da ünite testinde tekrar çözmek bunları yeniden vermez. Örnek Vize\'yi tekrar çözersen önceki en iyi sonucundan fazla doğruların puanı eklenir.',
-    'Dinleme sorularında ses dosyası çalar; cevaplayınca konuşma metni görünür. Ses dosyaları internetten indirilir, ilk dinlemede internet gerekebilir.']))}
   ${sec('🔁 Tekrar ve yanlış defteri',li([
     'Türkçe karşılığını veya tanımını yanlış bildiğin kelime <b>Tekrar</b> listesine girer.',
     'Listeden çıkması için Türkçe ve Tanım sorularını art arda <b>3 kez</b> doğru bilmen gerekir. İlk doğrudan <b>1 gün</b>, ikinci doğrudan <b>3 gün</b> sonra yeniden sorulur. Yanlış yaparsan sayaç düşer.',
@@ -1738,7 +1763,8 @@ function vHelp(){
     'Belirli hedefleri tamamlayınca (ör. 500 kelime öğrenmek, seri yapmak) rozet kazanırsın. 2. rozette Karanlık Şövalye, 3. rozette Plazma Kılıcı, 4. rozette Zırhlı At, 5. rozette Yangın Tüpü, 6. rozette F-16 Savaş Uçağı avatarı açılır. Kazandığın ve henüz kazanamadığın rozetler Ben → Profil bölümünde, nasıl kazanılacağıyla birlikte görünür.',
     'Rozetlerin profil kartında herkese görünür.']))}
   ${sec('⚔ Düello',li([
-    'Çalışma → <b>⚔ Düello</b> bölümünden girersin. Başlamak için en az <b>'+DSTAKE+' puanın</b> olmalı.',
+    'Alttaki menünün ortasındaki <b>⚔ Düello</b> düğmesinden girersin. Başlamak için en az <b>'+DSTAKE+' puanın</b> olmalı.',
+    '<b>Dereceli düello saatleri</b> (Türkiye saati): Hafta içi <b>20.30–21.30</b> ve <b>22.25–23.55</b>. Hafta sonu <b>14.00\'ten itibaren her saat başı 15 dakika</b> (14.00–14.15, 15.00–15.15 …) ve <b>23.00–23.55</b>. Klasik düello her zaman açıktır. Başlamış maç pencere kapansa da biter. Aramada ilk 5 saniye oyuncular toplanır, sonra herkes en uygun rakiple eşleştirilir (mümkünse daha önce oynamadığınla). 30 saniyede eşleşme olmazsa lobiye dönersin. Pencere açılırken ve açılmadan 5 dakika önce bildirim gelir.',
     '<b>Eşleştirme</b>: Rakip ara dersen aynı anda arayan biriyle eşleşirsin. Kimse yoksa botla alıştırma yapabilirsin (bot maçı puanı etkilemez).',
     '<b>Klasik düello salonu</b>: Klasik modda düello sekmesindeki kullanıcılar listede görünür. Yanındaki düello teklifi düğmesiyle teklif gönderebilirsin. Teklif <b>15 saniye</b> geçerlidir; kabul edilmezse tekrar gönderebilirsin. Teklifi yapan da alan da yalnızca düello kutusunu görür, kabul ya da red edilmeden başka işlem yapılamaz.',
     'İki oyuncu da aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Doğru cevap puanı <b>100 × seviye çarpanı × hız çarpanı</b>dır: seviye çarpanı A1 için 1,00, C2 için 1,85; hız çarpanı sorunun ilk 1,5 saniyesinde sabit 1,50\'dir (soruyu okuma süresi), bundan sonra her saniyede 0,20 düşer (4. saniyede 1,00, 6,5. saniyeden itibaren 0,50\'de sabit kalır). Yani ortalamada yarım saniye daha hızlı olmak kabaca bir doğru cevap kadar puan eder (15 doğru 4 sn ile 16 doğru 4,5 sn yaklaşık eşit skor verir). <b>Yanlış cevap</b> klasik düelloda 75 × seviye çarpanı kadar puan düşürür; süre dolup cevap vermezsen bunun yarısı düşer. Dereceli düelloda ise yanlış cevap, o soruyu doğru bilseydin alacağın puanın (100 × seviye çarpanı × hız çarpanı) <b>%66\'sı</b> kadar puan düşürür. Yani ne kadar hızlı yanlış yaparsan o kadar çok kaybedersin; yavaş yanlış cevapta ve süre dolunca hız çarpanı 1,00 üzerinden hesaplanır (ceza hiçbir zaman 1,00\'ın altına inmez) ve yine %66\'sı düşer. Maçı yarıda bırakırsan cevaplamadığın her soru için dereceli düelloda 200 puan (klasikte 100 puan) düşer. Bu yüzden bilmediğin soruda tahmin etmek zarar getirir.',
@@ -1916,7 +1942,10 @@ function adjInit(){
 }
 const tl=x=>toks(x).map(y=>y.toLowerCase());
 function nb2(list){const out=new Set();for(const x of list){out.add(x);const n=ADJ.get(x);if(n)n.forEach(y=>out.add(y))}return out}
-function validSyn(t){adjInit();return nb2([String(t.word).toLowerCase()].concat(tl(t.syn)))}   // t'nin gerçekten eş anlamlı sayılabilecek kelimeleri
+const XTR={mediation:['uzlaş','anlaş','barış']};   // raporlardan: bu kelimenin Türkçe şıkkında bulunamayacak parçalar
+const xtrBan=(t,txt)=>{const b=XTR[String(t.word).toLowerCase()];return !!b&&b.some(x=>String(txt||'').toLowerCase().indexOf(x)!==-1)};
+const XSYN={surpass:['improve','enhance','better'],tackle:['resolve','solve','handle'],mindful:['careful','cautious','considerate','thoughtful','heedful','conscious','wary'],frightening:['scared','afraid','frightened','terrified','fearful','terrifying','alarming'],opposing:['against','opposed','hostile','contrary','opposite','conflicting']};   // raporlardan: bu kelimeler için şık olamayacak yakın anlamlılar
+function validSyn(t){adjInit();return nb2([String(t.word).toLowerCase()].concat(tl(t.syn),XSYN[String(t.word).toLowerCase()]||[]))}   // t'nin gerçekten eş anlamlı sayılabilecek kelimeleri
 function validAnt(t){   // t'nin gerçekten zıt anlamlı sayılabilecek kelimeleri (eş anlamlılarının zıtları dahil)
   adjInit();const base=nb2([String(t.word).toLowerCase()].concat(tl(t.syn))),s=new Set(tl(t.ant));
   base.forEach(x=>{const o=BYL.get(x);if(o)tl(o.ant).forEach(a=>s.add(a))});
@@ -2156,7 +2185,7 @@ function ctxTransQ(t){
     const base=String(t.word).replace(/\s*\([^)]*\)/g,'').replace(/\.+$/,'').split('/')[0].trim();
     const suf=tok.toLowerCase().startsWith(base.toLowerCase())?tok.slice(base.length).toLowerCase():null;
     if(suf===null||['','s','es','ed','d','ing'].indexOf(suf)===-1)continue;
-    const d0=/^(adjective|adverb)$/i.test(posKey(p))?aaValidDist(p):clozeDist(p);if(!d0||d0.length<3)continue;
+    const d0=(/^(adjective|adverb)$/i.test(posKey(p))?aaValidDist(p):clozeDist(p));if(d0)for(let z=d0.length-1;z>=0;z--)if(TABOO.has(String(d0[z]).toLowerCase()))d0.splice(z,1);if(!d0||d0.length<3)continue;
     const cap=x=>i===0?x.charAt(0).toUpperCase()+x.slice(1):x;
     let ds=[];
     const isPl=x=>/[^s]s$|ies$/i.test(x)&&!/(us|is|ss|ics)$/i.test(x),noun=czSlot(p)==='noun'&&!/^(adjective|adverb)$/i.test(posKey(p)),tpl=noun&&isPl(tok);
@@ -2266,6 +2295,7 @@ function closedMates(t){
   if(!set)return[];
   return set.filter(x=>x!==k).map(x=>CLOSED_IDX[x]).filter(r=>r&&String(r.tr||'').toLowerCase()!==String(t.tr||'').toLowerCase());
 }
+const TABOO=new Set('sex sexual sexuality sexy porn pornography nude naked erotic orgasm rape rapist prostitute prostitution condom genital genitals penis vagina breast breasts'.split(' '));   // şık olarak gösterilmeyecek müstehcen/uygunsuz kelimeler
 function pickDistractors(t,textFn,filterFn,closed,near){
   const tk=posKey(t);
   const out=[],used={};
@@ -2278,7 +2308,7 @@ function pickDistractors(t,textFn,filterFn,closed,near){
   const same=[],other=[];
   for(let k=0;k<tries;k++){
     const r=W[(start+k*7919)%W.length];
-    if(r.word.toLowerCase()===t.word.toLowerCase()||!filterFn(r))continue;
+    if(r.word.toLowerCase()===t.word.toLowerCase()||TABOO.has(r.word.toLowerCase())||!filterFn(r))continue;
     (posKey(r)===tk?same:other).push(r);
   }
   let order=shuffle(same).concat(shuffle(other));
@@ -2336,8 +2366,16 @@ const trFirst=x=>noPar(parts(x)[0]||'');
 function senseOk(t,n){const s=(t.sn||[])[n];return !!(s&&s.t&&s.d&&s.e&&trFirst(s.t)&&String(s.e).split(/\s+/).length>=6)}
 const trOv=(a,b)=>trOverlap(noPar(a),noPar(b));   // parantez içi açıklamalar karşılaştırmaya girmez
 function trClash(a,b){   // iki kelimenin (ana + ek anlamlarıyla) herhangi bir Türkçe karşılığı çakışıyor mu
+  if(xtrBan(a,b.tr)||xtrBan(b,a.tr))return true;
   const A=[a.tr].concat((a.sn||[]).map(s=>s.t)),B=[b.tr].concat((b.sn||[]).map(s=>s.t));
   return A.some(x=>B.some(y=>trOv(x,y)));
+}
+const DGEN=new Set('something someone especially person people usually another between without through different certain because'.split(' ')) ;
+function keyShare(a,b){   // iki tanım ortak bir anlamlı sözcük (örn. 'problem') paylaşıyorsa o kelime yakın anlam şıkkı olamaz
+  const g=x=>cont(x).map(t=>t.replace(/s$/,'')).filter(t=>t.length>=6&&!DGEN.has(t));
+  const A=new Set(g(a.def)),ad=' '+cont(a.def).join(' ')+' ';adjInit();
+  if(g(b.def).some(t=>A.has(t)))return true;
+  return toks(b.syn).some(x=>{x=x.toLowerCase();if(ad.indexOf(' '+x+' ')!==-1)return true;const e=BYL.get(x);return !!(e&&g(e.def).some(t=>A.has(t)))});   // şıkkın kendi kelimesi de aynı sözcüğü paylaşıyor ya da hedefin tanımında geçiyor
 }
 function defClash(a,b){   // b'nin herhangi bir tanımı a'nın herhangi bir tanımına çok benziyor mu
   const A=[a.def].concat((a.sn||[]).map(s=>s.d)),B=[b.def].concat((b.sn||[]).map(s=>s.d));
@@ -2354,7 +2392,7 @@ function senseQ1(t,s,st){
   if(st===0){   // bu cümlede kelime ne anlama gelir
     if(trFirst(t.tr)===ct)return null;   // Türkçesi ilk anlamla aynıysa bu stilde anlamlar ayırt edilemez
     const d=[];   // kelimenin diğer anlamları şıkta yer almaz: doğru cevap net kalsın
-    const more=pickDistractors(t,r=>trFirst(r.tr),r=>r.tr&&trFirst(r.tr)&&!trOv(s.t,r.tr)&&!trClash(t,r)&&!related(t,r),false,1).filter(x=>d.indexOf(x)===-1&&x!==ct&&!trOv(ct,x)&&!others.some(o=>trOv(o,x)));
+    const more=pickDistractors(t,r=>trFirst(r.tr),r=>r.tr&&trFirst(r.tr)&&!trOv(s.t,r.tr)&&!trClash(t,r)&&!related(t,r)&&!xtrBan(t,r.tr),false,1).filter(x=>d.indexOf(x)===-1&&x!==ct&&!trOv(ct,x)&&!others.some(o=>trOv(o,x)));
     while(d.length<3&&more.length)d.push(more.shift());
     if(d.length<3)return null;
     return{question:'"'+t.word+'" sözcüğü bu cümlede ne anlama gelir?\n"'+s.e+'"',correct:ct,distractors:d};
@@ -2363,7 +2401,7 @@ function senseQ1(t,s,st){
     const more=pickDistractors(t,r=>r.def,r=>r.def&&!similarText(s.d,r.def)&&!defClash(t,r)&&!trClash(t,r)&&!related(t,r),false,2).filter(x=>![t.def].concat(t.sn.map(z=>z.d)).some(y=>similarText(y,x)||y.toLowerCase()===x.toLowerCase()));
     const d=more.slice(0,3);
     if(d.length<3)return null;
-    return{question:'"'+t.word+'" kelimesinin İngilizce tanımı hangisidir?',correct:s.d,distractors:d};
+    return{question:'İngilizce "'+t.word+'" kelimesinin (Türkçe değil) İngilizce tanımı hangisidir?',correct:s.d,distractors:d};
   }
   if(st===3){   // bu cümledeki anlama en yakın kelime
     if(!has(s.s))return null;
@@ -2410,7 +2448,7 @@ function buildQuestionRaw(t,k,opts){
     q='"'+t.word+'" kelimesinin Türkçe karşılığı hangisidir?';correct=t.tr;
     d=pickDistractors(t,r=>r.tr,r=>r.tr&&!trClash(t,r)&&!related(t,r),true,1);
   }else if(k===1){
-    q='"'+t.word+'" kelimesinin İngilizce tanımı hangisidir?';correct=t.def;
+    q='İngilizce "'+t.word+'" kelimesinin (Türkçe değil) İngilizce tanımı hangisidir?';correct=t.def;
     d=pickDistractors(t,r=>r.def,r=>r.def&&r.def.toLowerCase()!==t.def.toLowerCase()&&!similarText(t.def,r.def)&&!defClash(t,r)&&!related(t,r),false,2);
   }else if(k===3){
     const ca=clozeAlt(t);if(!ca)return null;
@@ -2425,7 +2463,7 @@ function buildQuestionRaw(t,k,opts){
     const ts=toks(t.syn).concat([t.word.toLowerCase()]),VS=new Set(validSyn(t));
     t.sn.forEach(z=>tl(z.s).forEach(x=>{VS.add(x);ts.push(x)}));   // ek anlamların eş anlamlıları da geçerli sayılır, şık olamaz
     nb2(Array.from(VS)).forEach(x=>VS.add(x));   // ek anlamların eş anlamlılarının komşuları da (shift→change→vary) şık olamaz
-    d=pickDistractors(t,r=>r.syn,r=>has(r.syn)&&r.syn.toLowerCase()!==t.syn.toLowerCase()&&r.syn.toLowerCase()!==t.ant.toLowerCase()&&!toks(r.syn).some(x=>ts.indexOf(x)!==-1)&&!tl(r.syn).some(x=>VS.has(x))&&!related(t,r)&&!trClash(t,r),false,1);
+    d=pickDistractors(t,r=>r.syn,r=>has(r.syn)&&r.syn.toLowerCase()!==t.syn.toLowerCase()&&r.syn.toLowerCase()!==t.ant.toLowerCase()&&!toks(r.syn).some(x=>ts.indexOf(x)!==-1)&&!tl(r.syn).some(x=>VS.has(x))&&!related(t,r)&&!trClash(t,r)&&!keyShare(t,r),false,1);
   }else if(k===5){
     if(!has(t.ant))return null;
     q='"'+t.word+'" kelimesinin anlamca tersi (karşıt yönü) hangisidir?';correct=t.ant;
@@ -2774,7 +2812,7 @@ const learnedCount=()=>Object.keys(S.learned).filter(k=>BYWORD.has(k)).length;
 
 /* ---------- arayüz ---------- */
 const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,grd:{list:[],sum:[],cases:[],plog:[],tab:'sum',kind:'all',sel:null,msg:'',min:'15',cf:null,loaded:false,busy:false,err:''},arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'prof',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
-try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz')UI.tab=t}catch(e){}
+try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz'&&t!=='exam')UI.tab=t}catch(e){}
 const ICON={
   today:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
   dict:'<svg viewBox="0 0 24 24"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/></svg>',
@@ -2786,7 +2824,7 @@ const ICON={
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['duel','⚔ Düello'],['read','Okuma'],['exam','İngilizce Vize'],['review','Tekrar'],['saved','Kaydedilenler']];
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']];
 const isStudy=t=>t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
@@ -3000,7 +3038,7 @@ function dictList(){
   const f=dictFiltered(),D=UI.dict;
   const shown=f.slice(0,D.limit);
   return`<div class="muted small" style="margin:2px 2px 0">${nf(f.length)} kelime</div>`+
-    (shown.length?shown.map(entryHtml).join(''):'<div class="empty">Bu filtrelerle kelime bulunamadı.</div>')+
+    (shown.length?shown.map(w=>entryHtml(w)).join(''):'<div class="empty">Bu filtrelerle kelime bulunamadı.</div>')+
     (f.length>shown.length?`<button class="btn block" data-act="more">Daha fazla göster (${nf(f.length-shown.length)})</button>`:'');
 }
 function chips(name,vals,cur){
@@ -3008,7 +3046,7 @@ function chips(name,vals,cur){
 }
 function savedList(){
   const L=savedWords();
-  return`<div class="muted small" style="margin:2px 2px 0">${nf(L.length)} kelime</div>`+(L.length?L.map(entryHtml).join(''):'<div class="empty card">Henüz kaydettiğin kelime yok. Test sorusunda ya da Sözlük\'te bir kelimenin altındaki "Kaydet" düğmesine bas.</div>');
+  return`<div class="muted small" style="margin:2px 2px 0">${nf(L.length)} kelime</div>`+(L.length?L.map(w=>entryHtml(w)).join(''):'<div class="empty card">Henüz kaydettiğin kelime yok. Test sorusunda ya da Sözlük\'te bir kelimenin altındaki "Kaydet" düğmesine bas.</div>');
 }
 function vSaved(){
   return`<div class="top"><h1>Kaydedilenler</h1><span class="muted small">${nf(savedWords().length)} kelime</span></div>
@@ -4208,6 +4246,34 @@ function seededQs(seed,n,lg){
   return out;
 }
 const dNow=()=>Date.now()+DUEL.off;
+/* ---- dereceli düello saat pencereleri (Türkiye saati, UTC+3) ---- sunucu da aynı kuralı uygular
+   Hafta içi 20.30-21.30 ve 22.25-23.55; hafta sonu 14.00'ten itibaren her saat başı ilk 15 dk (22.00-22.15'e kadar) ve 23.00-23.55 */
+const RKW={live0:Date.parse('2026-11-04T00:00:00+03:00')};
+const rkLive=()=>!!CLOUD.admin||dNow()>=RKW.live0;
+function rkOpenAt(ms){const t=new Date(ms+3*36e5),dw=t.getUTCDay(),h=t.getUTCHours(),m=t.getUTCMinutes(),mn=h*60+m;
+  if(dw===0||dw===6)return(mn>=1380&&mn<1435)||(h>=14&&h<=22&&m<15);
+  return(mn>=1230&&mn<1290)||(mn>=1345&&mn<1435)}
+function rkEdge(ms,open){let t=Math.floor(ms/6e4)*6e4+6e4;for(let i=0;i<11520;i++,t+=6e4)if(rkOpenAt(t)===open)return t;return null}   // sonraki açılış (open=true) ya da kapanış (open=false)
+const rkHM=ms=>new Date(ms+3*36e5).toISOString().slice(11,16).replace(':','.');
+const rkDur=ms=>{ms=Math.max(0,Math.round(ms/1000));const h=Math.floor(ms/3600),m=Math.floor(ms%3600/60),s=ms%60;return h?h+' sa '+m+' dk':m?m+' dk '+s+' sn':s+' sn'};
+const rkCan=()=>!rkLive()||rkOpenAt(dNow())||!!CLOUD.admin;   // yönetici testi: sunucuda admin_bypass açıkken pencere dışında da girer
+function rkBanner(){
+  if(!rkLive())return'';
+  const n=dNow(),o=rkOpenAt(n);
+  if(o){const c=rkEdge(n,false);return`<div class="fb ok" id="rkbn"><b>🟢 Dereceli pencere AÇIK</b><div class="small">Kapanışa <b id="rkcd">${rkDur(c-n)}</b> (${rkHM(c)}). Başlayan maçlar pencere kapansa da biter.</div></div>`}
+  const x=rkEdge(n,true);return`<div class="fb bad" id="rkbn"><b>🔴 Dereceli düello şu an kapalı</b><div class="small">Sonraki pencere <b>${rkHM(x)}</b> · <b id="rkcd">${rkDur(x-n)}</b> sonra. Klasik düello her zaman açık.${CLOUD.admin?' (Yönetici: pencere dışında da girebilirsin.)':''}</div></div>`}
+const RK={prev:null,warn:null,qc:null,qcT:0};
+function rkTick(){   // saniyede bir: geri sayımı günceller, pencere açılınca/açılmadan önce bildirir
+  try{if(!CLOUD.uid||!rkLive())return;
+    const n=dNow(),o=rkOpenAt(n),el=document.getElementById('rkcd');
+    if(el){const t=o?rkEdge(n,false):rkEdge(n,true);el.textContent=rkDur(t-n)}
+    if(RK.prev!==null&&RK.prev!==o){
+      if(o&&(S.tp||0)>=DRK_MIN)toast('🟢 Dereceli düello penceresi açıldı! Düello sekmesinden rakip bul.',6000);
+      if(UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')render()}
+    RK.prev=o;
+    if(!o&&(S.tp||0)>=DRK_MIN){const x=rkEdge(n,true);if(x&&x-n<=300000&&x-n>240000&&RK.warn!==x){RK.warn=x;toast('⏳ Dereceli düello penceresi 5 dk sonra ('+rkHM(x)+') açılıyor.',6000)}}
+  }catch(e){}}
+setInterval(rkTick,1000);
 const dIsP1=()=>DUEL.d&&DUEL.d.p1===CLOUD.uid;
 function dMine(){const d=DUEL.d;if(!d)return{s:0,c:0,a:0,t:0};return dIsP1()?{s:d.s1,c:d.c1,a:d.a1,t:+d.t1}:{s:d.s2,c:d.c2,a:d.a2,t:+d.t2}}
 function dOpp(){
@@ -4431,10 +4497,11 @@ const ntCard=()=>DUEL.nt.length?DUEL.nt.map(x=>`<div class="card" style="border-
 async function duelFind(){
   if(!sb||!CLOUD.uid)return;
   if(drkLocked()&&DUEL.sub==='ranked'){DUEL.sub='classic';render();return}
+  if(DUEL.sub==='ranked'&&!rkCan()){toast('Dereceli düello şu an kapalı. Sonraki pencere: '+rkHM(rkEdge(dNow(),true)||0),4500);render();return}
   if(DUEL.sub==='ranked'&&await banCheck())return;
   const need=DUEL.sub==='ranked'?DRK_MIN:DSTAKE;
   if((S.tp||0)<need){toast('Düelloya girmek için en az '+need+' puanın olmalı.');return}
-  dReset();DUEL.phase='search';DUEL.find=Date.now();render();
+  dReset();RK.qc=null;RK.qcT=0;DUEL.phase='search';DUEL.find=Date.now();render();
   const step=async()=>{
     if(DUEL.phase!=='search')return;
     try{
@@ -4442,11 +4509,14 @@ async function duelFind(){
       if(DUEL.phase!=='search')return;
       if(r.error)throw r.error;
       if(r.data){await duelStart(r.data);return}
-    }catch(e){if(/ranked penalty/i.test(String(e&&e.message))){DUEL.phase='lobby';DUEL.err='';banCheck();render();return}DUEL.err=/low points/i.test(String(e&&e.message))?'low':/duel_join|PGRST202|schema cache|42883/i.test(String(e&&(e.message||e.code)||''))?'setup':'err';DUEL.phase='lobby';render();return}
+    }catch(e){if(/ranked penalty/i.test(String(e&&e.message))){DUEL.phase='lobby';DUEL.err='';banCheck();render();return}DUEL.err=/ranked closed/i.test(String(e&&e.message))?'closed':/low points/i.test(String(e&&e.message))?'low':/duel_join|PGRST202|schema cache|42883/i.test(String(e&&(e.message||e.code)||''))?'setup':'err';DUEL.phase='lobby';render();return}
     DUEL.findT=setTimeout(step,2000);
   };
   step();
-  DUEL.tick=setInterval(()=>{if(DUEL.phase==='search'){const el=document.getElementById('dsec');if(el)el.textContent=Math.floor((Date.now()-DUEL.find)/1000);if(Date.now()-DUEL.find>25000&&!DUEL.longWait){DUEL.longWait=true;render()}}},500);
+  DUEL.tick=setInterval(()=>{if(DUEL.phase==='search'){const el=document.getElementById('dsec');if(el)el.textContent=Math.floor((Date.now()-DUEL.find)/1000);if(DUEL.sub==='ranked'){
+      if(Date.now()-DUEL.find>30000){duelCancel().then(()=>toast('Rakip bulunamadı, lobiye döndün. Tekrar deneyebilirsin.',5000));return}
+      if(Date.now()-RK.qcT>3000){RK.qcT=Date.now();sb.rpc('rk_queue_count',{p_wn:W.length}).then(r=>{if(!r.error&&typeof r.data==='number'){RK.qc=r.data;const q=document.getElementById('dqc');if(q)q.textContent=r.data}}).catch(()=>{})}}
+      else if(Date.now()-DUEL.find>25000&&!DUEL.longWait){DUEL.longWait=true;render()}}},500);
 }
 async function duelCancel(){
   const was=DUEL.phase;dReset();DUEL.longWait=false;render();
@@ -4711,6 +4781,7 @@ function vDuel(){
     const R=DUEL.rec;
     let err='';
     if(DUEL.err==='setup'||DUEL.recErr==='setup')err=`<div class="fb bad">Düello henüz kurulmadı. Yönetici, <b>supabase-duel.sql</b> dosyasını Supabase SQL Editor'da bir kez çalıştırmalı.</div>`;
+    else if(DUEL.err==='closed')err=`<div class="fb bad">Dereceli düello şu an kapalı (saat pencereleri). Klasik düello açık.</div>`;
     else if(DUEL.err==='low')err=`<div class="fb bad">Düelloya girmek için en az ${DUEL.sub==='ranked'?DRK_MIN:DSTAKE} puanın olmalı.</div>`;
     else if(DUEL.err==='ver')err=`<div class="fb bad">Rakibinle kelime listesi sürümün farklı. Uygulamayı kapatıp yeniden aç.</div>`;
     else if(DUEL.err==='err')err=`<div class="fb bad">Bağlantı sorunu. Biraz sonra tekrar dene.</div>`;
@@ -4721,7 +4792,8 @@ function vDuel(){
       ${DUEL.recR?`<div class="kp"><div><b>${DUEL.recR.w}</b><span>galibiyet</span></div><div><b>${DUEL.recR.l}</b><span>mağlubiyet</span></div><div><b>${DUEL.recR.d}</b><span>beraberlik</span></div></div><div style="width:100%;box-sizing:border-box;text-align:center;padding:14px 10px;border-radius:14px;background:var(--surface2)"><div style="font-size:2.2rem;font-weight:800;line-height:1.1;color:${DUEL.recR.net>0?'var(--ok)':DUEL.recR.net<0?'var(--bad)':'inherit'}">${DUEL.recR.net>0?'+':DUEL.recR.net<0?'−':''}${nf(r1(Math.abs(DUEL.recR.net)))}</div><div class="muted small" style="margin-top:2px">Dereceli puanı</div></div>`:''}
       ${err}
       ${penNote()}
-      <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DRK_MIN?'disabled':''}>Dereceli rakip bul</button>${(S.tp||0)<DRK_MIN?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. Dereceli düello Bronz ligden (${DRK_MIN} puan) başlar.</div>`:''}</div>${lobbyCard()}${duelHist()}`:`<div class="card stack"><h2>⚔ Klasik düello</h2>
+      ${rkBanner()}
+      <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DRK_MIN||!rkCan()?'disabled':''}>Dereceli rakip bul</button>${(S.tp||0)<DRK_MIN?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. Dereceli düello Bronz ligden (${DRK_MIN} puan) başlar.</div>`:''}</div>${lobbyCard()}${duelHist()}`:`<div class="card stack"><h2>⚔ Klasik düello</h2>
       <div class="muted small">Aynı ${n} soruyu çözen iki oyuncudan çok puan toplayan kazanır. Bahis: ${DSTAKE} puan. Kuralların tamamı <b>Ben → Nasıl kullanılır? → Düello</b> bölümünde.</div>
       ${R?`<div class="kp"><div><b>${R.w}</b><span>galibiyet</span></div><div><b>${R.l}</b><span>mağlubiyet</span></div><div><b>${R.d}</b><span>beraberlik</span></div></div>${R.last.length?`<div class="row" style="gap:6px">${R.last.map(x=>`<span class="badge ${x==='W'?'ok':x==='L'?'warn':''}">${x==='W'?'G':x==='L'?'M':'B'}</span>`).join('')}<span class="muted small">son maçlar</span></div>`:''}`:''}
       ${err}
@@ -4730,7 +4802,8 @@ function vDuel(){
   }else if(P==='search'){
     const lw=DUEL.longWait;
     body=`<div class="card stack" style="text-align:center"><h2>Rakip aranıyor…</h2><div class="mono" style="font-size:2rem"><span id="dsec">0</span> sn</div>
-      <div class="muted small">${lw?'Şu an kuyrukta başka biri yok. Beklemeye devam edebilir'+(DUEL.sub==='ranked'?'.':' ya da botla alıştırabilirsin.')+'':'Aynı anda aranan biri olunca eşleşirsiniz.'}</div>
+      ${DUEL.sub==='ranked'?`<div class="small">Eşleşmeye uygun, şu an maç arayan: <b id="dqc">${RK.qc==null?'…':RK.qc}</b> kişi</div><div class="muted small">İlk 5 saniye oyuncular toplanır, sonra herkes en uygun rakiple eşleştirilir. 30 saniye içinde eşleşme olmazsa lobiye dönersin.</div>`:''}
+      <div class="muted small">${DUEL.sub==='ranked'?'':lw?'Şu an kuyrukta başka biri yok. Beklemeye devam edebilir'+(DUEL.sub==='ranked'?'.':' ya da botla alıştırabilirsin.')+'':'Aynı anda aranan biri olunca eşleşirsiniz.'}</div>
       ${lw&&DUEL.sub!=='ranked'?'<button class="btn block" data-act="duel-bot">Botla alıştır</button>':''}
       <button class="btn block" data-act="duel-cancel">İptal</button></div>`;
   }else if(P==='count'){
@@ -4886,6 +4959,7 @@ document.addEventListener('click',async e=>{
     case'home':UI.quiz=null;setTab('today');break;
     case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=UI.tab==='saved'?savedList():dictList();break}
     case'sv-w':{const w=g('data-w');toggleSaved(w);toast(isSaved(w)?'Kaydedildi.':'Kayıttan çıkarıldı.');if(UI.tab==='saved'&&!isSaved(w))UI.dict.open=null;const dl=$('#dlist');if(dl)dl.innerHTML=UI.tab==='saved'?savedList():dictList();if(UI.tab==='saved'){const t=document.querySelector('.top .muted');if(t)t.textContent=nf(savedWords().length)+' kelime'}break}
+    case'sv-o':{const w=g('data-w');if(w){toggleSaved(w);toast(isSaved(w)?'Kaydedildi: Çalışma → Kaydedilenler':'Kayıttan çıkarıldı.');render()}break}
     case'sv-q':{const q2=UI.quiz;if(q2){const w=q2.items[q2.i].w.word;toggleSaved(w);toast(isSaved(w)?'Kaydedildi: Çalışma → Kaydedilenler':'Kayıttan çıkarıldı.');render()}break}
     case'more':UI.dict.limit+=40;$('#dlist').innerHTML=dictList();break;
     case'unlearn':{const w=g('data-w');delete S.learned[w];save();render();toast('Kelime tekrar öğrenilecekler arasına alındı.');break}
