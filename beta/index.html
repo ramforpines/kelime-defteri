@@ -503,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.30';
+const APP_VERSION='4.150.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1285,7 +1285,8 @@ function adCss(){return`
 .rkad .rka-s{margin:12px 0 2px;font:900 italic .92rem 'Arial Black',system-ui,sans-serif;letter-spacing:.5px;background:linear-gradient(#fff0b0,#f2c14e 55%,#b98417);-webkit-background-clip:text;background-clip:text;color:transparent}
 @media (prefers-reduced-motion:reduce){.ad-in,.ad-fl,.ad-st,.ad-tw,.ad-bk,.ad-lamp,.ad-sw,#adov .adb{animation:none!important;opacity:1!important}.ad-st{opacity:.5!important}}
 `}
-const RK_AD_ON=false;   // dereceli saat kısıtı sunucuda devreye girince true yapılır; o zamana kadar duyuru yalnızca yöneticide görünür
+const RK_AD={from:'2026-11-04',to:'2026-11-06'};   // duyuru: 04-06 Kasım arası her girişte (3 gün); yönetici ilk günü beklemeden hemen görür
+const rkAdDue=()=>{const t=today();return t<=RK_AD.to&&(t>=RK_AD.from||!!CLOUD.admin)};
 function rkAdHtml(){
   const avl=n=>`<span class="avw"><span class="av em svgav">${avSvg(n)}</span></span>`;
   const t=(v,a,b)=>`<div class="rka-t"><div class="pfv2" aria-hidden="true">${v}</div><b>${a}</b><i>${b}</i></div>`;
@@ -1300,11 +1301,11 @@ function adClose(){const o=document.getElementById('adov');if(o)o.remove();docum
 function adKey(e){if(e.key==='Escape')adClose()}
 function adShow(){
   if(AD.shown||!ADS.length||document.getElementById('adov'))return;AD.shown=true;
-  const a=ADS.find(x=>x.once&&(RK_AD_ON||CLOUD.admin)&&!(S.adr&&S.adr[x.id]))||ADS.find(x=>!x.once)||ADS[0];
+  const a=ADS.find(x=>x.once&&rkAdDue())||ADS.find(x=>!x.once)||ADS[0];
   if(!document.getElementById('adcss')){const s=document.createElement('style');s.id='adcss';s.textContent=adCss();document.head.appendChild(s)}
   const o=document.createElement('div');o.id='adov';o.setAttribute('role','dialog');o.setAttribute('aria-label','Reklam: '+a.name);
   o.innerHTML=`<div class="adb${a.once?' rka':''}"><span class="adt">${a.once?'Duyuru':'Reklam'}</span><button class="adx" aria-label="Kapat" type="button">×</button>${a.svg?a.svg():a.html()}<button class="adc" type="button">Kapat ve devam et</button></div>`;
-  o.addEventListener('click',e=>{if(e.target===o||e.target.closest('.adx,.adc')){if(a.once){try{(S.adr||(S.adr={}))[a.id]=1;save()}catch(er){}}adClose()}});
+  o.addEventListener('click',e=>{if(e.target===o||e.target.closest('.adx,.adc'))adClose()});
   document.addEventListener('keydown',adKey);
   document.body.appendChild(o);
 }
@@ -1763,6 +1764,7 @@ function vHelp(){
     'Rozetlerin profil kartında herkese görünür.']))}
   ${sec('⚔ Düello',li([
     'Alttaki menünün ortasındaki <b>⚔ Düello</b> düğmesinden girersin. Başlamak için en az <b>'+DSTAKE+' puanın</b> olmalı.',
+    '<b>Dereceli düello saatleri</b> (Türkiye saati): Hafta içi <b>20.30–21.30</b> ve <b>22.25–23.55</b>. Hafta sonu <b>14.00\'ten itibaren her saat başı 15 dakika</b> (14.00–14.15, 15.00–15.15 …) ve <b>23.00–23.55</b>. Klasik düello her zaman açıktır. Başlamış maç pencere kapansa da biter. Aramada ilk 5 saniye oyuncular toplanır, sonra herkes en uygun rakiple eşleştirilir (mümkünse daha önce oynamadığınla). 30 saniyede eşleşme olmazsa lobiye dönersin. Pencere açılırken ve açılmadan 5 dakika önce bildirim gelir.',
     '<b>Eşleştirme</b>: Rakip ara dersen aynı anda arayan biriyle eşleşirsin. Kimse yoksa botla alıştırma yapabilirsin (bot maçı puanı etkilemez).',
     '<b>Klasik düello salonu</b>: Klasik modda düello sekmesindeki kullanıcılar listede görünür. Yanındaki düello teklifi düğmesiyle teklif gönderebilirsin. Teklif <b>15 saniye</b> geçerlidir; kabul edilmezse tekrar gönderebilirsin. Teklifi yapan da alan da yalnızca düello kutusunu görür, kabul ya da red edilmeden başka işlem yapılamaz.',
     'İki oyuncu da aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Doğru cevap puanı <b>100 × seviye çarpanı × hız çarpanı</b>dır: seviye çarpanı A1 için 1,00, C2 için 1,85; hız çarpanı sorunun ilk 1,5 saniyesinde sabit 1,50\'dir (soruyu okuma süresi), bundan sonra her saniyede 0,20 düşer (4. saniyede 1,00, 6,5. saniyeden itibaren 0,50\'de sabit kalır). Yani ortalamada yarım saniye daha hızlı olmak kabaca bir doğru cevap kadar puan eder (15 doğru 4 sn ile 16 doğru 4,5 sn yaklaşık eşit skor verir). <b>Yanlış cevap</b> klasik düelloda 75 × seviye çarpanı kadar puan düşürür; süre dolup cevap vermezsen bunun yarısı düşer. Dereceli düelloda ise yanlış cevap, o soruyu doğru bilseydin alacağın puanın (100 × seviye çarpanı × hız çarpanı) <b>%66\'sı</b> kadar puan düşürür. Yani ne kadar hızlı yanlış yaparsan o kadar çok kaybedersin; yavaş yanlış cevapta ve süre dolunca hız çarpanı 1,00 üzerinden hesaplanır (ceza hiçbir zaman 1,00\'ın altına inmez) ve yine %66\'sı düşer. Maçı yarıda bırakırsan cevaplamadığın her soru için dereceli düelloda 200 puan (klasikte 100 puan) düşer. Bu yüzden bilmediğin soruda tahmin etmek zarar getirir.',
@@ -4244,6 +4246,34 @@ function seededQs(seed,n,lg){
   return out;
 }
 const dNow=()=>Date.now()+DUEL.off;
+/* ---- dereceli düello saat pencereleri (Türkiye saati, UTC+3) ---- sunucu da aynı kuralı uygular
+   Hafta içi 20.30-21.30 ve 22.25-23.55; hafta sonu 14.00'ten itibaren her saat başı ilk 15 dk (22.00-22.15'e kadar) ve 23.00-23.55 */
+const RKW={live0:Date.parse('2026-11-04T00:00:00+03:00')};
+const rkLive=()=>!!CLOUD.admin||dNow()>=RKW.live0;
+function rkOpenAt(ms){const t=new Date(ms+3*36e5),dw=t.getUTCDay(),h=t.getUTCHours(),m=t.getUTCMinutes(),mn=h*60+m;
+  if(dw===0||dw===6)return(mn>=1380&&mn<1435)||(h>=14&&h<=22&&m<15);
+  return(mn>=1230&&mn<1290)||(mn>=1345&&mn<1435)}
+function rkEdge(ms,open){let t=Math.floor(ms/6e4)*6e4+6e4;for(let i=0;i<11520;i++,t+=6e4)if(rkOpenAt(t)===open)return t;return null}   // sonraki açılış (open=true) ya da kapanış (open=false)
+const rkHM=ms=>new Date(ms+3*36e5).toISOString().slice(11,16).replace(':','.');
+const rkDur=ms=>{ms=Math.max(0,Math.round(ms/1000));const h=Math.floor(ms/3600),m=Math.floor(ms%3600/60),s=ms%60;return h?h+' sa '+m+' dk':m?m+' dk '+s+' sn':s+' sn'};
+const rkCan=()=>!rkLive()||rkOpenAt(dNow())||!!CLOUD.admin;   // yönetici testi: sunucuda admin_bypass açıkken pencere dışında da girer
+function rkBanner(){
+  if(!rkLive())return'';
+  const n=dNow(),o=rkOpenAt(n);
+  if(o){const c=rkEdge(n,false);return`<div class="fb ok" id="rkbn"><b>🟢 Dereceli pencere AÇIK</b><div class="small">Kapanışa <b id="rkcd">${rkDur(c-n)}</b> (${rkHM(c)}). Başlayan maçlar pencere kapansa da biter.</div></div>`}
+  const x=rkEdge(n,true);return`<div class="fb bad" id="rkbn"><b>🔴 Dereceli düello şu an kapalı</b><div class="small">Sonraki pencere <b>${rkHM(x)}</b> · <b id="rkcd">${rkDur(x-n)}</b> sonra. Klasik düello her zaman açık.${CLOUD.admin?' (Yönetici: pencere dışında da girebilirsin.)':''}</div></div>`}
+const RK={prev:null,warn:null,qc:null,qcT:0};
+function rkTick(){   // saniyede bir: geri sayımı günceller, pencere açılınca/açılmadan önce bildirir
+  try{if(!CLOUD.uid||!rkLive())return;
+    const n=dNow(),o=rkOpenAt(n),el=document.getElementById('rkcd');
+    if(el){const t=o?rkEdge(n,false):rkEdge(n,true);el.textContent=rkDur(t-n)}
+    if(RK.prev!==null&&RK.prev!==o){
+      if(o&&(S.tp||0)>=DRK_MIN)toast('🟢 Dereceli düello penceresi açıldı! Düello sekmesinden rakip bul.',6000);
+      if(UI.tab==='quiz'&&UI.qmode==='duel'&&DUEL.phase==='lobby')render()}
+    RK.prev=o;
+    if(!o&&(S.tp||0)>=DRK_MIN){const x=rkEdge(n,true);if(x&&x-n<=300000&&x-n>240000&&RK.warn!==x){RK.warn=x;toast('⏳ Dereceli düello penceresi 5 dk sonra ('+rkHM(x)+') açılıyor.',6000)}}
+  }catch(e){}}
+setInterval(rkTick,1000);
 const dIsP1=()=>DUEL.d&&DUEL.d.p1===CLOUD.uid;
 function dMine(){const d=DUEL.d;if(!d)return{s:0,c:0,a:0,t:0};return dIsP1()?{s:d.s1,c:d.c1,a:d.a1,t:+d.t1}:{s:d.s2,c:d.c2,a:d.a2,t:+d.t2}}
 function dOpp(){
@@ -4467,10 +4497,11 @@ const ntCard=()=>DUEL.nt.length?DUEL.nt.map(x=>`<div class="card" style="border-
 async function duelFind(){
   if(!sb||!CLOUD.uid)return;
   if(drkLocked()&&DUEL.sub==='ranked'){DUEL.sub='classic';render();return}
+  if(DUEL.sub==='ranked'&&!rkCan()){toast('Dereceli düello şu an kapalı. Sonraki pencere: '+rkHM(rkEdge(dNow(),true)||0),4500);render();return}
   if(DUEL.sub==='ranked'&&await banCheck())return;
   const need=DUEL.sub==='ranked'?DRK_MIN:DSTAKE;
   if((S.tp||0)<need){toast('Düelloya girmek için en az '+need+' puanın olmalı.');return}
-  dReset();DUEL.phase='search';DUEL.find=Date.now();render();
+  dReset();RK.qc=null;RK.qcT=0;DUEL.phase='search';DUEL.find=Date.now();render();
   const step=async()=>{
     if(DUEL.phase!=='search')return;
     try{
@@ -4478,11 +4509,14 @@ async function duelFind(){
       if(DUEL.phase!=='search')return;
       if(r.error)throw r.error;
       if(r.data){await duelStart(r.data);return}
-    }catch(e){if(/ranked penalty/i.test(String(e&&e.message))){DUEL.phase='lobby';DUEL.err='';banCheck();render();return}DUEL.err=/low points/i.test(String(e&&e.message))?'low':/duel_join|PGRST202|schema cache|42883/i.test(String(e&&(e.message||e.code)||''))?'setup':'err';DUEL.phase='lobby';render();return}
+    }catch(e){if(/ranked penalty/i.test(String(e&&e.message))){DUEL.phase='lobby';DUEL.err='';banCheck();render();return}DUEL.err=/ranked closed/i.test(String(e&&e.message))?'closed':/low points/i.test(String(e&&e.message))?'low':/duel_join|PGRST202|schema cache|42883/i.test(String(e&&(e.message||e.code)||''))?'setup':'err';DUEL.phase='lobby';render();return}
     DUEL.findT=setTimeout(step,2000);
   };
   step();
-  DUEL.tick=setInterval(()=>{if(DUEL.phase==='search'){const el=document.getElementById('dsec');if(el)el.textContent=Math.floor((Date.now()-DUEL.find)/1000);if(Date.now()-DUEL.find>25000&&!DUEL.longWait){DUEL.longWait=true;render()}}},500);
+  DUEL.tick=setInterval(()=>{if(DUEL.phase==='search'){const el=document.getElementById('dsec');if(el)el.textContent=Math.floor((Date.now()-DUEL.find)/1000);if(DUEL.sub==='ranked'){
+      if(Date.now()-DUEL.find>30000){duelCancel().then(()=>toast('Rakip bulunamadı, lobiye döndün. Tekrar deneyebilirsin.',5000));return}
+      if(Date.now()-RK.qcT>3000){RK.qcT=Date.now();sb.rpc('rk_queue_count',{p_wn:W.length}).then(r=>{if(!r.error&&typeof r.data==='number'){RK.qc=r.data;const q=document.getElementById('dqc');if(q)q.textContent=r.data}}).catch(()=>{})}}
+      else if(Date.now()-DUEL.find>25000&&!DUEL.longWait){DUEL.longWait=true;render()}}},500);
 }
 async function duelCancel(){
   const was=DUEL.phase;dReset();DUEL.longWait=false;render();
@@ -4747,6 +4781,7 @@ function vDuel(){
     const R=DUEL.rec;
     let err='';
     if(DUEL.err==='setup'||DUEL.recErr==='setup')err=`<div class="fb bad">Düello henüz kurulmadı. Yönetici, <b>supabase-duel.sql</b> dosyasını Supabase SQL Editor'da bir kez çalıştırmalı.</div>`;
+    else if(DUEL.err==='closed')err=`<div class="fb bad">Dereceli düello şu an kapalı (saat pencereleri). Klasik düello açık.</div>`;
     else if(DUEL.err==='low')err=`<div class="fb bad">Düelloya girmek için en az ${DUEL.sub==='ranked'?DRK_MIN:DSTAKE} puanın olmalı.</div>`;
     else if(DUEL.err==='ver')err=`<div class="fb bad">Rakibinle kelime listesi sürümün farklı. Uygulamayı kapatıp yeniden aç.</div>`;
     else if(DUEL.err==='err')err=`<div class="fb bad">Bağlantı sorunu. Biraz sonra tekrar dene.</div>`;
@@ -4757,7 +4792,8 @@ function vDuel(){
       ${DUEL.recR?`<div class="kp"><div><b>${DUEL.recR.w}</b><span>galibiyet</span></div><div><b>${DUEL.recR.l}</b><span>mağlubiyet</span></div><div><b>${DUEL.recR.d}</b><span>beraberlik</span></div></div><div style="width:100%;box-sizing:border-box;text-align:center;padding:14px 10px;border-radius:14px;background:var(--surface2)"><div style="font-size:2.2rem;font-weight:800;line-height:1.1;color:${DUEL.recR.net>0?'var(--ok)':DUEL.recR.net<0?'var(--bad)':'inherit'}">${DUEL.recR.net>0?'+':DUEL.recR.net<0?'−':''}${nf(r1(Math.abs(DUEL.recR.net)))}</div><div class="muted small" style="margin-top:2px">Dereceli puanı</div></div>`:''}
       ${err}
       ${penNote()}
-      <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DRK_MIN?'disabled':''}>Dereceli rakip bul</button>${(S.tp||0)<DRK_MIN?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. Dereceli düello Bronz ligden (${DRK_MIN} puan) başlar.</div>`:''}</div>${lobbyCard()}${duelHist()}`:`<div class="card stack"><h2>⚔ Klasik düello</h2>
+      ${rkBanner()}
+      <button class="btn primary block" data-act="duel-find" ${(S.tp||0)<DRK_MIN||!rkCan()?'disabled':''}>Dereceli rakip bul</button>${(S.tp||0)<DRK_MIN?`<div class="muted small">Puanın: ${nf(r1(S.tp||0))}. Dereceli düello Bronz ligden (${DRK_MIN} puan) başlar.</div>`:''}</div>${lobbyCard()}${duelHist()}`:`<div class="card stack"><h2>⚔ Klasik düello</h2>
       <div class="muted small">Aynı ${n} soruyu çözen iki oyuncudan çok puan toplayan kazanır. Bahis: ${DSTAKE} puan. Kuralların tamamı <b>Ben → Nasıl kullanılır? → Düello</b> bölümünde.</div>
       ${R?`<div class="kp"><div><b>${R.w}</b><span>galibiyet</span></div><div><b>${R.l}</b><span>mağlubiyet</span></div><div><b>${R.d}</b><span>beraberlik</span></div></div>${R.last.length?`<div class="row" style="gap:6px">${R.last.map(x=>`<span class="badge ${x==='W'?'ok':x==='L'?'warn':''}">${x==='W'?'G':x==='L'?'M':'B'}</span>`).join('')}<span class="muted small">son maçlar</span></div>`:''}`:''}
       ${err}
@@ -4766,7 +4802,8 @@ function vDuel(){
   }else if(P==='search'){
     const lw=DUEL.longWait;
     body=`<div class="card stack" style="text-align:center"><h2>Rakip aranıyor…</h2><div class="mono" style="font-size:2rem"><span id="dsec">0</span> sn</div>
-      <div class="muted small">${lw?'Şu an kuyrukta başka biri yok. Beklemeye devam edebilir'+(DUEL.sub==='ranked'?'.':' ya da botla alıştırabilirsin.')+'':'Aynı anda aranan biri olunca eşleşirsiniz.'}</div>
+      ${DUEL.sub==='ranked'?`<div class="small">Eşleşmeye uygun, şu an maç arayan: <b id="dqc">${RK.qc==null?'…':RK.qc}</b> kişi</div><div class="muted small">İlk 5 saniye oyuncular toplanır, sonra herkes en uygun rakiple eşleştirilir. 30 saniye içinde eşleşme olmazsa lobiye dönersin.</div>`:''}
+      <div class="muted small">${DUEL.sub==='ranked'?'':lw?'Şu an kuyrukta başka biri yok. Beklemeye devam edebilir'+(DUEL.sub==='ranked'?'.':' ya da botla alıştırabilirsin.')+'':'Aynı anda aranan biri olunca eşleşirsiniz.'}</div>
       ${lw&&DUEL.sub!=='ranked'?'<button class="btn block" data-act="duel-bot">Botla alıştır</button>':''}
       <button class="btn block" data-act="duel-cancel">İptal</button></div>`;
   }else if(P==='count'){
