@@ -503,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.150.2';
+const APP_VERSION='4.150.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4814,7 +4814,7 @@ function vDuel(){
   }else if(P==='search'){
     const lw=DUEL.longWait;
     body=`<div class="card stack" style="text-align:center"><h2>Rakip aranıyor…</h2><div class="mono" style="font-size:2rem"><span id="dsec">0</span> sn</div>
-      ${DUEL.sub==='ranked'?`<div class="small">Eşleşmeye uygun, şu an maç arayan: <b id="dqc">${RK.qc==null?'…':RK.qc}</b> kişi</div><div class="muted small">İlk 5 saniye oyuncular toplanır, sonra herkes en uygun rakiple eşleştirilir. 30 saniye içinde eşleşme olmazsa lobiye dönersin.</div>`:''}
+      ${DUEL.sub==='ranked'?`<div class="small">Eşleşmeye uygun, şu an maç arayan: <b id="dqc">${RK.qc==null?'…':RK.qc}</b> kişi</div>`:''}
       <div class="muted small">${DUEL.sub==='ranked'?'':lw?'Şu an kuyrukta başka biri yok. Beklemeye devam edebilir'+(DUEL.sub==='ranked'?'.':' ya da botla alıştırabilirsin.')+'':'Aynı anda aranan biri olunca eşleşirsiniz.'}</div>
       ${lw&&DUEL.sub!=='ranked'?'<button class="btn block" data-act="duel-bot">Botla alıştır</button>':''}
       <button class="btn block" data-act="duel-cancel">İptal</button></div>`;
