@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.10';
+const APP_VERSION='4.149.11';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2334,6 +2334,13 @@ function trClash(a,b){   // iki kelimenin (ana + ek anlamlarıyla) herhangi bir 
   const A=[a.tr].concat((a.sn||[]).map(s=>s.t)),B=[b.tr].concat((b.sn||[]).map(s=>s.t));
   return A.some(x=>B.some(y=>trOv(x,y)));
 }
+const DGEN=new Set('something someone especially person people usually another between without through different certain because'.split(' ')) ;
+function keyShare(a,b){   // iki tanım ortak bir anlamlı sözcük (örn. 'problem') paylaşıyorsa o kelime yakın anlam şıkkı olamaz
+  const g=x=>cont(x).map(t=>t.replace(/s$/,'')).filter(t=>t.length>=6&&!DGEN.has(t));
+  const A=new Set(g(a.def)),ad=' '+cont(a.def).join(' ')+' ';adjInit();
+  if(g(b.def).some(t=>A.has(t)))return true;
+  return toks(b.syn).some(x=>{x=x.toLowerCase();if(ad.indexOf(' '+x+' ')!==-1)return true;const e=BYL.get(x);return !!(e&&g(e.def).some(t=>A.has(t)))});   // şıkkın kendi kelimesi de aynı sözcüğü paylaşıyor ya da hedefin tanımında geçiyor
+}
 function defClash(a,b){   // b'nin herhangi bir tanımı a'nın herhangi bir tanımına çok benziyor mu
   const A=[a.def].concat((a.sn||[]).map(s=>s.d)),B=[b.def].concat((b.sn||[]).map(s=>s.d));
   return A.some(x=>B.some(y=>similarText(x,y)));
@@ -2420,7 +2427,7 @@ function buildQuestionRaw(t,k,opts){
     const ts=toks(t.syn).concat([t.word.toLowerCase()]),VS=new Set(validSyn(t));
     t.sn.forEach(z=>tl(z.s).forEach(x=>{VS.add(x);ts.push(x)}));   // ek anlamların eş anlamlıları da geçerli sayılır, şık olamaz
     nb2(Array.from(VS)).forEach(x=>VS.add(x));   // ek anlamların eş anlamlılarının komşuları da (shift→change→vary) şık olamaz
-    d=pickDistractors(t,r=>r.syn,r=>has(r.syn)&&r.syn.toLowerCase()!==t.syn.toLowerCase()&&r.syn.toLowerCase()!==t.ant.toLowerCase()&&!toks(r.syn).some(x=>ts.indexOf(x)!==-1)&&!tl(r.syn).some(x=>VS.has(x))&&!related(t,r)&&!trClash(t,r),false,1);
+    d=pickDistractors(t,r=>r.syn,r=>has(r.syn)&&r.syn.toLowerCase()!==t.syn.toLowerCase()&&r.syn.toLowerCase()!==t.ant.toLowerCase()&&!toks(r.syn).some(x=>ts.indexOf(x)!==-1)&&!tl(r.syn).some(x=>VS.has(x))&&!related(t,r)&&!trClash(t,r)&&!keyShare(t,r),false,1);
   }else if(k===5){
     if(!has(t.ant))return null;
     q='"'+t.word+'" kelimesinin anlamca tersi (karşıt yönü) hangisidir?';correct=t.ant;
