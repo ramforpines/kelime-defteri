@@ -503,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.28';
+const APP_VERSION='4.149.29';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1674,7 +1674,7 @@ function vHelp(){
   return`<div class="card stack"><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün kelimeleri, bu haftaki sıran, dünün ve geçen haftanın lideri.',
-    '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b>, <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
+    '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>Okuma</b>, <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
     '<b>Sıralamalar</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: Bugün, Çalışma, Sıralamalar ve Ben → Profil ekranlarında sağ altta duran mesaj balonuna dokununca açılır; genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte) vardır, sağ üstteki <b>Sohbetten çık</b> ile kapanır. Okunmamış mesaj sayısı balonun üstünde görünür. <b>Ben → Nasıl kullanılır?</b>: bu sayfa.',
     '<b>Ben</b>: Profil, İstatistik (öğrenilen kelimeler en altında), Ayarlar (geri bildirim en altında) ve Nasıl kullanılır? sayfası. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
   ${sec('🚀 Hızlı başlangıç',li([
@@ -1732,7 +1732,7 @@ function vHelp(){
     'Belirli hedefleri tamamlayınca (ör. 500 kelime öğrenmek, seri yapmak) rozet kazanırsın. 2. rozette Karanlık Şövalye, 3. rozette Plazma Kılıcı, 4. rozette Zırhlı At, 5. rozette Yangın Tüpü, 6. rozette F-16 Savaş Uçağı avatarı açılır. Kazandığın ve henüz kazanamadığın rozetler Ben → Profil bölümünde, nasıl kazanılacağıyla birlikte görünür.',
     'Rozetlerin profil kartında herkese görünür.']))}
   ${sec('⚔ Düello',li([
-    'Çalışma → <b>⚔ Düello</b> bölümünden girersin. Başlamak için en az <b>'+DSTAKE+' puanın</b> olmalı.',
+    'Alttaki menünün ortasındaki <b>⚔ Düello</b> düğmesinden girersin. Başlamak için en az <b>'+DSTAKE+' puanın</b> olmalı.',
     '<b>Eşleştirme</b>: Rakip ara dersen aynı anda arayan biriyle eşleşirsin. Kimse yoksa botla alıştırma yapabilirsin (bot maçı puanı etkilemez).',
     '<b>Klasik düello salonu</b>: Klasik modda düello sekmesindeki kullanıcılar listede görünür. Yanındaki düello teklifi düğmesiyle teklif gönderebilirsin. Teklif <b>15 saniye</b> geçerlidir; kabul edilmezse tekrar gönderebilirsin. Teklifi yapan da alan da yalnızca düello kutusunu görür, kabul ya da red edilmeden başka işlem yapılamaz.',
     'İki oyuncu da aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Doğru cevap puanı <b>100 × seviye çarpanı × hız çarpanı</b>dır: seviye çarpanı A1 için 1,00, C2 için 1,85; hız çarpanı sorunun ilk 1,5 saniyesinde sabit 1,50\'dir (soruyu okuma süresi), bundan sonra her saniyede 0,20 düşer (4. saniyede 1,00, 6,5. saniyeden itibaren 0,50\'de sabit kalır). Yani ortalamada yarım saniye daha hızlı olmak kabaca bir doğru cevap kadar puan eder (15 doğru 4 sn ile 16 doğru 4,5 sn yaklaşık eşit skor verir). <b>Yanlış cevap</b> klasik düelloda 75 × seviye çarpanı kadar puan düşürür; süre dolup cevap vermezsen bunun yarısı düşer. Dereceli düelloda ise yanlış cevap, o soruyu doğru bilseydin alacağın puanın (100 × seviye çarpanı × hız çarpanı) <b>%66\'sı</b> kadar puan düşürür. Yani ne kadar hızlı yanlış yaparsan o kadar çok kaybedersin; yavaş yanlış cevapta ve süre dolunca hız çarpanı 1,00 üzerinden hesaplanır (ceza hiçbir zaman 1,00\'ın altına inmez) ve yine %66\'sı düşer. Maçı yarıda bırakırsan cevaplamadığın her soru için dereceli düelloda 200 puan (klasikte 100 puan) düşer. Bu yüzden bilmediğin soruda tahmin etmek zarar getirir.',
@@ -2792,7 +2792,7 @@ const ICON={
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['duel','⚔ Düello'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']];
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']];
 const isStudy=t=>t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
