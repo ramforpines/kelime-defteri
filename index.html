@@ -503,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.150.9';
+const APP_VERSION='4.150.10';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1739,10 +1739,10 @@ function vHelp(){
     '<b>Yanlış defteri</b>: testte yanlış yaptığın her soru saklanır. Orada tekrar çözüp doğru yaparsan soru defterden çıkar; "Defterden çıkar" ile elle de silebilirsin.']))}
   ${sec('⭐ Puan sistemi',li([
     '<b>Doğru cevap</b> = seviye katsayısı × soru türü katsayısı. Seviye katsayıları: '+LEVELS.map(l=>l+' × '+COEF[l]).join(', ')+'. Örnek cümle, yakın/karşıt anlam gibi türlerin katsayısı biraz daha yüksektir.',
-    '<b>Bonuslar</b>: yeni kelimeyi öğrenmek +2 × seviye katsayısı, tekrar listesinden kelime çıkarmak +1 × seviye katsayısı, günlük hedefi tamamlamak +10 ve seri bonusu (bonus en fazla +10).',
+    '<b>Bonuslar</b>: yeni kelimeyi öğrenmek +2 × seviye katsayısı, tekrar listesinden kelime çıkarmak +1 × seviye katsayısı, günlük hedefi tamamlamak +10, üstüne seri gün sayısı kadar ek bonus (en fazla +10; yani 10\u201320 puan).',
     '<b>Günlük soru puanı sınırı</b>: Sorulardan, bonuslardan ve tekrar listesinden bir günde en fazla '+QCAP+' puan kazanırsın. Düello puanları bu sınıra girmez.',
     '<b>Yanlış cevap cezası</b>: Altın (1000 puan), Platin ve Zümrüt liglerinde yanlış cevap, doğru cevap puanının dörtte birini düşürür. Elmas ve üstünde doğru bilseydin alacağın puanın tamamını düşürür; doğruluğun %50\'nin altına düşerse puanın azalır. Günlük puan sıfırın altına inmez.',
-    '<b>Günlük hedef</b>: Ayarlar\'dan seçtiğin doğru cevap sayısıdır (20–100); asgari hedefin altına inemez. Tamamlayınca +10 bonus alırsın.',
+    '<b>Günlük hedef</b>: Ayarlar\'dan seçtiğin doğru cevap sayısıdır (20, 30, 50, 80 ya da 100); asgari hedefin altına inemez. Tamamlayınca 10–20 puan bonus alırsın (10 + seri gün sayısı, en fazla +10).',
     '<b>Günlük asgari hedef</b> ligine göre belirlenir: Zümrüt\'ün altında günde 20, Zümrüt\'te 35, Elmas ve üstünde 50 doğru (lig, dereceli galibiyet şartı dahil gerçek ligindir). Tutturduğun her gün serini (🔥) bir artırır. Tutturmadığın her gün toplam puanından <b>%5 kesilir</b>. Bugün ekranı gün bitmeden ne kadar kaybedeceğini önceden gösterir.',
     '<b>İzin günü</b>: haftada 1 gün (Elmas ve üstünde 2 gün) asgari hedefi tutturamasan da puan kesilmez, seri bozulmaz. Otomatik kullanılır; kalan hakkını Bugün ekranında görürsün. Hafta Pazartesi başlar. Aynı hak, zorunlu dereceli maç cezası için de geçerlidir.',
     '<b>Günün kelimeleri</b>: günde 3 kelime (B1, B2 ve C1\'den birer tane, 24 saat aynı kalır). Bunların soruları testlerde her 10 soruda 1 tane çıkar (20 soruluk testte 2). Bugünün testinde her zaman; kendi kurduğun testte kelimeler seçtiğin seviye ve türe uyuyorsa.',
@@ -3803,7 +3803,7 @@ function vRank(){
       <div><b>Doğru cevap</b> = seviye katsayısı × soru türü katsayısı.</div>
       <div class="row">${LEVELS.map(l=>`<span class="lv lv-${l}">${l} × ${COEF[l]}</span>`).join('')}</div>
       <div class="muted">Soru türü: Türkçe 1, Tür 1, Tanım 1,1, V2/V3 1,1, Örnek 1,15, Yakın ve karşıt anlam 1,2.</div>
-      <div><b>Bonuslar:</b> yeni kelimeyi öğrenmek +2 × seviye katsayısı, tekrar listesinden bir kelimeyi çıkarmak +1 × seviye katsayısı, günlük hedefi tamamlamak +10 ve seri bonusu (en fazla +10).</div>
+      <div><b>Bonuslar:</b> yeni kelimeyi öğrenmek +2 × seviye katsayısı, tekrar listesinden bir kelimeyi çıkarmak +1 × seviye katsayısı, günlük hedefi tamamlamak +10, üstüne seri gün sayısı kadar ek bonus (en fazla +10; yani 10\u201320 puan).</div>
       <div><b>Altın (1000 puan), Platin ve Zümrüt liglerinde</b> yanlış cevap, doğru cevap puanının dörtte biri kadar puan düşürür. <b>Elmas ve üstü liglerde</b> yanlış cevap, doğru bilseydin alacağın puanın tamamını (seviye × soru türü katsayısı) düşürür. Günlük puan sıfırın altına inmez.</div>
       <div><b>Günlük sınır:</b> Sorulardan ve bonuslardan bir günde en fazla ${QCAP} puan kazanılır. Düello puanları sınırsız eklenir.</div>
       <div><b>Günlük asgari hedef:</b> Zümrüt'ün altındaki liglerde 20 doğru, Zümrüt ligindeyken 35, Elmas ve üstünde 50 doğru (gerçek ligine göre; dereceli galibiyet şartı dahil). Tutturmayan her gün için toplam puanından, hangi ligde olursan ol, %5 kesilir.</div></div></details>
@@ -4756,7 +4756,7 @@ async function invCancel(){
 setInterval(()=>{
   if(document.hidden||!CLOUD.uid||CLOUD.approved===false)return;
   LOBBY.tick++;
-  if(INV||(duelLobbyView()&&(LOBBY.tick%(DUEL.sub==='ranked'?2:5)===0)))lobbyLoad();
+  if(INV||(duelLobbyView()&&(LOBBY.tick%(DUEL.sub==='ranked'?3:5)===0)))lobbyLoad();
 },1000);
 const lgName=id=>{try{return LEAGUES[leagueMap()[id]|0].n}catch(e){return'Lig'}};
 function lobbyCard(){

@@ -7,6 +7,7 @@
 -- 0) ayar tablosu + kuyruk sütunları
 create table if not exists public.rk_cfg (key text primary key, val text not null);
 insert into public.rk_cfg(key, val) values ('admin_bypass', 'on') on conflict (key) do nothing;
+insert into public.rk_cfg(key, val) values ('last_round', '2000-01-01 00:00:00+00') on conflict (key) do nothing;
 alter table public.rk_cfg enable row level security;
 revoke all on public.rk_cfg from anon, authenticated;
 
@@ -187,8 +188,12 @@ begin
       mode = 'ranked';
   select first_at into fa from public.duel_queue where user_id = uid;
   if fa > now() - interval '5 seconds' then return null; end if;   -- ilk 5 saniye: yalnızca toplanır
-  perform pg_advisory_xact_lock(7440);
-  perform public.rk_match_round(p_wn);
+  -- yük koruması: aynı anda yalnızca bir kişi eşleştirme turu çalıştırır ve turlar en çok saniyede 1 kez yapılır
+  if pg_try_advisory_xact_lock(7440) then
+    update public.rk_cfg set val = clock_timestamp()::text
+     where key = 'last_round' and val::timestamptz < clock_timestamp() - interval '1 second';
+    if found then perform public.rk_match_round(p_wn); end if;
+  end if;
   select id into did from public.duels where status = 'active' and (p1 = uid or p2 = uid) order by created_at desc limit 1;
   return did;
 end $$;
