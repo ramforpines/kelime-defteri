@@ -503,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.29';
+const APP_VERSION='4.149.30';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1240,6 +1240,7 @@ const ADS=[{id:'erol-kafe',name:'Mehmet Erol Kafe',svg:()=>{
 <g class="ad-in" style="--d:1.9s"><rect x="40" y="470" width="280" height="2" fill="#fff" opacity=".0"/></g>
 ${sp(30,150,9,0)}${sp(330,95,8,.6)}${sp(188,150,7,1.1)}${sp(52,330,8,.3)}${sp(320,340,9,.9)}${sp(210,250,6,1.4)}${sp(150,400,7,.5)}${sp(228,395,6,1.7)}${sp(340,230,7,1.2)}${sp(15,260,6,.8)}
 </svg>`}}];
+ADS.push({id:'rk-saat',name:'Dereceli düello saatleri',once:true,html:()=>rkAdHtml()});
 function adCss(){return`
 #adov{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(20,12,6,.62);backdrop-filter:blur(3px);animation:adfade .25s ease both}
 #adov .adb{position:relative;width:min(92vw,400px);max-height:92vh;border-radius:22px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);border:3px solid #ffe29a;background:#fff;animation:adbox .45s cubic-bezier(.2,1.3,.4,1) both}
@@ -1263,18 +1264,47 @@ function adCss(){return`
 @keyframes adsw{0%{transform:translateX(0) skewX(-20deg)}60%,100%{transform:translateX(520px) skewX(-20deg)}}
 @keyframes adfade{from{opacity:0}to{opacity:1}}
 @keyframes adbox{from{opacity:0;transform:scale(.85) translateY(20px)}to{opacity:1;transform:none}}
+#adov .adb.rka{overflow:auto;border-color:#f2c14e;background:#3a0510}
+.rkad{position:relative;padding:20px 14px 14px;text-align:center;color:#fff;font-family:system-ui,'Segoe UI',Arial,sans-serif;background:radial-gradient(120% 60% at 50% 0%,rgba(255,170,90,.35),rgba(0,0,0,0) 70%),linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,0) 22%,rgba(0,0,0,0) 78%,rgba(0,0,0,.55)),repeating-linear-gradient(90deg,#3a0510 0,#8e1226 16px,#4a0713 32px,#a3162c 48px,#4a0713 64px,#8e1226 80px,#3a0510 96px)}
+.rkad img.rka-sw{display:block;width:150px;height:96px;object-fit:cover;object-position:50% 62%;margin:0 auto 10px;border-radius:12px;border:2px solid #f2c14e;box-shadow:0 4px 14px rgba(0,0,0,.6)}
+.rkad h2{margin:0;font:900 1.7rem/1.05 'Arial Black',Impact,system-ui,sans-serif;letter-spacing:1px;background:linear-gradient(#fff0b0,#f2c14e 55%,#b98417);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+.rkad .rka-p{display:inline-block;margin:8px 0 10px;padding:5px 16px;border-radius:99px;background:#c8102e;border:1.5px solid #ffd3da;font:900 .78rem 'Arial Black',system-ui,sans-serif;letter-spacing:2px}
+.rkad .rka-b{margin:0 0 8px;padding:8px 8px 9px;border-radius:11px;background:rgba(20,2,10,.64);border:1px solid rgba(242,193,78,.55)}
+.rkad .rka-b small{display:block;font:800 .62rem system-ui,sans-serif;letter-spacing:2.5px;color:#f2c14e;margin-bottom:3px}
+.rkad .rka-b b{display:block;font:900 1.15rem/1.25 system-ui,sans-serif;white-space:nowrap}
+.rkad .rka-b b.s{font-size:.86rem;white-space:normal}
+.rkad .rka-h{margin:12px 0 7px;font:900 .7rem system-ui,sans-serif;letter-spacing:3px;color:#f2c14e;border-bottom:1px solid rgba(242,193,78,.5);padding-bottom:5px}
+.rkad .rka-g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.rkad .rka-t{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6px 2px 7px;border-radius:10px;background:rgba(20,2,10,.62);border:1px solid rgba(242,193,78,.5);min-width:0}
+.rkad .rka-t .pfv2{height:74px;width:100%;overflow:visible}
+.rkad .rka-t .pfvl{width:62px}
+.rkad .rka-t .pfv2 .kfl{transform:scale(.8)}
+.rkad .rka-t .pfv2 .avw{transform:scale(1.35)}.rkad .rka-t .pfv2 .avw.dogw{transform:scale(1)}
+.rkad .rka-t b{display:block;margin-top:4px;font:900 .56rem/1.15 system-ui,sans-serif;color:#fff;letter-spacing:.2px}
+.rkad .rka-t i{display:block;margin-top:2px;font:800 .54rem/1.15 system-ui,sans-serif;font-style:normal;color:#f2c14e}
+.rkad .rka-s{margin:12px 0 2px;font:900 italic .92rem 'Arial Black',system-ui,sans-serif;letter-spacing:.5px;background:linear-gradient(#fff0b0,#f2c14e 55%,#b98417);-webkit-background-clip:text;background-clip:text;color:transparent}
 @media (prefers-reduced-motion:reduce){.ad-in,.ad-fl,.ad-st,.ad-tw,.ad-bk,.ad-lamp,.ad-sw,#adov .adb{animation:none!important;opacity:1!important}.ad-st{opacity:.5!important}}
 `}
+const RK_AD_ON=false;   // dereceli saat kısıtı sunucuda devreye girince true yapılır; o zamana kadar duyuru yalnızca yöneticide görünür
+function rkAdHtml(){
+  const avl=n=>`<span class="avw"><span class="av em svgav">${avSvg(n)}</span></span>`;
+  const t=(v,a,b)=>`<div class="rka-t"><div class="pfv2" aria-hidden="true">${v}</div><b>${a}</b><i>${b}</i></div>`;
+  return`<div class="rkad"><img class="rka-sw" src="duel-swords.svg" alt=""><h2>DERECELİ DÜELLO</h2><span class="rka-p">⏳ SAAT KISITLI</span>
+  <div class="rka-b"><small>HAFTA İÇİ</small><b>20.30–21.30 · 22.25–23.55</b></div>
+  <div class="rka-b"><small>HAFTA SONU</small><b class="s">14.00'TEN İTİBAREN HER SAAT BAŞI 15 DK</b><b>+ 23.00–23.55</b></div>
+  <div class="rka-h">DERECELİ DÜELLO ÖDÜLLERİ</div>
+  <div class="rka-g">${t(avl(DRAGON_AV),'1 GALİBİYET','DÜELLO EJDERİ')}${t('<div class="pfvl"><span class="av sm" style="background:#475569"></span><b style="margin:0;font-size:.62rem;color:#ffe08a">AD</b><u style="margin-left:auto;text-decoration:none;font-weight:800">1.</u></div>','İLK 3','KIZIL KADİFE')}${t(kingFlag('x',true,1),'İLK 3','FATİH FLAMASI')}${t(dogAvatar(true,false),'1. SIRA','HAVLAYAN KÖPEK')}</div>
+  <div class="rka-s">KILICINI SAVAŞ SAATİNDE ÇEK!</div></div>`}
 const AD={shown:false};
 function adClose(){const o=document.getElementById('adov');if(o)o.remove();document.removeEventListener('keydown',adKey)}
 function adKey(e){if(e.key==='Escape')adClose()}
 function adShow(){
   if(AD.shown||!ADS.length||document.getElementById('adov'))return;AD.shown=true;
-  const a=ADS[0];
+  const a=ADS.find(x=>x.once&&(RK_AD_ON||CLOUD.admin)&&!(S.adr&&S.adr[x.id]))||ADS.find(x=>!x.once)||ADS[0];
   if(!document.getElementById('adcss')){const s=document.createElement('style');s.id='adcss';s.textContent=adCss();document.head.appendChild(s)}
   const o=document.createElement('div');o.id='adov';o.setAttribute('role','dialog');o.setAttribute('aria-label','Reklam: '+a.name);
-  o.innerHTML=`<div class="adb"><span class="adt">Reklam</span><button class="adx" aria-label="Kapat" type="button">×</button>${a.svg()}<button class="adc" type="button">Kapat ve devam et</button></div>`;
-  o.addEventListener('click',e=>{if(e.target===o||e.target.closest('.adx,.adc'))adClose()});
+  o.innerHTML=`<div class="adb${a.once?' rka':''}"><span class="adt">${a.once?'Duyuru':'Reklam'}</span><button class="adx" aria-label="Kapat" type="button">×</button>${a.svg?a.svg():a.html()}<button class="adc" type="button">Kapat ve devam et</button></div>`;
+  o.addEventListener('click',e=>{if(e.target===o||e.target.closest('.adx,.adc')){if(a.once){try{(S.adr||(S.adr={}))[a.id]=1;save()}catch(er){}}adClose()}});
   document.addEventListener('keydown',adKey);
   document.body.appendChild(o);
 }
