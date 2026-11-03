@@ -503,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.150.0';
+const APP_VERSION='4.150.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1285,7 +1285,7 @@ function adCss(){return`
 .rkad .rka-s{margin:12px 0 2px;font:900 italic .92rem 'Arial Black',system-ui,sans-serif;letter-spacing:.5px;background:linear-gradient(#fff0b0,#f2c14e 55%,#b98417);-webkit-background-clip:text;background-clip:text;color:transparent}
 @media (prefers-reduced-motion:reduce){.ad-in,.ad-fl,.ad-st,.ad-tw,.ad-bk,.ad-lamp,.ad-sw,#adov .adb{animation:none!important;opacity:1!important}.ad-st{opacity:.5!important}}
 `}
-const RK_AD={from:'2026-11-04',to:'2026-11-06'};   // duyuru: 04-06 Kasım arası her girişte (3 gün); yönetici ilk günü beklemeden hemen görür
+const RK_AD={from:'2026-11-03',to:'2026-11-05'};   // duyuru: 04-06 Kasım arası her girişte (3 gün); yönetici ilk günü beklemeden hemen görür
 const rkAdDue=()=>{const t=today();return t<=RK_AD.to&&(t>=RK_AD.from||!!CLOUD.admin)};
 function rkAdHtml(){
   const avl=n=>`<span class="avw"><span class="av em svgav">${avSvg(n)}</span></span>`;
@@ -4248,7 +4248,7 @@ function seededQs(seed,n,lg){
 const dNow=()=>Date.now()+DUEL.off;
 /* ---- dereceli düello saat pencereleri (Türkiye saati, UTC+3) ---- sunucu da aynı kuralı uygular
    Hafta içi 20.30-21.30 ve 22.25-23.55; hafta sonu 14.00'ten itibaren her saat başı ilk 15 dk (22.00-22.15'e kadar) ve 23.00-23.55 */
-const RKW={live0:Date.parse('2026-11-04T00:00:00+03:00')};
+const RKW={live0:Date.parse('2026-11-03T00:00:00+03:00')};
 const rkLive=()=>!!CLOUD.admin||dNow()>=RKW.live0;
 function rkOpenAt(ms){const t=new Date(ms+3*36e5),dw=t.getUTCDay(),h=t.getUTCHours(),m=t.getUTCMinutes(),mn=h*60+m;
   if(dw===0||dw===6)return(mn>=1380&&mn<1435)||(h>=14&&h<=22&&m<15);
