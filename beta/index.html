@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.151.0';
+const APP_VERSION='4.151.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2837,15 +2837,16 @@ let lastStudy='quiz';
 const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıralamalar'],['me','Ben']];
 /* ---------- Gramer (beta) ---------- */
 const gHl=t=>esc(t).replace(/\*([^*]+)\*/g,'<b class="gh">$1</b>');
+const gRaw=t=>String(t).replace(/\*([^*]+)\*/g,'<b class="gh">$1</b>');
 const gPlain=t=>String(t).replace(/\*/g,'');
-function gEx(en,tr){return`<div class="gex"><div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between"><div style="flex:1;min-width:0">${gHl(en)}</div><button class="btn ghost small" style="flex:0 0 auto;width:auto" data-say="${esc(gPlain(en))}" aria-label="Dinle">🔊</button></div><div class="muted small">${gHl(tr)}</div></div>`}
+function gEx(en,tr){return`<div class="gx" data-say="${esc(gPlain(en))}"><div class="gxe">${gHl(en)}</div><div class="gxt">${gHl(tr)}</div></div>`}
 function gVocab(w){
   const x=(window.WORDS||[]).find(a=>a[0]===w);if(!x)return'';
   const sv=typeof isSaved==='function'&&isSaved(w);
   return`<div class="gv"><div><b>${esc(w)}</b> <span class="badge">${esc(x[7]||'')}</span><div class="muted small">${esc(x[2]||'')}</div><div class="small" style="margin-top:2px">${esc(x[4]||'')}</div></div><div class="row" style="gap:6px"><button class="btn ghost small" data-say="${esc(w)}" data-pron="${esc(x[8]||'')}" aria-label="Dinle">🔊</button><button class="btn ghost small" data-act="sv-o" data-w="${esc(w)}">${sv?'★':'☆'}</button></div></div>`}
 function vGram(){
   const G=window.GRAMMAR||[],T=UI.gm&&G.find(t=>t.id===UI.gm);
-  const css=`<style>.gh{color:var(--accent);font-weight:700}.gex{padding:8px 10px;border-left:3px solid var(--accent);background:rgba(120,120,120,.08);border-radius:6px;margin-top:6px}.gv{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}.gf{padding:8px 10px;border-radius:8px;background:rgba(120,120,120,.08);margin-top:6px}.gbad{color:#e5484d;text-decoration:line-through}.ggood{color:#2e9e5b;font-weight:600}.gq button{display:block;width:100%;text-align:left;margin-top:6px}</style>`;
+  const css=`<style>.gh{color:var(--accent);font-weight:700}.gx{display:flex;gap:10px;justify-content:space-between;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);font-size:.92rem;cursor:pointer}.gxl>.gx:first-child{border-top:0}.gxe{flex:1.15}.gxt{flex:1;text-align:right;color:var(--muted);font-size:.8rem}.gv{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}.gf{padding:7px 10px;border-radius:8px;background:rgba(120,120,120,.08)}.gbad{color:#e5484d;text-decoration:line-through}.ggood{color:#2e9e5b;font-weight:600}.gq button{display:block;width:100%;text-align:left;margin-top:6px}.gn{padding:8px 10px;border-radius:8px;border-left:3px solid #e0a020;background:rgba(224,160,32,.1);font-size:.88rem}.gt{width:100%;border-collapse:collapse;font-size:.85rem}.gt th{text-align:left;background:rgba(120,120,120,.1);padding:5px 6px;font-size:.75rem}.gt td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:top}</style>`;
   if(!T){
     const lv=['A1','A2','B1','B2','C1','C2'];
     return css+`<div class="card stack"><h2 style="margin:0">Gramer</h2><div class="muted small">Konu anlatımı; kurallar, örnek cümleler, sık yapılan hatalar ve o konuyla öğrenmen gereken kelimeler. <b>Beta:</b> şimdilik yalnızca sende görünür.</div></div>`+
@@ -2853,15 +2854,18 @@ function vGram(){
       return`<div class="card stack"><h3 style="margin:0">${L}</h3>${ready.map(t=>`<button class="btn block" data-act="gm-open" data-v="${t.id}" style="text-align:left"><b>${esc(t.title)}</b><div class="muted small">${esc(t.form_name)}</div></button>`).join('')}${plan.filter(n=>!ready.some(t=>t.title===n)).map(n=>`<div class="small muted" style="padding:4px 2px">• ${esc(n)} <span class="badge">yakında</span></div>`).join('')}</div>`}).join('');
   }
   const done=(UI.gp&&UI.gp[T.id])||{};
+  const set=a=>`<div class="gxl">${a.map(e=>gEx(e[0],e[1])).join('')}</div>`;
   return css+`<div class="row"><button class="btn ghost small" data-act="gm-back">← Konular</button></div>
   <div class="card stack"><div class="row" style="gap:8px"><h2 style="margin:0">${esc(T.title)}</h2><span class="badge">${T.lv}</span></div>
-    <div>${esc(T.sub)}</div>
+    ${(T.intro||[T.sub]).filter(Boolean).map(t=>`<div>${t}</div>`).join('')}
     <div class="gf"><b>Kalıp:</b> ${gHl(T.form_name)}</div></div>
-  <div class="card stack"><h3 style="margin:0">Cümle yapısı</h3>${T.form.map(f=>`<div class="gf"><span class="badge">${esc(f.k)}</span> ${gHl(f.p)}${gEx(f.e[0],f.e[1])}</div>`).join('')}</div>
-  <div class="card stack"><h3 style="margin:0">Ne zaman kullanılır?</h3>${T.uses.map(u=>`<div><b>${esc(u.h)}</b><div class="small" style="margin-top:2px">${u.why}</div>${u.ex.map(e=>gEx(e[0],e[1])).join('')}</div>`).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">')}</div>
+  <div class="card stack"><h3 style="margin:0">Cümle yapısı</h3><table class="gt"><tr><th>Tür</th><th>Kalıp</th><th>Örnek</th></tr>${T.form.map(f=>`<tr><td><b>${esc(f.k)}</b></td><td>${gHl(f.p)}</td><td>${gHl(f.e[0])}<div class="muted small">${gHl(f.e[1])}</div></td></tr>`).join('')}</table></div>
+  <div class="card stack"><h3 style="margin:0">Ne zaman kullanılır?</h3><div class="muted small">İngilizce cümleye dokununca sesli okur.</div>${T.uses.map(u=>`<div><b>${esc(u.h)}</b><div class="small" style="margin:2px 0 4px">${u.why}</div>${set(u.ex)}${u.note?`<div class="gn" style="margin-top:6px">${gRaw(u.note)}</div>`:''}</div>`).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">')}</div>
+  ${T.notes?`<div class="card stack"><h3 style="margin:0">Dikkat: sık takıldığın yerler</h3>${T.notes.map(n=>`<div><b>${esc(n.h)}</b><div class="small" style="margin:2px 0 4px">${n.body}</div>${set(n.ex)}</div>`).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">')}</div>`:''}
   <div class="card stack"><h3 style="margin:0">Sinyal kelimeler</h3><div class="row" style="gap:6px;flex-wrap:wrap">${T.signals.map(a=>`<span class="badge" title="${esc(a[1])}"><b>${esc(a[0])}</b> · ${esc(a[1])}</span>`).join('')}</div></div>
-  <div class="card stack"><h3 style="margin:0">Karıştırılan yapı</h3><div class="gf">${gEx(T.vs.a[0],T.vs.a[1])}<div class="small muted" style="margin-top:4px">${esc(T.vs.a[2])}</div></div><div class="gf">${gEx(T.vs.b[0],T.vs.b[1])}<div class="small muted" style="margin-top:4px">${esc(T.vs.b[2])}</div></div></div>
+  ${T.vs2?`<div class="card stack"><h3 style="margin:0">Karıştırılan yapı: Past Simple ile Present Perfect</h3><table class="gt"><tr><th>Past Simple</th><th>Present Perfect</th></tr>${T.vs2.map(r=>`<tr><td>${gHl(r[0])}<div class="muted small">${esc(r[1])}</div></td><td>${gHl(r[2])}<div class="muted small">${esc(r[3])}</div></td></tr>`).join('')}</table></div>`:(T.vs&&T.vs.a[0]?`<div class="card stack"><h3 style="margin:0">Karıştırılan yapı</h3><table class="gt"><tr><td>${gHl(T.vs.a[0])}<div class="muted small">${esc(T.vs.a[1])}</div><div class="small" style="margin-top:2px">${esc(T.vs.a[2])}</div></td><td>${gHl(T.vs.b[0])}<div class="muted small">${esc(T.vs.b[1])}</div><div class="small" style="margin-top:2px">${esc(T.vs.b[2])}</div></td></tr></table></div>`:'')}
   <div class="card stack"><h3 style="margin:0">Sık yapılan hatalar</h3>${T.mistakes.map(m=>`<div class="gf"><div class="gbad">${esc(m.bad)}</div><div class="ggood">${esc(m.good)}</div><div class="small muted">${esc(m.why)}</div></div>`).join('')}<div class="small" style="margin-top:6px">💡 ${esc(T.tip)}</div></div>
+  ${T.irr?`<div class="card stack"><h3 style="margin:0">Sık kullanılan düzensiz fiiller</h3><table class="gt"><tr><th>V1</th><th>V2</th><th>V3 (have / has ile)</th></tr>${T.irr.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td><b>${esc(r[2])}</b></td></tr>`).join('')}</table></div>`:''}
   <div class="card stack"><h3 style="margin:0">Bu konuyla öğren</h3><div class="muted small">Konuyla sık kullanılan kelimeler. ☆ ile Kaydedilenler\'e ekleyebilirsin.</div>${T.vocab.map(gVocab).join('')}</div>
   <div class="card stack gq"><h3 style="margin:0">Kendini dene</h3>${T.quiz.map((q,i)=>{const c=done[i];return`<div><div><b>${i+1}.</b> ${esc(q.q)}</div>${q.o.map((o,j)=>`<button class="btn small${c!=null&&j===q.a?' primary':''}" data-act="gm-ans" data-q="${i}" data-o="${j}" ${c!=null?'disabled':''} style="${c===j&&j!==q.a?'border-color:#e5484d;color:#e5484d':''}">${esc(o)}</button>`).join('')}${c!=null?`<div class="small ${c===q.a?'ggood':'gbad'}" style="text-decoration:none;margin-top:4px">${c===q.a?'Doğru. ':'Yanlış. '}<span class="muted">${esc(q.w)}</span></div>`:''}</div>`}).join('')}<div class="muted small">Bu mini test puan vermez; sadece konuyu pekiştirir.</div></div>`;
 }
