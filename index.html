@@ -6,6 +6,10 @@
 <title>Kelime Defteri</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://cqlcrwolgxrrrcyyluin.supabase.co wss://cqlcrwolgxrrrcyyluin.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'; worker-src 'self'">
 <meta name="referrer" content="no-referrer">
+<script>/* yönetici kanalı: yönetici olarak girmiş tarayıcı en güncel (beta/) sürümü açar; ?stable=1 ile kararlı sürüm */
+(function(){try{var p=location.pathname;if(/\/beta\//.test(p)||/[?&]stable=1/.test(location.search)||localStorage.getItem('kd_beta')!=='1')return;
+var b=p.replace(/[^\/]*$/,'')+'beta/';fetch(b+'index.html',{method:'HEAD',cache:'no-store'}).then(function(r){if(r.ok)location.replace(b+location.search+location.hash)}).catch(function(){})}catch(e){}})();
+if(/\/beta\//.test(location.pathname))document.title='β '+document.title;</script>
 <meta name="theme-color" content="#2b4eff">
 <meta name="description" content="Kelime Defteri: sözlük, test, tekrar ve liderlik tablosu">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1114,10 +1118,11 @@ async function checkAccess(){
     CLOUD.approved=r.data?!!r.data.approved:false;CLOUD.resetAt=r.data&&r.data.reset_at||null;
     const a=await sb.rpc('is_admin');
     CLOUD.admin=!!(a&&a.data);
+    try{localStorage.setItem('kd_beta',CLOUD.admin?'1':'0')}catch(e){}
     try{localStorage.setItem(ck,JSON.stringify({approved:CLOUD.approved,admin:CLOUD.admin}))}catch(e){}
   }catch(e){
     const m=String((e&&(e.message||e.code))||'');
-    if(cache){CLOUD.approved=!!cache.approved;CLOUD.admin=!!cache.admin}
+    if(cache){CLOUD.approved=!!cache.approved;CLOUD.admin=!!cache.admin;try{if(cache.admin)localStorage.setItem('kd_beta','1')}catch(e){}}
     else CLOUD.approved=/PGRST205|42P01|does not exist|Could not find the table/i.test(m);   // yönetim kurulumu yapılmamışsa kısıtlama yok
   }
 }
