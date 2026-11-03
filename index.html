@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.16';
+const APP_VERSION='4.149.17';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1911,6 +1911,8 @@ function adjInit(){
 }
 const tl=x=>toks(x).map(y=>y.toLowerCase());
 function nb2(list){const out=new Set();for(const x of list){out.add(x);const n=ADJ.get(x);if(n)n.forEach(y=>out.add(y))}return out}
+const XTR={mediation:['uzlaş','anlaş','barış']};   // raporlardan: bu kelimenin Türkçe şıkkında bulunamayacak parçalar
+const xtrBan=(t,txt)=>{const b=XTR[String(t.word).toLowerCase()];return !!b&&b.some(x=>String(txt||'').toLowerCase().indexOf(x)!==-1)};
 const XSYN={surpass:['improve','enhance','better'],tackle:['resolve','solve','handle'],opposing:['against','opposed','hostile','contrary','opposite','conflicting']};   // raporlardan: bu kelimeler için şık olamayacak yakın anlamlılar
 function validSyn(t){adjInit();return nb2([String(t.word).toLowerCase()].concat(tl(t.syn),XSYN[String(t.word).toLowerCase()]||[]))}   // t'nin gerçekten eş anlamlı sayılabilecek kelimeleri
 function validAnt(t){   // t'nin gerçekten zıt anlamlı sayılabilecek kelimeleri (eş anlamlılarının zıtları dahil)
@@ -2332,6 +2334,7 @@ const trFirst=x=>noPar(parts(x)[0]||'');
 function senseOk(t,n){const s=(t.sn||[])[n];return !!(s&&s.t&&s.d&&s.e&&trFirst(s.t)&&String(s.e).split(/\s+/).length>=6)}
 const trOv=(a,b)=>trOverlap(noPar(a),noPar(b));   // parantez içi açıklamalar karşılaştırmaya girmez
 function trClash(a,b){   // iki kelimenin (ana + ek anlamlarıyla) herhangi bir Türkçe karşılığı çakışıyor mu
+  if(xtrBan(a,b.tr)||xtrBan(b,a.tr))return true;
   const A=[a.tr].concat((a.sn||[]).map(s=>s.t)),B=[b.tr].concat((b.sn||[]).map(s=>s.t));
   return A.some(x=>B.some(y=>trOv(x,y)));
 }
@@ -2357,7 +2360,7 @@ function senseQ1(t,s,st){
   if(st===0){   // bu cümlede kelime ne anlama gelir
     if(trFirst(t.tr)===ct)return null;   // Türkçesi ilk anlamla aynıysa bu stilde anlamlar ayırt edilemez
     const d=[];   // kelimenin diğer anlamları şıkta yer almaz: doğru cevap net kalsın
-    const more=pickDistractors(t,r=>trFirst(r.tr),r=>r.tr&&trFirst(r.tr)&&!trOv(s.t,r.tr)&&!trClash(t,r)&&!related(t,r),false,1).filter(x=>d.indexOf(x)===-1&&x!==ct&&!trOv(ct,x)&&!others.some(o=>trOv(o,x)));
+    const more=pickDistractors(t,r=>trFirst(r.tr),r=>r.tr&&trFirst(r.tr)&&!trOv(s.t,r.tr)&&!trClash(t,r)&&!related(t,r)&&!xtrBan(t,r.tr),false,1).filter(x=>d.indexOf(x)===-1&&x!==ct&&!trOv(ct,x)&&!others.some(o=>trOv(o,x)));
     while(d.length<3&&more.length)d.push(more.shift());
     if(d.length<3)return null;
     return{question:'"'+t.word+'" sözcüğü bu cümlede ne anlama gelir?\n"'+s.e+'"',correct:ct,distractors:d};
