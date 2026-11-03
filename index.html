@@ -503,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.150.10';
+const APP_VERSION='4.150.11';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1177,6 +1177,7 @@ function annPopClose(){const o=document.getElementById('annov');if(o)o.remove();
 function annPopKey(e){if(e.key==='Escape'&&ANNP.ready)annPopDone()}
 function annPopDone(){const u=ANNP.u;if(u!=='preview')seenSet('pop',u);annPopClose()}
 function annPop(pv){
+  if(duelLock())return;
   const prev=pv&&pv.preview;
   const A=prev?{body:prev,updated_at:'preview'}:CLOUD.live;
   if(!A||!CLOUD.uid||CLOUD.approved===false||!A.updated_at)return;
@@ -2549,7 +2550,7 @@ function rwMarkOne(id){if(!S.rwd)S.rwd={};S.rwd[id]=Date.now()}
 function rwPump(){
   if(RWR.cur||!RWR.q.length)return;
   if(UI.quiz&&!UI.quiz.done)return;
-  if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return;
+  if(duelLock())return;
   if(!CLOUD.uid||document.hidden)return;
   rwShow(RWR.q.shift());
 }
@@ -2863,7 +2864,7 @@ function profBar(){
   let lg='';try{lg=LEAGUES[leagueMap()[id]|0].n}catch(e){}
   return`<div class="pbar${flCls(id)}${isKing(id)?' king kv':''}" ${lgAttr(id)} data-pc="${esc(id)}" role="button" aria-label="Profil kartım">${avatar(name,color,false,av,fr,0,0,id)}<div class="pn"><b>${esc(name)}</b>${CLOUD.username?`<span class="muted small">@${esc(CLOUD.username)}</span>`:''}</div><div class="pr">${st?`<span class="badge">🔥 ${st}</span>`:''}${lg?`<span class="badge">${esc(lg)}</span>`:''}</div>${kingFlag(id)}${flagHtml(id)}</div>`;
 }
-const duelLock=()=>!DUEL.bot&&!!DUEL.id&&['count','play','wait'].includes(DUEL.phase);
+const duelLock=()=>!DUEL.bot&&((!!DUEL.id&&['count','play','wait'].includes(DUEL.phase))||DUEL.phase==='search');   // arama ve maç boyunca başka işlem, bildirim ya da pencere yok
 const MAINT={on:false,msg:'',adm:false,eff:false,daily:['23:59','00:09']};
 /* her gün bakım penceresi (Türkiye saati): 23:59 - 00:09, uygulama kapalı, giriş yapılamaz */
 function dailyWin(){
@@ -3839,7 +3840,10 @@ function rankedBoardHtml(per){
 
 /* ---------- olaylar ---------- */
 let toastT;
-function toast(m,ms){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true},ms||2600)}
+const TQ=[];
+function toast(m,ms,force){try{if(!force&&duelLock()){if(TQ.length<4&&!TQ.some(x=>x[0]===m))TQ.push([m,ms,Date.now()]);return}}catch(e){}
+  const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true},ms||2600)}
+setInterval(()=>{try{if(TQ.length&&!duelLock()){const q=TQ.shift();if(Date.now()-q[2]<90000)toast(q[0],q[1])}}catch(e){}},2800);
 let VOICES=[];
 try{const lv=()=>{VOICES=speechSynthesis.getVoices()};lv();speechSynthesis.addEventListener('voiceschanged',lv)}catch(e){}
 function say(word,pron){
@@ -4349,8 +4353,8 @@ async function grdVoid(res){
 }
 function grdWarn(res,kind){
   if(!res||!res.warn)return;
-  if(kind==='hide'){DUEL.zq=res.zq!=null?res.zq:DUEL.idx;toast('⚠️ Uygulamadan ayrıldın (1/2). Tekrarlarsan maç iptal edilir. O soru 0 puan sayıldı.',5000);render()}
-  else toast('⚠️ Odağını kaybettin ('+res.n+'/3). 3. seferde maç iptal edilir.',4000)
+  if(kind==='hide'){DUEL.zq=res.zq!=null?res.zq:DUEL.idx;toast('⚠️ Uygulamadan ayrıldın (1/2). Tekrarlarsan maç iptal edilir. O soru 0 puan sayıldı.',5000,true);render()}
+  else toast('⚠️ Odağını kaybettin ('+res.n+'/3). 3. seferde maç iptal edilir.',4000,true)
 }
 function duelVoid(){
   if(DUEL.phase==='void')return;
@@ -5113,6 +5117,7 @@ function toggleNotif(){
 }
 function maybeNotify(){
   try{
+    if(duelLock())return;
     if(!S.set.notif||!('Notification' in window)||Notification.permission!=='granted')return;
     if(new Date().getHours()<S.set.hour||S.lastNotif===today())return;
     const left=goalEff()-dayStat().c;if(left<=0)return;
