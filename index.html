@@ -498,7 +498,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.20';
+const APP_VERSION='4.149.21';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2154,7 +2154,7 @@ function ctxTransQ(t){
     const base=String(t.word).replace(/\s*\([^)]*\)/g,'').replace(/\.+$/,'').split('/')[0].trim();
     const suf=tok.toLowerCase().startsWith(base.toLowerCase())?tok.slice(base.length).toLowerCase():null;
     if(suf===null||['','s','es','ed','d','ing'].indexOf(suf)===-1)continue;
-    const d0=/^(adjective|adverb)$/i.test(posKey(p))?aaValidDist(p):clozeDist(p);if(!d0||d0.length<3)continue;
+    const d0=(/^(adjective|adverb)$/i.test(posKey(p))?aaValidDist(p):clozeDist(p));if(d0)for(let z=d0.length-1;z>=0;z--)if(TABOO.has(String(d0[z]).toLowerCase()))d0.splice(z,1);if(!d0||d0.length<3)continue;
     const cap=x=>i===0?x.charAt(0).toUpperCase()+x.slice(1):x;
     let ds=[];
     const isPl=x=>/[^s]s$|ies$/i.test(x)&&!/(us|is|ss|ics)$/i.test(x),noun=czSlot(p)==='noun'&&!/^(adjective|adverb)$/i.test(posKey(p)),tpl=noun&&isPl(tok);
@@ -2264,6 +2264,7 @@ function closedMates(t){
   if(!set)return[];
   return set.filter(x=>x!==k).map(x=>CLOSED_IDX[x]).filter(r=>r&&String(r.tr||'').toLowerCase()!==String(t.tr||'').toLowerCase());
 }
+const TABOO=new Set('sex sexual sexuality sexy porn pornography nude naked erotic orgasm rape rapist prostitute prostitution condom genital genitals penis vagina breast breasts'.split(' '));   // şık olarak gösterilmeyecek müstehcen/uygunsuz kelimeler
 function pickDistractors(t,textFn,filterFn,closed,near){
   const tk=posKey(t);
   const out=[],used={};
@@ -2276,7 +2277,7 @@ function pickDistractors(t,textFn,filterFn,closed,near){
   const same=[],other=[];
   for(let k=0;k<tries;k++){
     const r=W[(start+k*7919)%W.length];
-    if(r.word.toLowerCase()===t.word.toLowerCase()||!filterFn(r))continue;
+    if(r.word.toLowerCase()===t.word.toLowerCase()||TABOO.has(r.word.toLowerCase())||!filterFn(r))continue;
     (posKey(r)===tk?same:other).push(r);
   }
   let order=shuffle(same).concat(shuffle(other));
