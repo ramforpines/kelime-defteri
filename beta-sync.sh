@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 SRC=$(git rev-parse --short HEAD)
 WT=$(mktemp -d)
 git fetch -q origin main
-git worktree add -q --detach "$WT" origin/main
+git worktree add -q --detach "$WT" FETCH_HEAD
 FILES="index.html words.js extr.js examples.js senses.js gloss.js reading.js reading-tr.js reading2.js reading3.js exam.js mock.js supabase.js sw.js manifest.webmanifest icon-192.png icon-512.png icon-maskable-512.png apple-touch-icon.png duel-nav.svg duel-swords.svg"
 mkdir -p "$WT/beta"
 for f in $FILES; do [ -f "$f" ] && cp "$f" "$WT/beta/$f"; done
