@@ -503,7 +503,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.149.27';
+const APP_VERSION='4.149.28';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1674,7 +1674,7 @@ function vHelp(){
   return`<div class="card stack"><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün kelimeleri, bu haftaki sıran, dünün ve geçen haftanın lideri.',
-    '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b>, <b>İngilizce Vize</b> (ders kitabı üniteleri: kelimeler, dinleme, okuma ve Örnek Vize), <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
+    '<b>Çalışma</b>: üstteki düğmelerle <b>Sözlük</b>, <b>Test</b>, <b>⚔ Düello</b>, <b>Okuma</b>, <b>Tekrar</b> ve <b>Kaydedilenler</b> arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
     '<b>Sıralamalar</b>: günlük, haftalık ve tüm zamanlar sıralaması. <b>Sohbet</b>: Bugün, Çalışma, Sıralamalar ve Ben → Profil ekranlarında sağ altta duran mesaj balonuna dokununca açılır; genel sohbet, özel mesajlar ve <b>Kullanıcılar</b> listesi (en son aktif olanlar en üstte) vardır, sağ üstteki <b>Sohbetten çık</b> ile kapanır. Okunmamış mesaj sayısı balonun üstünde görünür. <b>Ben → Nasıl kullanılır?</b>: bu sayfa.',
     '<b>Ben</b>: Profil, İstatistik (öğrenilen kelimeler en altında), Ayarlar (geri bildirim en altında) ve Nasıl kullanılır? sayfası. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
   ${sec('🚀 Hızlı başlangıç',li([
@@ -1699,13 +1699,6 @@ function vHelp(){
     'Çalışma → <b>Okuma</b> bölümünde seviyene uygun kısa İngilizce metinler ve metinle ilgili sorular vardır. Metni oku, tüm soruları cevapla ve "Cevapları kontrol et" ile sonucunu gör; her sorunun açıklaması da gösterilir.',
     'Doğru cevap başına '+RD_PT+' × seviye katsayısı puan kazanırsın. Yüksek liglerde yanlış cevap, testteki gibi puan düşürür. Puan, ceza ve günlük hedef bonusu bir parçanın yalnızca ilk çözümünde işler; tekrar çözümde cevapların yine de istatistiklerine sayılır. Cevapların günlük hedefine, doğruluk oranına, seviye istatistiklerine ve doğru serine eklenir; yalnızca kelime ilerlemeni (öğrenildi ve tekrar listesi) etkilemez.',
     'Metinlerdeki zor kelimeler için "Yardımcı kelimeler" kutusuna bakabilirsin.']))}
-  ${sec('📘 İngilizce Vize',li([
-    'Çalışma → <b>İngilizce Vize</b> herkese açıktır. Ders kitabının 6 ünitesini (kelimeler, dinleme, okuma, kalıp ifadeler) ve <b>Örnek Vize</b>yi içerir.',
-    '<b>Ünite bölümleri</b>: Boşluk doldurma, Kelime testi, Örnek cümle, Tanım → kelime, Okuma, Dinleme ve Kalıp ifadeler ayrı ayrı çözülür. <b>Kelimeleri gör</b> ile ünitenin kelime listesine bakabilirsin.',
-    '<b>Tüm ünite soruları</b>: ünitenin sorularını <b>20\'şer soruluk parçalar</b> halinde verir. Çözdüğün soru anında kaydedilir; testi yarıda bıraksan bile o soru, ünitedeki tüm sorular bitene kadar bir daha karşına çıkmaz. Hepsi bitince tur baştan başlar. Düğmede kalan soru sayısı yazar.',
-    '<b>Örnek Vize</b> (100 puan): Dinleme 40 (8 kısa diyalog + 2 uzun konuşma, her biri 6 soru), Okuma 40 (5 kısa metin, 10 soruluk uzun metin, 5 kişi–metin eşleştirme), Kelime 20 (10 paragraf boşluğu + 10 yazılı boşluk doldurma). Sonuç ekranında bölüm puanlarını görürsün.',
-    '<b>Puan ve ilerleme</b>: Normal test gibi işler. Bir soru <b>ilk çözümünde</b> puan, ilerleme ve istatistik getirir; aynı soruyu başka bir vizede ya da ünite testinde tekrar çözmek bunları yeniden vermez. Örnek Vize\'yi tekrar çözersen önceki en iyi sonucundan fazla doğruların puanı eklenir.',
-    'Dinleme sorularında ses dosyası çalar; cevaplayınca konuşma metni görünür. Ses dosyaları internetten indirilir, ilk dinlemede internet gerekebilir.']))}
   ${sec('🔁 Tekrar ve yanlış defteri',li([
     'Türkçe karşılığını veya tanımını yanlış bildiğin kelime <b>Tekrar</b> listesine girer.',
     'Listeden çıkması için Türkçe ve Tanım sorularını art arda <b>3 kez</b> doğru bilmen gerekir. İlk doğrudan <b>1 gün</b>, ikinci doğrudan <b>3 gün</b> sonra yeniden sorulur. Yanlış yaparsan sayaç düşer.',
@@ -2787,7 +2780,7 @@ const learnedCount=()=>Object.keys(S.learned).filter(k=>BYWORD.has(k)).length;
 
 /* ---------- arayüz ---------- */
 const UI={rv:'due',wlConfirm:false,fb:{kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''},afb:{list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null},rep:null,grd:{list:[],sum:[],cases:[],plog:[],tab:'sum',kind:'all',sel:null,msg:'',min:'15',cf:null,loaded:false,busy:false,err:''},arp:{list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null},card:null,tab:'today',dict:{q:'',level:'Hepsi',pos:'Hepsi',status:'Hepsi',limit:40,open:null},quiz:null,me:'prof',backup:'',confirmReset:false,rank:{per:'day'},draft:null,auth:{mode:'login',user:'',name:'',msg:'',busy:false},adm:{list:[],loaded:false,filter:'pending',q:'',confirm:null,busy:false,err:'',pw:null,rs:null,annDraft:null}};
-try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz')UI.tab=t}catch(e){}
+try{const t=sessionStorage.getItem('kd-tab');if(t&&t!=='quiz'&&t!=='exam')UI.tab=t}catch(e){}
 const ICON={
   today:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
   dict:'<svg viewBox="0 0 24 24"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/></svg>',
@@ -2799,7 +2792,7 @@ const ICON={
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['duel','⚔ Düello'],['read','Okuma'],['exam','İngilizce Vize'],['review','Tekrar'],['saved','Kaydedilenler']];
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['duel','⚔ Düello'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']];
 const isStudy=t=>t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
