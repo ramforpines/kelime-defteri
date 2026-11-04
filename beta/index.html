@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.152.4';
+const APP_VERSION='4.152.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1774,6 +1774,7 @@ function vHelp(){
     '<b>Maç</b>: İki oyuncu aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Maç puanı yüksek olan kazanır, eşitse beraberlik olur.',
     '<b>Doğru cevap</b> = 100 × seviye çarpanı (A1 ×1,00 … C2 ×1,85) × hız çarpanı. Hız çarpanı ilk 1,5 saniyede ×1,50, sonra her saniye 0,20 düşer (4. saniyede ×1,00), en az ×0,50.',
     '<b>Yanlış cevap puan düşürür</b>: klasikte 75 × seviye çarpanı; dereceli düelloda doğru bilseydin alacağın puanın %66\'sı (hızlı yanlış daha çok kaybettirir). Süre dolunca klasikte bunun yarısı, dereceli düelloda yine %66\'sı düşer. Bilmediğin soruda tahmin etmek zarar getirir.',
+    '<b>Rakip koparsa</b>: bir oyuncudan <b>30 saniye</b> boyunca hiç cevap gelmezse maç kapanır; kalan soruları cevapsız sayılır (klasikte soru başına −100, derecelide −200) ve puan her zamanki kurala göre aktarılır. Maç geçmişe hemen düşer.',
     '<b>Yarıda bırakma</b>: Maçtan çıkarsan cevaplamadığın her soru için dereceli düelloda 200, klasikte 100 puan düşer.',
     '<b>Genel puana etkisi</b>: Düellodaki doğru/yanlışların normal test gibi işlenir (bilinenler ve yanlışlar kelime ilerlemene gider), bu sorulardan gelen test puanı yarıya iner. Düello kazancı günlük soru puanı sınırına girmez.',
     '<b>Klasik düello</b> her zaman açıktır. Rakip arayabilir ya da salondaki kullanıcıya teklif gönderebilirsin (teklif 15 saniye geçerli). Kimse yoksa botla alıştırma yapabilirsin; bot maçı puanı etkilemez.',
@@ -4484,6 +4485,7 @@ async function histPage(mode,reset){
   const st=DUEL.hp[mode];if(!sb||!CLOUD.uid||st.busy||(!reset&&st.done)||DUEL.hpOk===false)return;
   st.busy=true;const sg0=histSig(st.rows);
   try{
+    if(reset&&Date.now()-(DUEL.swT||0)>20000){DUEL.swT=Date.now();try{await sb.rpc('duel_sweep')}catch(e){}}   // askıda kalan maçlar kapansın, geçmişe ve puana işlensin
     const r=await sb.rpc('duel_history_page',{p_mode:mode,p_off:reset?0:st.rows.length,p_n:50});
     if(r.error)throw r.error;
     const got=(r.data||[]).map(bugD);DUEL.hpOk=true;
@@ -4689,7 +4691,10 @@ function duelTick(){
   }
   if(DUEL.bot&&DUEL.phase!=='result')duelHud();
 }
-function duelHud(){const el=document.getElementById('dhud');if(el)el.innerHTML=dHudHtml()}
+function duelHud(){const el=document.getElementById('dhud');if(el)el.innerHTML=dHudHtml();const a=document.getElementById('dafk');if(a)a.textContent=dAfkTxt()}
+// rakip 30 sn boyunca hiç cevap göndermezse sunucu maçı kapatır (kalan sorular cevapsız sayılır)
+function dAfkTxt(){const d=DUEL.d;if(!d||DUEL.bot||!('act1' in d))return'';const t=dIsP1()?d.act2:d.act1,b=Math.max(t?new Date(t).getTime():0,new Date(d.start_at).getTime());
+  const left=Math.ceil((b+30000-dNow())/1000);return left>0&&left<=30?`Rakipten ${left} sn içinde cevap gelmezse maç biter, kalan soruları cevapsız sayılır.`:left<=0?'Rakip yanıt vermiyor, maç kapatılıyor…':''}
 function duelAnswer(i){
   if(DUEL.phase!=='play'||DUEL.sel!==null)return;
   const it=DUEL.qs[DUEL.idx],ok=i>=0&&it.options[i]===it.correct;
@@ -4925,7 +4930,7 @@ function vDuel(){
     <div class="opts">${it.options.map((o,i)=>{let c='';if(ans){if(o===it.correct)c='ok';else if(i===DUEL.sel)c='bad'}return`<button class="opt ${c}" data-act="duel-opt" data-v="${i}" ${ans?'disabled':''}><kbd>${i+1}</kbd><span>${dQ(it,o,'o',i)}</span></button>`}).join('')}</div>
     ${ans?`<div class="fb ${DUEL.lastOk?'ok':'bad'}"><b class="t">${DUEL.sel===-1?'Süre doldu':DUEL.lastOk?'Doğru':'Yanlış'}</b>${DUEL.lastOk?'':` <span class="small">Doğru cevap: <b>${esc(it.correct)}</b></span>`}</div>`:''}</div>`;
   }else if(P==='wait'){
-    body=`<div class="card stack" style="text-align:center"><div id="dhud">${dHudHtml()}</div><h2>Bitirdin</h2><div class="muted">Rakibin bitirmesi bekleniyor…</div></div>`;
+    body=`<div class="card stack" style="text-align:center"><div id="dhud">${dHudHtml()}</div><h2>Bitirdin</h2><div class="muted">Rakibin bitirmesi bekleniyor…</div><div class="small muted" id="dafk">${dAfkTxt()}</div></div>`;
   }else if(P==='void'){
     const mine=d&&d.void_by===CLOUD.uid,why=d&&d.void_reason==='blur3'?'ekran odağını üçüncü kez kaybettiğin':'uygulamadan ikinci kez ayrıldığın';
     const my=d?+(d.p1===CLOUD.uid?d.dl1:d.dl2)||0:0,lv=d?+d.pen_lv||0:0,pn=d?+(d.p1===CLOUD.uid?d.pen1:d.pen2)||0:0,og=d?+(d.p1===CLOUD.uid?d.dl2:d.dl1)||0:0;
