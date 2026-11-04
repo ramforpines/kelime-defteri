@@ -7,19 +7,19 @@ TOPICS=[{
 'form':[
  {'k':'Yakın · tek','p':'*this* + is','e':('*This is* my phone.','Bu benim telefonum.')},
  {'k':'Yakın · çok','p':'*these* + are','e':('*These are* my shoes.','Bunlar benim ayakkabılarım.')},
- {'k':'Uzak · tek','p':"*that* + is (that's)",'e':("*That's* a big house.",'O büyük bir ev.')},
+ {'k':'Uzak · tek','p':"*that* + is (that's)",'e':("*That's* a big house.",'Şu büyük bir ev.')},
  {'k':'Uzak · çok','p':'*those* + are','e':('*Those are* my friends.','Şunlar benim arkadaşlarım.')},
  {'k':'Soru','p':'*Is this / that* ...? · *Are these / those* ...?','e':('*Are these* your keys?','Bunlar senin anahtarların mı?')},
- {'k':'Cevap','p':'*It is* ... · *They are* ...','e':('What are those? *They are* books.','Şunlar ne? Kitap.')}],
+ {'k':'Cevap','p':'*It is* ... · *They are* ...','e':('What are those? *They are* books.','Şunlar ne? Kitaplar.')}],
 'formnote':{'h':'İstisna: isimle kullanılınca','body':'<b>this / that</b> tekil isimle, <b>these / those</b> çoğul isimle birlikte gelir. İsmin çoğul olması gerekir: <i>these books</i> denir, <i>these book</i> denmez.','ex':[('*This* book is new.','Bu kitap yeni.'),('*Those* cars are fast.','Şu arabalar hızlı.')]},
 'uses':[
  {'h':'1. Yakındaki şeyler: this / these','why':'Elinde, yanında ya da çok yakınında olan şeyleri gösterirken <b>this</b> (tek) ve <b>these</b> (çok) kullanırsın.',
   'ex':[('*This* is my bag.','Bu benim çantam.'),('*These* are my keys.','Bunlar benim anahtarlarım.'),('I like *this* song.','Bu şarkıyı seviyorum.'),('*These* apples are red.','Bu elmalar kırmızı.'),('Who is *this*?','Bu kim?')]},
  {'h':'2. Uzaktaki şeyler: that / those','why':'Senden uzakta olan şeyleri gösterirken <b>that</b> (tek) ve <b>those</b> (çok) kullanırsın.',
   'ex':[('*That* is my school.','Şu benim okulum.'),('Look at *those* birds!','Şu kuşlara bak!'),('*That* man is my teacher.','Şu adam benim öğretmenim.'),('What are *those*?','Şunlar ne?'),('*Those* shoes are expensive.','Şu ayakkabılar pahalı.')]},
- {'h':'3. Telefonda ve tanıştırırken','why':'Birini tanıştırırken ve telefonda <b>this</b> kullanılır. Telefonda karşındakini sorarken <b>that</b> kullanılır.',
+ {'h':'3. Telefonda, tanıştırırken ve cevap verirken','why':'Birini tanıştırırken ve telefonda kendini tanıtırken <b>this</b> kullanılır. Telefonda karşındakini sorarken ve az önce söylenen bir şeye karşılık verirken <b>that</b> kullanılır.',
   'ex':[('Hello, *this is* Ali.','Merhaba, ben Ali. (telefonda)'),('Mum, *this is* my friend Tom.','Anne, bu arkadaşım Tom.'),('Is *that* you, Ayşe?','Sen misin Ayşe? (telefonda)'),("*That's* a good idea!",'Bu iyi bir fikir!')],
-  'inl':[{'h':'İstisna: telefonda "I am" denmez','body':'Telefonda kendini tanıtırken <i>I am Ali</i> değil <b>This is Ali</b> dersin. Karşındakini sorarken <b>Is that Ali?</b> dersin.','ex':[('*This is* Elif speaking.','Ben Elif.'),('Hello, *is that* Mr Brown?','Alo, Bay Brown siz misiniz?')]}]}],
+  'inl':[{'h':'İstisna: telefonda "I am" pek denmez','body':'Telefonda kendini tanıtırken genellikle <i>I am Ali</i> yerine <b>This is Ali</b> (ya da <b>It\'s Ali</b>) dersin. Karşındakini sorarken <b>Is that Ali?</b> dersin.','ex':[('*This is* Elif speaking.','Ben Elif.'),('Hello, *is that* Mr Brown?','Alo, Bay Brown siz misiniz?')]}]}],
 'timesTitle':'this ile zaman ifadeleri','timesNote':'this, şu an içinde olduğun zaman dilimini gösterir.',
 'times':[{'h':'this + zaman','say':'<b>this</b> ile zaman söylerken isim <b>tekil</b> kalır.','lists':[{'l':'İfadeler','w':[('this morning','bu sabah'),('this afternoon','bu öğleden sonra'),('this evening','bu akşam'),('this week','bu hafta'),('this month','bu ay'),('this year','bu yıl')]}],
   'ex':[('I am busy *this week*.','Bu hafta meşgulüm.'),('We are at home *this evening*.','Bu akşam evdeyiz.'),('It is cold *this morning*.','Bu sabah hava soğuk.')]}],
@@ -31,7 +31,7 @@ TOPICS=[{
  ('Is that your car?','*Is that* your car?','Şu senin araban mı?')],
 'dialogues':[
  {'h':'Alışverişte','lines':[('A','How much are *these* shoes?','Bu ayakkabılar kaç para?'),('B','They are three hundred liras.','Üç yüz lira.'),('A','And *that* bag over there?','Peki oradaki çanta?'),('B','*That* bag is two hundred liras.','O çanta iki yüz lira.'),('A','I like *this* blue bag.','Bu mavi çantayı beğendim.'),('B','It is a good bag!','İyi bir çanta!')]},
- {'h':'Sınıfta','lines':[('A','What is *this*?','Bu ne?'),('B','It is a pencil.','Bir kurşun kalem.'),('A','And what are *those*?','Peki şunlar ne?'),('B','*They* are books.','Kitap.'),('A','Are *those* your bags?','Şunlar senin çantaların mı?'),('B',"No, they aren't. *These* are my bags.",'Hayır değil. Bunlar benim çantalarım.')]}],
+ {'h':'Sınıfta','lines':[('A','What is *this*?','Bu ne?'),('B','It is a pencil.','Bir kurşun kalem.'),('A','And what are *those*?','Peki şunlar ne?'),('B','*They* are books.','Kitaplar.'),('A','Are *those* your bags?','Şunlar senin çantaların mı?'),('B',"No, they aren't. *These* are my bags.",'Hayır değil. Bunlar benim çantalarım.')]}],
 'mistakes':[
  {'bad':'This are my friends.','good':'These are my friends.','why':'Çoğul için these kullanılır.'},
  {'bad':'Those is my car.','good':'That is my car.','why':'Tek şey için that kullanılır.'},

@@ -34,7 +34,7 @@ TOPICS=[{
 'verbsTitle':'Düzensiz çoğullar','verbsNote':'Ezberlemen gereken sık kullanılan düzensiz isimler.',
 'verbs':[
  {'h':'İnsanlar','say':'Kişi isimleri en sık düzensizdir.','l':[('man → men','adam'),('woman → women','kadın'),('child → children','çocuk'),('person → people','kişi')],'ex':[('The *people* are happy.','İnsanlar mutlu.'),('Two *women* are teachers.','İki kadın öğretmen.')]},
- {'h':'Vücut','say':'Çift ve sıra halinde olan parçalar.','l':[('foot → feet','ayak'),('tooth → teeth','diş')],'ex':[('My *feet* are cold.','Ayaklarım soğuk.'),('Brush your *teeth*!','Dişlerini fırçala!')]},
+ {'h':'Vücut','say':'Vücut parçalarında sık görülür.','l':[('foot → feet','ayak'),('tooth → teeth','diş')],'ex':[('My *feet* are cold.','Ayaklarım soğuk.'),('Brush your *teeth*!','Dişlerini fırçala!')]},
  {'h':'Hayvanlar','say':'Aynı kalanlar ve değişenler.','l':[('mouse → mice','fare'),('sheep → sheep','koyun'),('fish → fish','balık')],'ex':[('Two *mice* are in the kitchen.','Mutfakta iki fare var.'),('We have ten *sheep*.','On koyunumuz var.')]}],
 'dialogues':[
  {'h':'Markette','lines':[('A','Can I have two *tomatoes* and three *potatoes*, please?','İki domates ve üç patates alabilir miyim?'),('B','Here you are. Anything else?','Buyurun. Başka bir şey?'),('A','Yes, two *boxes* of eggs.','Evet, iki kutu yumurta.'),('B','Sure. Four *eggs* in each box?','Tabii. Her kutuda dört yumurta mı?'),('A','No, ten *eggs*, please.','Hayır, on yumurta lütfen.'),('B','OK. That is all.','Tamam. Hepsi bu kadar.')]},

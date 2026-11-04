@@ -19,7 +19,7 @@ TOPICS=[{
   'ex':[('I *am* tired.','Yorgunum.'),('She *is* happy today.','O bugün mutlu.'),('The soup *is* hot.','Çorba sıcak.'),('We *are* hungry.','Biz açız.'),('The children *are* busy.','Çocuklar meşgul.')],
   'inl':[{'h':'İstisna: üşümek, acıkmak, susamak','body':'Türkçede "üşüyorum, acıktım" dersin; İngilizcede bunlar sıfattır ve <b>be</b> ile söylenir. <i>I have hungry</i> denmez.','ex':[('I *am* cold.','Üşüyorum.'),('He *is* thirsty.','O susamış.')]}]},
  {'h':'3. Nerede olduğunu ve nereli olduğunu söylemek','why':'Yer bildirirken <b>be + yer ifadesi</b> kullanırsın. Nereli olduğunu söylerken <b>from</b> gelir.',
-  'ex':[('I *am* at home.','Evdeyim.'),('The keys *are* on the table.','Anahtarlar masanın üstünde.'),('He *is* from Izmir.','O İzmirli.'),('We *are* from Turkey.','Biz Türkiye\'denbiz.'),('Where *is* the bank?','Banka nerede?')]},
+  'ex':[('I *am* at home.','Evdeyim.'),('The keys *are* on the table.','Anahtarlar masanın üstünde.'),('He *is* from Izmir.','O İzmirli.'),('We *are* from Turkey.','Biz Türkiyeliyiz.'),('Where *is* the bank?','Banka nerede?')]},
  {'h':'4. Yaş, saat ve fiyat','why':'Yaşı, saati ve fiyatı da <b>be</b> ile söylersin. Yaşı söylerken <i>years old</i> kısmı çoğu zaman düşer.',
   'ex':[('I *am* twenty years old.','Yirmi yaşındayım.'),('She *is* ten.','O on yaşında.'),("*It's* five o'clock.",'Saat beş.'),('The tickets *are* fifty liras.','Biletler elli lira.')],
   'inl':[{'h':'Türkçe tuzağı: yaş','body':'Türkçede "yirmi yaşındayım" dersin ama İngilizcede <i>I have twenty</i> denmez. <b>I am twenty</b> denir.','ex':[('How old *are* you?','Kaç yaşındasın?'),('I *am* twenty-two.','Yirmi iki yaşındayım.')]}]}],
@@ -35,7 +35,7 @@ TOPICS=[{
  ('What time is it?','*What time is it?* It\'s half past six.','Saat kaç? Altı buçuk.')],
 'dialogues':[
  {'h':'İlk tanışma','lines':[('A',"Hello! *I'm* Ayşe. What's your name?",'Merhaba! Ben Ayşe. Adın ne?'),('B',"Hi, Ayşe. *I'm* Tom.",'Merhaba Ayşe. Ben Tom.'),('A','*Are* you from England?','İngiltere\'den misin?'),('B',"No, I'm not. *I'm* from Canada. And you?",'Hayır, değilim. Kanadalıyım. Sen?'),('A',"*I'm* from Turkey. *I'm* a student.",'Ben Türkiyeliyim. Öğrenciyim.'),('B','Nice to meet you!','Tanıştığımıza memnun oldum!')]},
- {'h':'Telefonda','lines':[('A','Hello, Mum. Where *are* you?','Alo anne. Neredesin?'),('B',"*I'm* at the market. *Are* you at home?",'Marketteyim. Sen evde misin?'),('A','Yes, I *am*. Dad *is* here too.','Evet. Babam da burada.'),('B','*Is* he tired?','O yorgun mu?'),('A',"No, he *isn't*. He's happy.",'Hayır, değil. Mutlu.'),('B',"Good. *We're* late, but the bus is near.",'İyi. Geciktik ama otobüs yakın.')]}],
+ {'h':'Telefonda','lines':[('A','Hello, Mum. Where *are* you?','Alo anne. Neredesin?'),('B',"*I'm* at the market. *Are* you at home?",'Marketteyim. Sen evde misin?'),('A','Yes, I *am*. Dad *is* here too.','Evet. Babam da burada.'),('B','*Is* he tired?','O yorgun mu?'),('A',"No, he *isn't*. He's happy.",'Hayır, değil. Mutlu.'),('B',"Good. *We're* late, but the bus is here.",'İyi. Geç kaldık ama otobüs geldi.')]}],
 'mistakes':[
  {'bad':'I student.','good':'I am a student.','why':'Her cümlede fiil gerekir. Meslekten önce a / an gelir.'},
  {'bad':'She are my sister.','good':'She is my sister.','why':'she, he, it ile is kullanılır.'},

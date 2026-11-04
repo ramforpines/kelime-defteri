@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.151.6';
+const APP_VERSION='4.152.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1707,7 +1707,7 @@ function vHelp(){
   return`<div class="card stack"><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün 3 kelimesi, bu haftaki sıran, dünün ve geçen haftanın lideri. Puan kesintisi riskin varsa "Bugün bitmeden" uyarısı ve son 14 gündeki cezaların listesi de burada.',
-    '<b>Çalışma</b>: üstteki düğmelerle Sözlük, Test, Okuma, Tekrar ve Kaydedilenler arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
+    '<b>Çalışma</b>: üstteki düğmelerle Sözlük, Test, Okuma, Tekrar, Kaydedilenler ve Gramer arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
     '<b>⚔ Düello</b>: alttaki menünün ortasındaki düğme. Klasik ve Dereceli düello burada.',
     '<b>Sıralamalar</b>: günlük, haftalık, tüm zamanlar ve dereceli düello sıralaması.',
     '<b>Sohbet</b>: Bugün, Çalışma, Sıralamalar ve Ben → Profil ekranlarında sağ altta duran mesaj balonuyla açılır. Genel sohbet, özel mesajlar ve Kullanıcılar listesi (en son aktif olan üstte) vardır; okunmamış mesaj sayısı balonun üstünde görünür. Sağ üstteki "Sohbetten çık" ile kapanır.',
@@ -1718,6 +1718,11 @@ function vHelp(){
     'Çalışma → <b>Sözlük</b>: 10.000\'den fazla kelimenin Türkçesi, tanımı ve örnek cümlesi (Türkçe çevirisiyle) vardır; kelimeye dokunarak açarsın.',
     'İlk girişte yönetici onayı gerekebilir. Onaylanınca sıralamaya girer, sohbete ve düelloya katılırsın.',
     'İlerlemen hesabına kaydedilir. Başka cihazda aynı kullanıcı adı ve şifreyle girince kaldığın yerden devam edersin.']),true)}
+  ${sec('📘 Gramer',li([
+    '<b>Konular</b>: A1, A2 ve B1 seviyesinde 27 konu var (to be\'den Reported Speech\'e kadar). Üst seviyeler hazırlanıyor, listede "yakında" yazar.',
+    '<b>Her konuda</b>: kısa anlatım, kalıp tablosu, kullanımlar ve örnek cümleler (Türkçesiyle), istisnalar, zaman ifadeleri, hazır kalıplar, diyaloglar, sık yapılan hatalar ve konuyla ilgili kelimeler. Zaman konularında zaman çizgisi de vardır.',
+    '<b>Dinle</b>: örnek cümleye dokununca sesli okunur. Kelimeleri ☆ ile Kaydedilenler\'e ekleyebilirsin.',
+    '<b>Mini test</b>: her konunun sonunda kolaydan zora 20 soru (6 kolay, 6 orta, 5 zor, 3 çok zor). Her cevaptan sonra açıklama çıkar, sonunda puanın ve yanlışların görünür. Bu test <b>puan vermez</b>, sıralamayı etkilemez; istediğin kadar tekrar çözebilirsin.']))}
   ${sec('📝 Testler ve soru türleri',li([
     '<b>Bugünün testi</b>: her zaman 20 soru; tekrar zamanı gelen kelimeler, 1 Yanlış defteri sorusu, günün kelimeleri ve yeni kelimelerden karışık hazırlanır. Çalışma ekranındaki soru sayısı bunu etkilemez.',
     '<b>Yeni test</b>: seçtiğin seviye ve türden henüz öğrenmediğin kelimeler gelir.',
@@ -2827,7 +2832,10 @@ const ICON={
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const GRAM_ON=/\/beta\//.test(location.pathname)||/[?&]gram=1/.test(location.search);   // Gramer: yalnızca beta (hazır olunca herkese açılacak)
+const GRAM_ON=true;   // Gramer: herkese açık (A1–B1)
+const GRAM_BETA=/\/beta\//.test(location.pathname)||/[?&]gram=1/.test(location.search);   // B2 ve üstü yalnızca beta (yönetici)
+const GRAM_HIDE=['B2','C1','C2'];
+const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
 const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]);
 const isStudy=t=>(t==='gram'&&GRAM_ON)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
@@ -2846,6 +2854,8 @@ const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıralamalar'],['
     past:{svg:GTL_BASE(GTL_D(80,'#b35a00')+GTL_D(130,'#b35a00')+GTL_T(80,34,'yesterday','#b35a00')+GTL_T(130,34,'last week','#b35a00')+'<line x1="80" y1="108" x2="130" y2="108" stroke="var(--accent)" stroke-width="3"/>'+GTL_T(105,124,'bitti, bir daha olmadı')),cap:'Past Simple, geçmişte başlayıp bitmiş olayları anlatır. Şimdiyle bağı yoktur.'},
     future:{svg:GTL_BASE(GTL_D(260,'#17794a')+GTL_D(310,'#17794a')+GTL_T(260,34,'tomorrow','#17794a')+GTL_T(310,34,'next year','#17794a')+GTL_T(285,124,'will / be going to')),cap:'Gelecek zaman, henüz olmamış olayları anlatır; karar ve plana göre will ya da going to seçilir.'},
     pastcont:{svg:GTL_BASE('<rect x="50" y="53" width="110" height="14" rx="7" fill="var(--accent)" fill-opacity=".25"/>'+GTL_D(120,'#b35a00')+GTL_T(105,34,'was / were + fiil-ing','var(--accent)',1)+GTL_T(135,108,'kesen olay (when ...)','#b35a00')),cap:'Past Continuous, geçmişte sürmekte olan bir işi anlatır; çoğu zaman başka bir olay bu işi böler.'},
+    pastperf:{svg:GTL_BASE(GTL_D(70,'#b35a00')+GTL_D(150,'var(--accent)')+GTL_T(70,34,'önce: had + V3','#b35a00',1)+GTL_T(150,34,'sonra: V2','var(--accent)')+'<line x1="70" y1="108" x2="150" y2="108" stroke="var(--accent)" stroke-width="3"/>'+GTL_T(110,124,'geçmişteki bir andan daha önce')),cap:'Past Perfect, geçmişteki bir olaydan daha önce olmuş olanı gösterir: iki geçmiş olaydan önce olanı had + V3 ile söylersin.'},
+    futperf:{svg:GTL_BASE('<rect x="215" y="53" width="80" height="14" rx="7" fill="#17794a" fill-opacity=".25"/>'+GTL_D(295,'#17794a')+GTL_T(255,34,'will have + V3','#17794a',1)+GTL_T(295,108,'by Friday','#17794a')+GTL_T(200,124,'gelecekteki bir ana kadar bitmiş olacak')),cap:'Future Perfect, gelecekteki bir zaman noktasına kadar tamamlanmış olacak işi; Future Continuous ise o anda süren işi anlatır.'},
     ppc:{svg:GTL_BASE('<rect x="70" y="53" width="130" height="14" rx="7" fill="var(--accent)" fill-opacity=".25"/>'+GTL_D(70,'#b35a00')+GTL_T(70,34,'since 8:00','#b35a00')+GTL_T(135,124,'have / has been + fiil-ing')),cap:'Present Perfect Continuous, geçmişte başlayıp şimdiye kadar süren (ya da yeni biten) işi anlatır; süreç vurgulanır.'}
   };
   function gTLHtml(k){const g=GTL[k===true?'pp':k];if(!g)return'';return `<div class="card stack"><h3 style="margin:0">Zaman çizgisi</h3>${g.svg}<div class="small muted">${g.cap}</div></div>`}
@@ -2873,12 +2883,12 @@ function vGramQuiz(T){
   ${c!=null?`<div class="small ${c===q.a?'ggood':'gbad'}" style="text-decoration:none">${c===q.a?'Doğru. ':'Yanlış. '}<span class="muted">${esc(q.w)}</span></div><button class="btn primary block" data-act="gm-next">${st.cur+1>=n?'Sonucu gör':'Sonraki soru'}</button>`:''}
   <div class="muted small">Bu test puan vermez. Sorular kolaydan zora doğru ilerler.</div></div>`}
 function vGram(){
-  const G=window.GRAMMAR||[],T=UI.gm&&G.find(t=>t.id===UI.gm);
+  const G=gramList(),T=UI.gm&&G.find(t=>t.id===UI.gm);
   const css=`<style>.gh{color:var(--accent);font-weight:700}.gx{display:flex;gap:10px;justify-content:space-between;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);font-size:.92rem;cursor:pointer}.gxl>.gx:first-child{border-top:0}.gxe{flex:1.15}.gxt{flex:1;text-align:right;color:var(--muted);font-size:.8rem}.gv{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}.gf{padding:7px 10px;border-radius:8px;background:rgba(120,120,120,.08)}.gbad{color:#e5484d;text-decoration:line-through}.ggood{color:#2e9e5b;font-weight:600}.gq button{display:block;width:100%;text-align:left;margin-top:6px}.gn{padding:8px 10px;border-radius:8px;border-left:3px solid #e0a020;background:rgba(224,160,32,.1);font-size:.88rem}.gt{width:100%;border-collapse:collapse;font-size:.85rem}.gt th{text-align:left;background:rgba(120,120,120,.1);padding:5px 6px;font-size:.75rem}.gt td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:top}</style>`;
   if(!T){
     const lv=['A1','A2','B1','B2','C1','C2'];
-    return css+`<div class="card stack"><h2 style="margin:0">Gramer</h2><div class="muted small">Konu anlatımı; kurallar, örnek cümleler, sık yapılan hatalar ve o konuyla öğrenmen gereken kelimeler. <b>Beta:</b> şimdilik yalnızca sende görünür.</div></div>`+
-    lv.map(L=>{const ready=G.filter(t=>t.lv===L),plan=(window.GRAMMAR_PLAN||{})[L]||[];if(!ready.length&&!plan.length)return'';
+    return css+`<div class="card stack"><h2 style="margin:0">Gramer</h2><div class="muted small">Konu anlatımı; kurallar, örnek cümleler, sık yapılan hatalar ve o konuyla öğrenmen gereken kelimeler. ${GRAM_BETA?' <b>Beta:</b> B2 konuları yalnızca sende görünür.':''}</div></div>`+
+    lv.map(L=>{const ready=G.filter(t=>t.lv===L),plan=((window.GRAMMAR||[]).filter(t=>t.lv===L&&!G.includes(t)).map(t=>t.title)).concat((window.GRAMMAR_PLAN||{})[L]||[]);if(!ready.length&&!plan.length)return'';
       return`<div class="card stack"><h3 style="margin:0">${L}</h3>${ready.map(t=>`<button class="btn block" data-act="gm-open" data-v="${t.id}" style="text-align:left"><b>${esc(t.title)}</b><div class="muted small">${esc(t.form_name)}</div></button>`).join('')}${plan.filter(n=>!ready.some(t=>t.title===n)).map(n=>`<div class="small muted" style="padding:4px 2px">• ${esc(n)} <span class="badge">yakında</span></div>`).join('')}</div>`}).join('');
   }
   const done=(UI.gp&&UI.gp[T.id])||{};
@@ -5048,9 +5058,9 @@ document.addEventListener('click',async e=>{
     case'sv-w':{const w=g('data-w');toggleSaved(w);toast(isSaved(w)?'Kaydedildi.':'Kayıttan çıkarıldı.');if(UI.tab==='saved'&&!isSaved(w))UI.dict.open=null;const dl=$('#dlist');if(dl)dl.innerHTML=UI.tab==='saved'?savedList():dictList();if(UI.tab==='saved'){const t=document.querySelector('.top .muted');if(t)t.textContent=nf(savedWords().length)+' kelime'}break}
     case'gm-open':UI.gm=g('data-v');render();window.scrollTo(0,0);break;
     case'gm-back':UI.gm=null;render();window.scrollTo(0,0);break;
-    case'gm-ans':{const T=(window.GRAMMAR||[]).find(t=>t.id===UI.gm);if(T){UI.gp=UI.gp||{};const o=UI.gp[T.id]||(UI.gp[T.id]={a:{},cur:0});if(o.a[o.cur]==null){o.a[o.cur]=+g('data-o');const y=window.scrollY;render();window.scrollTo(0,y)}}break}
-    case'gm-next':{const T=(window.GRAMMAR||[]).find(t=>t.id===UI.gm);if(T){const o=UI.gp&&UI.gp[T.id];if(o){o.cur++;render();const q=document.getElementById('gq');if(q)q.scrollIntoView({block:'start'})}}break}
-    case'gm-retry':{const T=(window.GRAMMAR||[]).find(t=>t.id===UI.gm);if(T){UI.gp=UI.gp||{};UI.gp[T.id]={a:{},cur:0};render();const q=document.getElementById('gq');if(q)q.scrollIntoView({block:'start'})}break}
+    case'gm-ans':{const T=gramList().find(t=>t.id===UI.gm);if(T){UI.gp=UI.gp||{};const o=UI.gp[T.id]||(UI.gp[T.id]={a:{},cur:0});if(o.a[o.cur]==null){o.a[o.cur]=+g('data-o');const y=window.scrollY;render();window.scrollTo(0,y)}}break}
+    case'gm-next':{const T=gramList().find(t=>t.id===UI.gm);if(T){const o=UI.gp&&UI.gp[T.id];if(o){o.cur++;render();const q=document.getElementById('gq');if(q)q.scrollIntoView({block:'start'})}}break}
+    case'gm-retry':{const T=gramList().find(t=>t.id===UI.gm);if(T){UI.gp=UI.gp||{};UI.gp[T.id]={a:{},cur:0};render();const q=document.getElementById('gq');if(q)q.scrollIntoView({block:'start'})}break}
     case'sv-o':{const w=g('data-w');if(w){toggleSaved(w);toast(isSaved(w)?'Kaydedildi: Çalışma → Kaydedilenler':'Kayıttan çıkarıldı.');render()}break}
     case'sv-q':{const q2=UI.quiz;if(q2){const w=q2.items[q2.i].w.word;toggleSaved(w);toast(isSaved(w)?'Kaydedildi: Çalışma → Kaydedilenler':'Kayıttan çıkarıldı.');render()}break}
     case'more':UI.dict.limit+=40;$('#dlist').innerHTML=dictList();break;

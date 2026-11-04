@@ -38,7 +38,7 @@ TOPICS=[{
  ("Give me your...","*Give me your* hand.",'Elini ver.')],
 'dialogues':[
  {'h':'Kayıp eşya','lines':[('A','Excuse me, *whose* bag is this?','Affedersiniz, bu kimin çantası?'),('B','It is not *mine*.','Benim değil.'),('A','Is it *Ali\'s*?','Ali\'nin mi?'),('B','No, *his* bag is black. This one is blue.','Hayır, onun çantası siyah. Bu mavi.'),('A','Maybe it is *Elif\'s*.','Belki Elif\'indir.'),('B','Yes! *Her* name is on it.','Evet! Üstünde onun adı yazıyor.')]},
- {'h':'Aile fotoğrafı','lines':[('A','Who is this?','Bu kim?'),('B','This is *my* brother. *His* name is Can.','Bu benim erkek kardeşim. Adı Can.'),('A','And this woman?','Peki bu kadın?'),('B','She is *my mother*. *Her* job is teaching.','Annem. Mesleği öğretmenlik.'),('A','Is that *your* house?','Bu senin evin mi?'),('B','No, it is *my grandparents\'* house.','Hayır, büyükanne ve büyükbabamın evi.')]}],
+ {'h':'Aile fotoğrafı','lines':[('A','Who is this?','Bu kim?'),('B','This is *my* brother. *His* name is Can.','Bu benim erkek kardeşim. Adı Can.'),('A','And this woman?','Peki bu kadın?'),('B','She is *my mother*. *Her* job is teaching.','Annem. Mesleği öğretmenlik.'),('A','Is that *your* house?','Şu senin evin mi?'),('B','No, it is *my grandparents\'* house.','Hayır, büyükanne ve büyükbabamın evi.')]}],
 'mistakes':[
  {'bad':'Me name is Ali.','good':'My name is Ali.','why':'Sıfat olarak my kullanılır; me nesnedir.'},
  {'bad':"The dog likes it's ball.",'good':'The dog likes its ball.','why':'İyelik sıfatı its yazılır; it\'s = it is.'},
@@ -62,7 +62,7 @@ TOPICS=[{
  Q(2,'Bağımsız','This book is ___. (benim)','mine',['my','me'],'İsim gelmiyorsa bağımsız biçim: mine.'),
  Q(2,'Sıfat','My sister has ___ own room. (kendi)','her',['she','hers'],'Sıfat gerekir: her own room.'),
  Q(3,'Karışık','Hangi cümle doğru?',"It's a nice dog. Its name is Max.",["It's a nice dog. It's name is Max.","Its a nice dog. Its name is Max."],"its = onun; it's = it is."),
- Q(3,"'s",'Hangi cümle doğru?',"My father's car is old.",['The car of my father is old.','My fathers car is old.'],"Kişilerde 's kullanılır, kesme işareti unutulmaz."),
+ Q(3,"'s",'Hangi cümle hem doğru hem en doğal?',"My father's car is old.",['The car of my father is old.','My fathers car is old.'],"Kişilerde 's kullanılır, kesme işareti unutulmaz."),
  Q(3,'Bağımsız','That bag is not mine. It is ___. (onun, kadın)','hers',['her','she'],'İsim gelmiyorsa bağımsız biçim: hers.'),
  Q(3,'Bağımsız','Our flat is small, but ___ is big. (onlarınki)','theirs',['their','them'],'İsim tekrar edilmiyor: theirs.'),
  Q(3,'Whose','Hangi cümle doğru?',"Whose bag is this? It's Ali's.",["Who's bag is this? It's Ali's.","Whose bag are this? It's Ali's."],'Sahiplik sorusu: Whose.'),

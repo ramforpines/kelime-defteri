@@ -33,7 +33,7 @@ TOPICS=[{
 'verbsTitle':'Sık gelen fiiller','verbsNote':'Günlük rutinleri anlatırken en çok kullanılan fiiller. he / she / it ile -s alır.',
 'verbs':[
  {'h':'Günlük rutin','say':'Gün boyu yapılan işler.','l':[('get up → gets up','kalkmak'),('have breakfast → has','kahvaltı yapmak'),('go → goes','gitmek'),('work → works','çalışmak'),('study → studies','ders çalışmak'),('start → starts','başlamak'),('finish → finishes','bitirmek'),('come → comes','gelmek'),('sleep → sleeps','uyumak'),('watch → watches','izlemek')],'ex':[('She *gets up* at six.','O altıda kalkar.'),('He *studies* at night.','O geceleri çalışır.')]},
- {'h':'Sevgi ve tercih','say':'Durum fiilleri; şimdiki zamanla kullanılmaz.','l':[('like → likes','sevmek'),('love → loves','çok sevmek'),('hate → hates','nefret etmek'),('prefer → prefers','tercih etmek'),('want → wants','istemek'),('need → needs','ihtiyaç duymak'),('know → knows','bilmek'),('think → thinks','düşünmek')],'ex':[('He *loves* music.','O müziği çok sever.'),('She *needs* help.','Onun yardıma ihtiyacı var.')]}],
+ {'h':'Sevgi ve tercih','say':'Durum fiilleri; genellikle -ing almaz.','l':[('like → likes','sevmek'),('love → loves','çok sevmek'),('hate → hates','nefret etmek'),('prefer → prefers','tercih etmek'),('want → wants','istemek'),('need → needs','ihtiyaç duymak'),('know → knows','bilmek'),('understand → understands','anlamak')],'ex':[('He *loves* music.','O müziği çok sever.'),('She *needs* help.','Onun yardıma ihtiyacı var.')]}],
 'patterns':[
  ('What do you do?','*What do you do?* I am a teacher.','Ne iş yaparsın? Öğretmenim.'),
  ('How often do you ...?','*How often do you* go to the gym? Twice a week.','Ne sıklıkla spora gidersin? Haftada iki kez.'),

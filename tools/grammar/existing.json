@@ -1155,7 +1155,7 @@
     "q": "Hangi cümlede zarf doğru yerde?",
     "o": [
      "She has been never late.",
-     "She never has been late.",
+     "She has been late never.",
      "She has never been late."
     ],
     "a": 2,
@@ -1192,7 +1192,7 @@
     "o": [
      "ago",
      "yet",
-     "already"
+     "since"
     ],
     "a": 1,
     "w": "Soruda cümle sonunda yet kullanılır."
@@ -1236,7 +1236,7 @@
    {
     "lv": 3,
     "t": "Kısaltma",
-    "q": "In 'She's finished the report', 's means ___.",
+    "q": "'She's finished the report' cümlesinde 's şu anlama gelir: ___.",
     "o": [
      "has",
      "was",
@@ -1262,7 +1262,7 @@
     "t": "Süren zaman dilimi",
     "q": "It's 4 pm. I ___ three coffees today.",
     "o": [
-     "drank",
+     "drunk",
      "have drunk",
      "am drinking"
     ],
@@ -1272,7 +1272,7 @@
    {
     "lv": 4,
     "t": "Past Simple farkı",
-    "q": "Which sentence is WRONG?",
+    "q": "Hangi cümle YANLIŞ?",
     "o": [
      "She has just left.",
      "I have lived here for ten years.",
@@ -1284,7 +1284,7 @@
    {
     "lv": 4,
     "t": "been / gone",
-    "q": "Which sentence means \"Tom is still abroad\"?",
+    "q": "Hangi cümle \"Tom hâlâ yurt dışında\" anlamına gelir?",
     "o": [
      "Tom has been to Spain.",
      "Tom has gone to Spain.",

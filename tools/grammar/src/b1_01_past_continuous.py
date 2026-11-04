@@ -36,7 +36,7 @@ TOPICS=[{
  ('It was ...ing.','*It was raining.*','Yağmur yağıyordu.'),
  ('At that moment ...','*At that moment* I was driving.','O anda araba sürüyordum.')],
 'dialogues':[
- {'h':'Alibi','lines':[('A','Where *were* you last night at nine?','Dün gece dokuzda neredeydin?'),('B','I *was* at home.','Evdeydim.'),('A','What *were* you *doing*?','Ne yapıyordun?'),('B','I *was watching* a film.','Film izliyordum.'),('A','*Was* anyone with you?','Yanında kimse var mıydı?'),('B','Yes, my brother *was sitting* next to me.','Evet, kardeşim yanımda oturuyordu.')]},
+ {'h':'Dün gece','lines':[('A','Where *were* you last night at nine?','Dün gece dokuzda neredeydin?'),('B','I *was* at home.','Evdeydim.'),('A','What *were* you *doing*?','Ne yapıyordun?'),('B','I *was watching* a film.','Film izliyordum.'),('A','*Was* anyone with you?','Yanında kimse var mıydı?'),('B','Yes, my brother *was sitting* next to me.','Evet, kardeşim yanımda oturuyordu.')]},
  {'h':'Bir kaza','lines':[('A','What happened?','Ne oldu?'),('B','I *was walking* home when I *fell* down.','Eve yürürken düştüm.'),('A','Were you hurt?','Yaralandın mı?'),('B','Not really. I *was wearing* new shoes.','Pek değil. Yeni ayakkabı giyiyordum.'),('A','What *was* the weather like?','Hava nasıldı?'),('B','It *was raining*, and the road *was* wet.','Yağmur yağıyordu ve yol ıslaktı.')]}],
 'mistakes':[
  {'bad':'I was sleep when you called.','good':'I was sleeping when you called.','why':'was / were ile fiil-ing gerekir.'},
@@ -48,15 +48,15 @@ TOPICS=[{
 'tip':'"o sırada, -ken, o anda" gördüğünde sürmekte olan eylem için was / were + -ing düşün. Kısa olay (telefon çaldı, düştü, geldi) varsa onu Past Simple yap.',
 'vocab':['while','suddenly','accident','cross','ring','fall','hurt','shine','blow','wet','wear','dinner'],
 'quiz':[
- Q(1,'Yapı','She ___ a book at eight.','was reading',['read','is reading'],'Geçmişte belli anda sürmekte olan iş: was + -ing.'),
- Q(1,'Yapı','They ___ football at that time.','were playing',['was playing','played'],'they ile were + -ing.'),
+ Q(1,'Yapı','She ___ a book at eight.','was reading',['reads','is reading'],'Geçmişte belli anda sürmekte olan iş: was + -ing.'),
+ Q(1,'Yapı','They ___ football at that time.','were playing',['was playing','are playing'],'they ile were + -ing.'),
  Q(1,'Olumsuz',"We ___ sleeping.","weren't",["wasn't","didn't"],'we ile weren\'t kullanılır.'),
  Q(1,'Soru','___ you watching TV?','Were',['Did','Was'],'you ile Were kullanılır.'),
  Q(1,'was / were','I ___ cooking when she came.','was',['were','did'],'I ile was kullanılır.'),
  Q(1,'was / were','He ___ working all day.','was',['were','is'],'he ile was kullanılır.'),
  Q(2,'Bölünme','I ___ when the phone rang. (uyumak)','was sleeping',['slept','sleeping'],'Uzun eylem Past Continuous olur.'),
  Q(2,'Bölünme','I was walking when I ___ him. (görmek)','saw',['was seeing','see'],'Kısa olay Past Simple olur.'),
- Q(2,'while','___ I was cooking, he called.','While',['When','During'],'while ile sürmekte olan eylem gelir.'),
+ Q(2,'while','___ I was cooking, he called.','While',['During','Because of'],'while ile sürmekte olan eylem gelir.'),
  Q(2,'Soru kelimesi','What ___ you doing at six?','were',['did','was'],'you ile were kullanılır.'),
  Q(2,'Kısa cevap','"Was he working?" "Yes, he ___."','was',['did','is'],'Was ile sorulan soruya was ile cevap verilir.'),
  Q(2,'Aynı anda','She was talking while they ___ working.','were',['was','did'],'they ile were kullanılır.'),

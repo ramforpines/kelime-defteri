@@ -11,7 +11,7 @@ TOPICS=[{
  {'k':'Kısa cevap','p':"Yes, I *can*. · No, I *can't*.",'e':("*Can* she cook? Yes, she *can*.",'O yemek yapabilir mi? Evet.')},
  {'k':'Soru kelimesi','p':'What / Where / How + *can* + özne + fiil?','e':('What *can* you *do*?','Neler yapabilirsin?')},
  {'k':'Uzun biçim','p':'*cannot* (tek kelime) · can not (nadir)','e':('You *cannot* park here.','Buraya park edemezsin.')}],
-'formnote':{'h':'İstisna: can ile to ve -s kullanılmaz','body':'can\'den sonra <b>to</b> gelmez ve fiile <b>-s</b> eklenmez. <i>She can to swim</i> ya da <i>She cans swim</i> denmez. Ayrıca can\'in geçmiş biçimi <b>could</b>\'dur; <i>can</i> geçmiş zamanda (<i>I could swim when I was five</i>) bu şekilde kullanılır.','ex':[('She *can swim*.','O yüzebilir.'),('I *could swim* when I was five.','Beş yaşındayken yüzebiliyordum.')]},
+'formnote':{'h':'İstisna: can ile to ve -s kullanılmaz','body':'can\'den sonra <b>to</b> gelmez ve fiile <b>-s</b> eklenmez. <i>She can to swim</i> ya da <i>She cans swim</i> denmez. Ayrıca can\'in geçmiş biçimi <b>could</b>\'dur: geçmişteki yetenek için <i>I could swim when I was five</i> denir.','ex':[('She *can swim*.','O yüzebilir.'),('I *could swim* when I was five.','Beş yaşındayken yüzebiliyordum.')]},
 'uses':[
  {'h':'1. Yetenek: yapabilmek','why':'Bir kişinin öğrendiği ya da doğuştan sahip olduğu yeteneği söylerken <b>can</b> kullanılır.',
   'ex':[('I *can ride* a bike.','Bisiklete binebilirim.'),('She *can speak* three languages.','O üç dil konuşabilir.'),('My brother *can play* the guitar.','Erkek kardeşim gitar çalabilir.'),('Birds *can fly*.','Kuşlar uçabilir.'),('We *can cook* pasta.','Makarna pişirebiliriz.')]},
@@ -25,7 +25,7 @@ TOPICS=[{
 'timesTitle':'can ile sık kullanılan fiiller','timesNote':'Yetenek anlatırken en çok kullanılan fiiller.',
 'times':[{'h':'can + fiil','say':'can\'den sonra yalın fiil gelir.','lists':[
   {'l':'Spor ve hobi','w':[('swim','yüzmek'),('run','koşmak'),('ride a bike','bisiklete binmek'),('play football','futbol oynamak'),('play the piano','piyano çalmak'),('sing','şarkı söylemek'),('dance','dans etmek'),('draw','resim çizmek')]},
-  {'l':'Günlük beceri','w':[('cook','yemek yapmak'),('drive','araba sürmek'),('speak English','İngilizce konuşmak'),('read','okumak'),('write','yazmak'),('swim underwater','suyun altında yüzmek'),('fix a bike','bisiklet tamir etmek'),('use a computer','bilgisayar kullanmak')]}],
+  {'l':'Günlük beceri','w':[('cook','yemek yapmak'),('drive','araba sürmek'),('speak English','İngilizce konuşmak'),('read','okumak'),('write','yazmak'),('make tea','çay demlemek'),('fix a bike','bisiklet tamir etmek'),('use a computer','bilgisayar kullanmak')]}],
   'ex':[('I *can cook* but I *can\'t bake*.','Yemek yapabilirim ama pasta yapamam.'),('He *can run* fast.','O hızlı koşabilir.'),('She *can use* a computer.','O bilgisayar kullanabilir.')]}],
 'patterns':[
  ('Can I ...? (izin)','*Can I* sit here?','Buraya oturabilir miyim?'),

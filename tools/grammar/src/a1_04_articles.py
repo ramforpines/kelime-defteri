@@ -10,7 +10,7 @@ TOPICS=[{
  {'k':'the','p':'*the* + tekil / çoğul / sayılamayan isim','e':('*the* sun, *the* books, *the* water','güneş, kitaplar, su')},
  {'k':'Artikel yok','p':'çoğul ve sayılamayan genel isimler','e':('I like *cats*. I like *music*.','Kedileri severim. Müziği severim.')},
  {'k':'Meslek','p':'be + *a / an* + meslek','e':('She is *a* nurse.','O bir hemşire.')}],
-'formnote':{'h':'İstisna: a / an harfe değil sese bakar','body':'<b>an</b> ünlü <i>harf</i>le değil ünlü <i>ses</i>le başlayan kelimelerden önce gelir. <i>hour</i> sessiz h ile başlar ama ünlü sesiyle okunur: <b>an hour</b>. <i>university</i> ünlü harfle başlar ama "yu" sesiyle okunur: <b>a university</b>.','ex':[('*an* hour','bir saat'),('*a* university','bir üniversite'),('*an* umbrella','bir şemsiye'),('*a* European city','Avrupa şehri')]},
+'formnote':{'h':'İstisna: a / an harfe değil sese bakar','body':'<b>an</b> ünlü <i>harf</i>le değil ünlü <i>ses</i>le başlayan kelimelerden önce gelir. <i>hour</i> sessiz h ile başlar ama ünlü sesiyle okunur: <b>an hour</b>. <i>university</i> ünlü harfle başlar ama "yu" sesiyle okunur: <b>a university</b>.','ex':[('*an* hour','bir saat'),('*a* university','bir üniversite'),('*an* umbrella','bir şemsiye'),('*a* European city','bir Avrupa şehri')]},
 'uses':[
  {'h':'1. a / an: bir şeyden ilk kez söz ederken','why':'Karşındaki kişinin bilmediği, ilk kez bahsettiğin şeyin önüne <b>a / an</b> koyarsın. Sadece <b>tek</b> ve <b>sayılabilir</b> isimlerle kullanılır.',
   'ex':[('I have *a* sister.','Bir kız kardeşim var.'),('She has *an* idea.','Bir fikri var.'),('He wants *a* glass of water.','Bir bardak su istiyor.'),('I see *an* elephant.','Bir fil görüyorum.'),('We need *a* new car.','Yeni bir arabaya ihtiyacımız var.')]},
@@ -60,7 +60,7 @@ TOPICS=[{
  Q(2,'a','It is ___ big house. (ilk kez söz ediyorsun)','a',['an','the'],'big ünsüz sesiyle başlar: a big house.'),
  Q(2,'Artikel yok','I like ___. (genel olarak)','dogs',['the dogs','a dogs'],'Genel anlamda çoğul isimle artikel kullanılmaz.'),
  Q(2,'Artikel yok','We have ___ at eight. (kahvaltı)','breakfast',['a breakfast','the breakfast'],'Öğün adlarıyla artikel kullanılmaz.'),
- Q(3,'an','Hangi cümle doğru?','I wait for an hour.',['I wait for a hour.','I wait for the hour.'],'hour sessiz h ile başlar; ünlü sesiyle okunur: an hour.'),
+ Q(3,'an','Hangi cümle doğru?','The lesson is an hour long.',['The lesson is a hour long.','The lesson is the hour long.'],'hour sessiz h ile başlar; ünlü sesiyle okunur: an hour.'),
  Q(3,'a','Hangi cümle doğru?','He studies at a university.',['He studies at an university.','He studies at the a university.'],'university "yu" sesiyle başlar: a university.'),
  Q(3,'Sıfat','She has ___ expensive bag. (ilk kez söz ediyorsun)','an',['a','the'],'Sıfat varsa sıfata bakılır: expensive ünlü sesiyle başlar.'),
  Q(3,'the','Where is ___ bank? (hangi banka olduğu belli)','the',['a','an'],'Karşındaki hangi bankayı kastettiğini biliyorsa the kullanılır.'),

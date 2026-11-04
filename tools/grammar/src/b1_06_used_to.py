@@ -37,7 +37,7 @@ TOPICS=[{
  ('get used to + -ing','You *will get used to* it.','Alışırsın.'),
  ('There used to be ...','*There used to be* a park here.','Eskiden burada bir park vardı.')],
 'dialogues':[
- {'h':'Eskiden ve şimdi','lines':[('A','You look different! *Did* you *use to* have long hair?','Farklı görünüyorsun! Eskiden saçın uzun muydu?'),('B','Yes, I *used to have* long hair. Now it is short.','Evet, eskiden uzundu. Şimdi kısa.'),('A','And you *used to wear* glasses, right?','Eskiden gözlük takardın, değil mi?'),('B',"Yes, but I *don't* anymore. I *got used to* lenses.",'Evet ama artık takmıyorum. Lense alıştım.'),('A','What else *has changed*?','Başka ne değişti?'),('B','I *didn\'t use to* like sports, but now I love them.','Eskiden sporu sevmezdim ama şimdi çok seviyorum.')]},
+ {'h':'Eskiden ve şimdi','lines':[('A','You look different! *Did* you *use to* have long hair?','Farklı görünüyorsun! Eskiden saçın uzun muydu?'),('B','Yes, I *used to have* long hair. Now it is short.','Evet, eskiden uzundu. Şimdi kısa.'),('A','And you *used to wear* glasses, right?','Eskiden gözlük takardın, değil mi?'),('B',"Yes, but I *don't* anymore. I *got used to* lenses.",'Evet ama artık takmıyorum. Lenslere alıştım.'),('A','What else *has changed*?','Başka ne değişti?'),('B','I *didn\'t use to* like sports, but now I love them.','Eskiden sporu sevmezdim ama şimdi çok seviyorum.')]},
  {'h':'Yeni şehir','lines':[('A','How is your new life in London?','Londra\'daki yeni hayatın nasıl?'),('B','It is hard. I *am not used to* the weather yet.','Zor. Henüz havaya alışık değilim.'),('A','Don\'t worry. You *will get used to* it.','Merak etme. Alışırsın.'),('B','I *am used to* getting up early, but here the days are short.','Erken kalkmaya alışığım ama burada günler kısa.'),('A','I *used to live* in Paris. At first, it was difficult too.','Eskiden Paris\'te yaşardım. İlk başta zordu.'),('B','Really? Then I *will get used to* it soon.','Gerçekten mi? O zaman yakında alışırım.')]}],
 'mistakes':[
  {'bad':"I didn't used to like fish.",'good':"I didn't use to like fish.",'why':'did geldiğinde use yazılır.'},
@@ -54,7 +54,7 @@ TOPICS=[{
  Q(1,'Soru','___ you use to live here?','Did',['Do','Were'],'Soru: Did + özne + use to.'),
  Q(1,'Olumsuz',"I didn't ___ like fish.","use to",["used to",'using to'],'did sonrası use yazılır.'),
  Q(1,'be used to','I am used to ___ up early. (get)','getting',['get','got'],'be used to + -ing.'),
- Q(1,'get used to','You will get used to ___.','it',['use to','used'],'get used to + isim / -ing.'),
+ Q(1,'get used to','You will get used to ___ here. (yaşamak)','living',['live','lived'],'get used to + -ing.'),
  Q(2,'Karışık','Hangi cümle "alışığım" anlamındadır?','I am used to the cold.',['I used to the cold.','I use to the cold.'],'be used to: alışık olmak.'),
  Q(2,'Karışık','Hangi cümle "eskiden yapardım" anlamındadır?','I used to swim every day.',['I am used to swim every day.','I am used to swimming every day.'],'Geçmiş alışkanlık: used to + yalın fiil.'),
  Q(2,'Durum','This building ___ be a school.','used to',['is used to','get used to'],'Geçmişteki durum: used to be.'),

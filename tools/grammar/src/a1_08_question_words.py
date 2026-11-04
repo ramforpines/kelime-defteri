@@ -21,7 +21,7 @@ TOPICS=[{
   'ex':[('*How* are you?','Nasılsın?'),('*How old* is your sister?','Kız kardeşin kaç yaşında?'),('*How many* brothers do you have?','Kaç erkek kardeşin var?'),('*How much* is this?','Bu ne kadar?'),('*How often* do you swim?','Ne sıklıkla yüzersin?')],
   'inl':[{'h':'İstisna: how many ve how much','body':'<b>How many</b> sayılabilen çoğul isimlerle, <b>how much</b> sayılamayan isimlerle ve fiyat sorarken kullanılır.','ex':[('*How many* books do you have?','Kaç kitabın var?'),('*How much* water do you drink?','Ne kadar su içersin?')]}]},
  {'h':'4. why, which: neden, hangisi','why':'<b>Why</b> nedeni sorar; cevap <b>because</b> ile verilir. <b>Which</b> sınırlı sayıda seçenek arasından seçim sorar.',
-  'ex':[('*Why* are you late?','Neden geç kaldın?'),('*Because* the bus is late.','Çünkü otobüs geç geldi.'),('*Which* colour do you like?','Hangi rengi seviyorsun?'),('*Which* is your bag, the red one or the blue one?','Hangisi senin çantan, kırmızı mı mavi mi?')]}],
+  'ex':[('*Why* are you late?','Neden geç kaldın?'),('*Because* the bus is late.','Çünkü otobüs gecikti.'),('*Which* colour do you like?','Hangi rengi seviyorsun?'),('*Which* is your bag, the red one or the blue one?','Hangisi senin çantan, kırmızı mı mavi mi?')]}],
 'timesTitle':'Soru kelimeleri ve anlamları','timesNote':'Hangi bilgiyi soruyorsan o kelimeyi seç.',
 'times':[{'h':'Soru kelimeleri','say':'Her soru kelimesi başka bir bilgiyi ister.','lists':[
   {'l':'Temel','w':[('what','ne'),('who','kim'),('where','nerede'),('when','ne zaman'),('why','neden'),('how','nasıl'),('which','hangisi'),('whose','kimin')]},
@@ -39,7 +39,7 @@ TOPICS=[{
  {'h':'Biletçide','lines':[('A','*What time* does the train leave?','Tren kaçta kalkıyor?'),('B','At six thirty.','Altı buçukta.'),('A','*How much* is a ticket?','Bilet ne kadar?'),('B','It is fifty liras.','Elli lira.'),('A','*Which* platform is it?','Hangi peron?'),('B','Platform three.','Üçüncü peron.')]}],
 'mistakes':[
  {'bad':'Where you live?','good':'Where do you live?','why':'Present Simple soruda do / does gerekir.'},
- {'bad':'What time is it? It is ten. Where is?','good':'Where is it?','why':'Soru cümlesinde özne ve fiil bulunmalıdır.'},
+ {'bad':'What your name is?','good':'What is your name?','why':'Soruda be fiili özneden önce gelir.'},
  {'bad':'Where does she lives?','good':'Where does she live?','why':'does geldiğinde fiil yalın hâldedir.'},
  {'bad':'Who does like pizza?','good':'Who likes pizza?','why':'Soru kelimesi özneyse do / does kullanılmaz.'},
  {'bad':'How many water do you drink?','good':'How much water do you drink?','why':'Sayılamayan isimle how much kullanılır.'},

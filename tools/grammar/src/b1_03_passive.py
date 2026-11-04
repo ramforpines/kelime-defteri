@@ -7,7 +7,7 @@ TOPICS=[{
 'form':[
  {'k':'Present Simple','p':'*am / is / are* + V3','e':('English *is spoken* here.','Burada İngilizce konuşulur.')},
  {'k':'Past Simple','p':'*was / were* + V3','e':('The window *was broken*.','Pencere kırıldı.')},
- {'k':'Olumsuz','p':"*isn't / aren't / wasn't / weren't* + V3",'e':("The shop *isn't opened* on Sundays.",'Dükkân pazarları açılmaz.')},
+ {'k':'Olumsuz','p':"*isn't / aren't / wasn't / weren't* + V3",'e':("Cars *aren't made* here.",'Burada araba üretilmez.')},
  {'k':'Soru','p':'*Am / Is / Are / Was / Were* + özne + V3 ...?','e':('*Was* the car *stolen*?','Araba çalındı mı?')},
  {'k':'Soru kelimesi','p':'What / Where / When + *is / was* + özne + V3?','e':('*Where was* it *made*?','Nerede yapıldı?')},
  {'k':'by ile yapan','p':'... + V3 + *by* + yapan kişi','e':('The letter *was written by* my father.','Mektubu babam yazdı.')}],
@@ -46,7 +46,7 @@ TOPICS=[{
  {'bad':'The book written by him.','good':'The book was written by him.','why':'be fiili unutulmamalıdır.'},
  {'bad':'It was happened yesterday.','good':'It happened yesterday.','why':'Geçişsiz fiillerin pasifi olmaz.'},
  {'bad':'The tickets was sold.','good':'The tickets were sold.','why':'Çoğul özne ile were kullanılır.'},
- {'bad':'The cars make in Turkey.','good':'The cars are made in Turkey.','why':'Cars işi yapan değil, etkilenendir: pasif gerekir.'}],
+ {'bad':'Cars make in Turkey.','good':'Cars are made in Turkey.','why':'Cars işi yapan değil, etkilenendir: pasif gerekir.'}],
 'tip':'Önce işi yapanın önemli olup olmadığına bak. Önemli değilse pasif kur: zamanı be fiiliyle ver (is / are / was / were), fiili V3 yap. Geçişsiz fiillerde pasif kullanma.',
 'vocab':['steal','invent','build','produce','allow','serve','repair','design','clean','location','report','ticket'],
 'quiz':[
@@ -57,7 +57,7 @@ TOPICS=[{
  Q(1,'V3','The money was ___.','stolen',['stole','steal'],'steal → stole → stolen.'),
  Q(1,'V3','This book was ___ by Orhan Pamuk.','written',['wrote','write'],'write → wrote → written.'),
  Q(2,'Soru','___ the car stolen?','Was',['Did','Is'],'Geçmiş pasif soru: Was + özne + V3.'),
- Q(2,'Olumsuz',"The shop ___ opened on Sundays.","isn't",["doesn't","don't"],'Pasif olumsuz: isn\'t + V3.'),
+ Q(2,'Olumsuz',"These cars ___ made in Turkey.","aren't",["don't","doesn't"],'Pasif olumsuz: aren\'t + V3.'),
  Q(2,'by','Hamlet was written ___ Shakespeare.','by',['from','with'],'Yapanı belirtmek için by kullanılır.'),
  Q(2,'Soru kelimesi','Where ___ the film made?','was',['did','is'],'Geçmiş pasif: was.'),
  Q(2,'Çoğul','The tickets ___ sold out.','were',['was','did'],'tickets çoğul, geçmiş: were.'),

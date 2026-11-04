@@ -30,7 +30,7 @@ TOPICS=[{
   'ex':[('This test is *easier* than the last one.','Bu sınav öncekinden daha kolay.'),('She is *the happiest* girl.','O en mutlu kız.')]}],
 'verbsTitle':'Uzun ve düzensiz sıfatlar','verbsNote':'more / the most kullanılanlar ve düzensiz biçimler.',
 'verbs':[
- {'h':'more / the most','say':'Üç ve daha çok heceli sıfatlar.','l':[('beautiful','güzel'),('expensive','pahalı'),('interesting','ilginç'),('difficult','zor'),('comfortable','rahat'),('dangerous','tehlikeli'),('famous','ünlü'),('important','önemli')],'ex':[('This is *more difficult* than that.','Bu şundan daha zor.'),('He is *the most famous* actor.','O en ünlü oyuncu.')]},
+ {'h':'more / the most','say':'İki heceli (-y ile bitmeyen) ve daha uzun sıfatlar.','l':[('beautiful','güzel'),('expensive','pahalı'),('interesting','ilginç'),('difficult','zor'),('comfortable','rahat'),('dangerous','tehlikeli'),('famous','ünlü'),('important','önemli')],'ex':[('This is *more difficult* than that.','Bu şundan daha zor.'),('He is *the most famous* actor.','O en ünlü oyuncu.')]},
  {'h':'Düzensiz','say':'Ezberle.','l':[('good → better → best','iyi'),('bad → worse → worst','kötü'),('far → farther / further → farthest / furthest','uzak'),('little → less → least','az'),('much / many → more → most','çok')],'ex':[('She is *the best* student.','O en iyi öğrenci.'),('I feel *worse* today.','Bugün kendimi daha kötü hissediyorum.')]}],
 'patterns':[
  ('Which is ...er?','*Which is bigger*, this or that?','Hangisi daha büyük, bu mu şu mu?'),
