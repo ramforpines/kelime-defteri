@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.151.0';
+const APP_VERSION='4.152.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1707,7 +1707,7 @@ function vHelp(){
   return`<div class="card stack"><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün 3 kelimesi, bu haftaki sıran, dünün ve geçen haftanın lideri. Puan kesintisi riskin varsa "Bugün bitmeden" uyarısı ve son 14 gündeki cezaların listesi de burada.',
-    '<b>Çalışma</b>: üstteki düğmelerle Sözlük, Test, Okuma, Tekrar ve Kaydedilenler arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
+    '<b>Çalışma</b>: üstteki düğmelerle Sözlük, Test, Okuma, Tekrar, Kaydedilenler ve Gramer arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
     '<b>⚔ Düello</b>: alttaki menünün ortasındaki düğme. Klasik ve Dereceli düello burada.',
     '<b>Sıralamalar</b>: günlük, haftalık, tüm zamanlar ve dereceli düello sıralaması.',
     '<b>Sohbet</b>: Bugün, Çalışma, Sıralamalar ve Ben → Profil ekranlarında sağ altta duran mesaj balonuyla açılır. Genel sohbet, özel mesajlar ve Kullanıcılar listesi (en son aktif olan üstte) vardır; okunmamış mesaj sayısı balonun üstünde görünür. Sağ üstteki "Sohbetten çık" ile kapanır.',
@@ -1718,6 +1718,11 @@ function vHelp(){
     'Çalışma → <b>Sözlük</b>: 10.000\'den fazla kelimenin Türkçesi, tanımı ve örnek cümlesi (Türkçe çevirisiyle) vardır; kelimeye dokunarak açarsın.',
     'İlk girişte yönetici onayı gerekebilir. Onaylanınca sıralamaya girer, sohbete ve düelloya katılırsın.',
     'İlerlemen hesabına kaydedilir. Başka cihazda aynı kullanıcı adı ve şifreyle girince kaldığın yerden devam edersin.']),true)}
+  ${sec('📘 Gramer',li([
+    '<b>Konular</b>: A1, A2 ve B1 seviyesinde 27 konu var (to be\'den Reported Speech\'e kadar). Üst seviyeler hazırlanıyor, listede "yakında" yazar.',
+    '<b>Her konuda</b>: kısa anlatım, kalıp tablosu, kullanımlar ve örnek cümleler (Türkçesiyle), istisnalar, zaman ifadeleri, hazır kalıplar, diyaloglar, sık yapılan hatalar ve konuyla ilgili kelimeler. Zaman konularında zaman çizgisi de vardır.',
+    '<b>Dinle</b>: örnek cümleye dokununca sesli okunur. Kelimeleri ☆ ile Kaydedilenler\'e ekleyebilirsin.',
+    '<b>Mini test</b>: her konunun sonunda kolaydan zora 20 soru (6 kolay, 6 orta, 5 zor, 3 çok zor). Her cevaptan sonra açıklama çıkar, sonunda puanın ve yanlışların görünür. Bu test <b>puan vermez</b>, sıralamayı etkilemez; istediğin kadar tekrar çözebilirsin.']))}
   ${sec('📝 Testler ve soru türleri',li([
     '<b>Bugünün testi</b>: her zaman 20 soru; tekrar zamanı gelen kelimeler, 1 Yanlış defteri sorusu, günün kelimeleri ve yeni kelimelerden karışık hazırlanır. Çalışma ekranındaki soru sayısı bunu etkilemez.',
     '<b>Yeni test</b>: seçtiğin seviye ve türden henüz öğrenmediğin kelimeler gelir.',
@@ -2827,7 +2832,10 @@ const ICON={
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const GRAM_ON=/\/beta\//.test(location.pathname)||/[?&]gram=1/.test(location.search);   // Gramer: yalnızca beta (hazır olunca herkese açılacak)
+const GRAM_ON=true;   // Gramer: herkese açık (A1–B1)
+const GRAM_BETA=/\/beta\//.test(location.pathname)||/[?&]gram=1/.test(location.search);   // B2 ve üstü yalnızca beta (yönetici)
+const GRAM_HIDE=['B2','C1','C2'];
+const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
 const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]);
 const isStudy=t=>(t==='gram'&&GRAM_ON)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
@@ -2836,34 +2844,73 @@ const savedWords=()=>Object.keys(S.sav||{}).filter(k=>S.sav[k]>0&&BYWORD.has(k))
 let lastStudy='quiz';
 const TABS=[['today','Bugün'],['study','Çalışma'],['rank','Sıralamalar'],['me','Ben']];
 /* ---------- Gramer (beta) ---------- */
-const gHl=t=>esc(t).replace(/\*([^*]+)\*/g,'<b class="gh">$1</b>');
+  const GTL_BASE=(inner)=>`<svg viewBox="0 0 360 130" width="100%" role="img" aria-label="Zaman çizgisi"><line x1="10" y1="60" x2="350" y2="60" stroke="currentColor" stroke-opacity=".25" stroke-width="3"/>${inner}<circle cx="200" cy="60" r="9" fill="var(--accent)"/><text x="200" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">ŞİMDİ</text><text x="24" y="92" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity=".6">geçmiş</text><text x="335" y="92" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity=".6">gelecek</text></svg>`;
+  const GTL_T=(x,y,t,c,w)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="11"${w?' font-weight="700"':''} fill="${c||'var(--accent)'}">${t}</text>`;
+  const GTL_D=(x,c)=>`<circle cx="${x}" cy="60" r="5" fill="${c||'var(--accent)'}"/>`;
+  const GTL={
+    pp:{svg:`<svg viewBox="0 0 360 130" width="100%" role="img" aria-label="Zaman çizgisi"><line x1="10" y1="60" x2="350" y2="60" stroke="currentColor" stroke-opacity=".25" stroke-width="3"/><rect x="60" y="54" width="240" height="12" rx="6" fill="var(--accent)" fill-opacity=".18"/><circle cx="300" cy="60" r="9" fill="var(--accent)"/><text x="300" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">ŞİMDİ</text><text x="24" y="92" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity=".6">geçmiş</text><text x="170" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="var(--accent)">have / has + V3</text><circle cx="90" cy="60" r="5" fill="#b35a00"/><text x="90" y="34" text-anchor="middle" font-size="11" fill="#b35a00">deneyim</text><circle cx="190" cy="60" r="5" fill="#17794a"/><text x="190" y="34" text-anchor="middle" font-size="11" fill="#17794a">sonuç</text><line x1="120" y1="108" x2="300" y2="108" stroke="var(--accent)" stroke-width="3"/><text x="210" y="124" text-anchor="middle" font-size="11" fill="var(--accent)">süren durum (for / since)</text></svg>`,cap:`Present Perfect, geçmişten şimdiye uzanan bir köprüdür: olay geçmişte başlar ya da olur, ama bağı şimdiye uzanır.`},
+    simple:{svg:GTL_BASE([30,70,110,150,250,290,330].map(x=>GTL_D(x)).join('')+GTL_T(90,34,'alışkanlık: tekrar tekrar','#b35a00',1)+GTL_T(290,34,'her hafta / her gün','#b35a00')+GTL_T(200,124,'Present Simple: tekrar eden ve değişmeyen durumlar')),cap:'Present Simple, tek bir ana değil tekrar eden düzene bakar: alışkanlıklar, rutinler ve değişmeyen gerçekler.'},
+    cont:{svg:GTL_BASE('<rect x="150" y="53" width="100" height="14" rx="7" fill="var(--accent)" fill-opacity=".25"/>'+GTL_T(200,34,'şu anda devam ediyor','#b35a00',1)+GTL_T(200,124,'am / is / are + fiil-ing')),cap:'Present Continuous, konuşma anında sürmekte olan ya da bu günlerde geçerli olan işi anlatır.'},
+    past:{svg:GTL_BASE(GTL_D(80,'#b35a00')+GTL_D(130,'#b35a00')+GTL_T(80,34,'yesterday','#b35a00')+GTL_T(130,34,'last week','#b35a00')+'<line x1="80" y1="108" x2="130" y2="108" stroke="var(--accent)" stroke-width="3"/>'+GTL_T(105,124,'bitti, bir daha olmadı')),cap:'Past Simple, geçmişte başlayıp bitmiş olayları anlatır. Şimdiyle bağı yoktur.'},
+    future:{svg:GTL_BASE(GTL_D(260,'#17794a')+GTL_D(310,'#17794a')+GTL_T(260,34,'tomorrow','#17794a')+GTL_T(310,34,'next year','#17794a')+GTL_T(285,124,'will / be going to')),cap:'Gelecek zaman, henüz olmamış olayları anlatır; karar ve plana göre will ya da going to seçilir.'},
+    pastcont:{svg:GTL_BASE('<rect x="50" y="53" width="110" height="14" rx="7" fill="var(--accent)" fill-opacity=".25"/>'+GTL_D(120,'#b35a00')+GTL_T(105,34,'was / were + fiil-ing','var(--accent)',1)+GTL_T(135,108,'kesen olay (when ...)','#b35a00')),cap:'Past Continuous, geçmişte sürmekte olan bir işi anlatır; çoğu zaman başka bir olay bu işi böler.'},
+    pastperf:{svg:GTL_BASE(GTL_D(70,'#b35a00')+GTL_D(150,'var(--accent)')+GTL_T(70,34,'önce: had + V3','#b35a00',1)+GTL_T(150,34,'sonra: V2','var(--accent)')+'<line x1="70" y1="108" x2="150" y2="108" stroke="var(--accent)" stroke-width="3"/>'+GTL_T(110,124,'geçmişteki bir andan daha önce')),cap:'Past Perfect, geçmişteki bir olaydan daha önce olmuş olanı gösterir: iki geçmiş olaydan önce olanı had + V3 ile söylersin.'},
+    futperf:{svg:GTL_BASE('<rect x="215" y="53" width="80" height="14" rx="7" fill="#17794a" fill-opacity=".25"/>'+GTL_D(295,'#17794a')+GTL_T(255,34,'will have + V3','#17794a',1)+GTL_T(295,108,'by Friday','#17794a')+GTL_T(200,124,'gelecekteki bir ana kadar bitmiş olacak')),cap:'Future Perfect, gelecekteki bir zaman noktasına kadar tamamlanmış olacak işi; Future Continuous ise o anda süren işi anlatır.'},
+    ppc:{svg:GTL_BASE('<rect x="70" y="53" width="130" height="14" rx="7" fill="var(--accent)" fill-opacity=".25"/>'+GTL_D(70,'#b35a00')+GTL_T(70,34,'since 8:00','#b35a00')+GTL_T(135,124,'have / has been + fiil-ing')),cap:'Present Perfect Continuous, geçmişte başlayıp şimdiye kadar süren (ya da yeni biten) işi anlatır; süreç vurgulanır.'}
+  };
+  function gTLHtml(k){const g=GTL[k===true?'pp':k];if(!g)return'';return `<div class="card stack"><h3 style="margin:0">Zaman çizgisi</h3>${g.svg}<div class="small muted">${g.cap}</div></div>`}
+  const gHl=t=>esc(t).replace(/\*([^*]+)\*/g,'<b class="gh">$1</b>');
+const gRaw=t=>String(t).replace(/\*([^*]+)\*/g,'<b class="gh">$1</b>');
 const gPlain=t=>String(t).replace(/\*/g,'');
-function gEx(en,tr){return`<div class="gex"><div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between"><div style="flex:1;min-width:0">${gHl(en)}</div><button class="btn ghost small" style="flex:0 0 auto;width:auto" data-say="${esc(gPlain(en))}" aria-label="Dinle">🔊</button></div><div class="muted small">${gHl(tr)}</div></div>`}
+function gEx(en,tr){return`<div class="gx" data-say="${esc(gPlain(en))}"><div class="gxe">${gHl(en)}</div><div class="gxt">${gHl(tr)}</div></div>`}
 function gVocab(w){
   const x=(window.WORDS||[]).find(a=>a[0]===w);if(!x)return'';
   const sv=typeof isSaved==='function'&&isSaved(w);
   return`<div class="gv"><div><b>${esc(w)}</b> <span class="badge">${esc(x[7]||'')}</span><div class="muted small">${esc(x[2]||'')}</div><div class="small" style="margin-top:2px">${esc(x[4]||'')}</div></div><div class="row" style="gap:6px"><button class="btn ghost small" data-say="${esc(w)}" data-pron="${esc(x[8]||'')}" aria-label="Dinle">🔊</button><button class="btn ghost small" data-act="sv-o" data-w="${esc(w)}">${sv?'★':'☆'}</button></div></div>`}
+const gSet=a=>`<div class="gxl">${a.map(e=>gEx(e[0],e[1])).join('')}</div>`;
+const gBox=n=>`<div class="gn" style="margin-top:6px"><b>${esc(n.h)}</b><div>${gRaw(n.body)}</div>${n.ex&&n.ex.length?gSet(n.ex):''}</div>`;
+const gChips=l=>`<div class="row" style="gap:5px;flex-wrap:wrap">${l.map(a=>`<span class="badge"><b>${esc(a[0])}</b> · ${esc(a[1])}</span>`).join('')}</div>`;
+const GQL={1:'Kolay',2:'Orta',3:'Zor',4:'Çok zor'};
+function vGramQuiz(T){
+  const Q=T.quiz,n=Q.length,st=(UI.gp&&UI.gp[T.id])||{a:{},cur:0},tiers=Q.every(q=>q.lv);
+  if(st.cur>=n){
+    let sc=0;const by={},wr=[];Q.forEach((q,i)=>{const ok=st.a[i]===q.a;if(ok)sc++;else wr.push([i,q]);if(tiers){const b=by[q.lv]||(by[q.lv]=[0,0]);b[1]++;if(ok)b[0]++}});
+    const pc=Math.round(sc/n*100),msg=pc>=95?'Mükemmel: konuya hâkimsin.':pc>=75?'Çok iyi: birkaç ayrıntıya bir daha bak.':pc>=50?'İyi bir başlangıç: aşağıdaki yanlışlarına ve "Dikkat" bölümüne bak.':'Konuyu bir daha oku, sonra tekrar dene.';
+    return`<div class="card stack gq" id="gq"><h3 style="margin:0">Sonuç: ${sc} / ${n} (%${pc})</h3><div>${msg}</div>${tiers?`<table class="gt"><tr>${[1,2,3,4].map(k=>`<th>${GQL[k]}</th>`).join('')}</tr><tr>${[1,2,3,4].map(k=>`<td><b>${(by[k]||[0,0])[0]} / ${(by[k]||[0,0])[1]}</b></td>`).join('')}</tr></table>`:''}${wr.length?`<h3 style="margin:6px 0 0">Yanlışların</h3>${wr.map(([i,q])=>`<div class="gf"><div class="small muted">${i+1}. ${esc(q.t||'')}</div><div>${esc(q.q)}</div><div class="gbad">${esc(q.o[st.a[i]])}</div><div class="ggood">${esc(q.o[q.a])}</div><div class="small muted">${esc(q.w)}</div></div>`).join('')}`:''}<button class="btn primary block" data-act="gm-retry">Tekrar dene</button></div>`}
+  const q=Q[st.cur],c=st.a[st.cur];
+  return`<div class="card stack gq" id="gq"><h3 style="margin:0">Kendini dene</h3><div class="row" style="justify-content:space-between"><span class="small muted">Soru ${st.cur+1} / ${n}</span>${q.lv?`<span class="badge">${GQL[q.lv]}</span>`:''}</div><div style="height:6px;border-radius:99px;background:rgba(120,120,120,.18)"><div style="height:6px;border-radius:99px;background:var(--accent);width:${Math.round(st.cur/n*100)}%"></div></div>
+  <div style="margin-top:4px"><b>${esc(q.q)}</b></div>${q.o.map((o,j)=>`<button class="btn small${c!=null&&j===q.a?' primary':''}" data-act="gm-ans" data-o="${j}" ${c!=null?'disabled':''} style="${c===j&&j!==q.a?'border-color:#e5484d;color:#e5484d':''}">${esc(o)}</button>`).join('')}
+  ${c!=null?`<div class="small ${c===q.a?'ggood':'gbad'}" style="text-decoration:none">${c===q.a?'Doğru. ':'Yanlış. '}<span class="muted">${esc(q.w)}</span></div><button class="btn primary block" data-act="gm-next">${st.cur+1>=n?'Sonucu gör':'Sonraki soru'}</button>`:''}
+  <div class="muted small">Bu test puan vermez. Sorular kolaydan zora doğru ilerler.</div></div>`}
 function vGram(){
-  const G=window.GRAMMAR||[],T=UI.gm&&G.find(t=>t.id===UI.gm);
-  const css=`<style>.gh{color:var(--accent);font-weight:700}.gex{padding:8px 10px;border-left:3px solid var(--accent);background:rgba(120,120,120,.08);border-radius:6px;margin-top:6px}.gv{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}.gf{padding:8px 10px;border-radius:8px;background:rgba(120,120,120,.08);margin-top:6px}.gbad{color:#e5484d;text-decoration:line-through}.ggood{color:#2e9e5b;font-weight:600}.gq button{display:block;width:100%;text-align:left;margin-top:6px}</style>`;
+  const G=gramList(),T=UI.gm&&G.find(t=>t.id===UI.gm);
+  const css=`<style>.gh{color:var(--accent);font-weight:700}.gx{display:flex;gap:10px;justify-content:space-between;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);font-size:.92rem;cursor:pointer}.gxl>.gx:first-child{border-top:0}.gxe{flex:1.15}.gxt{flex:1;text-align:right;color:var(--muted);font-size:.8rem}.gv{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}.gf{padding:7px 10px;border-radius:8px;background:rgba(120,120,120,.08)}.gbad{color:#e5484d;text-decoration:line-through}.ggood{color:#2e9e5b;font-weight:600}.gq button{display:block;width:100%;text-align:left;margin-top:6px}.gn{padding:8px 10px;border-radius:8px;border-left:3px solid #e0a020;background:rgba(224,160,32,.1);font-size:.88rem}.gt{width:100%;border-collapse:collapse;font-size:.85rem}.gt th{text-align:left;background:rgba(120,120,120,.1);padding:5px 6px;font-size:.75rem}.gt td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:top}</style>`;
   if(!T){
     const lv=['A1','A2','B1','B2','C1','C2'];
-    return css+`<div class="card stack"><h2 style="margin:0">Gramer</h2><div class="muted small">Konu anlatımı; kurallar, örnek cümleler, sık yapılan hatalar ve o konuyla öğrenmen gereken kelimeler. <b>Beta:</b> şimdilik yalnızca sende görünür.</div></div>`+
-    lv.map(L=>{const ready=G.filter(t=>t.lv===L),plan=(window.GRAMMAR_PLAN||{})[L]||[];if(!ready.length&&!plan.length)return'';
+    return css+`<div class="card stack"><h2 style="margin:0">Gramer</h2><div class="muted small">Konu anlatımı; kurallar, örnek cümleler, sık yapılan hatalar ve o konuyla öğrenmen gereken kelimeler. ${GRAM_BETA?' <b>Beta:</b> B2 konuları yalnızca sende görünür.':''}</div></div>`+
+    lv.map(L=>{const ready=G.filter(t=>t.lv===L),plan=((window.GRAMMAR||[]).filter(t=>t.lv===L&&!G.includes(t)).map(t=>t.title)).concat((window.GRAMMAR_PLAN||{})[L]||[]);if(!ready.length&&!plan.length)return'';
       return`<div class="card stack"><h3 style="margin:0">${L}</h3>${ready.map(t=>`<button class="btn block" data-act="gm-open" data-v="${t.id}" style="text-align:left"><b>${esc(t.title)}</b><div class="muted small">${esc(t.form_name)}</div></button>`).join('')}${plan.filter(n=>!ready.some(t=>t.title===n)).map(n=>`<div class="small muted" style="padding:4px 2px">• ${esc(n)} <span class="badge">yakında</span></div>`).join('')}</div>`}).join('');
   }
   const done=(UI.gp&&UI.gp[T.id])||{};
+  const set=a=>`<div class="gxl">${a.map(e=>gEx(e[0],e[1])).join('')}</div>`;
   return css+`<div class="row"><button class="btn ghost small" data-act="gm-back">← Konular</button></div>
   <div class="card stack"><div class="row" style="gap:8px"><h2 style="margin:0">${esc(T.title)}</h2><span class="badge">${T.lv}</span></div>
-    <div>${esc(T.sub)}</div>
+    ${(T.intro||[T.sub]).filter(Boolean).map(t=>`<div>${t}</div>`).join('')}
     <div class="gf"><b>Kalıp:</b> ${gHl(T.form_name)}</div></div>
-  <div class="card stack"><h3 style="margin:0">Cümle yapısı</h3>${T.form.map(f=>`<div class="gf"><span class="badge">${esc(f.k)}</span> ${gHl(f.p)}${gEx(f.e[0],f.e[1])}</div>`).join('')}</div>
-  <div class="card stack"><h3 style="margin:0">Ne zaman kullanılır?</h3>${T.uses.map(u=>`<div><b>${esc(u.h)}</b><div class="small" style="margin-top:2px">${u.why}</div>${u.ex.map(e=>gEx(e[0],e[1])).join('')}</div>`).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">')}</div>
-  <div class="card stack"><h3 style="margin:0">Sinyal kelimeler</h3><div class="row" style="gap:6px;flex-wrap:wrap">${T.signals.map(a=>`<span class="badge" title="${esc(a[1])}"><b>${esc(a[0])}</b> · ${esc(a[1])}</span>`).join('')}</div></div>
-  <div class="card stack"><h3 style="margin:0">Karıştırılan yapı</h3><div class="gf">${gEx(T.vs.a[0],T.vs.a[1])}<div class="small muted" style="margin-top:4px">${esc(T.vs.a[2])}</div></div><div class="gf">${gEx(T.vs.b[0],T.vs.b[1])}<div class="small muted" style="margin-top:4px">${esc(T.vs.b[2])}</div></div></div>
+  ${T.timeline?gTLHtml(T.timeline):''}
+  <div class="card stack"><h3 style="margin:0">Cümle yapısı</h3><table class="gt"><tr><th>Tür</th><th>Kalıp</th><th>Örnek</th></tr>${T.form.map(f=>`<tr><td><b>${esc(f.k)}</b></td><td>${gHl(f.p)}</td><td>${gHl(f.e[0])}<div class="muted small">${gHl(f.e[1])}</div></td></tr>`).join('')}</table>${T.formnote?gBox(T.formnote):''}</div>
+  <div class="card stack"><h3 style="margin:0">Ne zaman kullanılır?</h3><div class="muted small">İngilizce cümleye dokununca sesli okur.</div>${T.uses.map(u=>`<div><b>${esc(u.h)}</b><div class="small" style="margin:2px 0 4px">${u.why}</div>${set(u.ex)}${u.note?`<div class="gn" style="margin-top:6px">${gRaw(u.note)}</div>`:''}${(u.inl||[]).map(gBox).join('')}</div>`).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">')}</div>
+  ${T.notes?`<div class="card stack"><h3 style="margin:0">Dikkat: sık takıldığın yerler</h3>${T.notes.map(n=>`<div><b>${esc(n.h)}</b><div class="small" style="margin:2px 0 4px">${n.body}</div>${set(n.ex)}</div>`).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">')}</div>`:''}
+  ${T.signals&&T.signals.length?`<div class="card stack"><h3 style="margin:0">Sinyal kelimeler</h3><div class="row" style="gap:6px;flex-wrap:wrap">${T.signals.map(a=>`<span class="badge" title="${esc(a[1])}"><b>${esc(a[0])}</b> · ${esc(a[1])}</span>`).join('')}</div></div></div>`:''}
+  ${T.times?`<div class="card stack"><h3 style="margin:0">${esc(T.timesTitle||'Zaman ifadeleri')}</h3><div class="muted small">${esc(T.timesNote||'Cümlede hangi ifade varsa hangi zamanın geleceğini gösterir. Her grup, o gruba giren ifadelerin listesini içerir.')}</div>${T.times.map(t=>`<div><b>${esc(t.h)}</b><div class="small" style="margin:2px 0 4px">${t.say}</div>${t.lists.map(L=>`<div class="muted small" style="margin:4px 0 2px">${esc(L.l)}</div>${gChips(L.w)}`).join('')}<div style="margin-top:6px">${gSet(t.ex)}</div>${(t.inl||[]).map(gBox).join('')}</div>`).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">')}</div>`:''}
+  ${T.verbs?`<div class="card stack"><h3 style="margin:0">${esc(T.verbsTitle||'Sık gelen fiil grupları')}</h3><div class="muted small">${esc(T.verbsNote||'Parantez içi V3 biçimidir (düzensiz fiillerde).')}</div>${T.verbs.map(v=>`<div><b>${esc(v.h)}</b><div class="small" style="margin:2px 0 4px">${v.say}</div>${gChips(v.l)}<div style="margin-top:6px">${gSet(v.ex)}</div></div>`).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">')}</div>`:''}
+  ${T.patterns?`<div class="card stack"><h3 style="margin:0">Hazır kalıplar</h3><table class="gt"><tr><th>Kalıp</th><th>Örnek</th></tr>${T.patterns.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td>${gHl(r[1])}<div class="muted small">${esc(r[2])}</div></td></tr>`).join('')}</table></div>`:''}
+  ${T.dialogues?`<div class="card stack"><h3 style="margin:0">Gerçek bağlam: diyaloglar</h3>${T.dialogues.map(d=>`<div><b>${esc(d.h)}</b><div class="gxl">${d.lines.map(l=>`<div class="gx" data-say="${esc(gPlain(l[1]))}"><div class="gxe"><b>${esc(l[0])}</b> ${gHl(l[1])}</div><div class="gxt">${gHl(l[2])}</div></div>`).join('')}</div>${d.note?`<div class="gn" style="margin-top:6px">${gRaw(d.note)}</div>`:''}</div>`).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">')}</div>`:''}
+  ${T.vs2?`<div class="card stack"><h3 style="margin:0">Karıştırılan yapı: Past Simple ile Present Perfect</h3><table class="gt"><tr><th>Past Simple</th><th>Present Perfect</th></tr>${T.vs2.map(r=>`<tr><td>${gHl(r[0])}<div class="muted small">${esc(r[1])}</div></td><td>${gHl(r[2])}<div class="muted small">${esc(r[3])}</div></td></tr>`).join('')}</table></div>`:(T.vs&&T.vs.a[0]?`<div class="card stack"><h3 style="margin:0">Karıştırılan yapı</h3><table class="gt"><tr><td>${gHl(T.vs.a[0])}<div class="muted small">${esc(T.vs.a[1])}</div><div class="small" style="margin-top:2px">${esc(T.vs.a[2])}</div></td><td>${gHl(T.vs.b[0])}<div class="muted small">${esc(T.vs.b[1])}</div><div class="small" style="margin-top:2px">${esc(T.vs.b[2])}</div></td></tr></table></div>`:'')}
   <div class="card stack"><h3 style="margin:0">Sık yapılan hatalar</h3>${T.mistakes.map(m=>`<div class="gf"><div class="gbad">${esc(m.bad)}</div><div class="ggood">${esc(m.good)}</div><div class="small muted">${esc(m.why)}</div></div>`).join('')}<div class="small" style="margin-top:6px">💡 ${esc(T.tip)}</div></div>
+  ${T.irr?`<div class="card stack"><h3 style="margin:0">Sık kullanılan düzensiz fiiller</h3><table class="gt"><tr><th>V1</th><th>V2</th><th>V3 (have / has ile)</th></tr>${T.irr.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td><b>${esc(r[2])}</b></td></tr>`).join('')}</table></div>`:''}
   <div class="card stack"><h3 style="margin:0">Bu konuyla öğren</h3><div class="muted small">Konuyla sık kullanılan kelimeler. ☆ ile Kaydedilenler\'e ekleyebilirsin.</div>${T.vocab.map(gVocab).join('')}</div>
-  <div class="card stack gq"><h3 style="margin:0">Kendini dene</h3>${T.quiz.map((q,i)=>{const c=done[i];return`<div><div><b>${i+1}.</b> ${esc(q.q)}</div>${q.o.map((o,j)=>`<button class="btn small${c!=null&&j===q.a?' primary':''}" data-act="gm-ans" data-q="${i}" data-o="${j}" ${c!=null?'disabled':''} style="${c===j&&j!==q.a?'border-color:#e5484d;color:#e5484d':''}">${esc(o)}</button>`).join('')}${c!=null?`<div class="small ${c===q.a?'ggood':'gbad'}" style="text-decoration:none;margin-top:4px">${c===q.a?'Doğru. ':'Yanlış. '}<span class="muted">${esc(q.w)}</span></div>`:''}</div>`}).join('')}<div class="muted small">Bu mini test puan vermez; sadece konuyu pekiştirir.</div></div>`;
+  ${vGramQuiz(T)}`;
 }
 function studySeg(){
   if(UI.quiz)return'';
@@ -5011,7 +5058,9 @@ document.addEventListener('click',async e=>{
     case'sv-w':{const w=g('data-w');toggleSaved(w);toast(isSaved(w)?'Kaydedildi.':'Kayıttan çıkarıldı.');if(UI.tab==='saved'&&!isSaved(w))UI.dict.open=null;const dl=$('#dlist');if(dl)dl.innerHTML=UI.tab==='saved'?savedList():dictList();if(UI.tab==='saved'){const t=document.querySelector('.top .muted');if(t)t.textContent=nf(savedWords().length)+' kelime'}break}
     case'gm-open':UI.gm=g('data-v');render();window.scrollTo(0,0);break;
     case'gm-back':UI.gm=null;render();window.scrollTo(0,0);break;
-    case'gm-ans':{const T=(window.GRAMMAR||[]).find(t=>t.id===UI.gm);if(T){UI.gp=UI.gp||{};const o=UI.gp[T.id]||(UI.gp[T.id]={});if(o[g('data-q')]==null){o[g('data-q')]=+g('data-o');const y=window.scrollY;render();window.scrollTo(0,y)}}break}
+    case'gm-ans':{const T=gramList().find(t=>t.id===UI.gm);if(T){UI.gp=UI.gp||{};const o=UI.gp[T.id]||(UI.gp[T.id]={a:{},cur:0});if(o.a[o.cur]==null){o.a[o.cur]=+g('data-o');const y=window.scrollY;render();window.scrollTo(0,y)}}break}
+    case'gm-next':{const T=gramList().find(t=>t.id===UI.gm);if(T){const o=UI.gp&&UI.gp[T.id];if(o){o.cur++;render();const q=document.getElementById('gq');if(q)q.scrollIntoView({block:'start'})}}break}
+    case'gm-retry':{const T=gramList().find(t=>t.id===UI.gm);if(T){UI.gp=UI.gp||{};UI.gp[T.id]={a:{},cur:0};render();const q=document.getElementById('gq');if(q)q.scrollIntoView({block:'start'})}break}
     case'sv-o':{const w=g('data-w');if(w){toggleSaved(w);toast(isSaved(w)?'Kaydedildi: Çalışma → Kaydedilenler':'Kayıttan çıkarıldı.');render()}break}
     case'sv-q':{const q2=UI.quiz;if(q2){const w=q2.items[q2.i].w.word;toggleSaved(w);toast(isSaved(w)?'Kaydedildi: Çalışma → Kaydedilenler':'Kayıttan çıkarıldı.');render()}break}
     case'more':UI.dict.limit+=40;$('#dlist').innerHTML=dictList();break;
