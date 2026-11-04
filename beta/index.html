@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.152.1';
+const APP_VERSION='4.152.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4438,7 +4438,7 @@ function grdWarn(res,kind){
 }
 function duelVoid(){
   if(DUEL.phase==='void')return;
-  dStop();DUEL.phase='void';DUEL.sel=null;
+  dStop();DUEL.phase='void';DUEL.sel=null;if(DUEL.id)(DUEL.done=DUEL.done||{})[DUEL.id]=1;
   if(DUEL.d&&DUEL.d.mode==='ranked'){duelApply([DUEL.d]);setTimeout(rqApply,3000)}
   render();
   duelRecord();
@@ -4600,10 +4600,10 @@ async function duelFind(){
   if((S.tp||0)<need){toast('Düelloya girmek için en az '+need+' puanın olmalı.');return}
   dReset();RK.qc=null;RK.qcT=0;DUEL.phase='search';DUEL.find=Date.now();render();
   const step=async()=>{
-    if(DUEL.phase!=='search')return;
+    if(DUEL.phase!=='search'||DUEL.botPend)return;
     try{
       const r=await sb.rpc('duel_join',{p_wn:W.length,p_mode:DUEL.sub==='ranked'?'ranked':'classic'});
-      if(DUEL.phase!=='search')return;
+      if(DUEL.phase!=='search'||DUEL.botPend)return;
       if(r.error)throw r.error;
       if(r.data){await duelStart(r.data);return}
     }catch(e){if(/ranked penalty/i.test(String(e&&e.message))){DUEL.phase='lobby';DUEL.err='';banCheck();render();return}DUEL.err=/ranked closed/i.test(String(e&&e.message))?'closed':/low points/i.test(String(e&&e.message))?'low':/duel_join|PGRST202|schema cache|42883/i.test(String(e&&(e.message||e.code)||''))?'setup':'err';DUEL.phase='lobby';render();return}
@@ -4615,9 +4615,17 @@ async function duelFind(){
       if(Date.now()-RK.qcT>3000){RK.qcT=Date.now();sb.rpc('rk_queue_count',{p_wn:W.length}).then(r=>{if(!r.error&&typeof r.data==='number'){RK.qc=r.data;const q=document.getElementById('dqc');if(q)q.textContent=r.data}}).catch(()=>{})}}
       else if(Date.now()-DUEL.find>25000&&!DUEL.longWait){DUEL.longWait=true;render()}}},500);
 }
+// Sıradan güvenli çıkış: iptal ile eşleşme aynı anda olursa sunucuda kurulmuş maçın id'si döner (oyuncu maçı kaçırmaz)
+async function duelCancelSafe(){
+  if(!sb||!CLOUD.uid)return null;
+  try{const r=await sb.rpc('duel_cancel2');if(!r.error)return r.data||null}catch(e){}
+  try{await sb.rpc('duel_cancel')}catch(e){}
+  try{const r=await sb.rpc('duel_lobby',DUEL.sub==='ranked'?{p_mode:'ranked'}:undefined);const x=r&&!r.error&&r.data&&(r.data.duels||[]).find(myLive);if(x)return x.id}catch(e){}
+  return null}
+const myLive=x=>x&&((x.a&&x.a.id)===CLOUD.uid||(x.b&&x.b.id)===CLOUD.uid);
 async function duelCancel(){
   const was=DUEL.phase;dReset();DUEL.longWait=false;render();
-  if(sb&&CLOUD.uid&&was==='search'){try{await sb.rpc('duel_cancel')}catch(e){}LOBBY.busy=false;lobbyLoad()}
+  if(sb&&CLOUD.uid&&was==='search'){const id=await duelCancelSafe();if(id&&DUEL.phase==='lobby'){toast('Rakip tam o anda bulundu, maça alındın.',3500);await duelStart(id);return}LOBBY.busy=false;lobbyLoad()}
 }
 async function duelFetch(){
   if(!DUEL.id||DUEL.bot)return;
@@ -4629,8 +4637,8 @@ async function duelFetch(){
   }catch(e){}
 }
 async function duelStart(id){
-  dStop();DUEL.id=id;DUEL.longWait=false;
-  await duelFetch();
+  dStop();DUEL.id=id;DUEL.bot=null;DUEL.d=null;DUEL.longWait=false;
+  for(let k=0;k<6&&!DUEL.d;k++){await duelFetch();if(!DUEL.d)await new Promise(r=>setTimeout(r,700))}
   const d=DUEL.d;if(!d){DUEL.err='err';DUEL.phase='lobby';render();return}
   if(d.wn!==W.length){DUEL.err='ver';DUEL.phase='lobby';render();return}
   DUEL.sub=d.mode==='ranked'&&!drkLocked()?'ranked':'classic';
@@ -4709,7 +4717,7 @@ async function duelEnd(){
     const d=DUEL.d,o=dOpp();d.s2=o.s;d.c2=o.c;d.a2=o.a;d.status='done';
     d.winner=d.s1>d.s2?CLOUD.uid:d.s2>d.s1?'bot':null;
   }else{await duelFetch();if(DUEL.d&&DUEL.d.status==='done')duelApply([DUEL.d])}
-  DUEL.phase='result';dStop();
+  DUEL.phase='result';dStop();if(DUEL.id&&!DUEL.bot)(DUEL.done=DUEL.done||{})[DUEL.id]=1;
   if(!DUEL.bot)duelRecord();
   render();
 }
@@ -4730,6 +4738,7 @@ async function lobbyLoad(){
     const r=await sb.rpc('duel_lobby',DUEL.sub==='ranked'?{p_mode:'ranked'}:undefined);
     if(r.error||!r.data){LOBBY.err=/duel_lobby|PGRST202|42883|schema cache/i.test(String(r.error&&(r.error.message||r.error.code)||''))?'setup':'err';if(duelLobbyView())render();return}
     LOBBY.err='';const d=r.data;
+    {const mine=(d.duels||[]).find(myLive);if(mine&&DUEL.phase==='lobby'&&!DUEL.botPend&&!(DUEL.done||{})[mine.id]&&!(DUEL.rjd=DUEL.rjd||{})[mine.id]){DUEL.rjd[mine.id]=1;LOBBY.busy=false;toast('Süren bir maçın var, maça dönülüyor.',3000);duelStart(mine.id);return}}
     (d.online||[]).forEach(peerSet);(d.duels||[]).forEach(x=>{peerSet(x.a);peerSet(x.b)});if(d.inbox)peerSet(d.inbox.from);if(d.outbox)peerSet(d.outbox.to);
     const prevIds=LOBBY.duels.map(x=>x.id);
     LOBBY.on=d.online||[];LOBBY.wait=d.wait||[];LOBBY.duels=d.duels||[];
@@ -5023,10 +5032,10 @@ document.addEventListener('click',async e=>{
     case'duel-find':duelFind();break;
     case'duel-cancel':duelCancel();break;
     case'inv-send':invSend(g('data-u'));break;
-    case'duel-bot':if(DUEL.phase==='search'){try{sb.rpc('duel_cancel')}catch(e){}}duelStartBot();break;
+    case'duel-bot':{if(DUEL.phase==='search'){if(DUEL.botPend)break;DUEL.botPend=1;dStop();duelCancelSafe().then(id=>{DUEL.botPend=0;if(DUEL.phase!=='search')return;if(id){toast('Rakip bulundu, gerçek maça alındın.',3500);duelStart(id)}else duelStartBot()})}else duelStartBot();break}
     case'duel-opt':duelAnswer(+g('data-v'));break;
     case'duel-trap':if(grdOn()&&!DUEL.g.trap){DUEL.g.trap=1;grdSend('trap',null)}break;
-    case'duel-exit':dReset();render();lobbyLoad();break;
+    case'duel-exit':if(DUEL.id&&DUEL.id!=='bot')(DUEL.done=DUEL.done||{})[DUEL.id]=1;dReset();render();lobbyLoad();break;
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
     case'start-review':startQuiz('review',false);break;
