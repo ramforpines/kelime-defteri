@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.152.0';
+const APP_VERSION='4.152.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1719,7 +1719,7 @@ function vHelp(){
     'İlk girişte yönetici onayı gerekebilir. Onaylanınca sıralamaya girer, sohbete ve düelloya katılırsın.',
     'İlerlemen hesabına kaydedilir. Başka cihazda aynı kullanıcı adı ve şifreyle girince kaldığın yerden devam edersin.']),true)}
   ${sec('📘 Gramer',li([
-    '<b>Konular</b>: A1, A2 ve B1 seviyesinde 27 konu var (to be\'den Reported Speech\'e kadar). Üst seviyeler hazırlanıyor, listede "yakında" yazar.',
+    '<b>Konular</b>: A1, A2, B1 ve B2 seviyesinde 36 konu var (to be\'den Third Conditional ve Passive\'in tüm zamanlarına kadar). C1 ve C2 hazırlanıyor, listede "yakında" yazar.',
     '<b>Her konuda</b>: kısa anlatım, kalıp tablosu, kullanımlar ve örnek cümleler (Türkçesiyle), istisnalar, zaman ifadeleri, hazır kalıplar, diyaloglar, sık yapılan hatalar ve konuyla ilgili kelimeler. Zaman konularında zaman çizgisi de vardır.',
     '<b>Dinle</b>: örnek cümleye dokununca sesli okunur. Kelimeleri ☆ ile Kaydedilenler\'e ekleyebilirsin.',
     '<b>Mini test</b>: her konunun sonunda kolaydan zora 20 soru (6 kolay, 6 orta, 5 zor, 3 çok zor). Her cevaptan sonra açıklama çıkar, sonunda puanın ve yanlışların görünür. Bu test <b>puan vermez</b>, sıralamayı etkilemez; istediğin kadar tekrar çözebilirsin.']))}
@@ -2832,9 +2832,9 @@ const ICON={
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const GRAM_ON=true;   // Gramer: herkese açık (A1–B1)
-const GRAM_BETA=/\/beta\//.test(location.pathname)||/[?&]gram=1/.test(location.search);   // B2 ve üstü yalnızca beta (yönetici)
-const GRAM_HIDE=['B2','C1','C2'];
+const GRAM_ON=true;   // Gramer: herkese açık (A1–B2)
+const GRAM_BETA=/\/beta\//.test(location.pathname)||/[?&]gram=1/.test(location.search);   // C1 ve üstü yalnızca beta (yönetici)
+const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
 const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]);
 const isStudy=t=>(t==='gram'&&GRAM_ON)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
@@ -2887,7 +2887,7 @@ function vGram(){
   const css=`<style>.gh{color:var(--accent);font-weight:700}.gx{display:flex;gap:10px;justify-content:space-between;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);font-size:.92rem;cursor:pointer}.gxl>.gx:first-child{border-top:0}.gxe{flex:1.15}.gxt{flex:1;text-align:right;color:var(--muted);font-size:.8rem}.gv{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}.gf{padding:7px 10px;border-radius:8px;background:rgba(120,120,120,.08)}.gbad{color:#e5484d;text-decoration:line-through}.ggood{color:#2e9e5b;font-weight:600}.gq button{display:block;width:100%;text-align:left;margin-top:6px}.gn{padding:8px 10px;border-radius:8px;border-left:3px solid #e0a020;background:rgba(224,160,32,.1);font-size:.88rem}.gt{width:100%;border-collapse:collapse;font-size:.85rem}.gt th{text-align:left;background:rgba(120,120,120,.1);padding:5px 6px;font-size:.75rem}.gt td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:top}</style>`;
   if(!T){
     const lv=['A1','A2','B1','B2','C1','C2'];
-    return css+`<div class="card stack"><h2 style="margin:0">Gramer</h2><div class="muted small">Konu anlatımı; kurallar, örnek cümleler, sık yapılan hatalar ve o konuyla öğrenmen gereken kelimeler. ${GRAM_BETA?' <b>Beta:</b> B2 konuları yalnızca sende görünür.':''}</div></div>`+
+    return css+`<div class="card stack"><h2 style="margin:0">Gramer</h2><div class="muted small">Konu anlatımı; kurallar, örnek cümleler, sık yapılan hatalar ve o konuyla öğrenmen gereken kelimeler. </div></div>`+
     lv.map(L=>{const ready=G.filter(t=>t.lv===L),plan=((window.GRAMMAR||[]).filter(t=>t.lv===L&&!G.includes(t)).map(t=>t.title)).concat((window.GRAMMAR_PLAN||{})[L]||[]);if(!ready.length&&!plan.length)return'';
       return`<div class="card stack"><h3 style="margin:0">${L}</h3>${ready.map(t=>`<button class="btn block" data-act="gm-open" data-v="${t.id}" style="text-align:left"><b>${esc(t.title)}</b><div class="muted small">${esc(t.form_name)}</div></button>`).join('')}${plan.filter(n=>!ready.some(t=>t.title===n)).map(n=>`<div class="small muted" style="padding:4px 2px">• ${esc(n)} <span class="badge">yakında</span></div>`).join('')}</div>`}).join('');
   }
