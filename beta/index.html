@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.152.6';
+const APP_VERSION='4.152.7';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -596,11 +596,12 @@ async function loadWins(){
 // tek seferlik düzeltme (4.152.6): galibiyetler yüklenmeden ya da cihaz birleştirmesiyle lig tavanını aşan puan tavana çekilir.
 // Yalnızca aşan kısım son 21 gündeki düello kazançlarıyla açıklanabiliyorsa uygulanır (kural öncesinden tavan üstünde olanlar etkilenmez).
 function capFix(){
-  try{if(S.capFix||!CLOUD.uid||!CLOUD.rwOk)return;const c=ptsCeil();if(c===Infinity){S.capFix=1;return}
-    const ex=Math.round(((S.tp||0)-c)*10)/10;if(!(ex>0)){S.capFix=1;return}
-    let g=0;Object.keys(S.days||{}).forEach(k=>{const ev=(S.days[k]||{}).ev||{};Object.keys(ev).forEach(x=>{const e=ev[x];if(/^(dr|dp)\|/.test(x)&&e&&e.t==='p'&&+e.pts>0)g+=+e.pts})});
-    S.capFix=1;if(ex>g){save();return}
-    const dy=dayStat();S.tp=c;dy.adj=Math.round(((dy.adj||0)-ex)*10)/10;evAdd(dy,'cap|fix',{t:'a',pts:-ex});save();
+  try{if(S.cf2||!CLOUD.uid||!CLOUD.rwOk||!CLOUD.pulled)return;   // buluttaki durum birleştikten ve galibiyetler yüklendikten sonra bakılır
+    const c=ptsCeil();if(c===Infinity)return;
+    const ex=Math.round(((S.tp||0)-c)*10)/10;if(!(ex>0))return;
+    let g=0;Object.keys(S.days||{}).forEach(k=>{const ev=(S.days[k]||{}).ev||{};Object.keys(ev).forEach(x=>{const e=ev[x];if(/^(dr|dp)\|/.test(x)&&e&&(e.t==='p'||e.t==='n')&&+e.pts>0)g+=+e.pts})});
+    S.cf2=1;if(ex>g){save();return}
+    const dy=dayStat();S.tp=c;dy.adj=Math.round(((dy.adj||0)-ex)*10)/10;evAdd(dy,'cap|fix',{t:'a',pts:-ex});save();pushNow();
     toast('Puanın lig tavanına ('+nf(c)+') düzeltildi: tavanı aşan '+nf(ex)+' puan bir hata nedeniyle eklenmişti.',6000);render()}catch(e){}
 }
 function leagueMap(){
@@ -1004,7 +1005,7 @@ async function pullState(){
   const changed=stSig(m)!==before;
   if(changed){S=m;S.upd=Date.now();persistLocal()}
   CLOUD.known=stAns(S);CLOUD.pulled=true;
-  seenMigrate();
+  seenMigrate();capFix();
   if(stSig(S)!==stSig(normState(cl))||(S.rs||0)>(cl.rs||0))schedulePush();   // bulutta olmayan yerel ilerleme varsa yukarı gönder
   return changed;
 }
