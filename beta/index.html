@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.152.5';
+const APP_VERSION='4.152.6';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -591,7 +591,17 @@ const winsReq=i=>({4:20,5:50,6:100,7:200,8:200,9:200})[i]||0;   // lig için ger
 const winsCap=w=>w>=200?9:w>=100?6:w>=50?5:w>=20?4:3;
 async function loadWins(){
   if(!sb||!CLOUD.uid)return;
-  try{const r=await sb.rpc('duel_wins');if(!r.error&&Array.isArray(r.data)){const m={};r.data.forEach(x=>{m[x.user_id]=x.w|0});CLOUD.rw=m;CLOUD.rwOk=true;CLOUD.rwv=(CLOUD.rwv||0)+1}}catch(e){}
+  try{const r=await sb.rpc('duel_wins');if(!r.error&&Array.isArray(r.data)){const m={};r.data.forEach(x=>{m[x.user_id]=x.w|0});CLOUD.rw=m;CLOUD.rwOk=true;CLOUD.rwv=(CLOUD.rwv||0)+1;capFix()}}catch(e){}
+}
+// tek seferlik düzeltme (4.152.6): galibiyetler yüklenmeden ya da cihaz birleştirmesiyle lig tavanını aşan puan tavana çekilir.
+// Yalnızca aşan kısım son 21 gündeki düello kazançlarıyla açıklanabiliyorsa uygulanır (kural öncesinden tavan üstünde olanlar etkilenmez).
+function capFix(){
+  try{if(S.capFix||!CLOUD.uid||!CLOUD.rwOk)return;const c=ptsCeil();if(c===Infinity){S.capFix=1;return}
+    const ex=Math.round(((S.tp||0)-c)*10)/10;if(!(ex>0)){S.capFix=1;return}
+    let g=0;Object.keys(S.days||{}).forEach(k=>{const ev=(S.days[k]||{}).ev||{};Object.keys(ev).forEach(x=>{const e=ev[x];if(/^(dr|dp)\|/.test(x)&&e&&e.t==='p'&&+e.pts>0)g+=+e.pts})});
+    S.capFix=1;if(ex>g){save();return}
+    const dy=dayStat();S.tp=c;dy.adj=Math.round(((dy.adj||0)-ex)*10)/10;evAdd(dy,'cap|fix',{t:'a',pts:-ex});save();
+    toast('Puanın lig tavanına ('+nf(c)+') düzeltildi: tavanı aşan '+nf(ex)+' puan bir hata nedeniyle eklenmişti.',6000);render()}catch(e){}
 }
 function leagueMap(){
   const own=ownPts(),key=(CLOUD.rwv||0)+'|'+(CLOUD.lb&&CLOUD.lb.length)+'|'+own+'|'+(CLOUD.lbReady?1:0)+'|'+(CLOUD.lb&&CLOUD.lb[0]&&CLOUD.lb[0].updated_at);
@@ -782,8 +792,9 @@ const EV_DAYS=21;
 function evKey(d,pre){let n=1;const ev=d.ev||(d.ev={});while(ev[pre+'|'+n])n++;return pre+'|'+n}
 function evAdd(d,key,rec){(d.ev||(d.ev={}))[key]=rec;return rec}
 function ptsCeil(){   // lig şartı (dereceli galibiyet) sağlanmadıysa, geçilemeyen ligin tavan puanı geçilemez
-  if(!CLOUD.rwOk||!CLOUD.uid)return Infinity;
-  const c=winsCap((CLOUD.rw||{})[CLOUD.uid]|0);if(c>=9)return Infinity;
+  if(!CLOUD.uid)return Infinity;
+  let w;if(CLOUD.rwOk){w=(CLOUD.rw||{})[CLOUD.uid]|0;if(S.rwc!==w)S.rwc=w}else if(S.rwc!=null)w=S.rwc|0;else return Infinity;   // galibiyetler henüz yüklenmediyse son bilinen sayı
+  const c=winsCap(w);if(c>=9)return Infinity;
   const nx=LEAGUES[c+2];return nx?nx.min-1:Infinity;
 }
 function capGain(v){   // v>0 ise tavana göre kısılmış kazanç
@@ -970,6 +981,7 @@ function mergeStates(a,b){
   {const a2=ot.seen||{},b2=m.seen||{},sn={};['ann','pop','fb'].forEach(k=>{const v=(a2[k]||'')>(b2[k]||'')?a2[k]:b2[k];if(v)sn[k]=v});
    const ch=Object.assign({},a2.chat||{});Object.keys(b2.chat||{}).forEach(k=>{if((ch[k]||0)<b2.chat[k])ch[k]=b2.chat[k]});if(Object.keys(ch).length)sn.chat=ch;m.seen=sn}   // okundu işaretleri: büyük olan kazanır
   {const x=Object.assign({},ot.exa||{});Object.keys(m.exa||{}).forEach(k=>{x[k]=(x[k]|0)|(m.exa[k]|0)});m.exa=x}   // hangi örnek cümleler soruldu: birleşir
+  {const c=ptsCeil(),hi=Math.max(a.tp||0,b.tp||0,c);if(c!==Infinity&&(m.tp||0)>hi)m.tp=hi}   // birleştirme lig tavanını aşamaz
   m.upd=Date.now();
   return m;
 }
