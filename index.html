@@ -3572,7 +3572,7 @@ const SX_SK={R:'Okuma',L:'Dinleme',W:'Yazma',S:'Konuşma'},SX_IC={R:'📖',L:'�
 const sxSkName=(lv,k)=>k==='R'&&(lv==='B2'||lv==='C1')?'Okuma ve dil kullanımı':SX_SK[k];
 const SX_VO={M:'Erkek',F:'Kadın',M2:'Erkek 2',F2:'Kadın 2'};
 let SX_LOADING=false;
-function sxLoad(){if(window.SINAV||SX_LOADING)return;SX_LOADING=true;const s=document.createElement('script');s.src='sinav.js?v='+APP_VERSION;s.onload=()=>{SX_LOADING=false;if(UI.tab==='pet'||UI.me==='adm')render()};s.onerror=()=>{SX_LOADING=false;toast('Sınav dosyası yüklenemedi. İnternetini kontrol et.',4000)};document.head.appendChild(s)}
+function sxLoad(){if(window.SINAV||SX_LOADING)return;SX_LOADING=true;const s=document.createElement('script');s.src='sinav.js?v='+APP_VERSION;s.onload=()=>{SX_LOADING=false;if(UI.tab==='pet'||UI.tab==='rank'||UI.me==='adm')render()};s.onerror=()=>{SX_LOADING=false;toast('Sınav dosyası yüklenemedi. İnternetini kontrol et.',4000)};document.head.appendChild(s)}
 const sxAud=n=>'audio/sx/'+n+'.mp3';
 const sxScTxt=sc=>{const many=new Set(sc.map(x=>x[0])).size>1;return sc.filter(x=>!String(x[1]).startsWith('#')).map(x=>(many?SX_VO[x[0]]+': ':'')+x[1]).join('\n')};
 const sxPara=p=>p==null?null:Array.isArray(p)?p:String(p).split('\n');
@@ -3836,7 +3836,7 @@ function vSx(){
     ${SX_LV.map(lv=>{const L=SN.exams.filter(x=>x.lv===lv);if(!L.length)return'';return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>${esc(SX_NM[lv])}</b><span class="badge">${lv} · ${SX_SHORT[lv]}</span></div>
       ${L.map(X=>{const r=R[X.id],o=r&&r.status==='done'?sxScores(X,r):null,nd=r?['R','L','W','S'].filter(k=>r.state.sec[k].done).length:0;
         const lk=!r&&sxLock(X);return`<button class="btn block" style="text-align:left${lk?';opacity:.65':''}" data-act="sx-open" data-v="${X.id}"><div class="row" style="justify-content:space-between"><b>${lk?'🔒 ':''}${esc(X.t)}</b><span class="small ${o?'':'muted'}">${o?'Bitti · '+(o.all??'–')+' · '+esc(o.all!=null?sxLevel(lv,o.all):''):r?'Devam ediyor · '+nd+'/4 bölüm':lk?(lk.k==='lv'?'Kilitli':'Haftaya açılır'):'Başlamadın'}</span></div></button>`}).join('')}</div>`}).join('')}
-    ${sxBoardCard()}</div>`}
+    <button class="btn block" data-act="sx-board">🏆 Sınav sıralamaları</button></div>`}
   const lv=UI.sxl||'B1',k=UI.sxk||'R',P=SN.prac[lv]||{},L=P[k]||[];
   return`<div class="top"><h1>Çalışma</h1></div><div class="stack">${seg}
   <div class="seg">${SX_LV.filter(x=>SN.prac[x]).map(x=>`<button class="chip" aria-pressed="${x===lv}" data-act="sx-l" data-v="${x}">${x}</button>`).join('')}</div>
@@ -3854,7 +3854,7 @@ function sxBoardCard(){
   if(!UI.sxbLd&&(UI.sxbId!==id||(!UI.sxb&&!UI.sxbErr))){UI.sxbLd=true;UI.sxbId=id;setTimeout(()=>sxBoardLoad(id),0)}
   const rows=(UI.sxb||[]).map(x=>({x,o:sxScores(X,{result:x.result||{}})})).sort((a,b)=>(b.o.all??-1)-(a.o.all??-1));
   const c=v=>v?v.sc:'–',me=CLOUD.uid,th='style="padding:6px 3px;text-align:right;white-space:nowrap"';
-  return`<div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><b>🏆 Sıralama</b>
+  return`<div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><b>📝 Sınav</b>
    <select id="sxbsel" style="max-width:62%;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card,transparent);color:inherit;font:inherit">${E.map(Y=>`<option value="${Y.id}" ${Y.id===id?'selected':''}>${esc(SX_NM[Y.lv]+' · '+Y.t)}</option>`).join('')}</select></div>
    ${UI.sxbErr?'<div class="small" style="color:var(--bad)">Sıralama alınamadı. (supabase-sinav2.sql çalıştırıldı mı?)</div>':!UI.sxb?'<div class="small muted">Yükleniyor…</div>':!rows.length?'<div class="small muted">Bu sınavı henüz bitiren yok.</div>':
    `<div style="overflow-x:auto;margin:0 -4px"><table style="width:100%;border-collapse:collapse;font-size:.85rem"><thead><tr style="border-bottom:1px solid var(--line)"><th style="padding:6px 4px;text-align:left">#</th><th style="padding:6px 4px;text-align:left">Ad</th><th ${th} title="Okuma">📖</th><th ${th} title="Dinleme">🎧</th><th ${th} title="Yazma">✍️</th><th ${th} title="Konuşma">🎤</th><th ${th}>Toplam</th></tr></thead><tbody>
@@ -4317,7 +4317,8 @@ function vRank(){
   }else if(!S.prof.name&&CLOUD.write){
     body=`<div class="card stack"><h2>Önce profilini oluştur</h2>${profileForm()}</div>`;
   }else{
-    const per=R.per==='ranked'&&drkLocked()?'day':R.per;
+    const per=R.per==='ranked'&&drkLocked()?'day':R.per==='exam'&&!GRAM_BETA?'day':R.per;
+    if(per==='exam'){sxLoad();body=`${rkSeg('exam')}<div class="stack" style="margin-top:12px">${window.SINAV?sxBoardCard():'<div class="card muted">Yükleniyor…</div>'}</div>`}else
     if(per==='ranked'&&!drkLocked()){body=rankedBoardHtml('all')}else{
     const rows=rankData().map(r=>Object.assign(r,{x:r[per]}));
     const lgm=per==='all'?leagueMap():null,lgOf=r=>lgm?(lgm[r.id]|0):0;   // tüm zamanlar: önce (şartlar dahil) lig, sonra puan
@@ -4349,7 +4350,7 @@ function vRank(){
   }}
   return`<div class="top"><h1>Sıralama</h1></div><div class="stack">${body}</div>`;
 }
-const rkSeg=per=>`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button>${drkLocked()?'':`<button class="chip vlc" aria-pressed="${per==='ranked'}" data-rp="ranked">🏅 Dereceli düello</button>`}</div>`;
+const rkSeg=per=>`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button>${drkLocked()?'':`<button class="chip vlc" aria-pressed="${per==='ranked'}" data-rp="ranked">🏅 Dereceli düello</button>`}${GRAM_BETA?`<button class="chip" aria-pressed="${per==='exam'}" data-rp="exam">📝 Sınavlar</button>`:''}</div>`;
 const RKB={per:{},busy:false};
 async function rkbLoad(per,force){
   if(!sb||!CLOUD.uid||RKB.busy)return;
@@ -5554,6 +5555,7 @@ document.addEventListener('click',async e=>{
     case'sx-sec':sxStartSec(UI.sxe,g('data-v'));break;
     case'sx-res':UI.sxres=true;aiLeft();render();window.scrollTo(0,0);break;
     case'sx-ai':sxAi();break;
+    case'sx-board':UI.tab='rank';UI.rank.per='exam';render();window.scrollTo(0,0);break;
     case'sx-unlock':UI.sxBy=UI.sxBy||{};UI.sxBy[UI.sxe]=1;render();break;
     case'sx-say':{const[pi,qi,j]=g('data-v').split('|').map(Number),X=sxExam(UI.sxe),q=X&&X.sec.S.parts[pi].q[qi];if(q)say((Array.isArray(q[3])?q[3]:[q[3]])[j]);break}
     case'sx-prac':{const[lv,id]=g('data-v').split('|');sxPracStart(lv,id);break}
