@@ -3664,10 +3664,10 @@ function sxTimer(){clearInterval(SXT);SXT=setInterval(()=>{
   s.left=Math.max(0,(s.left||0)-1);const el=document.getElementById('sxtm');if(el){el.textContent=sxMMSS(s.left);if(s.left<=300)el.style.color='var(--bad)'}
   if(s.left%15===0)sxSave(id);
   if(s.left<=0){toast('Süre doldu, bölüm teslim edildi.',4000);if(k==='W')sxWSubmit(true);else sxSubmit(true)}},1000)}
-const SX_WEEK=7*864e5;
+const sxWeekStart=()=>{const t=Date.now()+3*36e5,d=new Date(t),k=(d.getUTCDay()+6)%7;return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()-k)-3*36e5};   // Türkiye saatiyle bu haftanın pazartesi 00:00'ı
 function sxLock(X){const R=sxRecs();if(R[X.id])return null;
   const i=SX_LV.indexOf(X.lv);if(i>0){const prev=SX_LV[i-1];if(!(window.SINAV.exams||[]).some(Y=>Y.lv===prev&&R[Y.id]&&R[Y.id].status==='done'))return{k:'lv',t:'Önce '+SX_NM[prev]+' sınavını bitir.'}}
-  const last=Math.max(0,...Object.keys(R).map(id=>R[id].t0||0));if(last&&Date.now()-last<SX_WEEK){const d=new Date(last+SX_WEEK);return{k:'wk',t:'Haftada bir sınava başlayabilirsin. Açılış: '+d.toLocaleString('tr-TR',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})}}
+  const last=Math.max(0,...Object.keys(R).map(id=>R[id].t0||0));const ws=sxWeekStart();if(last&&last>=ws){const d=new Date(ws+7*864e5);return{k:'wk',t:'Haftada bir sınava başlayabilirsin. Açılış: '+d.toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long',timeZone:'Europe/Istanbul'})+' 00:00'}}
   return null}
 const sxLocked=X=>{const l=sxLock(X);return l&&!(CLOUD.admin&&(UI.sxBy||{})[X.id])?l:null};
 function sxStartSec(id,k){if(sxLocked(sxExam(id)))return;const X=sxExam(id),r=sxRec(id,true);if(r.status==='done')return;const s=r.state.sec[k];if(s.done)return;
@@ -3775,7 +3775,7 @@ function vSxExam(){
   const r=sxRec(X.id);if(r&&r.status==='done'&&UI.sxres)return vSxRes(X,r);
   const st=r&&r.state,lk=sxLock(X),lkd=sxLocked(X);
   return`<div class="top"><h1>${esc(SX_NM[X.lv])}</h1><span class="muted small">${esc(X.t)}</span></div><div class="stack">
-  ${lk?`<div class="card stack" style="border-left:3px solid #e0a020"><b>🔒 ${esc(lk.t)}</b><div class="small muted">Sınavlar sırayla açılır: A2 Key → B1 Preliminary → B2 First → C1 Advanced. Haftada bir yeni sınava başlanabilir.</div>${CLOUD.admin?(lkd?'<button class="btn" data-act="sx-unlock">Yönetici: kilidi bu oturumda aç</button>':'<div class="small" style="color:#b35a00">Yönetici olarak kilit atlandı (kullanıcılar için kilitli).</div>'):''}</div>`:''}
+  ${lk?`<div class="card stack" style="border-left:3px solid #e0a020"><b>🔒 ${esc(lk.t)}</b><div class="small muted">Sınavlar sırayla açılır: A2 Key → B1 Preliminary → B2 First → C1 Advanced. Haftada (pazartesi–pazar) bir yeni sınava başlanabilir.</div>${CLOUD.admin?(lkd?'<button class="btn" data-act="sx-unlock">Yönetici: kilidi bu oturumda aç</button>':'<div class="small" style="color:#b35a00">Yönetici olarak kilit atlandı (kullanıcılar için kilitli).</div>'):''}</div>`:''}
   <div class="card small">Bu sınavı <b>bir kez</b> çözebilirsin. Bölümleri istediğin sırada ve farklı zamanlarda çözebilirsin; ilerlemen kaydedilir, başka cihazda da kaldığın yerden devam edersin. Bölümün süresi yalnızca o bölüm açıkken işler. Teslim ettiğin bölüm değiştirilemez. Doğru cevaplar ve sonuç, dört bölüm de bitince görünür.</div>
   ${['R','L','W','S'].map(k=>{const s=st&&st.sec[k],started=s&&(k==='W'?Object.keys(s.t).length||s.left<X.sec.W.min*60:k==='S'?Object.keys(s.tr).length:s.ans.some(x=>x!=null)||s.left<X.sec[k].min*60);
     return`<div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><div><b>${SX_IC[k]} ${esc(sxSkName(X.lv,k))}</b><div class="small muted">${esc(sxSecInfo(X,k))}</div></div>${s&&s.done?'<span class="badge ok">✓ Teslim edildi</span>':''}</div>
@@ -3977,7 +3977,7 @@ function vPetS(){
   <div class="row">${P.st==='done'&&P.qi+1<T.q.length?`<button class="btn primary" data-act="ps-next">Sonraki soru</button>`:''}<button class="btn" data-act="ps-back">Çalışmaya dön</button></div></div>`;
 }
 /* yapay zekâ: yapay zekâ değerlendirmesi (Supabase Edge Function: pet-eval) */
-const AI_ERR={limit:'Bu haftaki değerlendirme hakkın bitti. Bir hafta sonra tekrar deneyebilirsin.',setup:'Yapay zekâ değerlendirmesi henüz kurulmadı (yönetici ayarı eksik).',auth:'Oturum doğrulanamadı. Çıkış yapıp tekrar giriş yap.',short:'Değerlendirme için en az birkaç cümle yaz ya da söyle.',ai:'Değerlendirme şu an yapılamadı, hakkın geri verildi. Biraz sonra tekrar dene.',db:'Sunucu kurulumu eksik (SQL).',net:'Bağlantı hatası. İnternetini kontrol edip tekrar dene.'};
+const AI_ERR={limit:'Bu haftaki değerlendirme hakkın bitti. Pazartesi yenilenir.',setup:'Yapay zekâ değerlendirmesi henüz kurulmadı (yönetici ayarı eksik).',auth:'Oturum doğrulanamadı. Çıkış yapıp tekrar giriş yap.',short:'Değerlendirme için en az birkaç cümle yaz ya da söyle.',ai:'Değerlendirme şu an yapılamadı, hakkın geri verildi. Biraz sonra tekrar dene.',db:'Sunucu kurulumu eksik (SQL).',net:'Bağlantı hatası. İnternetini kontrol edip tekrar dene.'};
 async function aiLeft(){try{const r=await sb.rpc('pet_eval_left');if(!r.error&&typeof r.data==='number'){UI.aiLeft=r.data;const el=document.getElementById('aileft');if(el)el.textContent=r.data}}catch(e){}}
 function aiHtml(res,kind){
   if(!res)return'';const sc=res.scores||{},keys=kind==='w'?[['content','İçerik'],['communicative','İletişim'],['organisation','Düzen'],['language','Dil']]:[['grammar_vocab','Dilbilgisi ve kelime'],['discourse','Konuşma düzeni']];
