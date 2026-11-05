@@ -102,5 +102,13 @@ if '--no-audio' not in sys.argv and audio_jobs:
         open(sg,'w').write(sig);print('ses:',name)
 
 out='/* PET (B1 Preliminary) formatında denemeler (beta). tools/pet/build.py ile üretilir; elle düzenleme. */\nwindow.PET='+json.dumps(tests,ensure_ascii=False,separators=(',',':'))+';\n'
+spec=importlib.util.spec_from_file_location('ws',os.path.join(HERE,'ws.py'));ws=importlib.util.module_from_spec(spec);spec.loader.exec_module(ws)
+for w in ws.W:
+    assert w['min']<w['max'] and len(w['pts'])==(4) and w['model'],w['id']
+    n=len(w['model'].split())
+    if not(w['min']<=n<=w['max']+20):print('UYARI: örnek cevap kelime sayısı',w['id'],n)
+for t in ws.S:
+    for q in t['q']:assert len(q)==4 and q[1]>=15,t['id']
+out+='window.PETWS='+json.dumps({'w':ws.W,'s':ws.S},ensure_ascii=False,separators=(',',':'))+';\n'
 open(os.path.join(ROOT,'pet.js'),'w',encoding='utf8').write(out)
 print('tamam: %d deneme, %d ses, %d KB'%(len(tests),len(audio_jobs),len(out)//1024))

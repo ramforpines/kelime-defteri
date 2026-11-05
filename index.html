@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.153.0';
+const APP_VERSION='4.153.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2928,7 +2928,7 @@ function vGram(){
 }
 function studySeg(){
   if(UI.quiz)return'';
-  if(UI.tab==='pet'&&UI.pt&&!UI.pt.done)return'';
+  if(UI.tab==='pet'&&((UI.pt&&!UI.pt.done)||(UI.ps&&UI.ps.st==='rec')))return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel')return'';   // düello ortadaki ana menüden açılır, çalışma sekmeleri görünmez
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
   return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='duel').map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
@@ -3594,10 +3594,13 @@ function petFinish(){const P=UI.pt;P.done=true;P.items.forEach(it=>it.ok=petOk(i
   S.pet=S.pet||{};const o=S.pet[P.id];if(!o||r+l>(o.r+o.l))S.pet[P.id]={r,l,d:today()};save();render();window.scrollTo(0,0)}
 function vPet(){
   if(!window.PET){petLoad();return`<div class="card"><div class="muted">Denemeler yükleniyor…</div></div>`}
+  if(UI.pw)return vPetW();
+  if(UI.ps)return vPetS();
   const P=UI.pt;
   if(!P)return`<div class="top"><h1>PET Denemeleri</h1></div><div class="stack">
     <div class="card stack"><div class="small"><b>B1 Preliminary (PET) formatında</b> okuma ve dinleme denemeleri. Okuma 6 bölüm, 32 soru; dinleme 4 bölüm, 25 soru. Sınav sırasında doğru / yanlış gösterilmez; sonunda bölüm puanların, tahmini seviyen ve <b>hangi konulara çalışman gerektiği</b> çıkar. Gramer hatalarında ilgili konu anlatımına tek dokunuşla gidersin.</div>
     <div class="small muted">Dinleme kayıtlarını istediğin kadar dinleyebilirsin. Puan vermez, sıralamayı etkilemez. Resmî Cambridge sınavı değildir; seviye tahmini yaklaşıktır.</div></div>
+    <div class="card stack"><b>Yazma ve konuşma</b><div class="small muted">Otomatik puanlanmaz: yazarken canlı kontrol, konuşurken yazıya dökme ve ölçüm yapılır; sonunda örnek cevap ve öz değerlendirme çıkar.</div><div class="row"><button class="btn" data-act="pw-list">✍️ Yazma (${((window.PETWS||{}).w||[]).length} görev)</button><button class="btn" data-act="ps-list">🎤 Konuşma (${((window.PETWS||{}).s||[]).length} görev)</button></div></div>
     ${window.PET.map(T=>{const b=(S.pet||{})[T.id];return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>${esc(T.t)}</b>${b?`<span class="small muted">en iyi: okuma ${b.r}/32 · dinleme ${b.l}/25</span>`:''}</div><button class="btn primary block" data-act="pet-start" data-v="${T.id}">${b?'Tekrar çöz':'Başla'}</button></div>`}).join('')}</div>`;
   if(P.done)return vPetReport(P);
   const it=P.items[P.i],tot=P.items.length,pct=Math.round(P.i/tot*100);
@@ -3610,6 +3613,109 @@ function vPet(){
   ${it.txt?`<div class="row"><input id="petans" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Cevabını yaz" style="flex:1;min-width:0"><button class="btn primary" data-act="pet-text">Cevapla</button></div>`
   :`<div class="opts" lang="en">${it.o.map((o,i)=>`<button class="opt" data-act="pet-ans" data-v="${i}"><kbd>${String.fromCharCode(65+i)}</kbd><span>${esc(o)}</span></button>`).join('')}</div>`}
   </div>`;
+}
+/* ===== PET yazma ve konuşma (beta, 1. aşama: canlı kontrol + örnek cevap + öz değerlendirme) ===== */
+const PW_LINK=['and','but','because','so','however','also','although','then','first','finally','after that','in my opinion','for example','for instance','on the other hand','in the end','luckily','suddenly','while','when','as soon as','if','unless','which','who','that'];
+const PW_FN=new Set('i me my mine myself you your yours yourself he him his himself she her hers herself it its itself we us our ours ourselves they them their theirs themselves a an the this that these those there here and but or so because if when while as than then also too very really just only not no yes of in on at to for from with by about into onto over under up down out off after before during until since between through without within around near far some any many much more most less least few little lot lots all both each every other another such what which who whom whose where why how am is are was were be been being have has had having do does did done doing will would shall should can could may might must ought ok okay hi hello dear thanks thank please sorry best wishes love regards yours sincerely mum dad mr mrs ms o clock am pm etc one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand first second third half quarter monday tuesday wednesday thursday friday saturday sunday'.split(' '));
+let PW_FORMS=null;
+function pwForms(){if(PW_FORMS)return PW_FORMS;const s=new Set();W.forEach(w=>{String(w.word).toLowerCase().split(/[\s\/]+/).forEach(x=>s.add(x));[w.v2,w.v3].forEach(v=>{if(v)String(v).toLowerCase().split(/[\s\/,]+/).forEach(x=>s.add(x))})});PW_FORMS=s;return s}
+function pwKnown(t){const S0=pwForms(),w=t.toLowerCase().replace(/^can't$/,'can').replace(/^won't$/,'will').replace(/^shan't$/,'shall').replace(/'(s|re|ll|ve|d|m)$/,'').replace(/n't$/,'');if(!w||PW_FN.has(w)||S0.has(w)||/^\d/.test(w))return true;
+  const c=[w.replace(/ies$/,'y'),w.replace(/ied$/,'y'),w.replace(/es$/,''),w.replace(/s$/,''),w.replace(/ed$/,''),w.replace(/d$/,''),w.replace(/ing$/,''),w.replace(/ing$/,'e'),w.replace(/([a-z])\1(ed|ing)$/,'$1'),w.replace(/er$/,''),w.replace(/est$/,''),w.replace(/ier$/,'y'),w.replace(/iest$/,'y'),w.replace(/ly$/,''),w.replace(/ily$/,'y')];
+  return c.some(x=>x&&x!==w&&(S0.has(x)||PW_FN.has(x)))}
+function pwAnalyse(T,txt){
+  const low=' '+txt.toLowerCase().replace(/\s+/g,' ')+' ',words=(txt.match(/[A-Za-z][A-Za-z']*/g)||[]);
+  const n=(txt.match(/\S+/g)||[]).length;
+  const lines=txt.split('\n').map(x=>x.trim()).filter(Boolean);
+  const pts=T.pts.map(([lb,kw])=>[lb,kw.some(k=>k==='@title'?(lines.length>1&&lines[0].split(/\s+/).length<=8&&!/[.!?]$/.test(lines[0])):low.includes(k.toLowerCase()))]);
+  const lk=PW_LINK.filter(l=>new RegExp('\\b'+l.replace(/ /g,'\\s+')+'\\b','i').test(txt));
+  const tn=[];
+  if(/\b(was|were|went|had|did|said|saw|got|came|told|made|took)\b|\b[a-z]{2,}ed\b/i.test(txt))tn.push('Past Simple');
+  if(/\b(have|has|'ve|'s)\s+(never\s+|just\s+|already\s+|ever\s+)?(been|done|seen|gone|had|made|[a-z]{2,}ed)\b/i.test(txt))tn.push('Present Perfect');
+  if(/\b(am|is|are|'m|'re)\s+[a-z]{2,}ing\b/i.test(txt))tn.push('Present Continuous');
+  if(/\b(will|'ll|won't|going to)\b/i.test(txt))tn.push('Gelecek (will / going to)');
+  if(/\bif\b/i.test(txt))tn.push('Koşul (if)');
+  if(/\b(can|could|should|must|might|would)\b/i.test(txt))tn.push('Modal (can / should…)');
+  const seen={},unk=[];words.forEach((w,i)=>{if(/^[A-Z]/.test(w)&&w!=='I')return;const k=w.toLowerCase();if(seen[k])return;seen[k]=1;if(!pwKnown(w))unk.push(w)});
+  return{n,pts,lk,tn,unk}
+}
+function pwCkHtml(T,txt){
+  const a=pwAnalyse(T,txt),okN=a.n>=T.min&&a.n<=T.max,c=(ok,t)=>`<span class="badge" style="${ok?'background:rgba(46,158,91,.15);color:#2e9e5b':'background:rgba(229,72,77,.12);color:#e5484d'}">${t}</span>`;
+  return`<div class="row" style="flex-wrap:wrap;gap:6px">${c(okN,a.n+' kelime (hedef '+T.min+'–'+T.max+')')}${c(a.lk.length>=4,a.lk.length+' bağlaç')}${c(a.tn.length>=2,a.tn.length+' farklı yapı')}</div>
+  <div class="small" style="margin-top:6px">${a.pts.map(([lb,ok])=>`<div>${ok?'✅':'⬜'} ${esc(lb)}</div>`).join('')}</div>
+  ${a.lk.length?`<div class="small muted" style="margin-top:4px">Bağlaçlar: ${a.lk.map(esc).join(', ')}</div>`:''}
+  ${a.tn.length?`<div class="small muted">Yapılar: ${a.tn.map(esc).join(', ')}</div>`:''}
+  ${a.unk.length?`<div class="small" style="margin-top:4px;color:#b35a00">Yazımını kontrol et: ${a.unk.slice(0,12).map(esc).join(', ')}</div>`:''}`
+}
+const PW_SELF=[['İçerik','Tüm maddelere değindim.','Okuyucu ne demek istediğimi tam anlar.','Gereksiz ya da konu dışı bilgi yok.'],
+  ['İletişim','E-posta / makale / hikâye biçimine uygun yazdım (hitap, başlık, kapanış).','Okuyucuya uygun bir ton kullandım (arkadaş / öğretmen).','Okuyucunun ilgisini çekecek ayrıntılar verdim.'],
+  ['Düzen','Paragraflara ayırdım.','Bağlaçlarla cümleleri bağladım (because, however, so...).','Fikirler mantıklı bir sırada.'],
+  ['Dil','Farklı zamanlar ve yapılar kullandım.','Kelime seçimim çeşitli, aynı kelimeyi tekrar etmedim.','Yazım ve dilbilgisi hatalarımı kontrol ettim.']];
+function vPetW(){
+  const L=(window.PETWS||{}).w||[],P=UI.pw;
+  if(!P.id)return`<div class="top"><h1>PET Yazma</h1></div><div class="stack"><div class="card small">PET yazma bölümü iki parçadır: <b>Part 1</b> e-posta (zorunlu), <b>Part 2</b> makale ya da hikâye (birini seçersin). Her biri yaklaşık 100 kelime. Yazarken kelime sayısı, maddeler, bağlaçlar ve yapılar canlı kontrol edilir; bitirince örnek cevap ve öz değerlendirme çıkar. Taslağın kaydedilir.</div>
+    ${L.map(T=>{const d=(S.pw||{})[T.id];return`<button class="btn block" style="text-align:left" data-act="pw-open" data-v="${T.id}"><b>Part ${T.part} · ${esc(T.t)}</b>${d&&d.t?`<div class="small muted">taslak: ${(d.t.match(/\S+/g)||[]).length} kelime${d.f?' · tamamlandı':''}</div>`:''}</button>`}).join('')}
+    <button class="btn" data-act="pw-back-list">PET menüsüne dön</button></div>`;
+  const T=L.find(x=>x.id===P.id);if(!T){UI.pw={};return''}
+  const d=(S.pw||{})[T.id]||{},txt=d.t||'';
+  return`<div class="top"><h1>Part ${T.part}</h1></div><div class="stack">
+  <div class="card stack"><b>${esc(T.t)}</b><div class="small muted" lang="en">${esc(T.in)}</div><div class="card small" lang="en" style="white-space:pre-line">${esc(T.mail)}</div></div>
+  <div class="card stack"><textarea id="petw" lang="en" spellcheck="false" autocapitalize="sentences" rows="11" style="width:100%;box-sizing:border-box;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit" placeholder="Cevabını İngilizce yaz…">${esc(txt)}</textarea><div id="petwck">${pwCkHtml(T,txt)}</div>
+  ${P.done?'':`<button class="btn primary block" data-act="pw-done">Bitir: örnek cevap ve değerlendirme</button>`}</div>
+  ${P.done?`<div class="card stack"><h3 style="margin:0">Öz değerlendirme</h3><div class="small muted">PET yazma 4 ölçütle puanlanır (her biri 0–5). Doğru olanları işaretle.</div>
+    ${PW_SELF.map((c,ci)=>`<div><b>${c[0]}</b> <span class="small muted" id="pws${ci}"></span>${c.slice(1).map((x,i)=>`<label class="small" style="display:flex;gap:8px;align-items:flex-start;margin-top:4px"><input type="checkbox" data-pwc="${ci}-${i}" ${(d.c||{})[ci+'-'+i]?'checked':''}> <span>${esc(x)}</span></label>`).join('')}</div>`).join('')}
+    <div id="pwsum" class="small"></div></div>
+    <div class="card stack"><h3 style="margin:0">Örnek cevap</h3><div class="small" lang="en" style="white-space:pre-line;line-height:1.6">${esc(T.model)}</div><div class="small muted">${(T.model.match(/\S+/g)||[]).length} kelime. Kendi cevabınla karşılaştır: maddeler, bağlaçlar ve farklı zamanlar nasıl kullanılmış?</div></div>`:''}
+  <div class="row"><button class="btn" data-act="pw-back">Görevlere dön</button></div></div>`;
+}
+function pwSelfUpd(){const d=((S.pw||{})[UI.pw.id])||{},c=d.c||{};let tot=0;PW_SELF.forEach((x,ci)=>{const n=[0,1,2].filter(i=>c[ci+'-'+i]).length,sc=[0,2,4,5][n];tot+=sc;const el=document.getElementById('pws'+ci);if(el)el.textContent=sc+'/5'});const s=document.getElementById('pwsum');if(s)s.innerHTML='<b>Tahmini toplam: '+tot+'/20</b> <span class="muted">(PET\'te B1 için yaklaşık 12/20 ve üstü)</span>'}
+let PW_T=null;
+document.addEventListener('input',e=>{
+  if(e.target&&e.target.id==='petw'&&UI.pw&&UI.pw.id){const T=((window.PETWS||{}).w||[]).find(x=>x.id===UI.pw.id);if(!T)return;S.pw=S.pw||{};const d=S.pw[T.id]||(S.pw[T.id]={});d.t=e.target.value.slice(0,3000);d.d=today();
+    const ck=document.getElementById('petwck');if(ck)ck.innerHTML=pwCkHtml(T,d.t);clearTimeout(PW_T);PW_T=setTimeout(save,1500)}
+});
+document.addEventListener('change',e=>{const k=e.target&&e.target.getAttribute&&e.target.getAttribute('data-pwc');if(!k||!UI.pw||!UI.pw.id)return;S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.c=d.c||{};d.c[k]=e.target.checked?1:0;save();pwSelfUpd()});
+/* konuşma */
+const PS_REC=window.SpeechRecognition||window.webkitSpeechRecognition;
+let PSR=null;
+function psStop(){const P=UI.ps;if(PSR){try{PSR.onend=null;PSR.stop()}catch(e){}PSR=null}if(P&&P.st==='rec'){P.st='done';P.dur=Math.min(P.lim,(Date.now()-P.t0)/1000);if(P.lastAt)P.pz=Math.max(P.pz||0,(Math.min(Date.now(),P.t0+P.lim*1000)-P.lastAt)/1000);clearInterval(P.tm);render()}}
+function psStart(){
+  const P=UI.ps,T=psTask(),q=T.q[P.qi];if(!PS_REC){toast('Bu tarayıcıda konuşma tanıma yok. Chrome ya da Safari\'nin güncel sürümünü dene.',5000);return}
+  try{speechSynthesis.cancel()}catch(e){}
+  Object.assign(P,{st:'rec',tr:'',fin:'',t0:Date.now(),lim:q[1],dur:0,pz:0,lastAt:Date.now()});
+  const start=()=>{const r=new PS_REC();r.lang='en-GB';r.continuous=true;r.interimResults=true;
+    r.onresult=e=>{let fin='',tmp='';for(let i=0;i<e.results.length;i++){const x=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=x+' ';else tmp+=x}const now=Date.now();P.pz=Math.max(P.pz||0,(now-P.lastAt)/1000);P.lastAt=now;P.cur=(fin+tmp).trim();const el=document.getElementById('pstr');if(el)el.textContent=((P.fin?P.fin+' ':'')+P.cur).trim();P.part=fin};
+    r.onend=()=>{if(UI.ps&&UI.ps.st==='rec'&&Date.now()<P.t0+P.lim*1000){P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';try{start()}catch(e){psStop()}}else{P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';psStop()}};
+    r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){toast('Mikrofon izni verilmedi.',4000);P.st='idle';clearInterval(P.tm);render()}};
+    PSR=r;r.start()};
+  start();
+  P.tm=setInterval(()=>{const left=Math.ceil(P.t0/1000+P.lim-Date.now()/1000),el=document.getElementById('pstm');if(el)el.textContent=left>0?left+' sn':'süre doldu';if(left<=0){P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';psStop()}},250);
+  render();
+}
+const psTask=()=>(((window.PETWS||{}).s)||[]).find(x=>x.id===UI.ps.id);
+function vPetS(){
+  const L=(window.PETWS||{}).s||[],P=UI.ps;
+  if(!P.id)return`<div class="top"><h1>PET Konuşma</h1></div><div class="stack"><div class="card small">Soru sesli okunur, sen süre bitene kadar İngilizce konuşursun. Söylediklerin telefonun konuşma tanımasıyla yazıya dökülür; sonra konuşma süren, kelime sayın, hızın, en uzun duraklaman ve kullandığın kalıplar gösterilir, örnek cevapla karşılaştırırsın.${PS_REC?'':' <b style="color:#e5484d">Bu tarayıcıda konuşma tanıma desteklenmiyor; Chrome (Android) ya da Safari (iPhone) kullan.</b>'}</div>
+    ${L.map(T=>`<button class="btn block" style="text-align:left" data-act="ps-open" data-v="${T.id}"><b>${esc(T.t)}</b><div class="small muted">${T.q.length>1?T.q.length+' soru':'1 dakika'}</div></button>`).join('')}
+    <button class="btn" data-act="pw-back-list">PET menüsüne dön</button></div>`;
+  const T=psTask(),q=T.q[P.qi];
+  let res='';
+  if(P.st==='done'){
+    const tr=(P.fin||'').trim(),wn=(tr.match(/\S+/g)||[]).length,dur=Math.max(1,P.dur||0),wpm=Math.round(wn/(dur/60)),low=' '+tr.toLowerCase()+' ';
+    const fill=(tr.match(/\b(um+|uh+|er+m*|ehm)\b/gi)||[]).length,kw=q[2].map(k=>[k,low.includes(k.toLowerCase())]);
+    res=`<div class="card stack"><h3 style="margin:0">Sonuç</h3><div class="small" lang="en" style="white-space:pre-line;padding:8px;border-radius:8px;background:rgba(120,120,120,.08)">${tr?esc(tr):'<span class="muted">Konuşma algılanmadı.</span>'}</div>
+      <div class="small">Süre: <b>${Math.round(dur)}</b>/${q[1]} sn · Kelime: <b>${wn}</b> · Hız: <b>${wpm}</b> kelime/dk${P.pz>=3?` · En uzun duraklama: <b>${Math.round(P.pz)}</b> sn`:''}${fill?` · Dolgu sesi (um, er): ${fill}`:''}</div>
+      <div class="small muted">${wn<q[1]*0.9?'Biraz daha uzun konuş: PET\'te sessiz kalmak ya da çok kısa cevap vermek puan kaybettirir.':wpm<70?'Akıcılığı artırmak için cümleleri önceden düşünmeden, kısa ve bağlantılı söylemeye çalış.':'Güzel uzunluk. Şimdi cümleleri because, so, however ile bağlamaya ve farklı zamanlar kullanmaya odaklan.'}</div>
+      <div class="small"><b>Kullanışlı kalıplar:</b> ${kw.map(([k,ok])=>`<span class="badge" style="${ok?'background:rgba(46,158,91,.15);color:#2e9e5b':''}">${ok?'✓ ':''}${esc(k)}</span>`).join(' ')}</div></div>
+      <div class="card stack"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Örnek cevap</h3><button class="btn" data-act="ps-say" data-v="m">🔊 Dinle</button></div><div class="small" lang="en" style="line-height:1.6">${esc(q[3])}</div></div>`;
+  }
+  return`<div class="top"><h1>${esc(T.t)}</h1></div><div class="stack">
+  <div class="card stack"><div class="small muted">${esc(T.ins)}</div>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}
+   <div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><h2 lang="en" style="margin:0">${esc(q[0])}</h2><button class="btn" data-act="ps-say" data-v="q" aria-label="Soruyu dinle">🔊</button></div>
+   <div class="small muted">Konuşma süresi: ${q[1]} saniye</div>
+   ${P.st==='rec'?`<div class="row" style="justify-content:space-between"><b style="color:#e5484d">● Kayıtta</b><b id="pstm">${q[1]} sn</b></div><div id="pstr" class="small" lang="en" style="min-height:3em;white-space:pre-line"></div><button class="btn primary block" data-act="ps-stop">Bitir</button>`
+   :`<button class="btn primary block" data-act="ps-start" ${PS_REC?'':'disabled'}>${P.st==='done'?'Tekrar konuş':'🎤 Konuşmaya başla'}</button>`}</div>
+  ${res}
+  <div class="row">${P.st==='done'&&P.qi+1<T.q.length?`<button class="btn primary" data-act="ps-next">Sonraki soru</button>`:''}<button class="btn" data-act="ps-back">Görevlere dön</button></div></div>`;
 }
 function vPetReport(P){
   const R=P.items.filter(i=>i.k[0]==='R'),L=P.items.filter(i=>i.k[0]==='L'),r=R.filter(i=>i.ok).length,l=L.filter(i=>i.ok).length;
@@ -5190,6 +5296,18 @@ document.addEventListener('click',async e=>{
     case'sv-w':{const w=g('data-w');toggleSaved(w);toast(isSaved(w)?'Kaydedildi.':'Kayıttan çıkarıldı.');if(UI.tab==='saved'&&!isSaved(w))UI.dict.open=null;const dl=$('#dlist');if(dl)dl.innerHTML=UI.tab==='saved'?savedList():dictList();if(UI.tab==='saved'){const t=document.querySelector('.top .muted');if(t)t.textContent=nf(savedWords().length)+' kelime'}break}
     case'gm-open':UI.gm=g('data-v');render();window.scrollTo(0,0);break;
     case'pet-start':petStart(g('data-v'));break;
+    case'pw-list':UI.pw={};UI.ps=null;render();window.scrollTo(0,0);break;
+    case'ps-list':psStop();UI.ps={};UI.pw=null;render();window.scrollTo(0,0);break;
+    case'pw-back-list':psStop();UI.pw=null;UI.ps=null;render();window.scrollTo(0,0);break;
+    case'pw-open':UI.pw={id:g('data-v'),done:!!(((S.pw||{})[g('data-v')]||{}).f)};render();window.scrollTo(0,0);if(UI.pw.done)pwSelfUpd();break;
+    case'pw-done':{S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.f=1;save();UI.pw.done=true;render();pwSelfUpd();break}
+    case'pw-back':save();UI.pw={};render();window.scrollTo(0,0);break;
+    case'ps-open':UI.ps={id:g('data-v'),qi:0,st:'idle'};render();window.scrollTo(0,0);setTimeout(()=>{const T=psTask();if(T)say(T.q[0][0])},300);break;
+    case'ps-say':{const T=psTask();if(T)say(g('data-v')==='m'?T.q[UI.ps.qi][3]:T.q[UI.ps.qi][0]);break}
+    case'ps-start':psStart();break;
+    case'ps-stop':{const P=UI.ps;P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';psStop();break}
+    case'ps-next':{UI.ps.qi++;UI.ps.st='idle';UI.ps.fin='';render();const T=psTask();if(T)setTimeout(()=>say(T.q[UI.ps.qi][0]),200);break}
+    case'ps-back':psStop();UI.ps={};render();window.scrollTo(0,0);break;
     case'pet-ans':petAnswer(+g('data-v'));break;
     case'pet-text':{const el=document.getElementById('petans');petAnswer(el?el.value:'');break}
     case'pet-quit':if(confirm('Denemeden çıkılsın mı? Cevapların kaybolur.')){UI.pt=null;render()}break;
