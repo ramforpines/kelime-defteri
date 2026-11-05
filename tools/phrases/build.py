@@ -63,7 +63,7 @@ for f in sorted(glob.glob(os.path.join(HERE,'src','*.py'))):
             a,b=d;right=fill('___',p['en']);o=opts(rng,right,[fill('___',q['en']) for q in same])
             add(0,'Complete the dialogue.\nA: %s\nB: %s'%(a,b),o,right,'A: %s\nB: %s'%(fill(a,p['en']) if '___' in a else a,fill(b,p['en']) if '___' in b else b))
         # 1 örnek cümlede boşluk + işlev etiketi (İngilizce)
-        c=core(p['en']).rstrip('?.!');ex=p['ex'][0];m=re.search(re.escape(c),ex,re.I)
+        c=core(p['en']).rstrip('?.!').strip();ex=p['ex'][0];m=re.search(re.escape(c),ex,re.I)
         if m:
             sent=ex[:m.start()]+'___'+ex[m.end():]
             cc=[core(q['en']).rstrip('?.!').strip() for q in same if core(q['en']).rstrip('?.!').lower()!=c.lower()]
