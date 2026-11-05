@@ -964,6 +964,7 @@ function mergeStates(a,b){
   const base=aa>bb||(aa===bb&&(a.upd||0)>=(b.upd||0))?a:b,oth=base===a?b:a;
   const m=normState(JSON.parse(JSON.stringify(base)));
   const ot=JSON.parse(JSON.stringify(oth));
+  if(ot.phs||m.phs)m.phs=Object.assign({},ot.phs||{},m.phs||{});   // kaydedilen kalıplar: iki cihazınkiler birleşir
   Object.keys(ot.learned||{}).forEach(w=>{const a=m.learned[w],b=ot.learned[w];if(!a)m.learned[w]=b;else if(b&&((b.lr||'')>(a.lr||'')||(b.n|0)>(a.n|0))){a.lr=b.lr;a.n=Math.max(a.n|0,b.n|0)}});
   Object.keys(ot.prog||{}).forEach(w=>{if(m.learned[w])return;const x=m.prog[w]||(m.prog[w]=[]);(ot.prog[w]||[]).forEach(f=>{if(x.indexOf(f)===-1)x.push(f)})});
   Object.keys(m.learned).forEach(w=>{delete m.prog[w]});
@@ -2854,8 +2855,8 @@ const GRAM_ON=true;   // Gramer: herkese açık (A1–B2)
 const GRAM_BETA=/\/beta\//.test(location.pathname)||/[?&]gram=1/.test(location.search);   // C1 ve üstü yalnızca beta (yönetici)
 const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['pet','Sınav']]:[]);   // seviye sınavları ve çalışma: yalnızca beta
-const isStudy=t=>(t==='gram'&&GRAM_ON)||(t==='pet'&&GRAM_BETA)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['phr','Kalıplar'],['pet','Sınav']]:[]);   // seviye sınavları ve çalışma: yalnızca beta
+const isStudy=t=>(t==='gram'&&GRAM_ON)||((t==='pet'||t==='phr')&&GRAM_BETA)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
 const savedWords=()=>Object.keys(S.sav||{}).filter(k=>S.sav[k]>0&&BYWORD.has(k)).sort((a,b)=>S.sav[b]-S.sav[a]).map(k=>BYWORD.get(k));
@@ -3036,6 +3037,7 @@ function render(){
   else if(UI.tab==='saved')h=vSaved();
   else if(UI.tab==='gram'&&GRAM_ON)h=vGram();
   else if(UI.tab==='pet'&&GRAM_BETA)h=vSx();
+  else if(UI.tab==='phr'&&GRAM_BETA)h=vPhr();
   else if(UI.tab==='rank')h=vRank();
   else if(UI.tab==='chat')h=vChat();
   else h=vMe();
@@ -3555,6 +3557,39 @@ function vResult(){
     ${qz.wrong.length?`<div class="card stack"><h3>Yanlışlar</h3>${qz.wrong.map(it=>`<div><b>${esc(it.w.word)}</b> <span class="muted">${esc(FEAT[it.f])}</span><div class="small">Doğru: ${esc(it.correct)}</div></div>`).join('')}</div>`:''}
     <div class="row"><button class="btn primary" data-act="again">${qz.mode==='exam'?'Vize listesine dön':'Yeni test'}</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
 }
+/* ===== Kalıplar (beta): fikir belirtme vb. ifade kalıpları. Veri: phrases.js (tools/phrases/build.py) ===== */
+let PH_LOADING=false;
+function phLoad(){if(window.PHRASES||PH_LOADING)return;PH_LOADING=true;const s=document.createElement('script');s.src='phrases.js?v='+APP_VERSION;s.onload=()=>{PH_LOADING=false;if(UI.tab==='phr')render()};s.onerror=()=>{PH_LOADING=false;toast('Kalıplar yüklenemedi.',3000)};document.head.appendChild(s)}
+const PH_LV=['A1','A2','B1','B2','C1','C2'];
+const phSaved=()=>S.phs||(S.phs={});
+function vPhr(){
+  if(!window.PHRASES){phLoad();return'<div class="card"><div class="muted">Kalıplar yükleniyor…</div></div>'}
+  const G=UI.phg&&window.PHRASES.find(g=>g.id===UI.phg);
+  if(!G)return`<div class="top"><h1>Kalıplar</h1></div><div class="stack"><div class="card small">Günlük konuşmada ve sınavlarda en çok kullanılan ifade kalıpları. Her kalıbın Türkçesi, seviyesi, üslubu (resmî / samimi) ve örnek cümlesi var; dinleyebilir, kaydedebilir ve alıştırma yapabilirsin.</div>
+    ${window.PHRASES.map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><div class="row" style="justify-content:space-between"><b>${esc(g.t)}</b><span class="small muted">${g.sub.reduce((a,x)=>a+x.items.length,0)} kalıp</span></div><div class="small muted" lang="en">${esc(g.en)}</div></button>`).join('')}
+    <div class="card small">${(window.PHRASES_PLAN||[]).map(t=>`<div style="padding:3px 0">• ${esc(t)} <span class="badge">yakında</span></div>`).join('')}</div></div>`;
+  if(UI.phq)return vPhrQuiz(G);
+  const lv=UI.phl||'all',sv=phSaved();
+  const show=p=>(lv==='all'||(lv==='fav'?sv[p.en]:p.lv===lv));
+  return`<div class="top"><h1>${esc(G.t)}</h1><span class="muted small" lang="en">${esc(G.en)}</span></div><div class="stack">
+  <div class="card small">${esc(G.ins)}</div>
+  <div class="seg">${['all'].concat(PH_LV,['fav']).map(x=>`<button class="chip" aria-pressed="${lv===x}" data-act="phr-l" data-v="${x}">${x==='all'?'Tümü':x==='fav'?'⭐ Kaydettiklerim':x}</button>`).join('')}</div>
+  <button class="btn primary block" data-act="phr-quiz">✏️ Alıştırma yap (${G.quiz.length} durum)</button>
+  ${G.sub.map(sb=>{const L=sb.items.filter(show);if(!L.length)return'';return`<div class="card stack"><div><b>${sb.c} ${esc(sb.t)}</b> <span class="small muted" lang="en">· ${esc(sb.en)}</span></div>
+    ${L.map(p=>`<div style="border-top:1px solid var(--line);padding:8px 0"><div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><div style="min-width:0"><b lang="en" style="font-size:1.02rem">${esc(p.en)}</b><div class="small">${esc(p.tr)}</div></div>
+      <div class="row" style="gap:4px;flex-shrink:0"><button class="btn" style="padding:4px 8px" data-act="phr-say" data-v="${esc(p.en)}" aria-label="Dinle">🔊</button><button class="btn" style="padding:4px 8px" data-act="phr-fav" data-v="${esc(p.en)}" aria-label="Kaydet">${sv[p.en]?'⭐':'☆'}</button></div></div>
+      <div class="row" style="gap:4px;margin-top:4px;flex-wrap:wrap"><span class="badge">${p.lv}</span>${p.reg?`<span class="badge">${esc(p.reg)}</span>`:''}</div>
+      <div class="small muted" style="margin-top:4px"><span lang="en">${esc(p.ex[0])}</span><br>${esc(p.ex[1])}</div></div>`).join('')}</div>`}).join('')||'<div class="empty card">Bu filtrede kalıp yok.</div>'}
+  <button class="btn" data-act="phr-home">Kalıp gruplarına dön</button></div>`;
+}
+function vPhrQuiz(G){const Q=UI.phq,n=G.quiz.length;
+  if(Q.i>=n){const c=Q.ans.filter((a,i)=>a===G.quiz[i].a).length;return`<div class="top"><h1>Sonuç</h1></div><div class="stack"><div class="card stack"><div class="score" style="font-size:2.2rem">${c}/${n}</div><div class="small muted">${esc(G.t)} alıştırması</div></div>
+    <div class="row"><button class="btn primary" data-act="phr-quiz">Tekrar çöz</button><button class="btn" data-act="phr-qx">Kalıplara dön</button></div></div>`}
+  const q=G.quiz[Q.i],ua=Q.ans[Q.i],done=ua!=null;
+  return`<div class="qtop"><button class="btn" data-act="phr-qx">Çık</button><div class="bar"><i style="width:${Math.round(Q.i/n*100)}%"></i></div><span class="mono muted">${Q.i+1}/${n}</span></div>
+  <div class="card qcard"><div class="row" style="margin-bottom:8px"><span class="badge">${q.lv}</span></div><h2>${esc(q.q)}</h2><div class="small muted" style="margin-bottom:8px">Bu durumda hangisini söylersin?</div>
+  <div class="opts" lang="en">${q.o.map((o,i)=>`<button class="opt" data-act="phr-ans" data-v="${i}" ${done?'disabled':''} style="${done&&i===q.a?'border-color:#2e9e5b;background:rgba(46,158,91,.12)':done&&i===ua?'border-color:#e5484d;background:rgba(229,72,77,.10)':''}"><kbd>${String.fromCharCode(65+i)}</kbd><span>${esc(o)}</span></button>`).join('')}</div>
+  ${done?`<div class="small" style="margin-top:10px"><b style="color:${ua===q.a?'#2e9e5b':'#e5484d'}">${ua===q.a?'Doğru!':'Yanlış.'}</b> ${esc(q.e)}</div><button class="btn primary block" style="margin-top:10px" data-act="phr-next">${Q.i+1<n?'Sonraki':'Sonucu gör'}</button>`:''}</div>`}
 /* ===== Seviye sınavları ve çalışma (beta) =====
 /* ===== Seviye sınavları (A2 Key, B1 Preliminary, B2 First, C1 Advanced) ve çalışma bölümü (beta) =====
    Veri: sinav.js (tools/sinav/build.py). Sınav ilerlemesi sunucuda (supabase-sinav.sql: exam_runs), her sınav bir kez çözülür. */
@@ -4009,7 +4044,7 @@ function vPetS(){
       <div class="card stack"><h3 style="margin:0">Örnek cevaplar</h3><div class="small muted">Aynı soruya iki farklı bakış açısıyla, süreyi dolduracak uzunlukta örnekler. Dinleyip kendi cevabınla karşılaştır.</div>${(Array.isArray(q[3])?q[3]:[q[3]]).map((m,i)=>`<div style="border-top:1px solid var(--line);padding:8px 0"><div class="row" style="justify-content:space-between;gap:8px"><b class="small">Örnek ${i+1} <span class="muted">· ${(m.match(/\S+/g)||[]).length} kelime</span></b><button class="btn" style="padding:4px 10px" data-act="ps-say" data-v="m${i}">🔊 Dinle</button></div><div class="small" lang="en" style="line-height:1.6;margin-top:4px">${esc(m)}</div></div>`).join('')}</div>`;
   }
   return`<div class="top"><h1>${esc(T.t)}</h1><span class="muted small">${esc(sxLvOfTask(T.id))}</span></div><div class="stack">
-  ${sxScene(T)}  <div class="card stack"><div class="small muted">${esc(T.ins)}</div>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}
+  ${sxScene(T)}${(T.p||0)>=3?`<button class="btn block" data-act="phr-open" data-v="opinion">💬 İşine yarar: Fikir belirtme kalıpları</button>`:''}  <div class="card stack"><div class="small muted">${esc(T.ins)}</div>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}
    <div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><h2 lang="en" style="margin:0">${esc(q[0])}</h2></div><div class="row" style="gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" data-act="ps-say" data-v="q">🔊 Soruyu dinle</button><button class="btn" data-act="tts-stop">⏹ Durdur</button></div><div class="small muted">Sesi duymuyorsan cihazının sesini aç ve sessiz modu kapat (iPhone\'da yandaki sessiz anahtarı).</div>
    <div class="small muted">Konuşma süresi: ${q[1]} saniye</div>
    ${P.st==='rec'?`<div class="row" style="justify-content:space-between"><b style="color:#e5484d">● Kayıtta</b><b id="pstm">${q[1]} sn</b></div><div id="pstr" class="small" lang="en" style="min-height:3em;white-space:pre-line"></div><button class="btn primary block" data-act="ps-stop">Bitir</button>`
@@ -5590,6 +5625,16 @@ document.addEventListener('click',async e=>{
     case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=UI.tab==='saved'?savedList():dictList();break}
     case'sv-w':{const w=g('data-w');toggleSaved(w);toast(isSaved(w)?'Kaydedildi.':'Kayıttan çıkarıldı.');if(UI.tab==='saved'&&!isSaved(w))UI.dict.open=null;const dl=$('#dlist');if(dl)dl.innerHTML=UI.tab==='saved'?savedList():dictList();if(UI.tab==='saved'){const t=document.querySelector('.top .muted');if(t)t.textContent=nf(savedWords().length)+' kelime'}break}
     case'gm-open':UI.gm=g('data-v');render();window.scrollTo(0,0);break;
+    case'phr-g':UI.phg=g('data-v');UI.phq=null;render();window.scrollTo(0,0);break;
+    case'phr-home':UI.phg=null;UI.phq=null;render();window.scrollTo(0,0);break;
+    case'phr-l':UI.phl=g('data-v');render();break;
+    case'phr-say':say(g('data-v').replace(/\.\.\./g,' '));break;
+    case'phr-fav':{const k=g('data-v'),v=phSaved();if(v[k])delete v[k];else v[k]=1;save();render();break}
+    case'phr-quiz':UI.phq={i:0,ans:[]};render();window.scrollTo(0,0);break;
+    case'phr-ans':{const Q=UI.phq;if(Q.ans[Q.i]==null){Q.ans[Q.i]=+g('data-v');render()}break}
+    case'phr-next':UI.phq.i++;render();window.scrollTo(0,0);break;
+    case'phr-qx':UI.phq=null;render();window.scrollTo(0,0);break;
+    case'phr-open':ttsStop();psStop();UI.ps=null;UI.tab='phr';UI.phg=g('data-v');UI.phq=null;UI.phl='all';lastStudy='phr';render();window.scrollTo(0,0);break;
     case'sx-m':UI.sxm=g('data-v');render();break;
     case'sx-l':UI.sxl=g('data-v');render();break;
     case'sx-k':UI.sxk=g('data-v');render();break;
