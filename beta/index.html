@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.152.9';
+const APP_VERSION='4.153.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2850,8 +2850,8 @@ const GRAM_ON=true;   // Gramer: herkese açık (A1–B2)
 const GRAM_BETA=/\/beta\//.test(location.pathname)||/[?&]gram=1/.test(location.search);   // C1 ve üstü yalnızca beta (yönetici)
 const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]);
-const isStudy=t=>(t==='gram'&&GRAM_ON)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['pet','PET']]:[]);   // PET denemeleri: yalnızca beta
+const isStudy=t=>(t==='gram'&&GRAM_ON)||(t==='pet'&&GRAM_BETA)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
 const savedWords=()=>Object.keys(S.sav||{}).filter(k=>S.sav[k]>0&&BYWORD.has(k)).sort((a,b)=>S.sav[b]-S.sav[a]).map(k=>BYWORD.get(k));
@@ -2928,6 +2928,7 @@ function vGram(){
 }
 function studySeg(){
   if(UI.quiz)return'';
+  if(UI.tab==='pet'&&UI.pt&&!UI.pt.done)return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel')return'';   // düello ortadaki ana menüden açılır, çalışma sekmeleri görünmez
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
   return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='duel').map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
@@ -3030,6 +3031,7 @@ function render(){
   else if(UI.tab==='review')h=vReview();
   else if(UI.tab==='saved')h=vSaved();
   else if(UI.tab==='gram'&&GRAM_ON)h=vGram();
+  else if(UI.tab==='pet'&&GRAM_BETA)h=vPet();
   else if(UI.tab==='rank')h=vRank();
   else if(UI.tab==='chat')h=vChat();
   else h=vMe();
@@ -3548,6 +3550,89 @@ function vResult(){
     ${qz.learnedNow.length?`<div class="row">${qz.learnedNow.map(k=>`<span class="badge ok">${esc(k)}</span>`).join('')}</div>`:''}</div>
     ${qz.wrong.length?`<div class="card stack"><h3>Yanlışlar</h3>${qz.wrong.map(it=>`<div><b>${esc(it.w.word)}</b> <span class="muted">${esc(FEAT[it.f])}</span><div class="small">Doğru: ${esc(it.correct)}</div></div>`).join('')}</div>`:''}
     <div class="row"><button class="btn primary" data-act="again">${qz.mode==='exam'?'Vize listesine dön':'Yeni test'}</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
+}
+/* ===== PET denemeleri (beta): B1 Preliminary formatında okuma + dinleme; sonunda konu raporu ===== */
+const PET_SK={gist:['Ana fikir','Metnin tamamını bir kez hızlıca oku, sonra soruya dön. İlk ve son paragraf çoğu zaman ana fikri verir.'],
+  detail:['Ayrıntı yakalama','Sorudaki anahtar kelimeyi metinde bul; şıktaki kelimenin aynısı değil, anlamca karşılığı aranır. Dinlemede "ama, sonra, aslında" gibi düzeltmelere dikkat et.'],
+  inference:['Çıkarım','Cevap açıkça yazmaz; konuşanın niyetini ve durumu düşün. "Neden?" ve "ne yapacak?" sorularında son söylenene bak.'],
+  attitude:['Görüş ve tutum','Konuşanın ne hissettiğini gösteren kelimelere odaklan (but, just, actually, I wish). Övgüden sonra gelen "ama" asıl görüştür.'],
+  purpose:['Amaç','Kısa mesajlarda "neden yazılmış?" sorusunda istek ya da bilgi cümlesini bul (Can you..., Please..., I\'ve left...).'],
+  vocab:['Kelime ve kalıp','Fiil + isim kalıplarını (go on a trip, take a walk, hold a festival) birlikte öğren. -ed / -ing sıfat farkına dikkat et.'],
+  spelling:['Sayı, saat ve yazım','Saatleri (quarter to, half past), fiyatları ve tarihleri yazarak dinle. Konuşan önce bir sayı söyleyip sonra düzeltebilir.'],
+  reference:['Metin içi gönderme','Boşluktan sonraki cümlede "they, them, there, this, during this time" gibi gönderme sözcüklerinin neyi gösterdiğini bul.'],
+  coherence:['Metin akışı','Boşluktan önceki ve sonraki cümleyi birlikte oku; "but, however, instead, so" bağlaçları anlamın yönünü gösterir.']};
+const PET_PN={R1:'Okuma 1 · Kısa metinler',R2:'Okuma 2 · Eşleştirme',R3:'Okuma 3 · Uzun metin',R4:'Okuma 4 · Cümle yerleştirme',R5:'Okuma 5 · Çoktan seçmeli boşluk',R6:'Okuma 6 · Açık boşluk',L1:'Dinleme 1 · Kısa kayıtlar',L2:'Dinleme 2 · Kısa konuşmalar',L3:'Dinleme 3 · Not tamamlama',L4:'Dinleme 4 · Röportaj'};
+let PET_LOADING=false;
+function petLoad(){if(window.PET||PET_LOADING)return;PET_LOADING=true;const s=document.createElement('script');s.src='pet.js?v='+APP_VERSION;s.onload=()=>{PET_LOADING=false;if(UI.tab==='pet')render()};s.onerror=()=>{PET_LOADING=false};document.head.appendChild(s)}
+const petAud=id=>'audio/pet/'+id+'.mp3';
+const petScTxt=sc=>sc.map(x=>(sc.length>1?(x[0]==='M'?'Erkek: ':'Kadın: '):'')+x[1]).join('\n');
+function petItems(T){
+  const out=[];
+  T.parts.forEach(p=>{
+    const b={k:p.k,ti:p.ti,ins:p.ins};
+    if(p.k==='R1')p.q.forEach((q,i)=>out.push(Object.assign({},b,{n:i+1,pass:[q.x],q:q.q,o:q.o,a:q.a,tg:q.tg,e:q.e})));
+    else if(p.k==='R2'){const tx=p.texts.map(t=>t[0]+'. '+t[1]+': '+t[2]);
+      p.people.forEach(([nm,d],i)=>out.push(Object.assign({},b,{n:i+1,pass:tx,pt:'Kurslar / kitaplar (A–H)',q:nm+': '+d,o:p.texts.map(t=>t[1]),a:p.texts.findIndex(t=>t[0]===p.a[i]),tg:Array.isArray(p.tg[i])?p.tg[i]:[p.tg[i]],e:p.e[i]})))}
+    else if(p.k==='R3')p.q.forEach((q,i)=>out.push(Object.assign({},b,{n:i+1,pass:p.p,pt:p.title,q:q.q,o:q.o,a:q.a,tg:q.tg,e:q.e})));
+    else if(p.k==='R4')p.a.forEach((a,i)=>out.push(Object.assign({},b,{n:i+1,pass:p.p.split('\n'),pt:p.title,q:'Boşluk ('+(i+1)+') için hangi cümle uygun?',o:p.s.map(s=>s[1]),a:p.s.findIndex(s=>s[0]===a),tg:[p.tg[i]],e:p.e[i]})));
+    else if(p.k==='R5')p.o.forEach(([o,a,t],i)=>out.push(Object.assign({},b,{n:i+1,pass:p.p.split('\n'),pt:p.title,q:'Boşluk ('+(i+1)+') için doğru seçenek hangisi?',o,a,tg:t,e:p.e[i]})));
+    else if(p.k==='R6')p.a.forEach((a,i)=>out.push(Object.assign({},b,{n:i+1,pass:p.p.split('\n'),pt:p.title,q:'Boşluk ('+(i+1)+') için tek kelime yaz.',txt:a,tg:p.tg[i],e:p.e[i]})));
+    else if(p.k==='L1'||p.k==='L2')p.q.forEach((q,i)=>out.push(Object.assign({},b,{n:i+1,au:petAud(T.id+'-'+q.id),sc:petScTxt(q.sc),q:q.q,o:q.o,a:q.a,tg:q.tg,e:q.e})));
+    else if(p.k==='L3')p.a.forEach((a,i)=>out.push(Object.assign({},b,{n:i+1,au:petAud(T.id+'-'+p.id),sc:petScTxt(p.sc),pass:p.notes.split('\n'),pt:'Notlar',q:'Boşluk ('+(i+1)+') için kelime, sayı ya da tarih yaz.',txt:a,tg:p.tg[i],e:p.e[i]})));
+    else if(p.k==='L4')p.q.forEach((q,i)=>out.push(Object.assign({},b,{n:i+1,au:petAud(T.id+'-'+p.id),sc:petScTxt(p.sc),q:q.q,o:q.o,a:q.a,tg:q.tg,e:q.e})));
+  });
+  return out;
+}
+const petNorm=s=>String(s||'').trim().toLowerCase().replace(/[’']/g,"'").replace(/\s+/g,' ').replace(/[.]$/,'').replace(/^£/,'');
+const petOk=it=>it.txt?it.txt.some(x=>petNorm(x)===petNorm(it.ua)):it.ua===it.a;
+function petLevel(sk,n){const t=sk==='R'?[29,23,13]:[23,18,11];return n>=t[0]?'B2':n>=t[1]?'B1':n>=t[2]?'A2':'A2 altı'}
+function petStart(id){const T=(window.PET||[]).find(x=>x.id===id);if(!T)return;UI.pt={id,items:petItems(T),i:0,done:false};render();window.scrollTo(0,0)}
+function petAnswer(v){const P=UI.pt;if(!P||P.done)return;const it=P.items[P.i];it.ua=v;
+  if(P.i+1>=P.items.length){petFinish();return}P.i++;const y=it.k===P.items[P.i].k&&(it.pass||it.au)?window.scrollY:0;render();window.scrollTo(0,y)}
+function petFinish(){const P=UI.pt;P.done=true;P.items.forEach(it=>it.ok=petOk(it));
+  const r=P.items.filter(i=>i.k[0]==='R'&&i.ok).length,l=P.items.filter(i=>i.k[0]==='L'&&i.ok).length;
+  S.pet=S.pet||{};const o=S.pet[P.id];if(!o||r+l>(o.r+o.l))S.pet[P.id]={r,l,d:today()};save();render();window.scrollTo(0,0)}
+function vPet(){
+  if(!window.PET){petLoad();return`<div class="card"><div class="muted">Denemeler yükleniyor…</div></div>`}
+  const P=UI.pt;
+  if(!P)return`<div class="top"><h1>PET Denemeleri</h1></div><div class="stack">
+    <div class="card stack"><div class="small"><b>B1 Preliminary (PET) formatında</b> okuma ve dinleme denemeleri. Okuma 6 bölüm, 32 soru; dinleme 4 bölüm, 25 soru. Sınav sırasında doğru / yanlış gösterilmez; sonunda bölüm puanların, tahmini seviyen ve <b>hangi konulara çalışman gerektiği</b> çıkar. Gramer hatalarında ilgili konu anlatımına tek dokunuşla gidersin.</div>
+    <div class="small muted">Dinleme kayıtlarını istediğin kadar dinleyebilirsin. Puan vermez, sıralamayı etkilemez. Resmî Cambridge sınavı değildir; seviye tahmini yaklaşıktır.</div></div>
+    ${window.PET.map(T=>{const b=(S.pet||{})[T.id];return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>${esc(T.t)}</b>${b?`<span class="small muted">en iyi: okuma ${b.r}/32 · dinleme ${b.l}/25</span>`:''}</div><button class="btn primary block" data-act="pet-start" data-v="${T.id}">${b?'Tekrar çöz':'Başla'}</button></div>`}).join('')}</div>`;
+  if(P.done)return vPetReport(P);
+  const it=P.items[P.i],tot=P.items.length,pct=Math.round(P.i/tot*100);
+  return`<div class="qtop"><button class="btn" data-act="pet-quit">Çık</button><div class="bar"><i style="width:${pct}%"></i></div><span class="mono muted">${P.i+1}/${tot}</span></div>
+  <div class="card qcard"><div class="row" style="margin-bottom:8px"><span class="badge">${esc(PET_PN[it.k])} · ${it.n}</span></div>
+  ${it.n===1?`<div class="small muted" style="margin-bottom:8px">${esc(it.ins)}</div>`:''}
+  ${it.au?`<div data-exaud="${esc(it.au)}" style="margin-bottom:10px"></div>`:''}
+  ${it.pass?`<details class="card small" lang="en" style="margin-bottom:10px" open><summary style="cursor:pointer;font-weight:600">${esc(it.pt||'Metin')}</summary><div class="stack" style="margin-top:8px">${it.pass.map(t=>`<p style="margin:0;line-height:1.6;white-space:pre-line">${esc(t)}</p>`).join('')}</div></details>`:''}
+  <h2 lang="en">${esc(it.q)}</h2>
+  ${it.txt?`<div class="row"><input id="petans" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Cevabını yaz" style="flex:1;min-width:0"><button class="btn primary" data-act="pet-text">Cevapla</button></div>`
+  :`<div class="opts" lang="en">${it.o.map((o,i)=>`<button class="opt" data-act="pet-ans" data-v="${i}"><kbd>${String.fromCharCode(65+i)}</kbd><span>${esc(o)}</span></button>`).join('')}</div>`}
+  </div>`;
+}
+function vPetReport(P){
+  const R=P.items.filter(i=>i.k[0]==='R'),L=P.items.filter(i=>i.k[0]==='L'),r=R.filter(i=>i.ok).length,l=L.filter(i=>i.ok).length;
+  const parts=Object.keys(PET_PN).map(k=>{const a=P.items.filter(i=>i.k===k);return[k,a.filter(i=>i.ok).length,a.length]});
+  const G={},Gn={};P.items.forEach(it=>(it.tg||[]).forEach(t=>{(Gn[t]=Gn[t]||[0,0])[1]++;if(!it.ok){Gn[t][0]++;(G[t]=G[t]||[]).push(it)}}));
+  const gram=Object.keys(G).filter(t=>!PET_SK[t]).sort((a,b)=>G[b].length-G[a].length),sk=Object.keys(G).filter(t=>PET_SK[t]).sort((a,b)=>G[b].length-G[a].length);
+  const gt=id=>((window.GRAMMAR||[]).find(t=>t.id===id)||{title:id}).title;
+  const wrong=P.items.filter(i=>!i.ok);
+  const LT=it=>['R2','R4'].includes(it.k)?i=>String.fromCharCode(65+i)+'. ':()=>'';
+  const ua=it=>it.txt?(it.ua||'(boş)'):it.ua!=null?LT(it)(it.ua)+it.o[it.ua]:'(boş)',ca=it=>it.txt?it.txt[0]:LT(it)(it.a)+it.o[it.a];
+  const top=[gram[0]&&gt(gram[0]),gram[1]&&gt(gram[1]),sk[0]&&PET_SK[sk[0]][0]].filter(Boolean);
+  return`<div class="top"><h1>Sonuç</h1></div><div class="stack">
+  <div class="card stack"><div class="row" style="gap:18px;flex-wrap:wrap"><div><div class="small muted">Okuma</div><div class="score" style="font-size:2rem">${r}/32</div><span class="badge">${petLevel('R',r)}</span></div><div><div class="small muted">Dinleme</div><div class="score" style="font-size:2rem">${l}/25</div><span class="badge">${petLevel('L',l)}</span></div></div>
+   <div class="small muted">Seviye tahmini yaklaşıktır (PET'te B1 için okumada yaklaşık 23/32, dinlemede 18/25 gerekir).</div>
+   <div class="small">${parts.map(([k,a,n])=>`<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding:3px 0"><span>${esc(PET_PN[k])}</span><b style="color:${a===n?'var(--ok,#2e9e5b)':a/n<0.6?'var(--bad)':'inherit'}">${a}/${n}</b></div>`).join('')}</div></div>
+  <div class="card stack"><h3 style="margin:0">Neye çalışmalısın?</h3>
+   ${!wrong.length?'<div>Tüm soruları doğru yaptın. Bir sonraki denemeye geçebilirsin.</div>':`<div style="padding:8px 10px;border-radius:8px;border-left:3px solid #e0a020;background:rgba(224,160,32,.1)">Öncelikli çalışma: <b>${top.map(esc).join(', ')}</b>. Aşağıdaki konulara dokunarak doğrudan anlatıma gidebilirsin; sonra konunun mini testini çöz ve denemeyi tekrar et.</div>`}
+   ${gram.length?`<div class="small muted">Gramer: yanlış yaptığın konular (en çok hatadan aza)</div>${gram.map(t=>`<div class="row" style="justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding:6px 0"><div><b>${esc(gt(t))}</b><div class="small muted">${G[t].length} hata · ${Gn[t][1]} sorudan</div></div><button class="btn" data-act="pet-gram" data-v="${esc(t)}">Konuyu çalış</button></div>`).join('')}`:''}
+   ${sk.length?`<div class="small muted" style="margin-top:6px">Beceriler</div>${sk.map(t=>`<div style="border-top:1px solid var(--line);padding:6px 0"><b>${esc(PET_SK[t][0])}</b> <span class="small muted">· ${G[t].length} hata / ${Gn[t][1]} soru</span><div class="small">${esc(PET_SK[t][1])}</div></div>`).join('')}`:''}</div>
+  ${wrong.length?`<div class="card stack"><h3 style="margin:0">Yanlışların (${wrong.length})</h3>${wrong.map(it=>`<details class="small" style="border-top:1px solid var(--line);padding:6px 0"><summary style="cursor:pointer"><b>${esc(PET_PN[it.k])} · ${it.n}</b> <span lang="en">${esc(it.q)}</span></summary>
+     <div style="margin-top:6px">Senin cevabın: <span style="color:#e5484d;text-decoration:line-through">${esc(ua(it))}</span><br>Doğru cevap: <b>${esc(ca(it))}</b>${it.txt&&it.txt.length>1?` <span class="muted">(${it.txt.slice(1).map(esc).join(', ')} de kabul)</span>`:''}</div>
+     <div class="muted" style="margin-top:4px">${esc(it.e||'')}</div>${it.sc?`<details style="margin-top:4px"><summary style="cursor:pointer" class="muted">Konuşma metni</summary><div lang="en" style="white-space:pre-line;margin-top:4px">${esc(it.sc)}</div></details>`:''}</details>`).join('')}</div>`:''}
+  <div class="row"><button class="btn primary" data-act="pet-list">Denemelere dön</button><button class="btn" data-act="pet-start" data-v="${P.id}">Tekrar çöz</button></div></div>`;
 }
 function vReview(){
   const keys=Object.keys(S.wrong).filter(k=>BYWORD.has(k)),dl=dueLearned().length,due=dueWrong(false).length+dl;
@@ -5104,6 +5189,12 @@ document.addEventListener('click',async e=>{
     case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=UI.tab==='saved'?savedList():dictList();break}
     case'sv-w':{const w=g('data-w');toggleSaved(w);toast(isSaved(w)?'Kaydedildi.':'Kayıttan çıkarıldı.');if(UI.tab==='saved'&&!isSaved(w))UI.dict.open=null;const dl=$('#dlist');if(dl)dl.innerHTML=UI.tab==='saved'?savedList():dictList();if(UI.tab==='saved'){const t=document.querySelector('.top .muted');if(t)t.textContent=nf(savedWords().length)+' kelime'}break}
     case'gm-open':UI.gm=g('data-v');render();window.scrollTo(0,0);break;
+    case'pet-start':petStart(g('data-v'));break;
+    case'pet-ans':petAnswer(+g('data-v'));break;
+    case'pet-text':{const el=document.getElementById('petans');petAnswer(el?el.value:'');break}
+    case'pet-quit':if(confirm('Denemeden çıkılsın mı? Cevapların kaybolur.')){UI.pt=null;render()}break;
+    case'pet-list':UI.pt=null;render();window.scrollTo(0,0);break;
+    case'pet-gram':UI.tab='gram';UI.gm=g('data-v');lastStudy='gram';render();window.scrollTo(0,0);break;
     case'gm-back':UI.gm=null;render();window.scrollTo(0,0);break;
     case'gm-ans':{const T=gramList().find(t=>t.id===UI.gm);if(T){UI.gp=UI.gp||{};const o=UI.gp[T.id]||(UI.gp[T.id]={a:{},cur:0});if(o.a[o.cur]==null){o.a[o.cur]=+g('data-o');const y=window.scrollY;render();window.scrollTo(0,y)}}break}
     case'gm-next':{const T=gramList().find(t=>t.id===UI.gm);if(T){const o=UI.gp&&UI.gp[T.id];if(o){o.cur++;render();const q=document.getElementById('gq');if(q)q.scrollIntoView({block:'start'})}}break}
