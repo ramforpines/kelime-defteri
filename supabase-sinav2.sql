@@ -4,11 +4,20 @@
 
 -- Kilit (yalnızca her seviyenin Sınav 1'i, örn. b1-1): A2 her zaman açık. Sonraki seviyenin Sınav 1'i,
 -- önceki seviyenin Sınav 1'i bittikten sonraki pazartesi (Türkiye saati 00:00) açılır. Diğer sınavlarda kilit yok. Yöneticiler muaf.
+-- yönetici ya da "Test eden yapımcı" flaması (user_flags.flag = 'maker') olanlar: kilitlerden muaf, günde 3 değerlendirme
+create or replace function public.is_beta() returns boolean
+language sql security definer stable set search_path = public as $$
+  select exists(select 1 from public.admins where user_id = auth.uid())
+      or exists(select 1 from public.user_flags where user_id = auth.uid() and flag = 'maker');
+$$;
+revoke all on function public.is_beta() from public, anon;
+grant execute on function public.is_beta() to authenticated;
+
 create or replace function public.exam_can_start(p_exam text)
 returns void language plpgsql security definer stable set search_path = public as $$
 declare uid uuid := auth.uid(); lv text[] := array['a2','b1','b2','c1']; i int; fin timestamptz;
 begin
-  if exists(select 1 from public.admins where user_id = uid) then return; end if;
+  if public.is_beta() then return; end if;
   if right(p_exam, 2) <> '-1' then return; end if;
   i := array_position(lv, left(p_exam, 2));
   if i is null then raise exception 'bad exam'; end if;
@@ -66,13 +75,13 @@ revoke all on function public.exam_board(text) from public, anon;
 grant execute on function public.exam_board(text) to authenticated;
 revoke all on function public.exam_can_start(text) from public, anon;
 
--- Yapay zekâ değerlendirmesi: kullanıcı haftada 1 (pazartesi–pazar), yönetici günde 3
+-- Yapay zekâ değerlendirmesi: kullanıcı haftada 1 (pazartesi–pazar), yönetici ve test eden yapımcı günde 3
 create or replace function public.pet_eval_left() returns int
 language plpgsql security definer stable set search_path = public as $$
 declare uid uuid := auth.uid(); adm boolean; used int;
 begin
   if uid is null then return 0; end if;
-  adm := exists(select 1 from public.admins where user_id = uid);
+  adm := public.is_beta();
   if adm then
     select count(*) into used from public.pet_evals
      where user_id = uid and created_at >= (date_trunc('day', now() at time zone 'Europe/Istanbul') at time zone 'Europe/Istanbul');
