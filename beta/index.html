@@ -3565,20 +3565,20 @@ const phSaved=()=>S.phs||(S.phs={});
 function vPhr(){
   if(!window.PHRASES){phLoad();return'<div class="card"><div class="muted">Kalıplar yükleniyor…</div></div>'}
   const G=UI.phg&&window.PHRASES.find(g=>g.id===UI.phg);
-  if(!G)return`<div class="top"><h1>Kalıplar</h1></div><div class="stack"><div class="card small">Günlük konuşmada ve sınavlarda en çok kullanılan ifade kalıpları. Her kalıbın Türkçesi, seviyesi, üslubu (resmî / samimi) ve örnek cümlesi var; dinleyebilir, kaydedebilir ve alıştırma yapabilirsin.</div>
+  if(!G)return`<div class="top"><h1>Kalıplar</h1></div><div class="stack"><div class="card small">Günlük konuşmada ve sınavlarda en çok kullanılan ifade kalıpları. Her kalıbın Türkçesi ve örnek cümlesi var; dinleyebilir, kaydedebilir ve alıştırma yapabilirsin.</div>
     ${window.PHRASES.map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><div class="row" style="justify-content:space-between"><b>${esc(g.t)}</b><span class="small muted">${g.sub.reduce((a,x)=>a+x.items.length,0)} kalıp</span></div><div class="small muted" lang="en">${esc(g.en)}</div></button>`).join('')}
     <div class="card small">${(window.PHRASES_PLAN||[]).map(t=>`<div style="padding:3px 0">• ${esc(t)} <span class="badge">yakında</span></div>`).join('')}</div></div>`;
   if(UI.phq)return vPhrQuiz(G);
-  const lv=UI.phl||'all',sv=phSaved();
-  const show=p=>(lv==='all'||(lv==='fav'?sv[p.en]:p.lv===lv));
+  const lv=UI.phl==='fav'?'fav':'all',sv=phSaved();
+  const show=p=>lv==='all'||!!sv[p.en];
   return`<div class="top"><h1>${esc(G.t)}</h1><span class="muted small" lang="en">${esc(G.en)}</span></div><div class="stack">
   <div class="card small">${esc(G.ins)}</div>
-  <div class="seg">${['all'].concat(PH_LV,['fav']).map(x=>`<button class="chip" aria-pressed="${lv===x}" data-act="phr-l" data-v="${x}">${x==='all'?'Tümü':x==='fav'?'⭐ Kaydettiklerim':x}</button>`).join('')}</div>
-  <button class="btn primary block" data-act="phr-quiz">✏️ Alıştırma yap (${G.quiz.length} durum)</button>
-  ${G.sub.map(sb=>{const L=sb.items.filter(show);if(!L.length)return'';return`<div class="card stack"><div><b>${sb.c} ${esc(sb.t)}</b> <span class="small muted" lang="en">· ${esc(sb.en)}</span></div>
+  <div class="seg">${['all','fav'].map(x=>`<button class="chip" aria-pressed="${lv===x}" data-act="phr-l" data-v="${x}">${x==='all'?'Tümü':'Kaydettiklerim'}</button>`).join('')}</div>
+  <button class="btn primary block" data-act="phr-quiz">Alıştırma yap (${G.quiz.length} durum)</button>
+  ${G.sub.map(sb=>{const L=sb.items.filter(show);if(!L.length)return'';return`<div class="card stack"><div><b>${esc(sb.t)}</b> <span class="small muted" lang="en">· ${esc(sb.en)}</span></div>
     ${L.map(p=>`<div style="border-top:1px solid var(--line);padding:8px 0"><div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><div style="min-width:0"><b lang="en" style="font-size:1.02rem">${esc(p.en)}</b><div class="small">${esc(p.tr)}</div></div>
-      <div class="row" style="gap:4px;flex-shrink:0"><button class="btn" style="padding:4px 8px" data-act="phr-say" data-v="${esc(p.en)}" aria-label="Dinle">🔊</button><button class="btn" style="padding:4px 8px" data-act="phr-fav" data-v="${esc(p.en)}" aria-label="Kaydet">${sv[p.en]?'⭐':'☆'}</button></div></div>
-      <div class="row" style="gap:4px;margin-top:4px;flex-wrap:wrap"><span class="badge">${p.lv}</span>${p.reg?`<span class="badge">${esc(p.reg)}</span>`:''}</div>
+      <div class="row" style="gap:4px;flex-shrink:0"><button class="btn" style="padding:4px 10px;font-size:.8rem" data-act="phr-say" data-v="${esc(p.en)}">Dinle</button><button class="btn ${sv[p.en]?'primary':''}" style="padding:4px 10px;font-size:.8rem" data-act="phr-fav" data-v="${esc(p.en)}">${sv[p.en]?'Kaydedildi':'Kaydet'}</button></div></div>
+      ${p.reg?`<div class="small muted" style="margin-top:2px">${esc(p.reg)}</div>`:''}
       <div class="small muted" style="margin-top:4px"><span lang="en">${esc(p.ex[0])}</span><br>${esc(p.ex[1])}</div></div>`).join('')}</div>`}).join('')||'<div class="empty card">Bu filtrede kalıp yok.</div>'}
   <button class="btn" data-act="phr-home">Kalıp gruplarına dön</button></div>`;
 }
@@ -3587,7 +3587,7 @@ function vPhrQuiz(G){const Q=UI.phq,n=G.quiz.length;
     <div class="row"><button class="btn primary" data-act="phr-quiz">Tekrar çöz</button><button class="btn" data-act="phr-qx">Kalıplara dön</button></div></div>`}
   const q=G.quiz[Q.i],ua=Q.ans[Q.i],done=ua!=null;
   return`<div class="qtop"><button class="btn" data-act="phr-qx">Çık</button><div class="bar"><i style="width:${Math.round(Q.i/n*100)}%"></i></div><span class="mono muted">${Q.i+1}/${n}</span></div>
-  <div class="card qcard"><div class="row" style="margin-bottom:8px"><span class="badge">${q.lv}</span></div><h2>${esc(q.q)}</h2><div class="small muted" style="margin-bottom:8px">Bu durumda hangisini söylersin?</div>
+  <div class="card qcard"><h2>${esc(q.q)}</h2><div class="small muted" style="margin-bottom:8px">Bu durumda hangisini söylersin?</div>
   <div class="opts" lang="en">${q.o.map((o,i)=>`<button class="opt" data-act="phr-ans" data-v="${i}" ${done?'disabled':''} style="${done&&i===q.a?'border-color:#2e9e5b;background:rgba(46,158,91,.12)':done&&i===ua?'border-color:#e5484d;background:rgba(229,72,77,.10)':''}"><kbd>${String.fromCharCode(65+i)}</kbd><span>${esc(o)}</span></button>`).join('')}</div>
   ${done?`<div class="small" style="margin-top:10px"><b style="color:${ua===q.a?'#2e9e5b':'#e5484d'}">${ua===q.a?'Doğru!':'Yanlış.'}</b> ${esc(q.e)}</div><button class="btn primary block" style="margin-top:10px" data-act="phr-next">${Q.i+1<n?'Sonraki':'Sonucu gör'}</button>`:''}</div>`}
 /* ===== Seviye sınavları ve çalışma (beta) =====
@@ -4044,7 +4044,7 @@ function vPetS(){
       <div class="card stack"><h3 style="margin:0">Örnek cevaplar</h3><div class="small muted">Aynı soruya iki farklı bakış açısıyla, süreyi dolduracak uzunlukta örnekler. Dinleyip kendi cevabınla karşılaştır.</div>${(Array.isArray(q[3])?q[3]:[q[3]]).map((m,i)=>`<div style="border-top:1px solid var(--line);padding:8px 0"><div class="row" style="justify-content:space-between;gap:8px"><b class="small">Örnek ${i+1} <span class="muted">· ${(m.match(/\S+/g)||[]).length} kelime</span></b><button class="btn" style="padding:4px 10px" data-act="ps-say" data-v="m${i}">🔊 Dinle</button></div><div class="small" lang="en" style="line-height:1.6;margin-top:4px">${esc(m)}</div></div>`).join('')}</div>`;
   }
   return`<div class="top"><h1>${esc(T.t)}</h1><span class="muted small">${esc(sxLvOfTask(T.id))}</span></div><div class="stack">
-  ${sxScene(T)}${(T.p||0)>=3?`<button class="btn block" data-act="phr-open" data-v="opinion">💬 İşine yarar: Fikir belirtme kalıpları</button>`:''}  <div class="card stack"><div class="small muted">${esc(T.ins)}</div>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}
+  ${sxScene(T)}${(T.p||0)>=3?`<button class="btn block" data-act="phr-open" data-v="opinion">İşine yarar: Fikir belirtme kalıpları</button>`:''}  <div class="card stack"><div class="small muted">${esc(T.ins)}</div>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}
    <div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><h2 lang="en" style="margin:0">${esc(q[0])}</h2></div><div class="row" style="gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" data-act="ps-say" data-v="q">🔊 Soruyu dinle</button><button class="btn" data-act="tts-stop">⏹ Durdur</button></div><div class="small muted">Sesi duymuyorsan cihazının sesini aç ve sessiz modu kapat (iPhone\'da yandaki sessiz anahtarı).</div>
    <div class="small muted">Konuşma süresi: ${q[1]} saniye</div>
    ${P.st==='rec'?`<div class="row" style="justify-content:space-between"><b style="color:#e5484d">● Kayıtta</b><b id="pstm">${q[1]} sn</b></div><div id="pstr" class="small" lang="en" style="min-height:3em;white-space:pre-line"></div><button class="btn primary block" data-act="ps-stop">Bitir</button>`
