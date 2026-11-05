@@ -2,7 +2,7 @@
 """Kalıplar bölümünü doğrular, her kalıp için test soruları üretir ve ../../phrases.js dosyasını yazar.
 Kullanım: python3 build.py
 Kaynak: src/<grup>.py (GROUP) ve src/<grup>_dlg.py (D: her kalıp için diyalog).
-Her kalıba 5–6 soru: 0 anlam (İng→Tr), 1 Tr→İng, 2 tutum, 3 örnek cümlede boşluk, 4 diyalog, 5 üslup (resmî / samimi kalıplarda).
+Her kalıba 5–6 İngilizce soru: 0 diyalog, 1 işlev etiketiyle boşluk, 2 işlev → kalıp, 3 kalıp → işlev, 4 yakın anlamlı kalıp, 5 üslup (resmî / samimi kalıplarda).
 Yanlış şıklar, anlamca yakın gruplardan (ör. tamamen ↔ kısmen katılma) ve seviyesi yakın kalıplardan seçilir."""
 import os,re,json,glob,importlib.util,random
 HERE=os.path.dirname(os.path.abspath(__file__));ROOT=os.path.abspath(os.path.join(HERE,'..','..'))
@@ -12,6 +12,7 @@ def load(f,name):
 # anlamca yakın gruplar (çeldirici kaynağı)
 NEAR={'give':['ask','unsure','partly'],'ask':['give','unsure'],'agree':['partly','unsure','polite'],'partly':['agree','polite','unsure'],
       'polite':['partly','unsure','agree'],'strong':['agree','unsure','partly'],'unsure':['agree','ask']}
+FUNC_EN={'give':'giving an opinion','ask':'asking for an opinion','agree':'complete agreement','partly':'partial agreement','polite':'polite disagreement','strong':'strong disagreement','unsure':'being undecided'}
 FUNC={'give':'Fikrini söylemek','ask':'Karşındakinin fikrini sormak','agree':'Tamamen katılmak','partly':'Kısmen katılmak','polite':'Kibarca katılmamak','strong':'Kesinlikle katılmamak','unsure':'Kararsız olmak'}
 def core(en):
     c=re.sub(r'\(([^)]*)\)',r'\1',en).replace('...','').strip()
@@ -54,35 +55,38 @@ for f in sorted(glob.glob(os.path.join(HERE,'src','*.py'))):
         elif len(same)<4:
             same=sorted([q for q in allp if isopen(q)==isopen(p) and q['cat']!=p['cat']],key=lambda q:(abs(LV.index(q['lv'])-li),rng.random()))[:8]
         Q=[]
-        # 0 anlam
-        o=opts(rng,p['tr'],[q['tr'] for q in cand]);Q.append({'f':0,'q':'“%s” ne anlama gelir?'%p['en'],'o':o,'a':o.index(p['tr']),'e':'“%s” = %s'%(p['en'],p['tr'])})
-        # 1 Türkçeden İngilizceye
-        o=opts(rng,p['en'],[q['en'] for q in cand]);Q.append({'f':1,'q':'“%s” demek için hangisini kullanırsın?'%p['tr'],'o':o,'a':o.index(p['en']),'e':'“%s” = %s'%(p['en'],p['tr'])})
-        # 2 tutum
-        fs=[FUNC[c] for c in NEAR[p['cat']]];o=opts(rng,FUNC[p['cat']],fs);Q.append({'f':2,'q':'“%s” diyen kişi ne yapıyor?'%p['en'],'o':o,'a':o.index(FUNC[p['cat']]),'e':'“%s”: %s.'%(p['en'],FUNC[p['cat']].lower())})
-        # 3 örnek cümlede boşluk (Türkçesi ipucu)
-        c=core(p['en']).rstrip('?.!');ex=p['ex'][0];m=re.search(re.escape(c),ex,re.I)
-        if m:
-            sent=ex[:m.start()]+'___'+ex[m.end():]
-            cc=[core(q['en']).rstrip('?.!') for q in same if core(q['en']).rstrip('?.!').lower()!=c.lower()]
-            if m.start()>0 and re.search(r'[a-z,] $',ex[:m.start()]):cc=[x[0].lower()+x[1:] if not x.startswith('I ') and not x.startswith("I'") else x for x in cc]
-            right=ex[m.start():m.end()];o=opts(rng,right,cc)
-            Q.append({'f':3,'q':'Boşluğa hangisi gelir?\n%s\n(Türkçesi: %s)'%(sent,p['ex'][1]),'o':o,'a':o.index(right),'e':'%s → %s'%(ex,p['ex'][1])})
-        else:errs.append('örnekte kalıp yok: '+p['en']+' | '+ex)
-        # 4 diyalog
+        def add(f,q,o,right,e):Q.append({'f':f,'q':q,'o':o,'a':o.index(right),'e':e})
+        # 0 diyalog
         d=dlg.get(p['en'])
         if not d:errs.append('diyalog yok: '+p['en'])
         else:
-            a,b=d;right=fill('___',p['en'])
-            co=[fill('___',q['en']) for q in same]
-            text='A: %s\nB: %s'%(a,b);o=opts(rng,right,co)
-            Q.append({'f':4,'q':'Diyalogda boşluğa hangisi gelir?\n'+text,'o':o,'a':o.index(right),'e':'A: %s\nB: %s'%(fill(a,p['en']) if '___' in a else a,fill(b,p['en']) if '___' in b else b)})
+            a,b=d;right=fill('___',p['en']);o=opts(rng,right,[fill('___',q['en']) for q in same])
+            add(0,'Complete the dialogue.\nA: %s\nB: %s'%(a,b),o,right,'A: %s\nB: %s'%(fill(a,p['en']) if '___' in a else a,fill(b,p['en']) if '___' in b else b))
+        # 1 örnek cümlede boşluk + işlev etiketi (İngilizce)
+        c=core(p['en']).rstrip('?.!');ex=p['ex'][0];m=re.search(re.escape(c),ex,re.I)
+        if m:
+            sent=ex[:m.start()]+'___'+ex[m.end():]
+            cc=[core(q['en']).rstrip('?.!').strip() for q in same if core(q['en']).rstrip('?.!').lower()!=c.lower()]
+            if m.start()>0 and re.search(r'[a-z,] $',ex[:m.start()]):cc=[x[0].lower()+x[1:] if not x.startswith('I ') and not x.startswith("I'") else x for x in cc]
+            right=ex[m.start():m.end()];o=opts(rng,right,cc)
+            add(1,'Complete the sentence (%s).\n%s'%(FUNC_EN[p['cat']],sent),o,right,ex)
+        else:errs.append('örnekte kalıp yok: '+p['en']+' | '+ex)
+        # 2 işlev → kalıp
+        o=opts(rng,p['en'],[q['en'] for q in cand])
+        add(2,'Which phrase do you use for %s?'%FUNC_EN[p['cat']],o,p['en'],'“%s” is used for %s.'%(p['en'],FUNC_EN[p['cat']]))
+        # 3 kalıp → işlev
+        fs=[FUNC_EN[c2] for c2 in NEAR[p['cat']]];o=opts(rng,FUNC_EN[p['cat']],fs)
+        add(3,'What does “%s” express?'%p['en'],o,FUNC_EN[p['cat']],'“%s” is used for %s.'%(p['en'],FUNC_EN[p['cat']]))
+        # 4 yakın anlam: aynı gruptan başka bir kalıp
+        sib=[q for q in by[p['cat']] if q['en']!=p['en']];sib.sort(key=lambda q:(isopen(q)!=isopen(p),abs(LV.index(q['lv'])-li),rng.random()))
+        if sib:
+            right=sib[0]['en'];o=opts(rng,right,[q['en'] for q in cand if q['cat']!=p['cat']])
+            add(4,'Which phrase is closest in meaning to “%s”?'%p['en'],o,right,'Both “%s” and “%s” are used for %s.'%(p['en'],right,FUNC_EN[p['cat']]))
         # 5 üslup
         if p['reg']:
             other=[q for q in by[p['cat']]+cand if q['reg']!=p['reg'] and q['en']!=p['en']]
             o=opts(rng,p['en'],[q['en'] for q in other])
-            soru='Hangisi daha resmî bir ifadedir (iş, toplantı, yazı)?' if p['reg']=='resmî' else 'Hangisi arkadaşlar arasında kullanılan samimi bir ifadedir?'
-            Q.append({'f':5,'q':soru,'o':o,'a':o.index(p['en']),'e':'“%s” %s bir ifadedir.'%(p['en'],p['reg'])})
+            add(5,'Which phrase is the most formal?' if p['reg']=='resmî' else 'Which phrase is the most informal (used with friends)?',o,p['en'],'“%s” is %s.'%(p['en'],'formal' if p['reg']=='resmî' else 'informal'))
         for q in Q:
             if len(set(q['o']))!=len(q['o']) or len(q['o'])<3:errs.append('şık sorunu: %s f%d %s'%(p['en'],q['f'],q['o']))
         p['qs']=Q;nq+=len(Q)

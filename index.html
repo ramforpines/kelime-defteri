@@ -3568,7 +3568,7 @@ function vResult(){
 let PH_LOADING=false;
 function phLoad(){if(window.PHRASES||PH_LOADING)return;PH_LOADING=true;const s=document.createElement('script');s.src='phrases.js?v='+APP_VERSION;s.onload=()=>{PH_LOADING=false;phReg();if(UI.tab==='phr'||UI.tab==='saved'||UI.tab==='review')render()};s.onerror=()=>{PH_LOADING=false;if(UI.tab==='phr')toast('Kalıplar yüklenemedi.',3000)};document.head.appendChild(s)}
 const PH_LV=['A1','A2','B1','B2','C1','C2'];
-const PH_FN=['Kalıp: anlam','Kalıp: Türkçeden','Kalıp: tutum','Kalıp: boşluk','Kalıp: diyalog','Kalıp: üslup'];
+const PH_FN=['Kalıp: diyalog','Kalıp: boşluk','Kalıp: kullanım','Kalıp: işlev','Kalıp: yakın anlam','Kalıp: üslup'];
 PH_FN.forEach((t,i)=>{FEAT[100+i]=t});
 // kalıplar sözde kelime olarak BYWORD'e eklenir: Kaydedilenler, Yanlış defteri ve testler kelimelerle aynı altyapıyı kullanır
 function phReg(){if(!window.PHRASES||phReg.done)return;phReg.done=true;
