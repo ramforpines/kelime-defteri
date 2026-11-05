@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.155.0';
+const APP_VERSION='4.156.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3610,9 +3610,9 @@ const sxKey=()=>'kd-sx:'+(CLOUD.uid||'-');
 function sxRecs(){if(!SXR||SXR_K!==sxKey()){SXR_K=sxKey();UI.sxSynced=false;try{SXR=JSON.parse(localStorage.getItem(SXR_K)||'{}')}catch(e){SXR={}}}return SXR}
 function sxPersist(){try{localStorage.setItem(sxKey(),JSON.stringify(SXR||{}))}catch(e){}}
 function sxNewState(X){const m=k=>X.sec[k].min*60;return{n:0,sec:{R:{ans:[],i:0,left:m('R'),done:false},L:{ans:[],i:0,left:m('L'),done:false,pl:{}},W:{t:{},ch:null,left:m('W'),done:false},S:{tr:{},pi:0,qi:0,done:false}}}}
-function sxRec(id,create){const R=sxRecs();if(!R[id]&&create){const X=sxExam(id);R[id]={status:'active',state:sxNewState(X),upd:Date.now()}}return R[id]}
+function sxRec(id,create){const R=sxRecs();if(!R[id]&&create){const X=sxExam(id);R[id]={status:'active',state:sxNewState(X),upd:Date.now(),t0:Date.now()}}return R[id]}
 function sxSave(id,now){const r=sxRec(id);if(!r||r.status==='done')return;r.state.n=(r.state.n||0)+1;r.upd=Date.now();sxPersist();clearTimeout(SXST);
-  const go=async()=>{if(!sb||!CLOUD.uid)return;try{const x=await sb.rpc('exam_save',{p_exam:id,p_state:r.state});if(x.error){if(/done/.test(x.error.message||''))sxSync(true)}else{r.sv=1;sxPersist()}}catch(e){}};
+  const go=async()=>{if(!sb||!CLOUD.uid)return;try{const x=await sb.rpc('exam_save',{p_exam:id,p_state:r.state});if(x.error){const m=x.error.message||'';if(/done/.test(m))sxSync(true);else if(/locked|week/.test(m)){toast(/week/.test(m)?'Haftada bir sınava başlayabilirsin.':'Bu sınav henüz kilitli.',4000);if(!r.sv&&r.state.n<=2){delete sxRecs()[id];sxPersist();UI.sq=null;UI.sxw=null;UI.ps=null;render()}}}else{r.sv=1;sxPersist()}}catch(e){}};
   if(now)go();else SXST=setTimeout(go,2500)}
 let SX_SYNC=false;
 async function sxSync(force){
@@ -3620,7 +3620,7 @@ async function sxSync(force){
   try{const x=await sb.rpc('exam_mine');if(x.error)throw x.error;
     const R=sxRecs(),seen={};
     (x.data||[]).forEach(row=>{seen[row.exam_id]=1;const l=R[row.exam_id];
-      if(row.status==='done'||!l||l.status!=='done'&&((row.state||{}).n||0)>=((l.state||{}).n||0))R[row.exam_id]={status:row.status,state:row.state,result:row.result,upd:Date.parse(row.updated_at)||Date.now(),sv:1};
+      if(row.status==='done'||!l||l.status!=='done'&&((row.state||{}).n||0)>=((l.state||{}).n||0))R[row.exam_id]={status:row.status,state:row.state,result:row.result,upd:Date.parse(row.updated_at)||Date.now(),t0:Date.parse(row.started_at)||Date.now(),sv:1};
       else if(l.status==='done'&&l.pend)sxPushFinish(row.exam_id);
       else if(l.status!=='done')sxSave(row.exam_id,true)});
     Object.keys(R).forEach(id=>{if(seen[id])return;const l=R[id];
@@ -3664,7 +3664,13 @@ function sxTimer(){clearInterval(SXT);SXT=setInterval(()=>{
   s.left=Math.max(0,(s.left||0)-1);const el=document.getElementById('sxtm');if(el){el.textContent=sxMMSS(s.left);if(s.left<=300)el.style.color='var(--bad)'}
   if(s.left%15===0)sxSave(id);
   if(s.left<=0){toast('Süre doldu, bölüm teslim edildi.',4000);if(k==='W')sxWSubmit(true);else sxSubmit(true)}},1000)}
-function sxStartSec(id,k){const X=sxExam(id),r=sxRec(id,true);if(r.status==='done')return;const s=r.state.sec[k];if(s.done)return;
+const SX_WEEK=7*864e5;
+function sxLock(X){const R=sxRecs();if(R[X.id])return null;
+  const i=SX_LV.indexOf(X.lv);if(i>0){const prev=SX_LV[i-1];if(!(window.SINAV.exams||[]).some(Y=>Y.lv===prev&&R[Y.id]&&R[Y.id].status==='done'))return{k:'lv',t:'Önce '+SX_NM[prev]+' sınavını bitir.'}}
+  const last=Math.max(0,...Object.keys(R).map(id=>R[id].t0||0));if(last&&Date.now()-last<SX_WEEK){const d=new Date(last+SX_WEEK);return{k:'wk',t:'Haftada bir sınava başlayabilirsin. Açılış: '+d.toLocaleString('tr-TR',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})}}
+  return null}
+const sxLocked=X=>{const l=sxLock(X);return l&&!(CLOUD.admin&&(UI.sxBy||{})[X.id])?l:null};
+function sxStartSec(id,k){if(sxLocked(sxExam(id)))return;const X=sxExam(id),r=sxRec(id,true);if(r.status==='done')return;const s=r.state.sec[k];if(s.done)return;
   if(k==='W'){UI.sxw=id;sxTimer();render();window.scrollTo(0,0);return}
   if(k==='S'){UI.ps={exam:id,T:X.sec.S.parts[s.pi]||X.sec.S.parts[0],pi:s.pi||0,qi:s.qi||0,st:'idle'};render();window.scrollTo(0,0);return}
   UI.sq={mode:'x',id,sk:k,items:sxExamItems(X,k),i:Math.min(s.i||0,sxExamItems(X,k).length)};sxTimer();sxSave(id);render();window.scrollTo(0,0)}
@@ -3767,12 +3773,13 @@ function sxSecInfo(X,k){const s=X.sec[k];
 function vSxExam(){
   const X=sxExam(UI.sxe);if(!X){UI.sxe=null;return vSx()}
   const r=sxRec(X.id);if(r&&r.status==='done'&&UI.sxres)return vSxRes(X,r);
-  const st=r&&r.state;
+  const st=r&&r.state,lk=sxLock(X),lkd=sxLocked(X);
   return`<div class="top"><h1>${esc(SX_NM[X.lv])}</h1><span class="muted small">${esc(X.t)}</span></div><div class="stack">
+  ${lk?`<div class="card stack" style="border-left:3px solid #e0a020"><b>🔒 ${esc(lk.t)}</b><div class="small muted">Sınavlar sırayla açılır: A2 Key → B1 Preliminary → B2 First → C1 Advanced. Haftada bir yeni sınava başlanabilir.</div>${CLOUD.admin?(lkd?'<button class="btn" data-act="sx-unlock">Yönetici: kilidi bu oturumda aç</button>':'<div class="small" style="color:#b35a00">Yönetici olarak kilit atlandı (kullanıcılar için kilitli).</div>'):''}</div>`:''}
   <div class="card small">Bu sınavı <b>bir kez</b> çözebilirsin. Bölümleri istediğin sırada ve farklı zamanlarda çözebilirsin; ilerlemen kaydedilir, başka cihazda da kaldığın yerden devam edersin. Bölümün süresi yalnızca o bölüm açıkken işler. Teslim ettiğin bölüm değiştirilemez. Doğru cevaplar ve sonuç, dört bölüm de bitince görünür.</div>
   ${['R','L','W','S'].map(k=>{const s=st&&st.sec[k],started=s&&(k==='W'?Object.keys(s.t).length||s.left<X.sec.W.min*60:k==='S'?Object.keys(s.tr).length:s.ans.some(x=>x!=null)||s.left<X.sec[k].min*60);
     return`<div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><div><b>${SX_IC[k]} ${esc(sxSkName(X.lv,k))}</b><div class="small muted">${esc(sxSecInfo(X,k))}</div></div>${s&&s.done?'<span class="badge ok">✓ Teslim edildi</span>':''}</div>
-    ${s&&s.done?'':`<button class="btn ${started?'':'primary'} block" data-act="sx-sec" data-v="${k}">${started?'Devam et'+(k!=='S'?' · kalan '+sxMMSS(s.left):''):'Başla'}</button>`}</div>`}).join('')}
+    ${s&&s.done?'':`<button class="btn ${started?'':'primary'} block" data-act="sx-sec" data-v="${k}" ${lkd?'disabled':''}>${started?'Devam et'+(k!=='S'?' · kalan '+sxMMSS(s.left):''):'Başla'}</button>`}</div>`}).join('')}
   ${r&&r.status==='done'?`<button class="btn primary block" data-act="sx-res">Sonucu gör</button>`:''}
   <button class="btn" data-act="sx-home">Sınavlara dön</button></div>`;
 }
@@ -3787,8 +3794,8 @@ function vSxRes(X,r){
    ${o.full?'':'<div class="small" style="color:#b35a00">Genel puan şimdilik yalnızca okuma ve dinlemeye göre. Yazma ve konuşmayı değerlendirince kesinleşir.</div>'}
    <div class="row" style="flex-wrap:wrap;gap:12px">${['R','L','W','S'].map(box).join('')}</div>
    <div class="small muted">${esc(SX_NM[lv])} için ${SX_BASE[lv]} ve üstü ${lv}, ${SX_BASE[lv]+20} ve üstü ${SX_UP[lv]} seviyesine karşılık gelir. Resmî Cambridge sonucu değildir; dönüşüm yaklaşıktır.</div></div>
-  <div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><h3 style="margin:0">🤖 Yazma ve konuşma değerlendirmesi</h3><span class="small muted">bugün kalan: <b id="aileft">${UI.aiLeft!=null?UI.aiLeft:'…'}</b></span></div>
-   ${ai?`<div class="small muted">${esc(SX_NM[lv])} ölçütlerine göre değerlendirildi.</div>`:`<div class="small muted">Yazma görevlerin ve konuşma kayıtların ${esc(SX_NM[lv])} ölçütlerine göre puanlanır; düzeltmeler ve çalışman gereken konular çıkar. Tüm sınav tek değerlendirme hakkı kullanır (günde 1).</div><button class="btn primary block" data-act="sx-ai" ${UI.aiBusy?'disabled':''}>${UI.aiBusy?'Değerlendiriliyor… (30–60 sn)':'Değerlendir'}</button>`}</div>
+  <div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><h3 style="margin:0">🤖 Yazma ve konuşma değerlendirmesi</h3><span class="small muted">kalan hak: <b id="aileft">${UI.aiLeft!=null?UI.aiLeft:'…'}</b></span></div>
+   ${ai?`<div class="small muted">${esc(SX_NM[lv])} ölçütlerine göre değerlendirildi.</div>`:`<div class="small muted">Yazma görevlerin ve konuşma kayıtların ${esc(SX_NM[lv])} ölçütlerine göre puanlanır; düzeltmeler ve çalışman gereken konular çıkar. Tüm sınav tek değerlendirme hakkı kullanır (haftada 1).</div><button class="btn primary block" data-act="sx-ai" ${UI.aiBusy?'disabled':''}>${UI.aiBusy?'Değerlendiriliyor… (30–60 sn)':'Değerlendir'}</button>`}</div>
   ${sxAnalysis(items,ans)}
   <div class="card stack"><h3 style="margin:0">✍️ Yazma</h3>${WT.map((w,i)=>{const t=st.sec.W.t[w.id]||'',a=ai&&ai.w&&ai.w[i];return`<details class="small" style="border-top:1px solid var(--line);padding:6px 0" ${i===0?'open':''}><summary style="cursor:pointer"><b>${esc(w.t)}</b> <span class="muted">· ${sxWc(t)} kelime${a&&a.scores?' · '+['content','communicative','organisation','language'].reduce((x,k)=>x+(+a.scores[k]||0),0)+'/20':''}</span></summary>
      <div class="stack" style="margin-top:6px"><div><b>Senin cevabın</b><div lang="en" style="white-space:pre-line;line-height:1.6">${t?esc(t):'<span class="muted">(boş)</span>'}</div></div>${a?aiHtml(a,'w'):''}${[['Örnek 1 · seviyeye uygun',w.model]].concat(w.more||[]).map(([lb,tx],j)=>`<details ${j===0?'open':''} style="border-top:1px solid var(--line);padding:4px 0"><summary style="cursor:pointer"><b>${esc(lb)}</b> <span class="muted">· ${sxWc(tx)} kelime</span></summary><div lang="en" style="white-space:pre-line;line-height:1.6;margin-top:4px">${esc(tx)}</div></details>`).join('')}</div></details>`}).join('')}</div>
@@ -3825,19 +3832,35 @@ function vSx(){
   const m=UI.sxm||'x',SN=window.SINAV,seg=`<div class="seg"><button class="chip" aria-pressed="${m==='x'}" data-act="sx-m" data-v="x">📝 Sınavlar</button><button class="chip" aria-pressed="${m==='p'}" data-act="sx-m" data-v="p">🏋️ Çalışma</button></div>`;
   if(m==='x'){const R=sxRecs();
     return`<div class="top"><h1>Sınavlar</h1></div><div class="stack">${seg}
-    <div class="card small">Cambridge sınavlarının gerçek formatında <b>okuma, dinleme, yazma ve konuşma</b>. Her sınav <b>bir kez</b> çözülür; sonunda bölüm puanların, Cambridge ölçeğine yakın genel puanın, seviyen ve çalışman gereken konular çıkar. Yazma ve konuşma yapay zekâ ile değerlendirilir (günde 1 hak). Resmî Cambridge sınavı değildir.${UI.sxErr?'<div style="color:#b35a00;margin-top:6px">Sunucuyla eşitlenemedi; ilerlemen bu cihazda saklanıyor.</div>':''}</div>
+    <div class="card small">Cambridge sınavlarının gerçek formatında <b>okuma, dinleme, yazma ve konuşma</b>. Her sınav <b>bir kez</b> çözülür; sonunda bölüm puanların, Cambridge ölçeğine yakın genel puanın, seviyen ve çalışman gereken konular çıkar. Sınavlar sırayla açılır (A2 → B1 → B2 → C1) ve haftada bir yeni sınava başlanabilir. Yazma ve konuşma yapay zekâ ile değerlendirilir (haftada 1 hak). Resmî Cambridge sınavı değildir.${UI.sxErr?'<div style="color:#b35a00;margin-top:6px">Sunucuyla eşitlenemedi; ilerlemen bu cihazda saklanıyor.</div>':''}</div>
     ${SX_LV.map(lv=>{const L=SN.exams.filter(x=>x.lv===lv);if(!L.length)return'';return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>${esc(SX_NM[lv])}</b><span class="badge">${lv} · ${SX_SHORT[lv]}</span></div>
       ${L.map(X=>{const r=R[X.id],o=r&&r.status==='done'?sxScores(X,r):null,nd=r?['R','L','W','S'].filter(k=>r.state.sec[k].done).length:0;
-        return`<button class="btn block" style="text-align:left" data-act="sx-open" data-v="${X.id}"><div class="row" style="justify-content:space-between"><b>${esc(X.t)}</b><span class="small ${o?'':'muted'}">${o?'Bitti · '+(o.all??'–')+' · '+esc(o.all!=null?sxLevel(lv,o.all):''):r?'Devam ediyor · '+nd+'/4 bölüm':'Başlamadın'}</span></div></button>`}).join('')}</div>`}).join('')}</div>`}
+        const lk=!r&&sxLock(X);return`<button class="btn block" style="text-align:left${lk?';opacity:.65':''}" data-act="sx-open" data-v="${X.id}"><div class="row" style="justify-content:space-between"><b>${lk?'🔒 ':''}${esc(X.t)}</b><span class="small ${o?'':'muted'}">${o?'Bitti · '+(o.all??'–')+' · '+esc(o.all!=null?sxLevel(lv,o.all):''):r?'Devam ediyor · '+nd+'/4 bölüm':lk?(lk.k==='lv'?'Kilitli':'Haftaya açılır'):'Başlamadın'}</span></div></button>`}).join('')}</div>`}).join('')}
+    ${sxBoardCard()}</div>`}
   const lv=UI.sxl||'B1',k=UI.sxk||'R',P=SN.prac[lv]||{},L=P[k]||[];
   return`<div class="top"><h1>Çalışma</h1></div><div class="stack">${seg}
   <div class="seg">${SX_LV.filter(x=>SN.prac[x]).map(x=>`<button class="chip" aria-pressed="${x===lv}" data-act="sx-l" data-v="${x}">${x}</button>`).join('')}</div>
   <div class="seg">${['R','L','W','S'].map(x=>`<button class="chip" aria-pressed="${x===k}" data-act="sx-k" data-v="${x}">${SX_IC[x]} ${esc(sxSkName(lv,x))}</button>`).join('')}</div>
   <div class="card small muted">${k==='R'||k==='L'?'Sınavdaki bölüm türlerinden örnekler. Süre yok, istediğin kadar tekrar çözebilirsin; sonunda açıklamalar ve çalışman gereken konular çıkar.':k==='W'?'Yazarken kelime sayısı, maddeler, bağlaçlar ve yapılar canlı kontrol edilir. Bitirince öz değerlendirme ve örnek cevap açılır.':'Soru sesli okunur, sen İngilizce konuşursun; konuşman yazıya dökülür, süre, kelime sayısı ve kalıplar gösterilir, sonra örnek cevapla karşılaştırırsın.'}</div>
-  ${L.length?L.map(x=>{if(k==='R'||k==='L'){const b=sxBest(x.id);return`<button class="btn block" style="text-align:left" data-act="sx-prac" data-v="${lv}|${esc(x.id)}"><b>${esc(x.t)}</b><div class="small muted">${esc(x.nm)}${b?' · en iyi: '+b[0]+'/'+b[1]:''}</div></button>`}
-    if(k==='W'){const d=(S.pw||{})[x.id];return`<button class="btn block" style="text-align:left" data-act="pw-open" data-v="${esc(x.id)}"><b>${esc(x.t)}</b><div class="small muted">${x.min}–${x.max} kelime${d&&d.t?' · taslak: '+sxWc(d.t)+' kelime'+(d.f?' · tamamlandı':''):''}</div></button>`}
-    return`<button class="btn block" style="text-align:left" data-act="ps-open" data-v="${esc(x.id)}"><b>${esc(x.t)}</b><div class="small muted">${x.q.length>1?x.q.length+' soru':Math.round(x.q[0][1]/6)/10+' dakika'}</div></button>`}).join(''):'<div class="empty card">Bu seviye için çalışma yakında.</div>'}</div>`;
+  ${L.length?L.map(x=>{if(k==='R'||k==='L'){const b=sxBest(x.id);return`<button class="btn block" style="text-align:left" data-act="sx-prac" data-v="${lv}|${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${b?`<span class="small muted">${b[0]}/${b[1]}</span>`:''}</div></button>`}
+    if(k==='W'){const d=(S.pw||{})[x.id];return`<button class="btn block" style="text-align:left" data-act="pw-open" data-v="${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${d&&d.f?'<span class="small muted">✓</span>':''}</div></button>`}
+    return`<button class="btn block" style="text-align:left" data-act="ps-open" data-v="${esc(x.id)}" lang="en"><b>${esc(x.t)}</b></button>`}).join(''):'<div class="empty card">Bu seviye için çalışma yakında.</div>'}</div>`;
 }
+/* sınav sıralama tablosu */
+async function sxBoardLoad(id){UI.sxbId=id;UI.sxb=null;UI.sxbErr=false;UI.sxbLd=true;if(!sb||!CLOUD.uid){UI.sxbLd=false;UI.sxbErr=true;render();return}render();
+  try{const r=await sb.rpc('exam_board',{p_exam:id});if(r.error)throw r.error;if(UI.sxbId===id){UI.sxbLd=false;UI.sxb=r.data||[];render()}}catch(e){if(UI.sxbId===id){UI.sxbLd=false;UI.sxbErr=true;render()}}}
+function sxBoardCard(){
+  const E=(window.SINAV.exams||[]),id=UI.sxbId||(E[0]&&E[0].id),X=sxExam(id);if(!X)return'';
+  if(!UI.sxbLd&&(UI.sxbId!==id||(!UI.sxb&&!UI.sxbErr))){UI.sxbLd=true;UI.sxbId=id;setTimeout(()=>sxBoardLoad(id),0)}
+  const rows=(UI.sxb||[]).map(x=>({x,o:sxScores(X,{result:x.result||{}})})).sort((a,b)=>(b.o.all??-1)-(a.o.all??-1));
+  const c=v=>v?v.sc:'–',me=CLOUD.uid,th='style="padding:6px 3px;text-align:right;white-space:nowrap"';
+  return`<div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><b>🏆 Sıralama</b>
+   <select id="sxbsel" style="max-width:62%;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card,transparent);color:inherit;font:inherit">${E.map(Y=>`<option value="${Y.id}" ${Y.id===id?'selected':''}>${esc(SX_NM[Y.lv]+' · '+Y.t)}</option>`).join('')}</select></div>
+   ${UI.sxbErr?'<div class="small" style="color:var(--bad)">Sıralama alınamadı. (supabase-sinav2.sql çalıştırıldı mı?)</div>':!UI.sxb?'<div class="small muted">Yükleniyor…</div>':!rows.length?'<div class="small muted">Bu sınavı henüz bitiren yok.</div>':
+   `<div style="overflow-x:auto;margin:0 -4px"><table style="width:100%;border-collapse:collapse;font-size:.85rem"><thead><tr style="border-bottom:1px solid var(--line)"><th style="padding:6px 4px;text-align:left">#</th><th style="padding:6px 4px;text-align:left">Ad</th><th ${th} title="Okuma">📖</th><th ${th} title="Dinleme">🎧</th><th ${th} title="Yazma">✍️</th><th ${th} title="Konuşma">🎤</th><th ${th}>Toplam</th></tr></thead><tbody>
+   ${rows.map(({x,o},i)=>`<tr style="border-bottom:1px solid var(--line);${x.user_id===me?'background:rgba(80,120,255,.10);font-weight:600':''}"><td style="padding:6px 4px">${i+1}</td><td style="padding:6px 4px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.name||x.username||'')}</td><td ${th}>${c(o.R)}</td><td ${th}>${c(o.L)}</td><td ${th}>${c(o.W)}</td><td ${th}>${c(o.S)}</td><td ${th}><b>${o.all??'–'}</b>${o.all!=null?`<div class="small muted">${esc(sxLevel(X.lv,o.all))}</div>`:''}</td></tr>`).join('')}</tbody></table></div>
+   <div class="small muted">📖 Okuma · 🎧 Dinleme · ✍️ Yazma · 🎤 Konuşma. Puanlar Cambridge ölçeğine yakın değerlerdir. Toplam, bölüm puanlarının ortalamasıdır; yazma ve konuşma yapay zekâ değerlendirmesi yapılmadıysa "–" görünür ve toplam yalnızca okuma ve dinlemeden hesaplanır.</div>`}</div>`}
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='sxbsel')sxBoardLoad(e.target.value)});
 /* yönetici: sınav sonuçları */
 async function sxAdmLoad(){const A=UI.adm;A.sxBusy=true;render();try{const r=await sb.rpc('exam_admin_list');if(r.error)throw r.error;A.sxList=r.data||[];A.sxErr=false}catch(e){A.sxErr=true}A.sxBusy=false;render()}
 async function sxAdmReset(uid,ex){try{const r=await sb.rpc('exam_admin_reset',{p_user:uid,p_exam:ex});if(r.error)throw r.error;toast('Sınav sıfırlandı.');UI.adm.sxDel=null;sxAdmLoad()}catch(e){toast('Sıfırlanamadı.',3000)}}
@@ -3954,7 +3977,7 @@ function vPetS(){
   <div class="row">${P.st==='done'&&P.qi+1<T.q.length?`<button class="btn primary" data-act="ps-next">Sonraki soru</button>`:''}<button class="btn" data-act="ps-back">Çalışmaya dön</button></div></div>`;
 }
 /* yapay zekâ: yapay zekâ değerlendirmesi (Supabase Edge Function: pet-eval) */
-const AI_ERR={limit:'Bugünkü değerlendirme hakkın bitti. Yarın tekrar deneyebilirsin.',setup:'Yapay zekâ değerlendirmesi henüz kurulmadı (yönetici ayarı eksik).',auth:'Oturum doğrulanamadı. Çıkış yapıp tekrar giriş yap.',short:'Değerlendirme için en az birkaç cümle yaz ya da söyle.',ai:'Değerlendirme şu an yapılamadı, hakkın geri verildi. Biraz sonra tekrar dene.',db:'Sunucu kurulumu eksik (SQL).',net:'Bağlantı hatası. İnternetini kontrol edip tekrar dene.'};
+const AI_ERR={limit:'Bu haftaki değerlendirme hakkın bitti. Bir hafta sonra tekrar deneyebilirsin.',setup:'Yapay zekâ değerlendirmesi henüz kurulmadı (yönetici ayarı eksik).',auth:'Oturum doğrulanamadı. Çıkış yapıp tekrar giriş yap.',short:'Değerlendirme için en az birkaç cümle yaz ya da söyle.',ai:'Değerlendirme şu an yapılamadı, hakkın geri verildi. Biraz sonra tekrar dene.',db:'Sunucu kurulumu eksik (SQL).',net:'Bağlantı hatası. İnternetini kontrol edip tekrar dene.'};
 async function aiLeft(){try{const r=await sb.rpc('pet_eval_left');if(!r.error&&typeof r.data==='number'){UI.aiLeft=r.data;const el=document.getElementById('aileft');if(el)el.textContent=r.data}}catch(e){}}
 function aiHtml(res,kind){
   if(!res)return'';const sc=res.scores||{},keys=kind==='w'?[['content','İçerik'],['communicative','İletişim'],['organisation','Düzen'],['language','Dil']]:[['grammar_vocab','Dilbilgisi ve kelime'],['discourse','Konuşma düzeni']];
@@ -5531,6 +5554,7 @@ document.addEventListener('click',async e=>{
     case'sx-sec':sxStartSec(UI.sxe,g('data-v'));break;
     case'sx-res':UI.sxres=true;aiLeft();render();window.scrollTo(0,0);break;
     case'sx-ai':sxAi();break;
+    case'sx-unlock':UI.sxBy=UI.sxBy||{};UI.sxBy[UI.sxe]=1;render();break;
     case'sx-say':{const[pi,qi,j]=g('data-v').split('|').map(Number),X=sxExam(UI.sxe),q=X&&X.sec.S.parts[pi].q[qi];if(q)say((Array.isArray(q[3])?q[3]:[q[3]])[j]);break}
     case'sx-prac':{const[lv,id]=g('data-v').split('|');sxPracStart(lv,id);break}
     case'sx-ans':sxAnswer(+g('data-v'));break;

@@ -158,6 +158,12 @@ if os.path.exists(XF):
             ms=xm.S[sp_['id']]
             if len(ms)!=len(sp_['q']):E(X['id']+'.'+sp_['id']+': ek örnek sayısı');continue
             sp_['q']=[[q[0],q[1],q[2],list(m2)] for q,m2 in zip(sp_['q'],ms)];spart(sp_,X['id'])
+_tt=importlib.util.spec_from_file_location('titles',os.path.join(HERE,'src','titles.py'));_tm=importlib.util.module_from_spec(_tt);_tt.loader.exec_module(_tm)
+for lv,pr in prac.items():
+    for k in 'RLWS':
+        for x in pr.get(k,[]):
+            if x['id'] in _tm.T:x['t']=_tm.T[x['id']]
+            else:warn.append('İngilizce başlık yok: '+x['id'])
 names=[a[0] for a in audio]
 if len(names)!=len(set(names)):E('ses adı tekrarı: '+str([n for n in names if names.count(n)>1]))
 for w in warn:print('UYARI:',w)
