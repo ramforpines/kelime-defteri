@@ -173,6 +173,7 @@ nav button{position:relative;border:0;background:none;border-radius:10px;min-hei
 #chatfab[hidden]{display:none}
 #chatfab svg{width:26px;height:26px}
 #chatfab .nbd{position:absolute;top:-3px;right:-3px;font-style:normal;background:var(--bad);color:#fff;border-radius:9px;padding:1px 6px;font-size:.68rem;font-weight:700}
+button .nw{margin-left:5px;padding:1px 6px;border-radius:8px;background:var(--bad);color:#fff;font-size:.62rem;font-weight:700;vertical-align:middle}
 nav .nbd{position:absolute;top:2px;right:6px;font-style:normal;background:var(--bad);color:#fff;border-radius:8px;padding:0 5px;font-size:.62rem}
 .chatlist{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;height:calc(100vh - 330px);min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
 .dhud{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -510,7 +511,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.156.5';
+const APP_VERSION='4.157.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2860,9 +2861,13 @@ const ICON={
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
 const GRAM_ON=true;   // Gramer: herkese açık (A1–B2)
-const GRAM_BETA=/\/beta\//.test(location.pathname)||/[?&]gram=1/.test(location.search);   // C1 ve üstü yalnızca beta (yönetici)
+const GRAM_BETA=true;   // C1 gramer, Kalıplar ve Sınav artık herkese açık
 const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
+const NEWF={phr:1,pet:1};   // yeni menüler: ilk açılışta 'Yeni' işareti kalkar
+const nwSeen=()=>{try{return JSON.parse(localStorage.getItem('kd-new1')||'{}')}catch(e){return{}}};
+const nwIs=k=>!!NEWF[k]&&!nwSeen()[k];
+const nwMark=k=>{if(!nwIs(k))return;try{const o=nwSeen();o[k]=1;localStorage.setItem('kd-new1',JSON.stringify(o))}catch(e){}};
 const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['phr','Kalıplar'],['pet','Sınav']]:[]);   // seviye sınavları ve çalışma: yalnızca beta
 const isStudy=t=>(t==='gram'&&GRAM_ON)||((t==='pet'||t==='phr')&&GRAM_BETA)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
@@ -2944,12 +2949,12 @@ function studySeg(){
   if(UI.tab==='pet'&&((UI.sq&&!UI.sq.done)||UI.sxw||(UI.ps&&(UI.ps.st==='rec'||UI.ps.exam))))return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel')return'';   // düello ortadaki ana menüden açılır, çalışma sekmeleri görünmez
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
-  return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='duel').map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
+  return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='duel').map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}${nwIs(k)?'<span class="nw">Yeni</span>':''}</button>`).join('')}</div>`;
 }
 function renderNav(){
   const adm=true,inDuel=UI.tab==='quiz'&&UI.qmode==='duel';   // ortadaki düello butonu herkeste
   const nv=$('#nav');nv.classList.toggle('adm5',adm);
-  const btn=([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab)&&!(adm&&inDuel):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}</span></button>`;
+  const btn=([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab)&&!(adm&&inDuel):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}</span>${k==='study'&&!isStudy(UI.tab)&&Object.keys(NEWF).some(nwIs)?'<i class="nbd">Yeni</i>':''}</button>`;
   const duel=`<button class="duelb" data-act="qmode" data-v="duel" aria-label="Düello" ${inDuel?'aria-current="page"':''}><img src="duel-nav.svg" alt="" width="92" height="120"><span>Düello</span></button>`;
   nv.innerHTML=adm?TABS.slice(0,2).map(btn).join('')+duel+TABS.slice(2).map(btn).join(''):TABS.map(btn).join('');
   fabUpdate();
@@ -3031,6 +3036,7 @@ function render(){
   if(maintBlocked()){fabUpdate();$('nav').hidden=true;app.innerHTML=vMaint();exAudioMount();return}
   if(!CLOUD.uid){fabUpdate();$('nav').hidden=true;app.innerHTML=vLogin();return}
   if(CLOUD.approved===false){fabUpdate();$('nav').hidden=true;app.innerHTML=vPending();return}
+  nwMark(UI.tab);
   const dlk=duelLock();
   if(dlk){UI.tab='quiz';UI.qmode='duel';qHold(true);UI.card=null}
   $('nav').hidden=dlk;
