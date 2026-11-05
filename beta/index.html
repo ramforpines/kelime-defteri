@@ -509,7 +509,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.156.1';
+const APP_VERSION='4.156.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3588,12 +3588,12 @@ function vPhr(){
   if(!window.PHRASES){phLoad();return'<div class="card"><div class="muted">Kalıplar yükleniyor…</div></div>'}
   const G=UI.phg&&window.PHRASES.find(g=>g.id===UI.phg);
   if(!G)return`<div class="top"><h1>Kalıplar</h1></div><div class="stack"><div class="card small">Günlük konuşmada ve sınavlarda en çok kullanılan ifade kalıpları. Her kalıbın Türkçesi ve örnek cümlesi var; dinleyebilir ve kaydedebilirsin. Kaydettiğin kalıplar Kaydedilenler'de görünür, soruları testlerde karşına çıkar.</div>
-    ${window.PHRASES.map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><div class="row" style="justify-content:space-between"><b>${esc(g.t)}</b><span class="small muted">${g.sub.reduce((a,x)=>a+x.items.length,0)} kalıp</span></div><div class="small muted" lang="en">${esc(g.en)}</div></button>`).join('')}
+    ${window.PHRASES.map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><div class="row" style="justify-content:space-between"><b lang="en">${esc(g.en)}</b><span class="small muted">${g.sub.reduce((a,x)=>a+x.items.length,0)}</span></div><div class="small muted">${esc(g.t)}</div></button>`).join('')}
     <div class="card small">${(window.PHRASES_PLAN||[]).map(t=>`<div style="padding:3px 0">• ${esc(t)} <span class="badge">yakında</span></div>`).join('')}</div></div>`;
   const sv=phSaved(),show=()=>true;
-  return`<div class="row" style="margin-bottom:8px"><button class="btn" data-act="phr-home">Çık</button></div><div class="top"><h1>${esc(G.t)}</h1><span class="muted small" lang="en">${esc(G.en)}</span></div><div class="stack">
+  return`<div class="row" style="margin-bottom:8px"><button class="btn" data-act="phr-home">Çık</button></div><div class="top"><h1 lang="en">${esc(G.en)}</h1><span class="muted small">${esc(G.t)}</span></div><div class="stack">
   <div class="card small">${esc(G.ins)}</div>
-  ${G.sub.map(sb=>{const L=sb.items.filter(show);if(!L.length)return'';return`<details class="card" data-phd="${sb.k}" ${(UI.phOpen||{})[sb.k]?'open':''}><summary style="cursor:pointer;list-style:revert;padding:2px 0"><b>${esc(sb.t)}</b> <span class="small muted" lang="en">· ${esc(sb.en)}</span> <span class="small muted">(${L.length})</span></summary><div class="stack" style="margin-top:8px">
+  ${G.sub.map(sb=>{const L=sb.items.filter(show);if(!L.length)return'';return`<details class="card" data-phd="${sb.k}" ${(UI.phOpen||{})[sb.k]?'open':''}><summary style="cursor:pointer;list-style:revert;padding:2px 0"><b lang="en">${esc(sb.en)}</b> <span class="small muted">· ${esc(sb.t)} (${L.length})</span></summary><div class="stack" style="margin-top:8px">
     ${L.map(p=>`<div style="border-top:1px solid var(--line);padding:8px 0"><div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><div style="min-width:0"><b lang="en" style="font-size:1.02rem">${esc(p.en)}</b><div class="small">${esc(p.tr)}</div></div>
       <div class="row" style="gap:4px;flex-shrink:0"><button class="btn" style="padding:4px 10px;font-size:.8rem" data-act="phr-say" data-v="${esc(p.en)}">Dinle</button><button class="btn ${sv[p.en]?'primary':''}" style="padding:4px 10px;font-size:.8rem" data-act="phr-fav" data-v="${esc(p.en)}">${sv[p.en]?'Kaydedildi':'Kaydet'}</button></div></div>
       ${p.reg?`<div class="small muted" style="margin-top:2px">${esc(p.reg)}</div>`:''}
