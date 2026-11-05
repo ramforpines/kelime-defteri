@@ -486,6 +486,7 @@ function optOwners(it){   // şıklar kelime değilse (Türkçe, tanım, eş/zı
   return`<div class="small" style="margin-top:8px"><b>Şıklar hangi kelimenin?</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m.length?' → '+r.m.map(a=>esc(a.w)+' <span class="muted">('+a.k+')</span>'+svBtn(a.w)).join(', '):''}</div>`).join('')}</div>`;
 }
 function optMeans(it){
+  if(it&&it.w&&it.w.phr)return phOptMeans(it);
   if(!it.options||optMean(it.correct)===null)return optOwners(it);
   const rows=it.options.map((o,i)=>({o,i,m:optMean(o)}));
   if(rows.filter(r=>r.m).length<2)return'';
@@ -964,7 +965,8 @@ function mergeStates(a,b){
   const base=aa>bb||(aa===bb&&(a.upd||0)>=(b.upd||0))?a:b,oth=base===a?b:a;
   const m=normState(JSON.parse(JSON.stringify(base)));
   const ot=JSON.parse(JSON.stringify(oth));
-  if(ot.phs||m.phs)m.phs=Object.assign({},ot.phs||{},m.phs||{});   // kaydedilen kalıplar: iki cihazınkiler birleşir
+  if(ot.phs||m.phs)m.phs=Object.assign({},ot.phs||{},m.phs||{});   // kaydedilen kalıplar (eski): iki cihazınkiler birleşir
+  if(ot.php||m.php)m.php=Object.assign({},ot.php||{},m.php||{});   // doğru çözülen kalıp soruları
   Object.keys(ot.learned||{}).forEach(w=>{const a=m.learned[w],b=ot.learned[w];if(!a)m.learned[w]=b;else if(b&&((b.lr||'')>(a.lr||'')||(b.n|0)>(a.n|0))){a.lr=b.lr;a.n=Math.max(a.n|0,b.n|0)}});
   Object.keys(ot.prog||{}).forEach(w=>{if(m.learned[w])return;const x=m.prog[w]||(m.prog[w]=[]);(ot.prog[w]||[]).forEach(f=>{if(x.indexOf(f)===-1)x.push(f)})});
   Object.keys(m.learned).forEach(w=>{delete m.prog[w]});
@@ -2614,6 +2616,7 @@ function dueWrong(all){
 }
 /* cevaptan sonra "Neden?" açıklaması (yalnızca çalışma testinde): sözlük verisinden şablonla üretilir, emin olunmayan durumda boş kalır */
 function whyText(it){
+  if(it&&it.phrq)return esc(it.phrq.e).replace(/\n/g,'<br>');
   try{
     const w=it.w,f=it.f,B=x=>'<b>'+esc(x)+'</b>',tr=str(w.tr),c=it.correct;
     if(!w||!tr)return'';
@@ -2640,6 +2643,7 @@ function whyText(it){
 }
 const whyHtml=it=>{const t=whyText(it);return t?`<div class="small" style="margin-top:8px"><b>Neden?</b> ${t}</div>`:''};
 function makeItem(w,f,kind){
+  if(w&&w.phr)return phItem(w,f,kind);
   const b=buildQuestion(w,f);
   if(!b)return null;
   return{w,f,kind,question:b.question,correct:b.correct,options:shuffle([b.correct].concat(b.distractors)),chosen:null,exu:b.exu};
@@ -2711,7 +2715,7 @@ function wlogItems(n){
 function savedItems(n){   // kaydedilen kelimelerin tüm soruları; daha önce doğru çözülenler puansız ('saved'), çözülmeyenler normal ('new': puan + ilerleme)
   const out=[];
   for(const w of savedWords()){
-    const done=S.learned[w.word]?null:(S.prog[w.word]||[]);   // öğrenilmişse tüm sorular çözülmüş sayılır
+    const done=S.learned[w.word]||w.phr?null:(S.prog[w.word]||[]);   // öğrenilmişse tüm sorular çözülmüş sayılır (kalıplar: puansız tekrar)
     for(const f of applicable(w)){
       const it=makeItem(w,f,(done===null||done.indexOf(f)!==-1)?'saved':'new');
       if(it)out.push(it);
@@ -2739,6 +2743,7 @@ function startQuiz(mode,all){
     }
     items=rv.concat(wl,newItems(n-rv.length-wl.length,S.set.level,skip));
     items=wodPick(items,true);
+    if(GRAM_BETA){const pi=phDailyItem();if(pi){const z=items.map(x=>x.kind).lastIndexOf('new');if(z!==-1)items.splice(z,1,pi);else items.push(pi)}}   // her gün 1 kalıp sorusu (beta)
   }else items=wodPick(newItems(n,S.set.level,new Set()),false);
   items=shuffle(items);
   if(!items.length){toast(mode==='saved'?'Kaydedilen kelimen yok.':mode==='wlog'?'Yanlış defterin boş.':mode==='review'?'Tekrar edilecek kelime yok.':'Bu seviyede soru üretilecek kelime kalmadı.');return}
@@ -2769,6 +2774,7 @@ function applyAnswerCore(it,ok,ua,qz,gate){
   if(ok){pt+=ap(bq,'c');const G=goalEff();if(d.c===G)pt+=ap(10+Math.min(streak(),10),'b')}
   else if(myLeague()>=3)pt+=ap(-(myLeague()>=6?1:0.25)*bq,'w');   // Altın–Zümrüt: ¼, Elmas ve üstü: doğru cevap puanının tamamı
   if(ok){if(it.kind==='wlog')wlogDel(it.lk||(w.word+'|'+it.f))}else if(isWF(it.f))wlogAdd(it,ua);
+  if(ok&&w.phr){(S.php||(S.php={}))[w.word+'|'+it.f]=1}
   if(it.kind==='wod'){const q=wqGet(),k=w.word+'|'+it.f;if(q.done.indexOf(k)===-1)q.done.push(k);S.wod=today()}
   if(it.kind==='lrev'&&S.learned[w.word]){const L=S.learned[w.word];if(ok){L.lr=today();L.n=(L.n|0)+1}else{L.n=Math.max(1,L.n|0);L.lr=addDays(today(),-(LRN_EVERY-7))}}
   const bw=S.wrong[w.word];
@@ -3143,9 +3149,9 @@ function entryHtml(w,fixed){   // fixed: vize kelime listesi, sözlükteki açı
   const open=fixed||UI.dict.open===w.word;
   const st=S.learned[w.word]?'<span class="badge ok">Öğrenildi</span>':S.wrong[w.word]?'<span class="badge bad">Tekrarda</span>':'';
   return`<div class="entry"><button class="head" ${fixed?'':`data-act="toggle" data-w="${esc(w.word)}" `}aria-expanded="${open}">
-    <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def)}</span></span>
+    <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def||(w.phr?w.tr:''))}</span></span>
     <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
-    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${exTr(w)}</dd>${exMore(w)}
+    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${w.phr?'<br><span class="extr">('+esc(w.phr.ex[1])+')</span>':exTr(w)}</dd>${exMore(w)}
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
       ${senseHtml(w)}
       ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
@@ -3539,10 +3545,10 @@ function vQuiz(){
     nb=`<button class="btn primary block" style="margin-top:12px" data-act="next" id="nextbtn">${qz.i+1>=qz.items.length?'Sonucu gör':'Sonraki soru'}</button>`;
   }
   return`<div class="qtop"><button class="btn" data-act="quit" aria-label="Testten çık">Çık</button><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span class="mono muted">${qz.i+1}/${qz.items.length}</span></div>
-  <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${qz.mode==='exam'?(it.part&&it.pn?it.pn:'Vize'):qz.mode==='saved'?'Kaydedilen kelime':it.kind==='wlog'?'Yanlış defteri':it.kind==='wod'?'Günün kelimeleri':it.kind==='saved'?'Kaydedilen kelime':it.kind==='lrev'?'Öğrenilen kelime tekrarı':qz.mode==='review'||it.kind==='review'?'Tekrar':'Yeni'} · ${FEAT[it.f]}</span>${lvTag(w.level)}${it.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rep-open" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}${BYWORD.has(w.word)?`<button class="btn" style="${it.rp?'margin-left:8px;':'margin-left:6px;'}padding:4px 10px;font-size:.8rem" data-act="sv-q" aria-pressed="${isSaved(w.word)}" aria-label="Kelimeyi kaydet">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>`:''}</div>
+  <div class="card qcard"><div class="row" style="margin-bottom:10px"><span class="badge">${it.w&&it.w.phr&&it.kind==='phr'?'Kalıp':qz.mode==='exam'?(it.part&&it.pn?it.pn:'Vize'):qz.mode==='saved'?'Kaydedilen kelime':it.kind==='wlog'?'Yanlış defteri':it.kind==='wod'?'Günün kelimeleri':it.kind==='saved'?'Kaydedilen kelime':it.kind==='lrev'?'Öğrenilen kelime tekrarı':qz.mode==='review'||it.kind==='review'?'Tekrar':'Yeni'} · ${FEAT[it.f]}</span>${lvTag(w.level)}${it.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rep-open" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}${BYWORD.has(w.word)?`<button class="btn" style="${it.rp?'margin-left:8px;':'margin-left:6px;'}padding:4px 10px;font-size:.8rem" data-act="sv-q" aria-pressed="${isSaved(w.word)}" aria-label="Kelimeyi kaydet">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>`:''}</div>
   ${it.audio?`<div data-exaud="${esc(it.audio)}" style="margin-bottom:10px"></div>`:''}
   ${it.pass?`<details class="card small" lang="en" style="margin-bottom:10px" ${it.first?'open':''}><summary style="cursor:pointer;font-weight:600">${esc(it.pt0||'Metin')}</summary><div class="stack" style="margin-top:8px">${it.pass.map(t=>`<p style="margin:0;line-height:1.6">${esc(t)}</p>`).join('')}</div></details>`:''}
-  <h2>${esc(it.question)}</h2>
+  <h2 style="white-space:pre-line">${esc(it.question)}</h2>
   ${it.type==='text'?`<div class="card small" style="margin-bottom:10px"><b>Kelime kutusu:</b> ${it.box.map(esc).join(' · ')}</div><div class="row"><input id="txtans" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Cevabını yaz" style="flex:1;min-width:0" ${ans?`disabled value="${esc(it.ua||'')}"`:''}><button class="btn primary" data-act="ans-text" ${ans?'disabled':''}>Cevapla</button></div>`
   :`<div class="opts">${it.options.map((o,i)=>{
     let c='';if(ans){if(o===it.correct)c='ok';else if(i===it.chosen)c='bad'}
@@ -3560,9 +3566,24 @@ function vResult(){
 }
 /* ===== Kalıplar (beta): fikir belirtme vb. ifade kalıpları. Veri: phrases.js (tools/phrases/build.py) ===== */
 let PH_LOADING=false;
-function phLoad(){if(window.PHRASES||PH_LOADING)return;PH_LOADING=true;const s=document.createElement('script');s.src='phrases.js?v='+APP_VERSION;s.onload=()=>{PH_LOADING=false;if(UI.tab==='phr')render()};s.onerror=()=>{PH_LOADING=false;toast('Kalıplar yüklenemedi.',3000)};document.head.appendChild(s)}
+function phLoad(){if(window.PHRASES||PH_LOADING)return;PH_LOADING=true;const s=document.createElement('script');s.src='phrases.js?v='+APP_VERSION;s.onload=()=>{PH_LOADING=false;phReg();if(UI.tab==='phr'||UI.tab==='saved'||UI.tab==='review')render()};s.onerror=()=>{PH_LOADING=false;if(UI.tab==='phr')toast('Kalıplar yüklenemedi.',3000)};document.head.appendChild(s)}
 const PH_LV=['A1','A2','B1','B2','C1','C2'];
-const phSaved=()=>S.phs||(S.phs={});
+const PH_FN=['Kalıp: anlam','Kalıp: Türkçeden','Kalıp: tutum','Kalıp: boşluk','Kalıp: diyalog','Kalıp: üslup'];
+PH_FN.forEach((t,i)=>{FEAT[100+i]=t});
+// kalıplar sözde kelime olarak BYWORD'e eklenir: Kaydedilenler, Yanlış defteri ve testler kelimelerle aynı altyapıyı kullanır
+function phReg(){if(!window.PHRASES||phReg.done)return;phReg.done=true;
+  window.PHRASES.forEach(G=>G.sub.forEach(sb=>sb.items.forEach(p=>{if(BYWORD.has(p.en))return;
+    const w={word:p.en,tr:p.tr,def:'',level:p.lv,pos:'kalıp',pron:'',ex:p.ex[0],phr:p,_app:p.qs.map(q=>100+q.f)};BYWORD.set(p.en,w)})));
+  if(S.phs){S.sav=S.sav||{};Object.keys(S.phs).forEach(k=>{if(!(S.sav[k]>0))S.sav[k]=Date.now()});delete S.phs;save()}}
+function phItem(w,f,kind){const q=w.phr.qs.find(x=>100+x.f===f);if(!q)return null;
+  return{w,f,kind,question:q.q,correct:q.o[q.a],options:shuffle(q.o.slice()),chosen:null,phrq:q}}
+function phDailyItem(){if(!window.PHRASES)return null;phReg();const done=S.php||{},inLog=new Set((S.wlog||[]).map(e=>e.w)),c=[];
+  window.PHRASES.forEach(G=>G.sub.forEach(sb=>sb.items.forEach(p=>{if(inLog.has(p.en))return;p.qs.forEach(q=>{if(!done[p.en+'|'+(100+q.f)])c.push([p,q])})})));
+  if(!c.length)return null;const[p,q]=c[Math.floor(Math.random()*c.length)];return phItem(BYWORD.get(p.en),100+q.f,'phr')}
+function phOptMeans(it){const rows=it.options.map((o,i)=>{const w=BYWORD.get(o)||BYWORD.get(o+' ...')||BYWORD.get(o.replace(/[.!?]$/,'')+' ...');return{o,i,m:w&&w.phr?w.tr:null}});
+  if(rows.filter(r=>r.m).length<2)return'';
+  return`<div class="small" style="margin-top:8px"><b>Şıkların anlamı</b>${rows.map(r=>`<div style="margin-top:2px;${r.o===it.correct?'color:var(--ok)':r.i===it.chosen?'color:var(--bad)':''}">${r.o===it.correct?'✓':r.i===it.chosen?'✗':'•'} <b>${esc(r.o)}</b>${r.m?' — '+esc(r.m):''}</div>`).join('')}</div>`}
+const phSaved=()=>{const o={};Object.keys(S.sav||{}).forEach(k=>{if(S.sav[k]>0)o[k]=1});return o};
 function vPhr(){
   if(!window.PHRASES){phLoad();return'<div class="card"><div class="muted">Kalıplar yükleniyor…</div></div>'}
   const G=UI.phg&&window.PHRASES.find(g=>g.id===UI.phg);
@@ -3942,6 +3963,7 @@ function sxBoardCard(){
    ${rows.map(({x,o},i)=>`<tr style="border-bottom:1px solid var(--line);${x.user_id===me?'background:rgba(80,120,255,.10);font-weight:600':''}"><td style="padding:6px 4px">${i+1}</td><td style="padding:6px 4px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.name||x.username||'')}</td><td ${th}>${c(o.R)}</td><td ${th}>${c(o.L)}</td><td ${th}>${c(o.W)}</td><td ${th}>${c(o.S)}</td><td ${th}><b>${o.all??'–'}</b>${o.all!=null?`<div class="small muted">${esc(sxLevel(X.lv,o.all))}</div>`:''}</td></tr>`).join('')}</tbody></table></div>
    <div class="small muted">📖 Okuma · 🎧 Dinleme · ✍️ Yazma · 🎤 Konuşma. Puanlar Cambridge ölçeğine yakın değerlerdir. Toplam, dört bölüm puanının ortalamasıdır. Sınav bitince yazma ve konuşma otomatik değerlendirilir; hesaplama tamamlanınca sonuç tabloya eklenir.</div>`}</div>`}
 document.addEventListener('change',e=>{if(e.target&&e.target.id==='sxbsel')sxBoardLoad(e.target.value)});
+if(GRAM_BETA)setTimeout(phLoad,1200);   // kalıplar: Kaydedilenler, Yanlış defteri ve günün testi için
 /* yönetici: sınav sonuçları */
 async function sxAdmLoad(){const A=UI.adm;A.sxBusy=true;render();try{const r=await sb.rpc('exam_admin_list');if(r.error)throw r.error;A.sxList=r.data||[];A.sxErr=false}catch(e){A.sxErr=true}A.sxBusy=false;render()}
 async function sxAdmReset(uid,ex){try{const r=await sb.rpc('exam_admin_reset',{p_user:uid,p_exam:ex});if(r.error)throw r.error;toast('Sınav sıfırlandı.');UI.adm.sxDel=null;sxAdmLoad()}catch(e){toast('Sıfırlanamadı.',3000)}}
@@ -5635,7 +5657,7 @@ document.addEventListener('click',async e=>{
     case'phr-home':UI.phg=null;UI.phq=null;render();window.scrollTo(0,0);break;
     case'phr-l':UI.phl=g('data-v');render();break;
     case'phr-say':say(g('data-v').replace(/\.\.\./g,' '));break;
-    case'phr-fav':{const k=g('data-v'),v=phSaved();if(v[k])delete v[k];else v[k]=1;save();render();break}
+    case'phr-fav':{phReg();toggleSaved(g('data-v'));render();break}
     case'phr-quiz':UI.phq={i:0,ans:[]};render();window.scrollTo(0,0);break;
     case'phr-ans':{const Q=UI.phq;if(Q.ans[Q.i]==null){Q.ans[Q.i]=+g('data-v');render()}break}
     case'phr-next':UI.phq.i++;render();window.scrollTo(0,0);break;

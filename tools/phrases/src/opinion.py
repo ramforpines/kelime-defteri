@@ -14,7 +14,7 @@ GROUP={'id':'opinion','t':'Fikir belirtme','en':'Giving opinions, agreeing and d
   P('As far as I\'m concerned, ...','Bana kalırsa ... / Bana göre ...','B2','','As far as I\'m concerned, the meeting was a waste of time.','Bana kalırsa toplantı zaman kaybıydı.'),
   P('From my point of view, ...','Benim bakış açıma göre ...','B2','','From my point of view, the plan is too risky.','Benim bakış açıma göre plan fazla riskli.'),
   P('It seems to me that ...','Bana öyle geliyor ki ...','B2','','It seems to me that people are less patient these days.','Bana öyle geliyor ki insanlar bu aralar daha sabırsız.'),
-  P('I\'d say (that) ...','Ben ... derim','B2','','I\'d say it\'s about two hours away.','Ben iki saat kadar uzakta derim.'),
+  P('I\'d say (that) ...','Ben ... derim','B2','','I\'d say that it\'s about two hours away.','Bence iki saat kadar uzakta.'),
   P('I\'m convinced (that) ...','... olduğuna eminim / ikna olmuş durumdayım','C1','','I\'m convinced that this is the right decision.','Bunun doğru karar olduğuna eminim.'),
   P('I\'d argue (that) ...','... olduğunu savunurum','C1','resmî','I\'d argue that education is the key to change.','Değişimin anahtarının eğitim olduğunu savunurum.'),
   P('To my mind, ...','Kanımca ...','C1','','To my mind, the second option is far better.','Kanımca ikinci seçenek çok daha iyi.'),
@@ -54,6 +54,7 @@ GROUP={'id':'opinion','t':'Fikir belirtme','en':'Giving opinions, agreeing and d
   P('I\'d go along with that, with one reservation.','Buna katılırım, tek bir çekincem var.','C2','resmî','I\'d go along with that, with one reservation: the cost.','Buna katılırım, tek bir çekincem var: maliyet.'),
   P('That\'s true as far as it goes.','Bir yere kadar doğru (ama eksik).','C2','','That\'s true as far as it goes, but it ignores the long-term effects.','Bir yere kadar doğru ama uzun vadeli etkileri göz ardı ediyor.')]},
  {'k':'polite','c':'🟠','t':'Kibarca katılmamak','en':'Disagreeing politely','items':[
+  P('No, I don\'t think so.','Hayır, sanmıyorum.','A1','','"Is it going to rain?" "No, I don\'t think so."','"Yağmur yağacak mı?" "Hayır, sanmıyorum."'),
   P('I don\'t agree.','Katılmıyorum.','A2','','I don\'t agree. I think it\'s a good idea.','Katılmıyorum. Bence iyi bir fikir.'),
   P('I\'m not sure I agree.','Katıldığımdan emin değilim.','B1','','I\'m not sure I agree. It might be dangerous.','Katıldığımdan emin değilim. Tehlikeli olabilir.'),
   P('I\'m afraid I disagree.','Korkarım katılmıyorum.','B1','','I\'m afraid I disagree. The first one was better.','Korkarım katılmıyorum. İlki daha iyiydi.'),
@@ -65,12 +66,11 @@ GROUP={'id':'opinion','t':'Fikir belirtme','en':'Giving opinions, agreeing and d
   P('I\'d take issue with that.','Buna itiraz ederim.','C2','resmî','I\'d take issue with that – the research shows the opposite.','Buna itiraz ederim, araştırmalar tersini gösteriyor.'),
   P('I can\'t go along with that.','Buna katılamam. / Bunu destekleyemem.','C2','','I\'m sorry, but I can\'t go along with that plan.','Üzgünüm ama bu plana katılamam.')]},
  {'k':'strong','c':'🔴','t':'Kesinlikle katılmamak','en':'Disagreeing strongly','items':[
-  P('No, I don\'t think so.','Hayır, sanmıyorum.','A1','','"Is it going to rain?" "No, I don\'t think so."','"Yağmur yağacak mı?" "Hayır, sanmıyorum."'),
   P('I totally disagree.','Kesinlikle katılmıyorum.','B1','','I totally disagree. Homework is important.','Kesinlikle katılmıyorum. Ödev önemli.'),
   P('That\'s not true at all.','Bu hiç doğru değil.','B2','','That\'s not true at all. I was there the whole time.','Bu hiç doğru değil. Ben baştan sona oradaydım.'),
   P('No way!','Asla! / Olamaz!','B2','samimi','"Let\'s walk home in the rain." "No way!"','"Yağmurda eve yürüyelim." "Asla!"'),
   P('I couldn\'t disagree more.','Hiç katılmıyorum. (Bundan daha fazla katılmayamazdım.)','B2','','"Social media is harmless." "I couldn\'t disagree more."','"Sosyal medya zararsız." "Hiç katılmıyorum."'),
-  P('That\'s out of the question.','Bu söz konusu bile olamaz.','C1','','Cancelling the trip now is out of the question.','Geziyi şimdi iptal etmek söz konusu bile olamaz.'),
+  P('That\'s out of the question.','Bu söz konusu bile olamaz.','C1','','Cancel the trip now? That\'s out of the question.','Geziyi şimdi iptal etmek mi? Bu söz konusu bile olamaz.'),
   P('You can\'t be serious!','Ciddi olamazsın!','C1','samimi','"I\'m quitting my job tomorrow." "You can\'t be serious!"','"Yarın işimi bırakıyorum." "Ciddi olamazsın!"')]},
  {'k':'unsure','c':'⚪','t':'Kararsız kalmak','en':'Being undecided','items':[
   P('I\'m not sure.','Emin değilim.','A2','','"Which one do you want?" "I\'m not sure."','"Hangisini istiyorsun?" "Emin değilim."'),
@@ -78,9 +78,9 @@ GROUP={'id':'opinion','t':'Fikir belirtme','en':'Giving opinions, agreeing and d
   P('I haven\'t decided yet.','Henüz karar vermedim.','B1','','I haven\'t decided yet where to go on holiday.','Tatile nereye gideceğime henüz karar vermedim.'),
   P('It\'s hard to say.','Söylemesi zor.','B1','','"Will they win?" "It\'s hard to say."','"Kazanacaklar mı?" "Söylemesi zor."'),
   P('I haven\'t made up my mind yet.','Henüz kararımı vermedim.','B2','','I haven\'t made up my mind yet about the job offer.','İş teklifi konusunda henüz kararımı vermedim.'),
-  P('I\'m in two minds about it.','Bu konuda kararsızım. (İkisi arasında gidip geliyorum.)','B2','','I\'m in two minds about moving abroad.','Yurt dışına taşınma konusunda kararsızım.'),
+  P('I\'m in two minds about it.','Bu konuda kararsızım. (İkisi arasında gidip geliyorum.)','B2','','Move abroad? I\'m in two minds about it.','Yurt dışına taşınmak mı? Bu konuda kararsızım.'),
   P('I can see both sides.','İki tarafı da anlayabiliyorum.','B2','','I can see both sides of the argument.','Tartışmanın iki tarafını da anlayabiliyorum.'),
-  P('I\'m on the fence.','Ortada kaldım. / Kararsızım.','C1','samimi','I\'m still on the fence about buying a car.','Araba alma konusunda hâlâ kararsızım.'),
+  P('I\'m on the fence.','Ortada kaldım. / Kararsızım.','C1','samimi','Buy a car? I\'m on the fence.','Araba almak mı? Kararsızım.'),
   P('I\'m torn between the two.','İkisi arasında kaldım.','C2','','I\'m torn between the two universities.','İki üniversite arasında kaldım.')]}],
 'quiz':[
  # (durum, doğru, [yanlışlar], açıklama, seviye)
