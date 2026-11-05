@@ -3666,7 +3666,8 @@ async function sxSync(force){
     Object.keys(R).forEach(id=>{if(seen[id])return;const l=R[id];
       if(l.sv){delete R[id];return}   // sunucuda yok ama daha önce kaydedilmişti: yönetici sıfırladı
       if(l.status==='done')sxPushFinish(id);else sxSave(id,true)});
-    sxPersist();UI.sxSynced=true;UI.sxErr=false}
+    sxPersist();UI.sxSynced=true;UI.sxErr=false;
+    setTimeout(()=>{const R2=sxRecs();Object.keys(R2).forEach(id=>{const r=R2[id];if(r.status==='done'&&!(r.result&&r.result.ai)&&!(UI.aiTry||{})[id]&&!UI.aiBusy)sxAi(id)})},1500)}
   catch(e){UI.sxErr=true;UI.sxSynced=true;setTimeout(()=>{UI.sxSynced=false},30000)}   // hata: 30 sn sonra yeniden dene (döngüye girmesin)
   SX_SYNC=false;if(UI.tab==='pet'&&!UI.sq&&!(UI.ps&&UI.ps.st==='rec')&&!UI.sxw)render();
 }
@@ -3713,7 +3714,8 @@ function sxLock(X){const R=sxRecs();if(R[X.id])return null;
   const tf=pr.tf||0,ws=sxWeekStart();
   if(tf>=ws){const d=new Date(ws+7*864e5);return{k:'wk',t:'Bu sınav '+d.toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long',timeZone:'Europe/Istanbul'})+' 00:00\'da açılır.'}}
   return null}
-const sxLocked=X=>{const l=sxLock(X);return l&&!(CLOUD.admin&&(UI.sxBy||{})[X.id])?l:null};
+const sxPriv=()=>!!(CLOUD.admin||CLOUD.beta);   // yönetici ve test eden yapımcı
+const sxLocked=X=>{const l=sxLock(X);return l&&!(sxPriv()&&(UI.sxBy||{})[X.id])?l:null};
 function sxStartSec(id,k){if(sxLocked(sxExam(id)))return;const X=sxExam(id),r=sxRec(id,true);if(r.status==='done')return;const s=r.state.sec[k];if(s.done)return;
   if(k==='W'){UI.sxw=id;sxTimer();render();window.scrollTo(0,0);return}
   if(k==='S'&&!s.mic&&!UI.sxMicOk){UI.sxmic={id,st:'idle',tr:''};render();window.scrollTo(0,0);return}
@@ -3793,19 +3795,22 @@ function sxWSubmit(auto){const id=UI.sxw;if(!id)return;const r=sxRec(id);r.state
 function sxScene(T){const n=(T.img||[]).length;return`${(T.img||[]).map(([em,cap,im,en],i)=>im?`<div class="card" style="padding:8px">${n>1?`<div class="small muted" style="margin:0 0 6px 4px"><b>Fotoğraf ${i+1}</b></div>`:''}<img src="img/sx/${esc(im)}.svg?v=${APP_VERSION}" alt="${esc(en||'Fotoğraf '+(i+1))}" style="display:block;width:100%;height:auto;border-radius:10px">${en?`<details style="margin:8px 4px 2px"><summary class="small muted" style="cursor:pointer">Açıklamayı göster</summary><div class="small" lang="en" style="margin-top:4px;line-height:1.5">${esc(en)}</div></details>`:''}</div>`:`<div class="card" style="text-align:center"><div style="font-size:2.6rem;line-height:1.3;letter-spacing:.1em">${esc(em)}</div><div class="small muted" style="margin-top:6px">${esc(cap)}</div></div>`).join('')}
   ${T.opts?`<div class="card"><div class="row" style="flex-wrap:wrap;gap:6px;justify-content:center">${T.opts.map(o=>`<span class="badge" style="font-size:.95rem;padding:6px 10px">${esc(o)}</span>`).join('')}</div></div>`:''}`}
 function sxSpSave(){const P=UI.ps;if(!P||!P.exam)return;const r=sxRec(P.exam);r.state.sec.S.tr[P.pi+'-'+P.qi]={t:(P.fin||'').trim(),dur:Math.round(P.dur||0)};sxSave(P.exam,true)}
+function sxSpDraft(){const P=UI.ps;if(!P||!P.exam)return;const r=sxRec(P.exam);r.state.sec.S.dr={k:P.pi+'-'+P.qi,t:(P.fin||'').trim(),dur:Math.round(P.dur||0)};sxSave(P.exam,true)}   // onaylanmamış cevap: ara verilse de kalır
 function sxSpNext(){const P=UI.ps,X=sxExam(P.exam),parts=X.sec.S.parts,r=sxRec(P.exam),s=r.state.sec.S;
   if(P.qi+1<parts[P.pi].q.length)P.qi++;else{P.pi++;P.qi=0}
   if(P.pi>=parts.length){s.done=true;s.pi=parts.length;sxSave(P.exam,true);const id=P.exam;UI.ps=null;UI.sxe=id;sxCheckFinish(id);render();window.scrollTo(0,0);return}
   s.pi=P.pi;s.qi=P.qi;P.T=parts[P.pi];P.st='idle';P.fin='';P.cur='';sxSave(P.exam);render();window.scrollTo(0,0);}
 function vSxS(){
-  const P=UI.ps,X=sxExam(P.exam),parts=X.sec.S.parts,T=parts[P.pi],q=T.q[P.qi],r=sxRec(P.exam),rec=r.state.sec.S.tr[P.pi+'-'+P.qi];
+  const P=UI.ps,X=sxExam(P.exam),parts=X.sec.S.parts,T=parts[P.pi],q=T.q[P.qi],r=sxRec(P.exam),key=P.pi+'-'+P.qi,rec=r.state.sec.S.tr[key],dr=r.state.sec.S.dr&&r.state.sec.S.dr.k===key?r.state.sec.S.dr:null;
   const nAll=parts.reduce((a,p)=>a+p.q.length,0),nDone=Object.keys(r.state.sec.S.tr).length;
   return`<div class="qtop"><button class="btn" data-act="sxs-pause">Ara ver</button><div class="bar"><i style="width:${Math.round(nDone/nAll*100)}%"></i></div><span class="mono muted">${nDone}/${nAll}</span></div>
   <div class="stack"><div class="card stack"><div class="row" style="justify-content:space-between"><b>${esc(T.t)}</b>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}</div><div class="small muted">${esc(T.ins)}</div></div>
   ${sxScene(T)}
   <div class="card stack"><div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><h2 lang="en" style="margin:0">${esc(q[0])}</h2></div><div class="row" style="gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" data-act="ps-say" data-v="q">🔊 Soruyu dinle</button><button class="btn" data-act="tts-stop">⏹ Durdur</button></div><div class="small muted">Sesi duymuyorsan cihazının sesini aç ve sessiz modu kapat (iPhone\'da yandaki sessiz anahtarı).</div>
-   <div class="small muted">Konuşma süresi: ${q[1]} saniye. Sınavda her soruya bir kez cevap verirsin.</div>
+   <div class="small muted">Konuşma süresi: ${q[1]} saniye. Beklenmedik bir gürültü olursa cevabını onaylamadan önce tekrar deneyebilirsin.</div>
    ${rec?`<div class="small" lang="en" style="white-space:pre-line;padding:8px;border-radius:8px;background:rgba(120,120,120,.08)">${rec.t?esc(rec.t):'<span class="muted">Konuşma algılanmadı.</span>'}</div><div class="small muted">${rec.dur} sn · ${sxWc(rec.t)} kelime</div><button class="btn primary block" data-act="sxs-next">${P.pi+1>=parts.length&&P.qi+1>=T.q.length?'Konuşma bölümünü bitir':'Sonraki soru'}</button>`
+   :dr&&P.st!=='rec'?`<div class="small" lang="en" style="white-space:pre-line;padding:8px;border-radius:8px;background:rgba(120,120,120,.08)">${dr.t?esc(dr.t):'<span class="muted">Konuşma algılanmadı.</span>'}</div><div class="small muted">${dr.dur} sn · ${sxWc(dr.t)} kelime · Yazıya dökülen metin doğru değilse ya da gürültü olduysa tekrar dene.</div>
+     <button class="btn primary block" data-act="sxs-ok">Cevabı onayla${P.pi+1>=parts.length&&P.qi+1>=T.q.length?' ve bölümü bitir':', sonraki soru'}</button><button class="btn block" data-act="sxs-retry">Tekrar dene</button>`
    :P.st==='rec'?`<div class="row" style="justify-content:space-between"><b style="color:#e5484d">● Kayıtta</b><b id="pstm">${q[1]} sn</b></div><div id="pstr" class="small" lang="en" style="min-height:3em;white-space:pre-line"></div><button class="btn primary block" data-act="ps-stop">Bitir</button>`
    :PS_REC?`<button class="btn primary block" data-act="ps-start">🎤 Konuşmaya başla</button><button class="btn block" data-act="sxs-skip">Bu soruyu boş geç</button>`
    :`<div class="small" style="color:var(--bad)">Bu tarayıcıda konuşma tanıma yok (Chrome ya da Safari'nin güncel sürümünü kullan). Bu soruyu boş geçebilirsin.</div><button class="btn block" data-act="sxs-skip">Boş geç</button>`}</div></div>`;
@@ -3844,7 +3849,7 @@ function vSxExam(){
   const r=sxRec(X.id);if(r&&r.status==='done'&&UI.sxres)return vSxRes(X,r);
   const st=r&&r.state,lk=sxLock(X),lkd=sxLocked(X);
   return`<div class="top"><h1>${esc(SX_NM[X.lv])}</h1><span class="muted small">${esc(X.t)}</span></div><div class="stack">
-  ${lk?`<div class="card stack" style="border-left:3px solid #e0a020"><b>🔒 ${esc(lk.t)}</b><div class="small muted">Sınav 1'ler sırayla açılır: A2 Key → B1 Preliminary → B2 First → C1 Advanced. Bir seviyenin Sınav 1'ini bitirince bir sonrakinin Sınav 1'i takip eden pazartesi açılır.</div>${CLOUD.admin?(lkd?'<button class="btn" data-act="sx-unlock">Yönetici: kilidi bu oturumda aç</button>':'<div class="small" style="color:#b35a00">Yönetici olarak kilit atlandı (kullanıcılar için kilitli).</div>'):''}</div>`:''}
+  ${lk?`<div class="card stack" style="border-left:3px solid #e0a020"><b>🔒 ${esc(lk.t)}</b><div class="small muted">Sınav 1'ler sırayla açılır: A2 Key → B1 Preliminary → B2 First → C1 Advanced. Bir seviyenin Sınav 1'ini bitirince bir sonrakinin Sınav 1'i takip eden pazartesi açılır.</div>${sxPriv()?(lkd?'<button class="btn" data-act="sx-unlock">Test: kilidi bu oturumda aç</button>':'<div class="small" style="color:#b35a00">Test için kilit atlandı (kullanıcılar için kilitli).</div>'):''}</div>`:''}
   <div class="card small">Bu sınavı <b>bir kez</b> çözebilirsin. Bölümleri istediğin sırada ve farklı zamanlarda çözebilirsin; ilerlemen kaydedilir, başka cihazda da kaldığın yerden devam edersin. Bölümün süresi yalnızca o bölüm açıkken işler. Teslim ettiğin bölüm değiştirilemez. Doğru cevaplar ve sonuç, dört bölüm de bitince görünür.</div>
   ${['R','L','W','S'].map(k=>{const s=st&&st.sec[k],started=s&&(k==='W'?Object.keys(s.t).length||s.left<X.sec.W.min*60:k==='S'?Object.keys(s.tr).length:s.ans.some(x=>x!=null)||s.left<X.sec[k].min*60);
     return`<div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><div><b>${SX_IC[k]} ${esc(sxSkName(X.lv,k))}</b><div class="small muted">${esc(sxSecInfo(X,k))}</div></div>${s&&s.done?'<span class="badge ok">✓ Teslim edildi</span>':''}</div>
@@ -3928,14 +3933,14 @@ async function sxBoardLoad(id){UI.sxbId=id;UI.sxb=null;UI.sxbErr=false;UI.sxbLd=
 function sxBoardCard(){
   const E=(window.SINAV.exams||[]),id=UI.sxbId||(E[0]&&E[0].id),X=sxExam(id);if(!X)return'';
   if(!UI.sxbLd&&(UI.sxbId!==id||(!UI.sxb&&!UI.sxbErr))){UI.sxbLd=true;UI.sxbId=id;setTimeout(()=>sxBoardLoad(id),0)}
-  const rows=(UI.sxb||[]).map(x=>({x,o:sxScores(X,{result:x.result||{}})})).sort((a,b)=>(b.o.all??-1)-(a.o.all??-1));
+  const rows=(UI.sxb||[]).filter(x=>x.result&&x.result.ai).map(x=>({x,o:sxScores(X,{result:x.result||{}})})).sort((a,b)=>(b.o.all??-1)-(a.o.all??-1));
   const c=v=>v?v.sc:'–',me=CLOUD.uid,th='style="padding:6px 3px;text-align:right;white-space:nowrap"';
   return`<div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><b>📝 Sınav</b>
    <select id="sxbsel" style="max-width:62%;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card,transparent);color:inherit;font:inherit">${E.map(Y=>`<option value="${Y.id}" ${Y.id===id?'selected':''}>${esc(SX_NM[Y.lv]+' · '+Y.t)}</option>`).join('')}</select></div>
    ${UI.sxbErr?'<div class="small" style="color:var(--bad)">Sıralama alınamadı. (supabase-sinav2.sql çalıştırıldı mı?)</div>':!UI.sxb?'<div class="small muted">Yükleniyor…</div>':!rows.length?'<div class="small muted">Bu sınavı henüz bitiren yok.</div>':
    `<div style="overflow-x:auto;margin:0 -4px"><table style="width:100%;border-collapse:collapse;font-size:.85rem"><thead><tr style="border-bottom:1px solid var(--line)"><th style="padding:6px 4px;text-align:left">#</th><th style="padding:6px 4px;text-align:left">Ad</th><th ${th} title="Okuma">📖</th><th ${th} title="Dinleme">🎧</th><th ${th} title="Yazma">✍️</th><th ${th} title="Konuşma">🎤</th><th ${th}>Toplam</th></tr></thead><tbody>
    ${rows.map(({x,o},i)=>`<tr style="border-bottom:1px solid var(--line);${x.user_id===me?'background:rgba(80,120,255,.10);font-weight:600':''}"><td style="padding:6px 4px">${i+1}</td><td style="padding:6px 4px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.name||x.username||'')}</td><td ${th}>${c(o.R)}</td><td ${th}>${c(o.L)}</td><td ${th}>${c(o.W)}</td><td ${th}>${c(o.S)}</td><td ${th}><b>${o.all??'–'}</b>${o.all!=null?`<div class="small muted">${esc(sxLevel(X.lv,o.all))}</div>`:''}</td></tr>`).join('')}</tbody></table></div>
-   <div class="small muted">📖 Okuma · 🎧 Dinleme · ✍️ Yazma · 🎤 Konuşma. Puanlar Cambridge ölçeğine yakın değerlerdir. Toplam, bölüm puanlarının ortalamasıdır; yazma ve konuşma yapay zekâ değerlendirmesi yapılmadıysa "–" görünür ve toplam yalnızca okuma ve dinlemeden hesaplanır.</div>`}</div>`}
+   <div class="small muted">📖 Okuma · 🎧 Dinleme · ✍️ Yazma · 🎤 Konuşma. Puanlar Cambridge ölçeğine yakın değerlerdir. Toplam, dört bölüm puanının ortalamasıdır. Sınav bitince yazma ve konuşma otomatik değerlendirilir; hesaplama tamamlanınca sonuç tabloya eklenir.</div>`}</div>`}
 document.addEventListener('change',e=>{if(e.target&&e.target.id==='sxbsel')sxBoardLoad(e.target.value)});
 /* yönetici: sınav sonuçları */
 async function sxAdmLoad(){const A=UI.adm;A.sxBusy=true;render();try{const r=await sb.rpc('exam_admin_list');if(r.error)throw r.error;A.sxList=r.data||[];A.sxErr=false}catch(e){A.sxErr=true}A.sxBusy=false;render()}
@@ -4016,7 +4021,7 @@ document.addEventListener('change',e=>{const k=e.target&&e.target.getAttribute&&
 /* konuşma */
 const PS_REC=window.SpeechRecognition||window.webkitSpeechRecognition;
 let PSR=null;
-function psStop(){const P=UI.ps;if(PSR){try{PSR.onend=null;PSR.stop()}catch(e){}PSR=null}if(P&&P.st==='rec'){P.st='done';P.dur=Math.min(P.lim,(Date.now()-P.t0)/1000);if(P.lastAt)P.pz=Math.max(P.pz||0,(Math.min(Date.now(),P.t0+P.lim*1000)-P.lastAt)/1000);clearInterval(P.tm);if(P.exam)sxSpSave();render()}}
+function psStop(){const P=UI.ps;if(PSR){try{PSR.onend=null;PSR.stop()}catch(e){}PSR=null}if(P&&P.st==='rec'){P.st='done';P.dur=Math.min(P.lim,(Date.now()-P.t0)/1000);if(P.lastAt)P.pz=Math.max(P.pz||0,(Math.min(Date.now(),P.t0+P.lim*1000)-P.lastAt)/1000);clearInterval(P.tm);if(P.exam)sxSpDraft();render()}}
 function psStart(){
   const P=UI.ps,T=psTask(),q=T.q[P.qi];if(!PS_REC){toast('Bu tarayıcıda konuşma tanıma yok. Chrome ya da Safari\'nin güncel sürümünü dene.',5000);return}
   try{speechSynthesis.cancel()}catch(e){}
@@ -5660,9 +5665,11 @@ document.addEventListener('click',async e=>{
     case'sxw-ch':{const r=sxRec(UI.sxw);r.state.sec.W.ch=g('data-v')||null;sxSave(UI.sxw);render();break}
     case'sxw-pause':{const id=UI.sxw;sxSave(id,true);UI.sxw=null;UI.sxe=id;UI.sxres=false;render();window.scrollTo(0,0);break}
     case'sxw-submit':{const r=sxRec(UI.sxw),X=sxExam(UI.sxw),T=sxWTasks(X),miss=T.filter(t=>sxWc(r.state.sec.W.t[t.choice?r.state.sec.W.ch:t.id])<10).length;if(!confirm((miss?miss+' görev boş ya da çok kısa. ':'')+'Yazma bölümü teslim edilsin mi? Sonra değiştiremezsin.'))break;sxWSubmit();break}
-    case'sxs-pause':{psStop();ttsStop();const id=UI.ps.exam;UI.ps=null;UI.sxe=id;UI.sxres=false;render();window.scrollTo(0,0);break}
+    case'sxs-pause':{const P0=UI.ps;if(P0&&P0.st==='rec'){P0.fin=((P0.fin?P0.fin+' ':'')+(P0.cur||'')).trim();P0.cur=''}psStop();ttsStop();const id=UI.ps.exam;UI.ps=null;UI.sxe=id;UI.sxres=false;render();window.scrollTo(0,0);break}
     case'sxs-next':ttsStop();sxSpNext();break;
-    case'sxs-skip':{const P=UI.ps;P.fin='';P.dur=0;sxSpSave();sxSpNext();break}
+    case'sxs-skip':{const P=UI.ps;P.fin='';P.dur=0;delete sxRec(P.exam).state.sec.S.dr;sxSpSave();sxSpNext();break}
+    case'sxs-ok':{ttsStop();const P=UI.ps,S0=sxRec(P.exam).state.sec.S,d=S0.dr;if(d){P.fin=d.t;P.dur=d.dur;delete S0.dr;sxSpSave()}sxSpNext();break}
+    case'sxs-retry':{const P=UI.ps;delete sxRec(P.exam).state.sec.S.dr;P.st='idle';P.fin='';P.cur='';sxSave(P.exam);psStart();break}
     case'pw-open':UI.pw={id:g('data-v'),done:!!(((S.pw||{})[g('data-v')]||{}).f)};render();window.scrollTo(0,0);if(UI.pw.done)pwSelfUpd();break;
     case'pw-done':{S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.f=1;save();UI.pw.done=true;render();pwSelfUpd();break}
     case'pw-back':save();UI.pw=null;render();window.scrollTo(0,0);break;
