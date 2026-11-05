@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.152.8';
+const APP_VERSION='4.152.9';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4386,6 +4386,25 @@ function rkTick(){   // saniyede bir: geri sayımı günceller, pencere açılı
   }catch(e){}}
 setInterval(rkTick,1000);
 const dIsP1=()=>DUEL.d&&DUEL.d.p1===CLOUD.uid;
+// Cevap bildirimi sırayla ve tekrar denenerek gönderilir. Önceden her cevap ayrı ve beklemeden gidiyordu:
+// hızlı cevaplarda istekler sunucuya ters sırada ulaşınca ya da biri ağda kaybolunca sunucu sonraki tüm cevapları
+// "sıra numarası tutmuyor" diye yok sayıyordu; oyuncu oynamaya devam ettiği hâlde cevapları sayılmıyordu.
+function dRep(p){(DUEL.rh=DUEL.rh||{})[p.idx]=p;(DUEL.rq=DUEL.rq||[]).push(p);dRepRun()}
+async function dRepRun(){
+  if(DUEL.rqBusy||!sb)return;DUEL.rqBusy=1;
+  try{while(DUEL.rq&&DUEL.rq.length){const p=DUEL.rq[0];if(p.did!==DUEL.id){DUEL.rq.shift();continue}
+      let done=false;
+      for(let k=0;k<10&&!done;k++){try{const r=await sb.rpc('duel_report',p);if(!r.error)done=true;else if(/not allowed/i.test(String(r.error.message||''))){DUEL.rq=[];break}}catch(e){}
+        if(!done&&DUEL.rq.length)await new Promise(z=>setTimeout(z,500+k*300))}
+      if(!done&&DUEL.rq.length){DUEL.err='report';break}
+      DUEL.rq.shift()}
+  }finally{DUEL.rqBusy=0}
+}
+function dRepSync(){   // sunucudaki cevap sayısı geride kaldıysa eksik cevapları sırayla yeniden gönder
+  const d=DUEL.d;if(!d||DUEL.bot||d.status!=='active'||DUEL.rqBusy||(DUEL.rq&&DUEL.rq.length)||!DUEL.rh)return;
+  for(let k=dMine().a|0;DUEL.rh[k]&&DUEL.rh[k].did===DUEL.id;k++)(DUEL.rq=DUEL.rq||[]).push(DUEL.rh[k]);
+  if(DUEL.rq&&DUEL.rq.length)dRepRun();
+}
 function dMine(){const d=DUEL.d;if(!d)return{s:0,c:0,a:0,t:0};return dIsP1()?{s:d.s1,c:d.c1,a:d.a1,t:+d.t1}:{s:d.s2,c:d.c2,a:d.a2,t:+d.t2}}
 function dOpp(){
   const d=DUEL.d;if(!d)return{s:0,c:0,a:0,t:0};
@@ -4648,11 +4667,11 @@ async function duelFetch(){
     const r=await sb.rpc('duel_state',{did:DUEL.id});
     if(r.error||!r.data)return;
     DUEL.off=new Date(r.data.now).getTime()-Date.now();
-    DUEL.d=r.data.d;
+    DUEL.d=r.data.d;dRepSync();
   }catch(e){}
 }
 async function duelStart(id){
-  dStop();DUEL.id=id;DUEL.bot=null;DUEL.d=null;DUEL.longWait=false;
+  dStop();DUEL.id=id;DUEL.bot=null;DUEL.d=null;DUEL.longWait=false;DUEL.rq=[];DUEL.rh={};
   for(let k=0;k<6&&!DUEL.d;k++){await duelFetch();if(!DUEL.d)await new Promise(r=>setTimeout(r,700))}
   const d=DUEL.d;if(!d){DUEL.err='err';DUEL.phase='lobby';render();return}
   if(d.wn!==W.length){DUEL.err='ver';DUEL.phase='lobby';render();return}
@@ -4720,7 +4739,7 @@ function duelAnswer(i){
   if(DUEL.bot){const d=DUEL.d;d.a1++;d.s1+=pts;if(ok)d.c1++;d.t1+=ms}
   else{
     const d=DUEL.d;if(d){if(dIsP1()){d.a1=Math.max(d.a1,idx+1);d.s1+=pts;if(ok)d.c1++}else{d.a2=Math.max(d.a2,idx+1);d.s2+=pts;if(ok)d.c2++}}
-    sb.rpc('duel_report',{did:DUEL.id,idx,ok,ms,lv:COEF[it.w.level]||1,to:i<0}).then(r=>{if(r&&r.error)DUEL.err='report'}).catch(()=>{});
+    dRep({did:DUEL.id,idx,ok,ms,lv:COEF[it.w.level]||1,to:i<0});
   }
   render();
   setTimeout(()=>{
