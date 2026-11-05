@@ -164,6 +164,14 @@ for lv,pr in prac.items():
         for x in pr.get(k,[]):
             if x['id'] in _tm.T:x['t']=_tm.T[x['id']]
             else:warn.append('İngilizce başlık yok: '+x['id'])
+def _imgcap(parts):
+    for t in parts:
+        for im in t.get('img',[]):
+            if len(im)>=3:
+                if im[2] not in _tm.IMG:E('İngilizce resim açıklaması yok: '+im[2])
+                else:im[:]=im[:3]+[_tm.IMG[im[2]]]
+for X in exams:_imgcap(X['sec']['S']['parts'])
+for lv,pr in prac.items():_imgcap(pr.get('S',[]))
 names=[a[0] for a in audio]
 if len(names)!=len(set(names)):E('ses adı tekrarı: '+str([n for n in names if names.count(n)>1]))
 for w in warn:print('UYARI:',w)
