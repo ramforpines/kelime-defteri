@@ -1138,11 +1138,12 @@ async function checkAccess(){
     CLOUD.approved=r.data?!!r.data.approved:false;CLOUD.resetAt=r.data&&r.data.reset_at||null;
     const a=await sb.rpc('is_admin');
     CLOUD.admin=!!(a&&a.data);
-    try{localStorage.setItem('kd_beta',CLOUD.admin?'1':'0')}catch(e){}
-    try{localStorage.setItem(ck,JSON.stringify({approved:CLOUD.approved,admin:CLOUD.admin}))}catch(e){}
+    let bt=CLOUD.admin;if(!bt){try{const x=await sb.rpc('is_beta');bt=!!(x&&x.data)}catch(e){}}CLOUD.beta=bt;   // beta test kullanıcısı (supabase-tester.sql)
+    try{localStorage.setItem('kd_beta',bt?'1':'0')}catch(e){}
+    try{localStorage.setItem(ck,JSON.stringify({approved:CLOUD.approved,admin:CLOUD.admin,beta:CLOUD.beta}))}catch(e){}
   }catch(e){
     const m=String((e&&(e.message||e.code))||'');
-    if(cache){CLOUD.approved=!!cache.approved;CLOUD.admin=!!cache.admin;try{if(cache.admin)localStorage.setItem('kd_beta','1')}catch(e){}}
+    if(cache){CLOUD.approved=!!cache.approved;CLOUD.admin=!!cache.admin;CLOUD.beta=!!(cache.beta||cache.admin);try{if(CLOUD.beta)localStorage.setItem('kd_beta','1')}catch(e){}}
     else CLOUD.approved=/PGRST205|42P01|does not exist|Could not find the table/i.test(m);   // yönetim kurulumu yapılmamışsa kısıtlama yok
   }
 }
