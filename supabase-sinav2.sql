@@ -1,8 +1,9 @@
 -- Sınavlar 2. adım (4.156.0): sıralama tablosu, seviye kilidi, haftada 1 sınav, haftada 1 yapay zekâ değerlendirmesi
+-- Hafta: Türkiye saatiyle pazartesi 00:00 – pazar 23:59. (Daha önce çalıştırdıysan yeniden çalıştırman yeterli.)
 -- Önce supabase-sinav.sql çalıştırılmış olmalı.
 
 -- Seviye sırası: a2 → b1 → b2 → c1. Bir seviyenin sınavı, bir önceki seviyeden en az bir sınav bitmeden başlatılamaz.
--- Haftada 1 sınav: son 7 gün içinde başka bir sınava başlanmışsa yenisi başlatılamaz. Yöneticiler bu kurallardan muaftır.
+-- Haftada 1 sınav: bu hafta (pazartesi–pazar) başka bir sınava başlanmışsa yenisi başlatılamaz. Yöneticiler bu kurallardan muaftır.
 create or replace function public.exam_can_start(p_exam text)
 returns void language plpgsql security definer stable set search_path = public as $$
 declare uid uuid := auth.uid(); lv text[] := array['a2','b1','b2','c1']; i int; last timestamptz;
@@ -14,7 +15,7 @@ begin
     raise exception 'locked';
   end if;
   select max(started_at) into last from public.exam_runs where user_id = uid and exam_id <> p_exam;
-  if last is not null and last > now() - interval '7 days' then raise exception 'week'; end if;
+  if last is not null and last >= (date_trunc('week', now() at time zone 'Europe/Istanbul') at time zone 'Europe/Istanbul') then raise exception 'week'; end if;
 end $$;
 
 create or replace function public.exam_save(p_exam text, p_state jsonb)
@@ -65,7 +66,7 @@ revoke all on function public.exam_board(text) from public, anon;
 grant execute on function public.exam_board(text) to authenticated;
 revoke all on function public.exam_can_start(text) from public, anon;
 
--- Yapay zekâ değerlendirmesi: kullanıcı haftada 1 (son 7 gün), yönetici günde 3
+-- Yapay zekâ değerlendirmesi: kullanıcı haftada 1 (pazartesi–pazar), yönetici günde 3
 create or replace function public.pet_eval_left() returns int
 language plpgsql security definer stable set search_path = public as $$
 declare uid uuid := auth.uid(); adm boolean; used int;
@@ -77,6 +78,7 @@ begin
      where user_id = uid and created_at >= (date_trunc('day', now() at time zone 'Europe/Istanbul') at time zone 'Europe/Istanbul');
     return greatest(3 - used, 0);
   end if;
-  select count(*) into used from public.pet_evals where user_id = uid and created_at > now() - interval '7 days';
+  select count(*) into used from public.pet_evals where user_id = uid
+    and created_at >= (date_trunc('week', now() at time zone 'Europe/Istanbul') at time zone 'Europe/Istanbul');
   return greatest(1 - used, 0);
 end $$;
