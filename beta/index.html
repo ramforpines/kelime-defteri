@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.153.1';
+const APP_VERSION='4.154.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3664,6 +3664,7 @@ function vPetW(){
   ${P.done?`<div class="card stack"><h3 style="margin:0">Öz değerlendirme</h3><div class="small muted">PET yazma 4 ölçütle puanlanır (her biri 0–5). Doğru olanları işaretle.</div>
     ${PW_SELF.map((c,ci)=>`<div><b>${c[0]}</b> <span class="small muted" id="pws${ci}"></span>${c.slice(1).map((x,i)=>`<label class="small" style="display:flex;gap:8px;align-items:flex-start;margin-top:4px"><input type="checkbox" data-pwc="${ci}-${i}" ${(d.c||{})[ci+'-'+i]?'checked':''}> <span>${esc(x)}</span></label>`).join('')}</div>`).join('')}
     <div id="pwsum" class="small"></div></div>
+    ${aiCard('w',d.ai&&d.ai.res,d.ai&&d.ai.n!==(txt.match(/\S+/g)||[]).length)}
     <div class="card stack"><h3 style="margin:0">Örnek cevap</h3><div class="small" lang="en" style="white-space:pre-line;line-height:1.6">${esc(T.model)}</div><div class="small muted">${(T.model.match(/\S+/g)||[]).length} kelime. Kendi cevabınla karşılaştır: maddeler, bağlaçlar ve farklı zamanlar nasıl kullanılmış?</div></div>`:''}
   <div class="row"><button class="btn" data-act="pw-back">Görevlere dön</button></div></div>`;
 }
@@ -3706,6 +3707,7 @@ function vPetS(){
       <div class="small">Süre: <b>${Math.round(dur)}</b>/${q[1]} sn · Kelime: <b>${wn}</b> · Hız: <b>${wpm}</b> kelime/dk${P.pz>=3?` · En uzun duraklama: <b>${Math.round(P.pz)}</b> sn`:''}${fill?` · Dolgu sesi (um, er): ${fill}`:''}</div>
       <div class="small muted">${wn<q[1]*0.9?'Biraz daha uzun konuş: PET\'te sessiz kalmak ya da çok kısa cevap vermek puan kaybettirir.':wpm<70?'Akıcılığı artırmak için cümleleri önceden düşünmeden, kısa ve bağlantılı söylemeye çalış.':'Güzel uzunluk. Şimdi cümleleri because, so, however ile bağlamaya ve farklı zamanlar kullanmaya odaklan.'}</div>
       <div class="small"><b>Kullanışlı kalıplar:</b> ${kw.map(([k,ok])=>`<span class="badge" style="${ok?'background:rgba(46,158,91,.15);color:#2e9e5b':''}">${ok?'✓ ':''}${esc(k)}</span>`).join(' ')}</div></div>
+      ${aiCard('s',(P.ai||{})[P.qi])}
       <div class="card stack"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Örnek cevap</h3><button class="btn" data-act="ps-say" data-v="m">🔊 Dinle</button></div><div class="small" lang="en" style="line-height:1.6">${esc(q[3])}</div></div>`;
   }
   return`<div class="top"><h1>${esc(T.t)}</h1></div><div class="stack">
@@ -3716,6 +3718,46 @@ function vPetS(){
    :`<button class="btn primary block" data-act="ps-start" ${PS_REC?'':'disabled'}>${P.st==='done'?'Tekrar konuş':'🎤 Konuşmaya başla'}</button>`}</div>
   ${res}
   <div class="row">${P.st==='done'&&P.qi+1<T.q.length?`<button class="btn primary" data-act="ps-next">Sonraki soru</button>`:''}<button class="btn" data-act="ps-back">Görevlere dön</button></div></div>`;
+}
+/* PET 2. aşama: yapay zekâ değerlendirmesi (Supabase Edge Function: pet-eval) */
+const AI_ERR={limit:'Bugünkü değerlendirme hakkın bitti. Yarın tekrar deneyebilirsin.',setup:'Yapay zekâ değerlendirmesi henüz kurulmadı (yönetici ayarı eksik).',auth:'Oturum doğrulanamadı. Çıkış yapıp tekrar giriş yap.',short:'Değerlendirme için en az birkaç cümle yaz ya da söyle.',ai:'Değerlendirme şu an yapılamadı, hakkın geri verildi. Biraz sonra tekrar dene.',db:'Sunucu kurulumu eksik (SQL).',net:'Bağlantı hatası. İnternetini kontrol edip tekrar dene.'};
+async function aiLeft(){try{const r=await sb.rpc('pet_eval_left');if(!r.error&&typeof r.data==='number'){UI.aiLeft=r.data;const el=document.getElementById('aileft');if(el)el.textContent=r.data}}catch(e){}}
+async function aiEval(kind){
+  if(!sb||!CLOUD.uid||UI.aiBusy)return;
+  let body;
+  if(kind==='w'){const T=((window.PETWS||{}).w||[]).find(x=>x.id===UI.pw.id),d=((S.pw||{})[T.id])||{},txt=d.t||'';
+    body={kind:'w',id:T.id,part:T.part,genre:T.kind||'email',task:T.in+'\n\n'+T.mail,points:T.pts.map(p=>'- '+p[0]).join('\n'),text:txt,words:(txt.match(/\S+/g)||[]).length}}
+  else{const P=UI.ps,T=psTask(),q=T.q[P.qi];body={kind:'s',id:T.id+'-'+P.qi,part:T.p,task:q[0],limit:q[1],dur:Math.round(P.dur||0),text:P.fin||''}}
+  body.topics=(window.GRAMMAR||[]).map(t=>({id:t.id,t:t.title}));
+  UI.aiBusy=true;render();
+  let res=null,err=null;
+  try{const r=await sb.functions.invoke('pet-eval',{body});
+    if(r.error){let c='net';try{const j=await r.error.context.json();c=j.error||c}catch(e){if(/404|not found/i.test(String(r.error.message)))c='setup'}err=c}
+    else if(r.data&&r.data.ok){res=r.data.res;UI.aiLeft=r.data.left}else err=(r.data&&r.data.error)||'ai'}
+  catch(e){err='net'}
+  UI.aiBusy=false;
+  if(err){toast(AI_ERR[err]||AI_ERR.ai,5000)}
+  else if(kind==='w'){const d=S.pw[UI.pw.id];d.ai={res,d:today(),n:(d.t.match(/\S+/g)||[]).length};save()}
+  else{const P=UI.ps;(P.ai=P.ai||{})[P.qi]=res}
+  render();if(kind==='w')pwSelfUpd();
+}
+function aiHtml(res,kind){
+  if(!res)return'';const sc=res.scores||{},keys=kind==='w'?[['content','İçerik'],['communicative','İletişim'],['organisation','Düzen'],['language','Dil']]:[['grammar_vocab','Dilbilgisi ve kelime'],['discourse','Konuşma düzeni']];
+  const tot=keys.reduce((t,[k])=>t+(+sc[k]||0),0),mx=keys.length*5;
+  return`<div class="row" style="gap:10px;align-items:baseline"><div class="score" style="font-size:2rem">${tot}/${mx}</div>${res.level?`<span class="badge">${esc(res.level)}</span>`:''}</div>
+  <div class="small">${keys.map(([k,l])=>`<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding:3px 0"><span>${l}</span><b>${+sc[k]||0}/5</b></div>`).join('')}</div>
+  ${res.summary?`<div class="small">${esc(res.summary)}</div>`:''}
+  ${(res.strengths||[]).length?`<div class="small"><b>İyi yaptıkların</b>${(res.strengths||[]).map(x=>`<div>✅ ${esc(x)}</div>`).join('')}</div>`:''}
+  ${(res.errors||[]).length?`<div class="small"><b>Düzeltmeler</b>${res.errors.map(x=>`<div style="border-top:1px solid var(--line);padding:6px 0"><span lang="en" style="color:#e5484d;text-decoration:line-through">${esc(x.orig||'')}</span> → <b lang="en" style="color:#2e9e5b">${esc(x.fix||'')}</b><div class="muted">${esc(x.why||'')}</div>${x.topic&&(window.GRAMMAR||[]).some(t=>t.id===x.topic)?`<button class="btn" style="margin-top:4px;padding:4px 10px;font-size:.8rem" data-act="pet-gram" data-v="${esc(x.topic)}">Konuyu çalış: ${esc((window.GRAMMAR.find(t=>t.id===x.topic)||{}).title||'')}</button>`:''}</div>`).join('')}</div>`:''}
+  ${(res.tips||[]).length?`<div class="small"><b>Öneriler</b>${res.tips.map(x=>`<div>• ${esc(x)}</div>`).join('')}</div>`:''}
+  ${res.improved||res.better?`<details class="small"><summary style="cursor:pointer;font-weight:600">Geliştirilmiş hâli</summary><div lang="en" style="white-space:pre-line;line-height:1.6;margin-top:6px">${esc(res.improved||res.better)}</div></details>`:''}
+  <div class="small muted">Yapay zekâ değerlendirmesidir; resmî puan değildir, ara sıra hata yapabilir.</div>`;
+}
+function aiCard(kind,res,stale){
+  return`<div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><h3 style="margin:0">🤖 Yapay zekâ değerlendirmesi</h3><span class="small muted">bugün kalan: <b id="aileft">${UI.aiLeft!=null?UI.aiLeft:'…'}</b></span></div>
+  ${res?aiHtml(res,kind):'<div class="small muted">PET ölçütlerine göre puan, düzeltmeler ve çalışman gereken gramer konuları.</div>'}
+  ${stale?'<div class="small" style="color:#b35a00">Metnini değerlendirmeden sonra değiştirdin; yeni hâli için tekrar değerlendir.</div>':''}
+  <button class="btn ${res?'':'primary'} block" data-act="ai-eval" data-v="${kind}" ${UI.aiBusy?'disabled':''}>${UI.aiBusy?'Değerlendiriliyor… (15–30 sn)':res?'Tekrar değerlendir':'Değerlendir'}</button></div>`;
 }
 function vPetReport(P){
   const R=P.items.filter(i=>i.k[0]==='R'),L=P.items.filter(i=>i.k[0]==='L'),r=R.filter(i=>i.ok).length,l=L.filter(i=>i.ok).length;
@@ -5299,12 +5341,13 @@ document.addEventListener('click',async e=>{
     case'pw-list':UI.pw={};UI.ps=null;render();window.scrollTo(0,0);break;
     case'ps-list':psStop();UI.ps={};UI.pw=null;render();window.scrollTo(0,0);break;
     case'pw-back-list':psStop();UI.pw=null;UI.ps=null;render();window.scrollTo(0,0);break;
-    case'pw-open':UI.pw={id:g('data-v'),done:!!(((S.pw||{})[g('data-v')]||{}).f)};render();window.scrollTo(0,0);if(UI.pw.done)pwSelfUpd();break;
-    case'pw-done':{S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.f=1;save();UI.pw.done=true;render();pwSelfUpd();break}
+    case'pw-open':aiLeft();UI.pw={id:g('data-v'),done:!!(((S.pw||{})[g('data-v')]||{}).f)};render();window.scrollTo(0,0);if(UI.pw.done)pwSelfUpd();break;
+    case'ai-eval':aiEval(g('data-v'));break;
+    case'pw-done':{aiLeft();S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.f=1;save();UI.pw.done=true;render();pwSelfUpd();break}
     case'pw-back':save();UI.pw={};render();window.scrollTo(0,0);break;
     case'ps-open':UI.ps={id:g('data-v'),qi:0,st:'idle'};render();window.scrollTo(0,0);setTimeout(()=>{const T=psTask();if(T)say(T.q[0][0])},300);break;
     case'ps-say':{const T=psTask();if(T)say(g('data-v')==='m'?T.q[UI.ps.qi][3]:T.q[UI.ps.qi][0]);break}
-    case'ps-start':psStart();break;
+    case'ps-start':if(UI.ps.ai)delete UI.ps.ai[UI.ps.qi];aiLeft();psStart();break;
     case'ps-stop':{const P=UI.ps;P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';psStop();break}
     case'ps-next':{UI.ps.qi++;UI.ps.st='idle';UI.ps.fin='';render();const T=psTask();if(T)setTimeout(()=>say(T.q[UI.ps.qi][0]),200);break}
     case'ps-back':psStop();UI.ps={};render();window.scrollTo(0,0);break;
