@@ -2,7 +2,7 @@
 # üslup: '' (nötr), 'resmî', 'samimi'
 def P(en,tr,lv,reg,ex,extr):return {'en':en,'tr':tr,'lv':lv,'reg':reg,'ex':[ex,extr]}
 GROUP={'id':'opinion','t':'Fikir belirtme','en':'Giving opinions, agreeing and disagreeing',
-'ins':'Fikrini söylemek, karşındakinin fikrini sormak ve ne kadar katıldığını göstermek için kalıplar. Katılma derecesi yeşilden kırmızıya doğru azalır.',
+'ins':'Fikrini söylemek, karşındakinin fikrini sormak ve ne kadar katıldığını göstermek için kalıplar. Katılma derecesi tamamen katılmaktan kesinlikle katılmamaya doğru sıralanır.',
 'sub':[
  {'k':'give','c':'💬','t':'Fikrini söylemek','en':'Giving your opinion','items':[
   P('I think ...','Bence ... / Sanırım ...','A1','','I think this film is great.','Bence bu film harika.'),
