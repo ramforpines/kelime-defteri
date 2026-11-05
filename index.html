@@ -3756,14 +3756,14 @@ function sxSpSave(){const P=UI.ps;if(!P||!P.exam)return;const r=sxRec(P.exam);r.
 function sxSpNext(){const P=UI.ps,X=sxExam(P.exam),parts=X.sec.S.parts,r=sxRec(P.exam),s=r.state.sec.S;
   if(P.qi+1<parts[P.pi].q.length)P.qi++;else{P.pi++;P.qi=0}
   if(P.pi>=parts.length){s.done=true;s.pi=parts.length;sxSave(P.exam,true);const id=P.exam;UI.ps=null;UI.sxe=id;sxCheckFinish(id);render();window.scrollTo(0,0);return}
-  s.pi=P.pi;s.qi=P.qi;P.T=parts[P.pi];P.st='idle';P.fin='';P.cur='';sxSave(P.exam);render();window.scrollTo(0,0);setTimeout(()=>say(P.T.q[P.qi][0]),300)}
+  s.pi=P.pi;s.qi=P.qi;P.T=parts[P.pi];P.st='idle';P.fin='';P.cur='';sxSave(P.exam);render();window.scrollTo(0,0);}
 function vSxS(){
   const P=UI.ps,X=sxExam(P.exam),parts=X.sec.S.parts,T=parts[P.pi],q=T.q[P.qi],r=sxRec(P.exam),rec=r.state.sec.S.tr[P.pi+'-'+P.qi];
   const nAll=parts.reduce((a,p)=>a+p.q.length,0),nDone=Object.keys(r.state.sec.S.tr).length;
   return`<div class="qtop"><button class="btn" data-act="sxs-pause">Ara ver</button><div class="bar"><i style="width:${Math.round(nDone/nAll*100)}%"></i></div><span class="mono muted">${nDone}/${nAll}</span></div>
   <div class="stack"><div class="card stack"><div class="row" style="justify-content:space-between"><b>${esc(T.t)}</b>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}</div><div class="small muted">${esc(T.ins)}</div></div>
   ${sxScene(T)}
-  <div class="card stack"><div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><h2 lang="en" style="margin:0">${esc(q[0])}</h2><button class="btn" data-act="ps-say" data-v="q" aria-label="Soruyu dinle">🔊</button></div>
+  <div class="card stack"><div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><h2 lang="en" style="margin:0">${esc(q[0])}</h2></div><div class="row" style="gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" data-act="ps-say" data-v="q">🔊 Soruyu dinle</button><button class="btn" data-act="tts-stop">⏹ Durdur</button></div><div class="small muted">Sesi duymuyorsan cihazının sesini aç ve sessiz modu kapat (iPhone\'da yandaki sessiz anahtarı).</div>
    <div class="small muted">Konuşma süresi: ${q[1]} saniye. Sınavda her soruya bir kez cevap verirsin.</div>
    ${rec?`<div class="small" lang="en" style="white-space:pre-line;padding:8px;border-radius:8px;background:rgba(120,120,120,.08)">${rec.t?esc(rec.t):'<span class="muted">Konuşma algılanmadı.</span>'}</div><div class="small muted">${rec.dur} sn · ${sxWc(rec.t)} kelime</div><button class="btn primary block" data-act="sxs-next">${P.pi+1>=parts.length&&P.qi+1>=T.q.length?'Konuşma bölümünü bitir':'Sonraki soru'}</button>`
    :P.st==='rec'?`<div class="row" style="justify-content:space-between"><b style="color:#e5484d">● Kayıtta</b><b id="pstm">${q[1]} sn</b></div><div id="pstr" class="small" lang="en" style="min-height:3em;white-space:pre-line"></div><button class="btn primary block" data-act="ps-stop">Bitir</button>`
@@ -3786,7 +3786,7 @@ function vSxMic(){const M=UI.sxmic,X=sxExam(M.id);
   const msg={perm:'Mikrofon izni verilmedi. Tarayıcının adres çubuğundaki ya da ayarlarındaki site izinlerinden mikrofona izin ver ve testi tekrarla.',nowords:'Sesin algılanamadı. Sessiz bir ortamda, telefona yakın ve net konuşarak tekrar dene.',other:'Konuşma tanıma şu an çalışmadı. İnternet bağlantını kontrol edip tekrar dene.',nosupport:''};
   return`<div class="top"><h1>Mikrofon testi</h1><span class="muted small">${esc(SX_NM[X.lv])}</span></div><div class="stack">
   ${!PS_REC?`<div class="card stack" style="border-left:3px solid var(--bad)"><b>Bu tarayıcı konuşma tanımayı desteklemiyor.</b><div class="small">Konuşma bölümü için şu tarayıcılardan biriyle aç:${how}</div></div>`
-  :`<div class="card stack"><div class="small">Konuşma bölümüne başlamadan önce mikrofonunu deneyelim. <b>Testi başlat</b>'a dokun ve İngilizce şunu söyle:</div>
+  :`<div class="card stack"><b>1. Ses testi</b><div class="small">Sorular sesli okunur. Dokun ve sesi duyduğundan emin ol; duymuyorsan cihazının sesini aç ve sessiz modu kapat.</div><button class="btn block" data-act="sx-sndtest">🔊 Sesi dene</button></div><div class="card stack"><b>2. Mikrofon testi</b><div class="small">Konuşma bölümüne başlamadan önce mikrofonunu deneyelim. <b>Testi başlat</b>'a dokun ve İngilizce şunu söyle:</div>
     <div lang="en" style="font-size:1.1rem;font-weight:600">"Hello, my name is ... and I am ready for the test."</div>
     ${M.st==='rec'?`<div class="row" style="justify-content:space-between"><b style="color:#e5484d">● Dinleniyor…</b><span class="small muted">en fazla 7 sn</span></div>`:''}
     <div id="sxmictr" class="small" lang="en" style="min-height:2.4em;padding:8px;border-radius:8px;background:rgba(120,120,120,.08)">${esc(M.tr)}</div>
@@ -4006,7 +4006,7 @@ function vPetS(){
   }
   return`<div class="top"><h1>${esc(T.t)}</h1><span class="muted small">${esc(sxLvOfTask(T.id))}</span></div><div class="stack">
   ${sxScene(T)}  <div class="card stack"><div class="small muted">${esc(T.ins)}</div>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}
-   <div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><h2 lang="en" style="margin:0">${esc(q[0])}</h2><button class="btn" data-act="ps-say" data-v="q" aria-label="Soruyu dinle">🔊</button></div>
+   <div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><h2 lang="en" style="margin:0">${esc(q[0])}</h2></div><div class="row" style="gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" data-act="ps-say" data-v="q">🔊 Soruyu dinle</button><button class="btn" data-act="tts-stop">⏹ Durdur</button></div><div class="small muted">Sesi duymuyorsan cihazının sesini aç ve sessiz modu kapat (iPhone\'da yandaki sessiz anahtarı).</div>
    <div class="small muted">Konuşma süresi: ${q[1]} saniye</div>
    ${P.st==='rec'?`<div class="row" style="justify-content:space-between"><b style="color:#e5484d">● Kayıtta</b><b id="pstm">${q[1]} sn</b></div><div id="pstr" class="small" lang="en" style="min-height:3em;white-space:pre-line"></div><button class="btn primary block" data-act="ps-stop">Bitir</button>`
    :`<button class="btn primary block" data-act="ps-start" ${PS_REC?'':'disabled'}>${P.st==='done'?'Tekrar konuş':'🎤 Konuşmaya başla'}</button>`}</div>
@@ -4420,6 +4420,8 @@ function toast(m,ms,force){try{if(!force&&duelLock()){if(TQ.length<4&&!TQ.some(x
 setInterval(()=>{try{if(TQ.length&&!duelLock()){const q=TQ.shift();if(Date.now()-q[2]<90000)toast(q[0],q[1])}}catch(e){}},2800);
 let VOICES=[];
 try{const lv=()=>{VOICES=speechSynthesis.getVoices()};lv();speechSynthesis.addEventListener('voiceschanged',lv)}catch(e){}
+function ttsStop(){try{speechSynthesis.cancel()}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)ttsStop()});
 function say(word,pron){
   try{
     const clean=String(word).replace(/\s*\([^)]*\)/g,'').split('/')[0];
@@ -5493,7 +5495,7 @@ document.addEventListener('click',async e=>{
   if(!el)return;
   const g=a=>el.getAttribute(a);
   if(duelLock()&&!/^duel-/.test(g('data-act')||'')){return}
-  if(g('data-tab')){setTab(g('data-tab'));return}
+  if(g('data-tab')){ttsStop();setTab(g('data-tab'));return}
   if(g('data-say')!==null&&el.hasAttribute('data-say')){say(g('data-say'),g('data-pron'));return}
   if(el.hasAttribute('data-opt')){answer(+g('data-opt'));return}
   if(el.hasAttribute('data-adf')){UI.adm.filter=g('data-adf');render();return}
@@ -5588,12 +5590,12 @@ document.addEventListener('click',async e=>{
     case'sx-l':UI.sxl=g('data-v');render();break;
     case'sx-k':UI.sxk=g('data-v');render();break;
     case'sx-open':UI.sxe=g('data-v');UI.sxres=true;sxRec(UI.sxe);render();window.scrollTo(0,0);break;
-    case'sx-home':sxAudioStop();UI.sq=null;UI.sxe=null;UI.sxres=false;render();window.scrollTo(0,0);break;
+    case'sx-home':sxAudioStop();ttsStop();UI.sq=null;UI.sxe=null;UI.sxres=false;render();window.scrollTo(0,0);break;
     case'sx-sec':sxStartSec(UI.sxe,g('data-v'));break;
     case'sx-res':UI.sxres=true;aiLeft();render();window.scrollTo(0,0);break;
     case'sxmic-test':sxMicTest();break;
     case'sxmic-go':{const id=UI.sxmic.id,r=sxRec(id,true);r.state.sec.S.mic=1;sxSave(id);UI.sxmic=null;sxStartSec(id,'S');break}
-    case'sxmic-back':sxMicStop();UI.sxe=UI.sxmic.id;UI.sxmic=null;UI.sxres=false;render();window.scrollTo(0,0);break;
+    case'sxmic-back':sxMicStop();ttsStop();UI.sxe=UI.sxmic.id;UI.sxmic=null;UI.sxres=false;render();window.scrollTo(0,0);break;
     case'sx-ai':if(UI.aiErr)delete UI.aiErr[UI.sxe];sxAi();break;
     case'sx-board':UI.tab='rank';UI.rank.per='exam';render();window.scrollTo(0,0);break;
     case'sx-unlock':UI.sxBy=UI.sxBy||{};UI.sxBy[UI.sxe]=1;render();break;
@@ -5608,18 +5610,20 @@ document.addEventListener('click',async e=>{
     case'sxw-ch':{const r=sxRec(UI.sxw);r.state.sec.W.ch=g('data-v')||null;sxSave(UI.sxw);render();break}
     case'sxw-pause':{const id=UI.sxw;sxSave(id,true);UI.sxw=null;UI.sxe=id;UI.sxres=false;render();window.scrollTo(0,0);break}
     case'sxw-submit':{const r=sxRec(UI.sxw),X=sxExam(UI.sxw),T=sxWTasks(X),miss=T.filter(t=>sxWc(r.state.sec.W.t[t.choice?r.state.sec.W.ch:t.id])<10).length;if(!confirm((miss?miss+' görev boş ya da çok kısa. ':'')+'Yazma bölümü teslim edilsin mi? Sonra değiştiremezsin.'))break;sxWSubmit();break}
-    case'sxs-pause':{psStop();const id=UI.ps.exam;UI.ps=null;UI.sxe=id;UI.sxres=false;render();window.scrollTo(0,0);break}
-    case'sxs-next':sxSpNext();break;
+    case'sxs-pause':{psStop();ttsStop();const id=UI.ps.exam;UI.ps=null;UI.sxe=id;UI.sxres=false;render();window.scrollTo(0,0);break}
+    case'sxs-next':ttsStop();sxSpNext();break;
     case'sxs-skip':{const P=UI.ps;P.fin='';P.dur=0;sxSpSave();sxSpNext();break}
     case'pw-open':UI.pw={id:g('data-v'),done:!!(((S.pw||{})[g('data-v')]||{}).f)};render();window.scrollTo(0,0);if(UI.pw.done)pwSelfUpd();break;
     case'pw-done':{S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.f=1;save();UI.pw.done=true;render();pwSelfUpd();break}
     case'pw-back':save();UI.pw=null;render();window.scrollTo(0,0);break;
-    case'ps-open':{const r=sxPracAll().find(x=>x[1]==='S'&&x[2].id===g('data-v'));if(!r)break;UI.ps={T:r[2],qi:0,st:'idle'};render();window.scrollTo(0,0);setTimeout(()=>{const T=psTask();if(T)say(T.q[0][0])},300);break}
+    case'ps-open':{const r=sxPracAll().find(x=>x[1]==='S'&&x[2].id===g('data-v'));if(!r)break;UI.ps={T:r[2],qi:0,st:'idle'};render();window.scrollTo(0,0);ttsStop();break}
     case'ps-say':{const T=psTask();if(!T)break;const v=g('data-v'),q=T.q[UI.ps.qi],m=Array.isArray(q[3])?q[3]:[q[3]];say(v[0]==='m'?m[+v.slice(1)||0]:q[0]);break}
     case'ps-start':psStart();break;
     case'ps-stop':{const P=UI.ps;P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';psStop();break}
-    case'ps-next':{UI.ps.qi++;UI.ps.st='idle';UI.ps.fin='';render();const T=psTask();if(T)setTimeout(()=>say(T.q[UI.ps.qi][0]),200);break}
-    case'ps-back':psStop();UI.ps=null;render();window.scrollTo(0,0);break;
+    case'ps-next':{UI.ps.qi++;UI.ps.st='idle';UI.ps.fin='';ttsStop();render();break}
+    case'tts-stop':ttsStop();break;
+    case'sx-sndtest':say('Hello! If you can hear this, your sound is working.');break;
+    case'ps-back':psStop();ttsStop();UI.ps=null;render();window.scrollTo(0,0);break;
     case'adm-sx':sxAdmLoad();break;
     case'adm-sx-del':UI.adm.sxDel=g('data-v');render();break;
     case'adm-sx-no':UI.adm.sxDel=null;render();break;
