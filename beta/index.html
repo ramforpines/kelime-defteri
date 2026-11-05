@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.154.0';
+const APP_VERSION='4.155.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1343,7 +1343,7 @@ async function onLogin(user){
 }
 function onLogout(){
   try{dReset()}catch(e){}
-  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.ldDone=false;try{RWR.q=[]}catch(e){}CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;CLOUD.live=null;annPopClose();UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.flags={};CLOUD.flagsErr=false;UI.rep=null;CHAT.myban=null;CHAT.bans={};UI.cban=null;UI.cbp=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.lc={};CLOUD.ld=null;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
+  clearTimeout(pushT);clearTimeout(pullT);CLOUD.pulled=false;CLOUD.known=0;CLOUD.uid=null;CLOUD.ldDone=false;SXR=null;UI.sxSynced=false;UI.sq=null;UI.sxe=null;UI.sxw=null;UI.ps=null;UI.pw=null;try{RWR.q=[]}catch(e){}CLOUD.approved=null;CLOUD.admin=false;UI.adm.list=[];UI.adm.loaded=false;UI.adm.pw=null;UI.adm.rs=null;CLOUD.ann=null;CLOUD.live=null;annPopClose();UI.fb={kind:'oneri',draft:'',list:[],loaded:false,busy:false,err:''};UI.afb={list:[],loaded:false,filter:'new',busy:false,err:'',reply:{},del:null};CLOUD.flags={};CLOUD.flagsErr=false;UI.rep=null;CHAT.myban=null;CHAT.bans={};UI.cban=null;UI.cbp=null;UI.arp={list:[],loaded:false,filter:'open',busy:false,err:'',del:null,reply:{},edit:{},rdel:null};CLOUD.ready=false;CLOUD.lb=[];CLOUD.lbReady=false;CLOUD.lc={};CLOUD.ld=null;CLOUD.last='';S=fresh();UI.tab='today';UI.quiz=null;render();
 }
 async function initAuth(){
   try{
@@ -1870,7 +1870,7 @@ function vAdmin(){
   const d=s=>s?new Date(s).toLocaleDateString('tr-TR',{day:'numeric',month:'short'}):'–';
   const ad=A.annDraft!=null?A.annDraft:(CLOUD.ann?CLOUD.ann.body:'');
   const btn=(act,u,label,cls)=>`<button class="btn ${cls||''}" data-act="${act}" data-u="${esc(u)}">${label}</button>`;
-  return`${adminStatsCard()}${adminSecCard()}<div class="card stack"><div class="seg"><button class="chip" aria-pressed="${A.filter==='pending'}" data-adf="pending">Bekleyen (${pend})</button><button class="chip" aria-pressed="${A.filter==='ok'}" data-adf="ok">Onaylı (${A.list.length-pend})</button><button class="chip" aria-pressed="${A.filter==='all'}" data-adf="all">Hepsi</button></div>
+  return`${adminStatsCard()}${adminSecCard()}${adminSxCard()}<div class="card stack"><div class="seg"><button class="chip" aria-pressed="${A.filter==='pending'}" data-adf="pending">Bekleyen (${pend})</button><button class="chip" aria-pressed="${A.filter==='ok'}" data-adf="ok">Onaylı (${A.list.length-pend})</button><button class="chip" aria-pressed="${A.filter==='all'}" data-adf="all">Hepsi</button></div>
   <input id="adq" class="nameinp" type="search" placeholder="Kullanıcı ara" value="${esc(A.q)}" autocomplete="off">
   <div class="row"><button class="btn" data-act="adm-load" ${A.busy?'disabled':''}>${A.busy?'Yükleniyor…':'Yenile'}</button>${pend>1&&A.filter!=='ok'?`<button class="btn primary" data-act="adm-approve-all" ${A.busy?'disabled':''}>Bekleyen ${pend} kişiyi onayla</button>`:''}<span class="small muted">${A.list.length} kullanıcı</span></div>
   ${A.err?`<div class="small" style="color:var(--bad)">${esc(A.err)}</div>`:''}</div>
@@ -2850,7 +2850,7 @@ const GRAM_ON=true;   // Gramer: herkese açık (A1–B2)
 const GRAM_BETA=/\/beta\//.test(location.pathname)||/[?&]gram=1/.test(location.search);   // C1 ve üstü yalnızca beta (yönetici)
 const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['pet','PET']]:[]);   // PET denemeleri: yalnızca beta
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['pet','Sınav']]:[]);   // seviye sınavları ve çalışma: yalnızca beta
 const isStudy=t=>(t==='gram'&&GRAM_ON)||(t==='pet'&&GRAM_BETA)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
@@ -2928,7 +2928,7 @@ function vGram(){
 }
 function studySeg(){
   if(UI.quiz)return'';
-  if(UI.tab==='pet'&&((UI.pt&&!UI.pt.done)||(UI.ps&&UI.ps.st==='rec')))return'';
+  if(UI.tab==='pet'&&((UI.sq&&!UI.sq.done)||UI.sxw||(UI.ps&&(UI.ps.st==='rec'||UI.ps.exam))))return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel')return'';   // düello ortadaki ana menüden açılır, çalışma sekmeleri görünmez
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
   return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='duel').map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}</button>`).join('')}</div>`;
@@ -3031,7 +3031,7 @@ function render(){
   else if(UI.tab==='review')h=vReview();
   else if(UI.tab==='saved')h=vSaved();
   else if(UI.tab==='gram'&&GRAM_ON)h=vGram();
-  else if(UI.tab==='pet'&&GRAM_BETA)h=vPet();
+  else if(UI.tab==='pet'&&GRAM_BETA)h=vSx();
   else if(UI.tab==='rank')h=vRank();
   else if(UI.tab==='chat')h=vChat();
   else h=vMe();
@@ -3552,6 +3552,8 @@ function vResult(){
     <div class="row"><button class="btn primary" data-act="again">${qz.mode==='exam'?'Vize listesine dön':'Yeni test'}</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
 }
 /* ===== PET denemeleri (beta): B1 Preliminary formatında okuma + dinleme; sonunda konu raporu ===== */
+/* ===== Seviye sınavları (A2 Key, B1 Preliminary, B2 First, C1 Advanced) ve çalışma bölümü (beta) =====
+   Veri: sinav.js (tools/sinav/build.py). Sınav ilerlemesi sunucuda (supabase-sinav.sql: exam_runs), her sınav bir kez çözülür. */
 const PET_SK={gist:['Ana fikir','Metnin tamamını bir kez hızlıca oku, sonra soruya dön. İlk ve son paragraf çoğu zaman ana fikri verir.'],
   detail:['Ayrıntı yakalama','Sorudaki anahtar kelimeyi metinde bul; şıktaki kelimenin aynısı değil, anlamca karşılığı aranır. Dinlemede "ama, sonra, aslında" gibi düzeltmelere dikkat et.'],
   inference:['Çıkarım','Cevap açıkça yazmaz; konuşanın niyetini ve durumu düşün. "Neden?" ve "ne yapacak?" sorularında son söylenene bak.'],
@@ -3560,61 +3562,298 @@ const PET_SK={gist:['Ana fikir','Metnin tamamını bir kez hızlıca oku, sonra 
   vocab:['Kelime ve kalıp','Fiil + isim kalıplarını (go on a trip, take a walk, hold a festival) birlikte öğren. -ed / -ing sıfat farkına dikkat et.'],
   spelling:['Sayı, saat ve yazım','Saatleri (quarter to, half past), fiyatları ve tarihleri yazarak dinle. Konuşan önce bir sayı söyleyip sonra düzeltebilir.'],
   reference:['Metin içi gönderme','Boşluktan sonraki cümlede "they, them, there, this, during this time" gibi gönderme sözcüklerinin neyi gösterdiğini bul.'],
-  coherence:['Metin akışı','Boşluktan önceki ve sonraki cümleyi birlikte oku; "but, however, instead, so" bağlaçları anlamın yönünü gösterir.']};
-const PET_PN={R1:'Okuma 1 · Kısa metinler',R2:'Okuma 2 · Eşleştirme',R3:'Okuma 3 · Uzun metin',R4:'Okuma 4 · Cümle yerleştirme',R5:'Okuma 5 · Çoktan seçmeli boşluk',R6:'Okuma 6 · Açık boşluk',L1:'Dinleme 1 · Kısa kayıtlar',L2:'Dinleme 2 · Kısa konuşmalar',L3:'Dinleme 3 · Not tamamlama',L4:'Dinleme 4 · Röportaj'};
-let PET_LOADING=false;
-function petLoad(){if(window.PET||PET_LOADING)return;PET_LOADING=true;const s=document.createElement('script');s.src='pet.js?v='+APP_VERSION;s.onload=()=>{PET_LOADING=false;if(UI.tab==='pet')render()};s.onerror=()=>{PET_LOADING=false};document.head.appendChild(s)}
-const petAud=id=>'audio/pet/'+id+'.mp3';
-const petScTxt=sc=>sc.map(x=>(sc.length>1?(x[0]==='M'?'Erkek: ':'Kadın: '):'')+x[1]).join('\n');
-function petItems(T){
-  const out=[];
-  T.parts.forEach(p=>{
-    const b={k:p.k,ti:p.ti,ins:p.ins};
-    if(p.k==='R1')p.q.forEach((q,i)=>out.push(Object.assign({},b,{n:i+1,pass:[q.x],q:q.q,o:q.o,a:q.a,tg:q.tg,e:q.e})));
-    else if(p.k==='R2'){const tx=p.texts.map(t=>t[0]+'. '+t[1]+': '+t[2]);
-      p.people.forEach(([nm,d],i)=>out.push(Object.assign({},b,{n:i+1,pass:tx,pt:'Kurslar / kitaplar (A–H)',q:nm+': '+d,o:p.texts.map(t=>t[1]),a:p.texts.findIndex(t=>t[0]===p.a[i]),tg:Array.isArray(p.tg[i])?p.tg[i]:[p.tg[i]],e:p.e[i]})))}
-    else if(p.k==='R3')p.q.forEach((q,i)=>out.push(Object.assign({},b,{n:i+1,pass:p.p,pt:p.title,q:q.q,o:q.o,a:q.a,tg:q.tg,e:q.e})));
-    else if(p.k==='R4')p.a.forEach((a,i)=>out.push(Object.assign({},b,{n:i+1,pass:p.p.split('\n'),pt:p.title,q:'Boşluk ('+(i+1)+') için hangi cümle uygun?',o:p.s.map(s=>s[1]),a:p.s.findIndex(s=>s[0]===a),tg:[p.tg[i]],e:p.e[i]})));
-    else if(p.k==='R5')p.o.forEach(([o,a,t],i)=>out.push(Object.assign({},b,{n:i+1,pass:p.p.split('\n'),pt:p.title,q:'Boşluk ('+(i+1)+') için doğru seçenek hangisi?',o,a,tg:t,e:p.e[i]})));
-    else if(p.k==='R6')p.a.forEach((a,i)=>out.push(Object.assign({},b,{n:i+1,pass:p.p.split('\n'),pt:p.title,q:'Boşluk ('+(i+1)+') için tek kelime yaz.',txt:a,tg:p.tg[i],e:p.e[i]})));
-    else if(p.k==='L1'||p.k==='L2')p.q.forEach((q,i)=>out.push(Object.assign({},b,{n:i+1,au:petAud(T.id+'-'+q.id),sc:petScTxt(q.sc),q:q.q,o:q.o,a:q.a,tg:q.tg,e:q.e})));
-    else if(p.k==='L3')p.a.forEach((a,i)=>out.push(Object.assign({},b,{n:i+1,au:petAud(T.id+'-'+p.id),sc:petScTxt(p.sc),pass:p.notes.split('\n'),pt:'Notlar',q:'Boşluk ('+(i+1)+') için kelime, sayı ya da tarih yaz.',txt:a,tg:p.tg[i],e:p.e[i]})));
-    else if(p.k==='L4')p.q.forEach((q,i)=>out.push(Object.assign({},b,{n:i+1,au:petAud(T.id+'-'+p.id),sc:petScTxt(p.sc),q:q.q,o:q.o,a:q.a,tg:q.tg,e:q.e})));
-  });
+  coherence:['Metin akışı','Boşluktan önceki ve sonraki cümleyi birlikte oku; "but, however, instead, so" bağlaçları anlamın yönünü gösterir.'],
+  collocation:['Eşdizim','Hangi kelimelerin birlikte kullanıldığını kalıp olarak öğren (make a decision, heavy rain, take part in). Anlamca yakın şıklardan yalnızca biri kalıba uyar.'],
+  'word-formation':['Kelime türetme','Boşluğa isim mi, sıfat mı, zarf mı, fiil mi geldiğine bak; ek getir (-ness, -ity, -ment, -ful, -ive, -ly). Olumsuz anlam (un-, in-, dis-) ve çoğul eki unutma.'],
+  transformation:['Cümle dönüştürme','Verilen kelimeyi değiştirmeden kullan ve sınırı aşma. Anlam aynı kalmalı: zaman, olumsuzluk, edilgen yapı ve kalıp (used to, unless, as long as) dikkat ister.']};
+const SX_LV=['A2','B1','B2','C1'],SX_NM={A2:'A2 Key',B1:'B1 Preliminary',B2:'B2 First',C1:'C1 Advanced'},SX_SHORT={A2:'KET',B1:'PET',B2:'FCE',C1:'CAE'};
+const SX_BASE={A2:120,B1:140,B2:160,C1:180},SX_UP={A2:'B1',B1:'B2',B2:'C1',C1:'C2'},SX_DN={A2:'A1',B1:'A2',B2:'B1',C1:'B2'};
+const SX_SK={R:'Okuma',L:'Dinleme',W:'Yazma',S:'Konuşma'},SX_IC={R:'📖',L:'🎧',W:'✍️',S:'🎤'};
+const sxSkName=(lv,k)=>k==='R'&&(lv==='B2'||lv==='C1')?'Okuma ve dil kullanımı':SX_SK[k];
+const SX_VO={M:'Erkek',F:'Kadın',M2:'Erkek 2',F2:'Kadın 2'};
+let SX_LOADING=false;
+function sxLoad(){if(window.SINAV||SX_LOADING)return;SX_LOADING=true;const s=document.createElement('script');s.src='sinav.js?v='+APP_VERSION;s.onload=()=>{SX_LOADING=false;if(UI.tab==='pet'||UI.me==='adm')render()};s.onerror=()=>{SX_LOADING=false;toast('Sınav dosyası yüklenemedi. İnternetini kontrol et.',4000)};document.head.appendChild(s)}
+const sxAud=n=>'audio/sx/'+n+'.mp3';
+const sxScTxt=sc=>{const many=new Set(sc.map(x=>x[0])).size>1;return sc.filter(x=>!String(x[1]).startsWith('#')).map(x=>(many?SX_VO[x[0]]+': ':'')+x[1]).join('\n')};
+const sxPara=p=>p==null?null:Array.isArray(p)?p:String(p).split('\n');
+function sxItems(p,owner){
+  const out=[],pass=sxPara(p.p),pau=p.sc?sxAud(owner+'-'+p.id):null,psc=p.sc?sxScTxt(p.sc):null;
+  const b=(n,o)=>Object.assign({k:p.k,nm:p.nm,ins:n===1?p.ins:'',n,pt:p.title||'Metin',au:pau,sc:psc,pass},o);
+  if(p.ty==='mc')p.q.forEach((q,i)=>out.push(b(i+1,{pass:q.x?[q.x]:pass,pt:q.x?'Metin':(p.title||'Metin'),au:q.sc?sxAud(owner+'-'+q.id):pau,sc:q.sc?sxScTxt(q.sc):psc,q:q.q,o:q.o,a:q.a,tg:q.tg,e:q.e})));
+  else if(p.ty==='match'){const lab=p.opts.map(o=>o[0]),ps=pass||(p.opts.some(o=>o[2])?p.opts.map(o=>o[0]+'. '+o[1]+(o[2]?': '+o[2]:'')):null);
+    p.q.forEach((q,i)=>out.push(b(i+1,{pass:ps,pt:p.pl||p.title||'Metinler',q:q.q,o:p.opts.map(o=>o[1]),lab,a:lab.indexOf(q.a),tg:q.tg,e:q.e})))}
+  else if(p.ty==='gap'){const lab=p.opts.map(o=>o[0]);p.a.forEach((a,i)=>out.push(b(i+1,{q:'Boşluk ('+(i+1)+') için hangisi uygun?',o:p.opts.map(o=>o[1]),lab,a:lab.indexOf(a),tg:p.tg[i],e:p.e[i]})))}
+  else if(p.ty==='cloze')p.o.forEach(([o,a,t],i)=>out.push(b(i+1,{q:'Boşluk ('+(i+1)+') için doğru seçenek hangisi?',o,a,tg:t,e:p.e[i]})));
+  else if(p.ty==='open')p.a.forEach((a,i)=>out.push(b(i+1,{q:p.st?'Boşluk ('+(i+1)+'): '+p.st[i]+' kelimesinin doğru biçimini yaz.':'Boşluk ('+(i+1)+') için '+(p.sc?'kelime, sayı ya da tarih':'TEK kelime')+' yaz.',txt:a,tg:p.tg[i],e:p.e[i]})));
+  else if(p.ty==='kwt')p.q.forEach((q,i)=>out.push(b(i+1,{pass:null,q:q.s1,kw:q.key,s2:q.s2,mx:q.mx||5,txt:q.a,tg:q.tg,e:q.e})));
   return out;
 }
-const petNorm=s=>String(s||'').trim().toLowerCase().replace(/[’']/g,"'").replace(/\s+/g,' ').replace(/[.]$/,'').replace(/^£/,'');
-const petOk=it=>it.txt?it.txt.some(x=>petNorm(x)===petNorm(it.ua)):it.ua===it.a;
-function petLevel(sk,n){const t=sk==='R'?[29,23,13]:[23,18,11];return n>=t[0]?'B2':n>=t[1]?'B1':n>=t[2]?'A2':'A2 altı'}
-function petStart(id){const T=(window.PET||[]).find(x=>x.id===id);if(!T)return;UI.pt={id,items:petItems(T),i:0,done:false};render();window.scrollTo(0,0)}
-function petAnswer(v){const P=UI.pt;if(!P||P.done)return;const it=P.items[P.i];it.ua=v;
-  if(P.i+1>=P.items.length){petFinish();return}P.i++;const y=it.k===P.items[P.i].k&&(it.pass||it.au)?window.scrollY:0;render();window.scrollTo(0,y)}
-function petFinish(){const P=UI.pt;P.done=true;P.items.forEach(it=>it.ok=petOk(it));
-  const r=P.items.filter(i=>i.k[0]==='R'&&i.ok).length,l=P.items.filter(i=>i.k[0]==='L'&&i.ok).length;
-  S.pet=S.pet||{};const o=S.pet[P.id];if(!o||r+l>(o.r+o.l))S.pet[P.id]={r,l,d:today()};save();render();window.scrollTo(0,0)}
-function vPet(){
-  if(!window.PET){petLoad();return`<div class="card"><div class="muted">Denemeler yükleniyor…</div></div>`}
+const petNorm=s=>String(s||'').trim().toLowerCase().replace(/[’‘`]/g,"'").replace(/\s+/g,' ').replace(/[.!?]$/,'').replace(/^£/,'');
+const sxOk=(it,ua)=>ua==null||ua===''?false:it.txt?it.txt.some(x=>petNorm(x)===petNorm(ua)):ua===it.a;
+const sxLab=(it,i)=>it.lab?it.lab[i]:String.fromCharCode(65+i);
+const sxUa=(it,ua)=>it.txt?(ua||'(boş)'):ua!=null&&ua!==''?sxLab(it,ua)+'. '+it.o[ua]:'(boş)';
+const sxCa=it=>it.txt?it.txt[0]:sxLab(it,it.a)+'. '+it.o[it.a];
+function sxScale(lv,pct){const B=SX_BASE[lv],P=[[0,B-40],[.41,B-20],[.72,B],[.91,B+20],[1,B+30]];pct=Math.max(0,Math.min(1,pct));for(let i=1;i<P.length;i++)if(pct<=P[i][0]){const[a,x]=P[i-1],[b,y]=P[i];return Math.round(x+(y-x)*(pct-a)/(b-a))}return B+30}
+function sxLevel(lv,sc){const B=SX_BASE[lv];return sc>=B+20?SX_UP[lv]:sc>=B?lv:sc>=B-20?SX_DN[lv]:SX_DN[lv]+' altı'}
+const sxMMSS=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const sxExam=id=>((window.SINAV||{}).exams||[]).find(x=>x.id===id);
+const SXI={};
+const sxExamItems=(X,k)=>SXI[X.id+k]||(SXI[X.id+k]=X.sec[k].parts.flatMap(p=>sxItems(p,X.id)));
+const sxWTasks=X=>X.sec.W.tasks.map(t=>t.choice?{choice:t.choice}:t);
+const sxPracAll=()=>{const P=(window.SINAV||{}).prac||{},o=[];Object.keys(P).forEach(lv=>['R','L','W','S'].forEach(k=>(P[lv][k]||[]).forEach(x=>o.push([lv,k,x]))));return o};
+const sxWTask=id=>{const r=sxPracAll().find(([lv,k,x])=>k==='W'&&x.id===id);return r?r[2]:null};
+const sxLvOfTask=id=>{const r=sxPracAll().find(x=>x[2].id===id);return r?r[0]:'B1'};
+
+/* --- sınav kayıtları: yerel kopya + sunucu --- */
+let SXR=null,SXR_K='',SXST=null;
+const sxKey=()=>'kd-sx:'+(CLOUD.uid||'-');
+function sxRecs(){if(!SXR||SXR_K!==sxKey()){SXR_K=sxKey();UI.sxSynced=false;try{SXR=JSON.parse(localStorage.getItem(SXR_K)||'{}')}catch(e){SXR={}}}return SXR}
+function sxPersist(){try{localStorage.setItem(sxKey(),JSON.stringify(SXR||{}))}catch(e){}}
+function sxNewState(X){const m=k=>X.sec[k].min*60;return{n:0,sec:{R:{ans:[],i:0,left:m('R'),done:false},L:{ans:[],i:0,left:m('L'),done:false,pl:{}},W:{t:{},ch:null,left:m('W'),done:false},S:{tr:{},pi:0,qi:0,done:false}}}}
+function sxRec(id,create){const R=sxRecs();if(!R[id]&&create){const X=sxExam(id);R[id]={status:'active',state:sxNewState(X),upd:Date.now()}}return R[id]}
+function sxSave(id,now){const r=sxRec(id);if(!r||r.status==='done')return;r.state.n=(r.state.n||0)+1;r.upd=Date.now();sxPersist();clearTimeout(SXST);
+  const go=async()=>{if(!sb||!CLOUD.uid)return;try{const x=await sb.rpc('exam_save',{p_exam:id,p_state:r.state});if(x.error){if(/done/.test(x.error.message||''))sxSync(true)}else{r.sv=1;sxPersist()}}catch(e){}};
+  if(now)go();else SXST=setTimeout(go,2500)}
+let SX_SYNC=false;
+async function sxSync(force){
+  if(!sb||!CLOUD.uid||SX_SYNC)return;if(UI.sxSynced&&!force)return;SX_SYNC=true;
+  try{const x=await sb.rpc('exam_mine');if(x.error)throw x.error;
+    const R=sxRecs(),seen={};
+    (x.data||[]).forEach(row=>{seen[row.exam_id]=1;const l=R[row.exam_id];
+      if(row.status==='done'||!l||l.status!=='done'&&((row.state||{}).n||0)>=((l.state||{}).n||0))R[row.exam_id]={status:row.status,state:row.state,result:row.result,upd:Date.parse(row.updated_at)||Date.now(),sv:1};
+      else if(l.status==='done'&&l.pend)sxPushFinish(row.exam_id);
+      else if(l.status!=='done')sxSave(row.exam_id,true)});
+    Object.keys(R).forEach(id=>{if(seen[id])return;const l=R[id];
+      if(l.sv){delete R[id];return}   // sunucuda yok ama daha önce kaydedilmişti: yönetici sıfırladı
+      if(l.status==='done')sxPushFinish(id);else sxSave(id,true)});
+    sxPersist();UI.sxSynced=true;UI.sxErr=false}
+  catch(e){UI.sxErr=true;UI.sxSynced=true;setTimeout(()=>{UI.sxSynced=false},30000)}   // hata: 30 sn sonra yeniden dene (döngüye girmesin)
+  SX_SYNC=false;if(UI.tab==='pet'&&!UI.sq&&!(UI.ps&&UI.ps.st==='rec')&&!UI.sxw)render();
+}
+async function sxPushFinish(id){const r=sxRec(id);if(!r||!sb||!CLOUD.uid)return;try{const x=await sb.rpc('exam_finish',{p_exam:id,p_state:r.state,p_result:r.result});if(!x.error||/done/.test(x.error.message||'')){r.pend=0;r.sv=1;sxPersist();if(r.result&&r.result.ai)sb.rpc('exam_ai',{p_exam:id,p_ai:r.result.ai})}}catch(e){}}
+function sxResult(X,st){
+  const res={at:today()},tg={};
+  ['R','L'].forEach(k=>{const it=sxExamItems(X,k);let c=0;it.forEach((x,i)=>{const ok=sxOk(x,st.sec[k].ans[i]);if(ok)c++;(x.tg||[]).forEach(t=>{const a=tg[t]||(tg[t]=[0,0]);a[1]++;if(!ok)a[0]++})});res[k]=[c,it.length]});
+  res.tg=tg;return res;
+}
+function sxCheckFinish(id){const r=sxRec(id),X=sxExam(id);if(!r||r.status==='done'||!X)return;const s=r.state.sec;if(!['R','L','W','S'].every(k=>s[k].done))return;
+  r.result=sxResult(X,r.state);r.status='done';r.pend=1;sxPersist();sxPushFinish(id);UI.sxe=id;UI.sxres=true;toast('Sınav tamamlandı. Sonucun hazır.',3000)}
+function sxScores(X,r){
+  const lv=X.lv,res=r.result||{},ai=res.ai||{},o={};
+  ['R','L'].forEach(k=>{if(res[k]){const[c,n]=res[k];o[k]={raw:c+'/'+n,sc:sxScale(lv,c/n)}}});
+  if(ai.w){const n=sxWTasks(X).length;let t=0;(ai.w||[]).forEach(x=>{if(x&&x.scores)t+=['content','communicative','organisation','language'].reduce((a,k)=>a+(+x.scores[k]||0),0)});o.W={raw:t+'/'+n*20,sc:sxScale(lv,t/(n*20))}}
+  if(ai.w&&'s' in ai){const s=ai.s&&ai.s.scores||{},t=(+s.grammar_vocab||0)+(+s.discourse||0);o.S={raw:t+'/10',sc:sxScale(lv,t/10)}}
+  const v=['R','L','W','S'].filter(k=>o[k]).map(k=>o[k].sc);o.all=v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length):null;o.full=v.length===4;return o}
+
+/* --- okuma / dinleme çözücü (sınav: UI.sq.mode 'x', çalışma: 'p') --- */
+let SXA=null,SXT=null;
+function sxAudioStop(){if(SXA){try{SXA.pause()}catch(e){}}}
+const sxPlays=src=>{const Q=UI.sq;if(!Q||Q.mode!=='x')return 0;const r=sxRec(Q.id);return((r.state.sec.L.pl||{})[src])||0};
+function sxPlayBtn(src){const n=sxPlays(src),on=SXA&&!SXA.paused&&SXA.dataset.src===src;
+  return`<div id="sxpb" class="row" style="gap:8px;margin-bottom:10px"><button class="btn ${on?'':'primary'}" data-act="sx-play" data-v="${esc(src)}" ${n>=2&&!on?'disabled':''}>${on?'⏹ Durdur':'▶ Dinle'}</button><span class="small muted">${on?'Çalıyor…':n>=2?'Dinleme hakkın bitti (2/2).':'Gerçek sınavdaki gibi en fazla 2 kez: '+(2-n)+' hakkın kaldı.'}</span></div>`}
+function sxPlay(src){const Q=UI.sq;if(!Q)return;const r=sxRec(Q.id),pl=r.state.sec.L.pl||(r.state.sec.L.pl={});
+  if(!SXA){SXA=new Audio();SXA.onended=SXA.onpause=()=>{const b=document.getElementById('sxpb');if(b&&SXA.dataset.src)b.outerHTML=sxPlayBtn(SXA.dataset.src)}}
+  if(!SXA.paused&&SXA.dataset.src===src){SXA.pause();return}
+  if((pl[src]||0)>=2)return;sxAudioStop();pl[src]=(pl[src]||0)+1;sxSave(Q.id);SXA.dataset.src=src;SXA.src=src;
+  SXA.play().then(()=>{const b=document.getElementById('sxpb');if(b)b.outerHTML=sxPlayBtn(src)}).catch(()=>{pl[src]--;toast('Ses çalınamadı.',3000)})}
+function sxTimer(){clearInterval(SXT);SXT=setInterval(()=>{
+  const id=UI.sq&&UI.sq.mode==='x'?UI.sq.id:UI.sxw||null,k=UI.sq&&UI.sq.mode==='x'?UI.sq.sk:UI.sxw?'W':null;
+  if(!id||UI.tab!=='pet'){clearInterval(SXT);SXT=null;return}
+  if(document.visibilityState!=='visible')return;
+  const r=sxRec(id);if(!r||r.status==='done')return;const s=r.state.sec[k];if(s.done)return;
+  s.left=Math.max(0,(s.left||0)-1);const el=document.getElementById('sxtm');if(el){el.textContent=sxMMSS(s.left);if(s.left<=300)el.style.color='var(--bad)'}
+  if(s.left%15===0)sxSave(id);
+  if(s.left<=0){toast('Süre doldu, bölüm teslim edildi.',4000);if(k==='W')sxWSubmit(true);else sxSubmit(true)}},1000)}
+function sxStartSec(id,k){const X=sxExam(id),r=sxRec(id,true);if(r.status==='done')return;const s=r.state.sec[k];if(s.done)return;
+  if(k==='W'){UI.sxw=id;sxTimer();render();window.scrollTo(0,0);return}
+  if(k==='S'){UI.ps={exam:id,T:X.sec.S.parts[s.pi]||X.sec.S.parts[0],pi:s.pi||0,qi:s.qi||0,st:'idle'};render();window.scrollTo(0,0);return}
+  UI.sq={mode:'x',id,sk:k,items:sxExamItems(X,k),i:Math.min(s.i||0,sxExamItems(X,k).length)};sxTimer();sxSave(id);render();window.scrollTo(0,0)}
+function sxPracStart(lv,id){const P=window.SINAV.prac[lv],p=(P.R||[]).concat(P.L||[]).find(x=>x.id===id);if(!p)return;
+  UI.sq={mode:'p',id,lv,sk:p.k[0],items:sxItems(p,'p'+lv.toLowerCase()),i:0,ans:[]};render();window.scrollTo(0,0)}
+const sxAns=()=>{const Q=UI.sq;return Q.mode==='x'?sxRec(Q.id).state.sec[Q.sk].ans:Q.ans};
+function sxAnswer(v){const Q=UI.sq;if(!Q||Q.done)return;const A=sxAns(),it=Q.items[Q.i];A[Q.i]=v;
+  const prev=Q.i;Q.i=Math.min(Q.items.length,Q.i+1);if(Q.mode==='x'){sxRec(Q.id).state.sec[Q.sk].i=Q.i;sxSave(Q.id)}
+  const nx=Q.items[Q.i],keep=nx&&nx.k===it.k&&(it.pass||it.au)&&nx.n>1;render();window.scrollTo(0,keep?window.scrollY:0)}
+function sxGo(i){const Q=UI.sq;Q.i=Math.max(0,Math.min(Q.items.length,i));if(Q.mode==='x'){sxRec(Q.id).state.sec[Q.sk].i=Q.i;sxSave(Q.id)}render();window.scrollTo(0,0)}
+function sxSubmit(auto){const Q=UI.sq;if(!Q)return;sxAudioStop();
+  if(Q.mode==='x'){const r=sxRec(Q.id),s=r.state.sec[Q.sk];s.done=true;s.i=Q.items.length;sxSave(Q.id,true);clearInterval(SXT);SXT=null;const id=Q.id;UI.sq=null;UI.sxe=id;sxCheckFinish(id);render();window.scrollTo(0,0);return}
+  Q.done=true;const c=Q.items.filter((it,i)=>sxOk(it,Q.ans[i])).length;let B={};try{B=JSON.parse(localStorage.getItem('kd-sxp')||'{}')}catch(e){}
+  const o=B[Q.id];if(!o||c>o[0])B[Q.id]=[c,Q.items.length,today()];try{localStorage.setItem('kd-sxp',JSON.stringify(B))}catch(e){}
+  render();window.scrollTo(0,0)}
+function sxGrid(Q,A){return`<div class="row" style="flex-wrap:wrap;gap:4px">${Q.items.map((it,i)=>{const has=A[i]!=null&&A[i]!=='';return`<button class="chip" style="min-width:34px;padding:4px 6px;${i===Q.i?'outline:2px solid var(--accent);':''}${has?'background:rgba(46,158,91,.15)':''}" data-act="sx-go" data-v="${i}">${i+1}</button>`}).join('')}</div>`}
+function vSxRun(){
+  const Q=UI.sq;if(Q.done)return vSxPracRep(Q);
+  const A=sxAns(),tot=Q.items.length,X=Q.mode==='x'?sxExam(Q.id):null,s=X?sxRec(Q.id).state.sec[Q.sk]:null;
+  const head=`<div class="qtop"><button class="btn" data-act="sx-quit">${Q.mode==='x'?'Ara ver':'Çık'}</button><div class="bar"><i style="width:${Math.round(A.filter(x=>x!=null&&x!=='').length/tot*100)}%"></i></div>${s?`<b class="mono" id="sxtm" style="${s.left<=300?'color:var(--bad)':''}">${sxMMSS(s.left)}</b>`:`<span class="mono muted">${Math.min(Q.i+1,tot)}/${tot}</span>`}</div>`;
+  if(Q.i>=tot){const empty=Q.items.filter((it,i)=>A[i]==null||A[i]==='').length;
+    return head+`<div class="card stack"><h2 style="margin:0">${Q.mode==='x'?'Bölümü teslim et':'Bitir'}</h2>
+    <div class="small">${empty?`<b style="color:var(--bad)">${empty} soru boş.</b> Numaraya dokunarak dönebilirsin.`:'Tüm soruları cevapladın.'}${Q.mode==='x'?' Teslim ettikten sonra bu bölümdeki cevaplarını değiştiremezsin.':''}</div>
+    ${sxGrid(Q,A)}<button class="btn primary block" data-act="sx-submit">${Q.mode==='x'?'Teslim et':'Bitir ve sonucu gör'}</button></div>`}
+  const it=Q.items[Q.i],ua=A[Q.i];
+  const au=it.au?(Q.mode==='x'?sxPlayBtn(it.au):`<div data-exaud="${esc(it.au)}" style="margin-bottom:10px"></div>`):'';
+  const body=it.kw?`<div class="small muted">Birinci cümleyle aynı anlamı verecek şekilde ikinci cümleyi tamamla. Kalın kelimeyi değiştirmeden kullan; 2–${it.mx} kelime yaz.</div>
+     <div lang="en" style="font-size:1.05rem;line-height:1.6">${esc(it.q)}</div><div><span class="badge" style="font-size:1rem;letter-spacing:.06em">${esc(it.kw)}</span></div>
+     <div lang="en" style="font-size:1.05rem;line-height:1.6">${esc(it.s2)}</div>`:`<h2 lang="en" style="white-space:pre-line">${esc(it.q)}</h2>`;
+  const ans=it.txt?`<div class="row"><input id="sxans" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Cevabını yaz" value="${esc(ua||'')}" style="flex:1;min-width:0"><button class="btn primary" data-act="sx-text">Kaydet</button></div>`
+    :`<div class="opts" lang="en">${it.o.map((o,i)=>`<button class="opt" data-act="sx-ans" data-v="${i}" style="${ua===i?'border-color:var(--accent);background:rgba(80,120,255,.12)':''}"><kbd>${esc(sxLab(it,i))}</kbd><span>${esc(o)}</span></button>`).join('')}</div>`;
+  return head+`<div class="card qcard"><div class="row" style="margin-bottom:8px;justify-content:space-between"><span class="badge">${esc(it.nm)} · ${it.n}</span><span class="small muted">${Q.i+1}/${tot}</span></div>
+  ${it.ins?`<div class="small muted" style="margin-bottom:8px">${esc(it.ins)}</div>`:''}${au}
+  ${it.pass?`<details class="card small" lang="en" style="margin-bottom:10px" ${it.n===1||Q.mode==='x'||it.pass.length<4?'open':''}><summary style="cursor:pointer;font-weight:600">${esc(it.pt||'Metin')}</summary><div class="stack" style="margin-top:8px">${it.pass.map(t=>`<p style="margin:0;line-height:1.6;white-space:pre-line">${esc(t)}</p>`).join('')}</div></details>`:''}
+  ${body}${ans}
+  <div class="row" style="justify-content:space-between;margin-top:10px"><button class="btn" data-act="sx-go" data-v="${Q.i-1}" ${Q.i?'':'disabled'}>← Önceki</button><button class="btn" data-act="sx-go" data-v="${Q.i+1}">${Q.i+1<tot?'Sonraki →':'Bitir →'}</button></div></div>
+  <details class="card small"><summary style="cursor:pointer">Soru listesi</summary><div style="margin-top:8px">${sxGrid(Q,A)}</div></details>`;
+}
+/* sonuç analizi: yanlışlar ve konular (çalışma ve sınav) */
+function sxAnalysis(items,ans){
+  const G={},Gn={};items.forEach((it,i)=>{const ok=sxOk(it,ans[i]);(it.tg||[]).forEach(t=>{(Gn[t]=Gn[t]||[0,0])[1]++;if(!ok){Gn[t][0]++;(G[t]=G[t]||[]).push(it)}})});
+  const gram=Object.keys(G).filter(t=>!PET_SK[t]).sort((a,b)=>G[b].length-G[a].length),sk=Object.keys(G).filter(t=>PET_SK[t]).sort((a,b)=>G[b].length-G[a].length);
+  const gt=id=>((window.GRAMMAR||[]).find(t=>t.id===id)||{title:id}).title;
+  const top=[gram[0]&&gt(gram[0]),gram[1]&&gt(gram[1]),sk[0]&&PET_SK[sk[0]][0]].filter(Boolean);
+  const wrong=items.map((it,i)=>[it,ans[i]]).filter(([it,a])=>!sxOk(it,a));
+  return`<div class="card stack"><h3 style="margin:0">Neye çalışmalısın?</h3>
+   ${!wrong.length?'<div>Tüm soruları doğru yaptın.</div>':`<div style="padding:8px 10px;border-radius:8px;border-left:3px solid #e0a020;background:rgba(224,160,32,.1)">Öncelikli çalışma: <b>${top.map(esc).join(', ')||'ayrıntılar aşağıda'}</b>. Konulara dokunarak doğrudan anlatıma gidebilirsin.</div>`}
+   ${gram.length?`<div class="small muted">Gramer: yanlış yaptığın konular</div>${gram.map(t=>`<div class="row" style="justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding:6px 0"><div><b>${esc(gt(t))}</b><div class="small muted">${G[t].length} hata · ${Gn[t][1]} sorudan</div></div>${(window.GRAMMAR||[]).some(x=>x.id===t)?`<button class="btn" data-act="pet-gram" data-v="${esc(t)}">Konuyu çalış</button>`:''}</div>`).join('')}`:''}
+   ${sk.length?`<div class="small muted" style="margin-top:6px">Beceriler</div>${sk.map(t=>`<div style="border-top:1px solid var(--line);padding:6px 0"><b>${esc(PET_SK[t][0])}</b> <span class="small muted">· ${G[t].length} hata / ${Gn[t][1]} soru</span><div class="small">${esc(PET_SK[t][1])}</div></div>`).join('')}`:''}</div>
+  ${wrong.length?`<div class="card stack"><h3 style="margin:0">Yanlışların (${wrong.length})</h3>${wrong.map(([it,a])=>`<details class="small" style="border-top:1px solid var(--line);padding:6px 0"><summary style="cursor:pointer"><b>${esc(it.nm)} · ${it.n}</b> <span lang="en">${esc(it.kw?it.s2:it.q)}</span></summary>
+     <div style="margin-top:6px">Senin cevabın: <span style="color:#e5484d;text-decoration:line-through">${esc(sxUa(it,a))}</span><br>Doğru cevap: <b>${esc(sxCa(it))}</b>${it.txt&&it.txt.length>1?` <span class="muted">(${it.txt.slice(1).map(esc).join(', ')} de kabul)</span>`:''}</div>
+     <div class="muted" style="margin-top:4px">${esc(it.e||'')}</div>${it.sc?`<details style="margin-top:4px"><summary style="cursor:pointer" class="muted">Konuşma metni</summary><div lang="en" style="white-space:pre-line;margin-top:4px">${esc(it.sc)}</div></details>`:''}${it.pass&&!it.sc?`<details style="margin-top:4px"><summary style="cursor:pointer" class="muted">Metin</summary><div lang="en" style="white-space:pre-line;margin-top:4px">${esc(it.pass.join('\n'))}</div></details>`:''}</details>`).join('')}</div>`:''}`;
+}
+function vSxPracRep(Q){const c=Q.items.filter((it,i)=>sxOk(it,Q.ans[i])).length,n=Q.items.length;
+  return`<div class="top"><h1>Sonuç</h1></div><div class="stack"><div class="card stack"><div class="score" style="font-size:2.2rem">${c}/${n}</div><div class="small muted">${esc(Q.items[0].nm)} · çalışma. Puan vermez, sıralamayı etkilemez.</div></div>
+  ${sxAnalysis(Q.items,Q.ans)}<div class="row"><button class="btn primary" data-act="sx-home">Çalışmaya dön</button><button class="btn" data-act="sx-prac" data-v="${esc(Q.lv)}|${esc(Q.id)}">Tekrar çöz</button></div></div>`}
+
+/* --- sınav: yazma bölümü --- */
+const sxWc=t=>(String(t||'').match(/\S+/g)||[]).length;
+function vSxW(){
+  const id=UI.sxw,X=sxExam(id),r=sxRec(id,true),s=r.state.sec.W,T=sxWTasks(X);
+  return`<div class="qtop"><button class="btn" data-act="sxw-pause">Ara ver</button><div class="bar"><i style="width:${Math.round(T.filter(t=>sxWc(s.t[(t.choice?s.ch:t.id)])>=10).length/T.length*100)}%"></i></div><b class="mono" id="sxtm" style="${s.left<=300?'color:var(--bad)':''}">${sxMMSS(s.left)}</b></div>
+  <div class="stack"><div class="card small muted">${esc(sxSkName(X.lv,'W'))}: ${T.length} görev. Metnin otomatik kaydedilir. Sınavda canlı kontrol ve örnek cevap gösterilmez; sınav bitince yapay zekâ değerlendirmesi ve örnek cevaplar açılır.</div>
+  ${T.map((t,ti)=>{
+    if(t.choice&&!s.ch)return`<div class="card stack"><b>Part ${t.choice[0].part}: birini seç</b>${t.choice.map(c=>`<button class="btn block" style="text-align:left" data-act="sxw-ch" data-v="${esc(c.id)}"><b>${esc(c.t)}</b><div class="small muted" lang="en" style="white-space:pre-line">${esc(c.mail.slice(0,160))}…</div></button>`).join('')}</div>`;
+    const w=t.choice?t.choice.find(c=>c.id===s.ch):t,n=sxWc(s.t[w.id]);
+    return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>${esc(w.t)}</b>${t.choice?`<button class="btn" style="padding:4px 10px;font-size:.8rem" data-act="sxw-ch" data-v="">Görevi değiştir</button>`:''}</div>
+     <div class="small muted" lang="en">${esc(w.in)}</div><div class="card small" lang="en" style="white-space:pre-line">${esc(w.mail)}</div>
+     <textarea data-sxw="${esc(w.id)}" lang="en" spellcheck="false" autocapitalize="sentences" rows="10" style="width:100%;box-sizing:border-box;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit" placeholder="Cevabını İngilizce yaz…">${esc(s.t[w.id]||'')}</textarea>
+     <div class="small"><span id="sxwc-${esc(w.id)}" style="${n<w.min||n>w.max?'color:#b35a00':'color:#2e9e5b'}">${n} kelime</span> <span class="muted">(hedef ${w.min}–${w.max})</span></div></div>`}).join('')}
+  <button class="btn primary block" data-act="sxw-submit">Yazma bölümünü teslim et</button></div>`;
+}
+function sxWSubmit(auto){const id=UI.sxw;if(!id)return;const r=sxRec(id);r.state.sec.W.done=true;sxSave(id,true);clearInterval(SXT);SXT=null;UI.sxw=null;UI.sxe=id;sxCheckFinish(id);render();window.scrollTo(0,0)}
+/* --- sınav: konuşma bölümü (PS kayıt altyapısını kullanır) --- */
+function sxScene(T){return`${(T.img||[]).map(([em,cap])=>`<div class="card" style="text-align:center"><div style="font-size:2.6rem;line-height:1.3;letter-spacing:.1em">${esc(em)}</div><div class="small muted" style="margin-top:6px">${esc(cap)}</div></div>`).join('')}
+  ${T.opts?`<div class="card"><div class="row" style="flex-wrap:wrap;gap:6px;justify-content:center">${T.opts.map(o=>`<span class="badge" style="font-size:.95rem;padding:6px 10px">${esc(o)}</span>`).join('')}</div></div>`:''}`}
+function sxSpSave(){const P=UI.ps;if(!P||!P.exam)return;const r=sxRec(P.exam);r.state.sec.S.tr[P.pi+'-'+P.qi]={t:(P.fin||'').trim(),dur:Math.round(P.dur||0)};sxSave(P.exam,true)}
+function sxSpNext(){const P=UI.ps,X=sxExam(P.exam),parts=X.sec.S.parts,r=sxRec(P.exam),s=r.state.sec.S;
+  if(P.qi+1<parts[P.pi].q.length)P.qi++;else{P.pi++;P.qi=0}
+  if(P.pi>=parts.length){s.done=true;s.pi=parts.length;sxSave(P.exam,true);const id=P.exam;UI.ps=null;UI.sxe=id;sxCheckFinish(id);render();window.scrollTo(0,0);return}
+  s.pi=P.pi;s.qi=P.qi;P.T=parts[P.pi];P.st='idle';P.fin='';P.cur='';sxSave(P.exam);render();window.scrollTo(0,0);setTimeout(()=>say(P.T.q[P.qi][0]),300)}
+function vSxS(){
+  const P=UI.ps,X=sxExam(P.exam),parts=X.sec.S.parts,T=parts[P.pi],q=T.q[P.qi],r=sxRec(P.exam),rec=r.state.sec.S.tr[P.pi+'-'+P.qi];
+  const nAll=parts.reduce((a,p)=>a+p.q.length,0),nDone=Object.keys(r.state.sec.S.tr).length;
+  return`<div class="qtop"><button class="btn" data-act="sxs-pause">Ara ver</button><div class="bar"><i style="width:${Math.round(nDone/nAll*100)}%"></i></div><span class="mono muted">${nDone}/${nAll}</span></div>
+  <div class="stack"><div class="card stack"><div class="row" style="justify-content:space-between"><b>${esc(T.t)}</b>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}</div><div class="small muted">${esc(T.ins)}</div></div>
+  ${sxScene(T)}
+  <div class="card stack"><div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><h2 lang="en" style="margin:0">${esc(q[0])}</h2><button class="btn" data-act="ps-say" data-v="q" aria-label="Soruyu dinle">🔊</button></div>
+   <div class="small muted">Konuşma süresi: ${q[1]} saniye. Sınavda her soruya bir kez cevap verirsin.</div>
+   ${rec?`<div class="small" lang="en" style="white-space:pre-line;padding:8px;border-radius:8px;background:rgba(120,120,120,.08)">${rec.t?esc(rec.t):'<span class="muted">Konuşma algılanmadı.</span>'}</div><div class="small muted">${rec.dur} sn · ${sxWc(rec.t)} kelime</div><button class="btn primary block" data-act="sxs-next">${P.pi+1>=parts.length&&P.qi+1>=T.q.length?'Konuşma bölümünü bitir':'Sonraki soru'}</button>`
+   :P.st==='rec'?`<div class="row" style="justify-content:space-between"><b style="color:#e5484d">● Kayıtta</b><b id="pstm">${q[1]} sn</b></div><div id="pstr" class="small" lang="en" style="min-height:3em;white-space:pre-line"></div><button class="btn primary block" data-act="ps-stop">Bitir</button>`
+   :PS_REC?`<button class="btn primary block" data-act="ps-start">🎤 Konuşmaya başla</button><button class="btn block" data-act="sxs-skip">Bu soruyu boş geç</button>`
+   :`<div class="small" style="color:var(--bad)">Bu tarayıcıda konuşma tanıma yok (Chrome ya da Safari'nin güncel sürümünü kullan). Bu soruyu boş geçebilirsin.</div><button class="btn block" data-act="sxs-skip">Boş geç</button>`}</div></div>`;
+}
+/* --- sınav genel görünüm --- */
+function sxSecInfo(X,k){const s=X.sec[k];
+  if(k==='R'||k==='L')return s.parts.length+' bölüm · '+sxExamItems(X,k).length+' soru · '+s.min+' dk';
+  if(k==='W')return sxWTasks(X).length+' görev · '+s.min+' dk';
+  return s.parts.length+' bölüm · '+s.parts.reduce((a,p)=>a+p.q.length,0)+' soru · yaklaşık '+Math.max(1,Math.round(s.parts.reduce((a,p)=>a+p.q.reduce((b,q)=>b+q[1],0),0)/60))+' dk konuşma'}
+function vSxExam(){
+  const X=sxExam(UI.sxe);if(!X){UI.sxe=null;return vSx()}
+  const r=sxRec(X.id);if(r&&r.status==='done'&&UI.sxres)return vSxRes(X,r);
+  const st=r&&r.state;
+  return`<div class="top"><h1>${esc(SX_NM[X.lv])}</h1><span class="muted small">${esc(X.t)}</span></div><div class="stack">
+  <div class="card small">Bu sınavı <b>bir kez</b> çözebilirsin. Bölümleri istediğin sırada ve farklı zamanlarda çözebilirsin; ilerlemen kaydedilir, başka cihazda da kaldığın yerden devam edersin. Bölümün süresi yalnızca o bölüm açıkken işler. Teslim ettiğin bölüm değiştirilemez. Doğru cevaplar ve sonuç, dört bölüm de bitince görünür.</div>
+  ${['R','L','W','S'].map(k=>{const s=st&&st.sec[k],started=s&&(k==='W'?Object.keys(s.t).length||s.left<X.sec.W.min*60:k==='S'?Object.keys(s.tr).length:s.ans.some(x=>x!=null)||s.left<X.sec[k].min*60);
+    return`<div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><div><b>${SX_IC[k]} ${esc(sxSkName(X.lv,k))}</b><div class="small muted">${esc(sxSecInfo(X,k))}</div></div>${s&&s.done?'<span class="badge ok">✓ Teslim edildi</span>':''}</div>
+    ${s&&s.done?'':`<button class="btn ${started?'':'primary'} block" data-act="sx-sec" data-v="${k}">${started?'Devam et'+(k!=='S'?' · kalan '+sxMMSS(s.left):''):'Başla'}</button>`}</div>`}).join('')}
+  ${r&&r.status==='done'?`<button class="btn primary block" data-act="sx-res">Sonucu gör</button>`:''}
+  <button class="btn" data-act="sx-home">Sınavlara dön</button></div>`;
+}
+/* --- sınav sonucu --- */
+function vSxRes(X,r){
+  const o=sxScores(X,r),res=r.result||{},ai=res.ai,st=r.state,lv=X.lv;
+  const box=(k)=>{const v=o[k];return`<div style="flex:1;min-width:120px"><div class="small muted">${SX_IC[k]} ${esc(sxSkName(lv,k))}</div>${v?`<div class="score" style="font-size:1.6rem">${v.sc}</div><div class="small">${esc(v.raw)} · <span class="badge">${esc(sxLevel(lv,v.sc))}</span></div>`:'<div class="small muted" style="margin-top:6px">Değerlendirilmedi</div>'}</div>`};
+  const items=['R','L'].flatMap(k=>sxExamItems(X,k)),ans=['R','L'].flatMap(k=>{const it=sxExamItems(X,k);return it.map((x,i)=>st.sec[k].ans[i])});
+  const WT=sxWTasks(X).map(t=>t.choice?(t.choice.find(c=>c.id===st.sec.W.ch)||t.choice[0]):t);
+  return`<div class="top"><h1>Sonuç</h1><span class="muted small">${esc(SX_NM[lv])} · ${esc(X.t)}</span></div><div class="stack">
+  <div class="card stack"><div class="row" style="gap:14px;align-items:baseline"><div><div class="small muted">Genel puan (Cambridge ölçeğine yakın)</div><div class="score" style="font-size:2.6rem">${o.all??'–'}</div></div>${o.all!=null?`<span class="badge" style="font-size:1rem">${esc(sxLevel(lv,o.all))}</span>`:''}</div>
+   ${o.full?'':'<div class="small" style="color:#b35a00">Genel puan şimdilik yalnızca okuma ve dinlemeye göre. Yazma ve konuşmayı değerlendirince kesinleşir.</div>'}
+   <div class="row" style="flex-wrap:wrap;gap:12px">${['R','L','W','S'].map(box).join('')}</div>
+   <div class="small muted">${esc(SX_NM[lv])} için ${SX_BASE[lv]} ve üstü ${lv}, ${SX_BASE[lv]+20} ve üstü ${SX_UP[lv]} seviyesine karşılık gelir. Resmî Cambridge sonucu değildir; dönüşüm yaklaşıktır.</div></div>
+  <div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><h3 style="margin:0">🤖 Yazma ve konuşma değerlendirmesi</h3><span class="small muted">bugün kalan: <b id="aileft">${UI.aiLeft!=null?UI.aiLeft:'…'}</b></span></div>
+   ${ai?`<div class="small muted">${esc(SX_NM[lv])} ölçütlerine göre değerlendirildi.</div>`:`<div class="small muted">Yazma görevlerin ve konuşma kayıtların ${esc(SX_NM[lv])} ölçütlerine göre puanlanır; düzeltmeler ve çalışman gereken konular çıkar. Tüm sınav tek değerlendirme hakkı kullanır (günde 1).</div><button class="btn primary block" data-act="sx-ai" ${UI.aiBusy?'disabled':''}>${UI.aiBusy?'Değerlendiriliyor… (30–60 sn)':'Değerlendir'}</button>`}</div>
+  ${sxAnalysis(items,ans)}
+  <div class="card stack"><h3 style="margin:0">✍️ Yazma</h3>${WT.map((w,i)=>{const t=st.sec.W.t[w.id]||'',a=ai&&ai.w&&ai.w[i];return`<details class="small" style="border-top:1px solid var(--line);padding:6px 0" ${i===0?'open':''}><summary style="cursor:pointer"><b>${esc(w.t)}</b> <span class="muted">· ${sxWc(t)} kelime${a&&a.scores?' · '+['content','communicative','organisation','language'].reduce((x,k)=>x+(+a.scores[k]||0),0)+'/20':''}</span></summary>
+     <div class="stack" style="margin-top:6px"><div><b>Senin cevabın</b><div lang="en" style="white-space:pre-line;line-height:1.6">${t?esc(t):'<span class="muted">(boş)</span>'}</div></div>${a?aiHtml(a,'w'):''}<div><b>Örnek cevap</b><div lang="en" style="white-space:pre-line;line-height:1.6">${esc(w.model)}</div></div></div></details>`}).join('')}</div>
+  <div class="card stack"><h3 style="margin:0">🎤 Konuşma</h3>${ai&&ai.s?aiHtml(ai.s,'s'):''}${X.sec.S.parts.map((T,pi)=>T.q.map((q,qi)=>{const t=(st.sec.S.tr[pi+'-'+qi]||{}).t||'';return`<details class="small" style="border-top:1px solid var(--line);padding:6px 0"><summary style="cursor:pointer"><b>${esc(T.t)}</b> <span lang="en">${esc(q[0])}</span></summary><div class="stack" style="margin-top:6px"><div><b>Senin cevabın</b> <span class="muted">(yazıya dökülmüş)</span><div lang="en">${t?esc(t):'<span class="muted">(boş)</span>'}</div></div><div><b>Örnek cevap</b><div lang="en" style="line-height:1.6">${esc(q[3])}</div></div></div></details>`}).join('')).join('')}</div>
+  <button class="btn" data-act="sx-home">Sınavlara dön</button></div>`;
+}
+async function sxAi(){
+  const id=UI.sxe,X=sxExam(id),r=sxRec(id);if(!X||!r||!sb||!CLOUD.uid||UI.aiBusy)return;
+  const st=r.state,WT=sxWTasks(X).map(t=>t.choice?(t.choice.find(c=>c.id===st.sec.W.ch)||t.choice[0]):t);
+  const body={kind:'x',id,lv:X.lv,topics:(window.GRAMMAR||[]).map(t=>({id:t.id,t:t.title})),
+    w:WT.map(w=>({part:w.part,genre:w.kind||'email',task:w.in+'\n\n'+w.mail,points:w.pts.map(p=>'- '+p[0]).join('\n'),text:st.sec.W.t[w.id]||'',words:sxWc(st.sec.W.t[w.id]),min:w.min,max:w.max})),
+    s:X.sec.S.parts.flatMap((T,pi)=>T.q.map((q,qi)=>{const x=st.sec.S.tr[pi+'-'+qi]||{};return{part:T.p||pi+1,task:q[0],limit:q[1],dur:x.dur||0,text:x.t||''}}))};
+  UI.aiBusy=true;render();let res=null,err=null;
+  try{const x=await sb.functions.invoke('pet-eval',{body});
+    if(x.error){let c='net';try{const j=await x.error.context.json();c=j.error||c}catch(e){if(/404|not found/i.test(String(x.error.message)))c='setup'}err=c}
+    else if(x.data&&x.data.ok){res=x.data.res;UI.aiLeft=x.data.left}else err=(x.data&&x.data.error)||'ai'}
+  catch(e){err='net'}
+  UI.aiBusy=false;
+  if(err)toast(err==='short'?'Değerlendirilecek yazma ya da konuşma cevabı yok.':AI_ERR[err]||AI_ERR.ai,5000);
+  else{r.result=r.result||{};r.result.ai=res;sxPersist();try{await sb.rpc('exam_ai',{p_exam:id,p_ai:res})}catch(e){}}
+  render();
+}
+/* --- ana görünüm: Sınavlar / Çalışma --- */
+function sxBest(id){try{return(JSON.parse(localStorage.getItem('kd-sxp')||'{}'))[id]}catch(e){return null}}
+function vSx(){
+  if(!window.SINAV){sxLoad();return`<div class="card"><div class="muted">Sınavlar yükleniyor…</div></div>`}
+  if(UI.sq)return vSxRun();
+  if(UI.sxw)return vSxW();
+  if(UI.ps&&UI.ps.exam)return vSxS();
   if(UI.pw)return vPetW();
   if(UI.ps)return vPetS();
-  const P=UI.pt;
-  if(!P)return`<div class="top"><h1>PET Denemeleri</h1></div><div class="stack">
-    <div class="card stack"><div class="small"><b>B1 Preliminary (PET) formatında</b> okuma ve dinleme denemeleri. Okuma 6 bölüm, 32 soru; dinleme 4 bölüm, 25 soru. Sınav sırasında doğru / yanlış gösterilmez; sonunda bölüm puanların, tahmini seviyen ve <b>hangi konulara çalışman gerektiği</b> çıkar. Gramer hatalarında ilgili konu anlatımına tek dokunuşla gidersin.</div>
-    <div class="small muted">Dinleme kayıtlarını istediğin kadar dinleyebilirsin. Puan vermez, sıralamayı etkilemez. Resmî Cambridge sınavı değildir; seviye tahmini yaklaşıktır.</div></div>
-    <div class="card stack"><b>Yazma ve konuşma</b><div class="small muted">Otomatik puanlanmaz: yazarken canlı kontrol, konuşurken yazıya dökme ve ölçüm yapılır; sonunda örnek cevap ve öz değerlendirme çıkar.</div><div class="row"><button class="btn" data-act="pw-list">✍️ Yazma (${((window.PETWS||{}).w||[]).length} görev)</button><button class="btn" data-act="ps-list">🎤 Konuşma (${((window.PETWS||{}).s||[]).length} görev)</button></div></div>
-    ${window.PET.map(T=>{const b=(S.pet||{})[T.id];return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>${esc(T.t)}</b>${b?`<span class="small muted">en iyi: okuma ${b.r}/32 · dinleme ${b.l}/25</span>`:''}</div><button class="btn primary block" data-act="pet-start" data-v="${T.id}">${b?'Tekrar çöz':'Başla'}</button></div>`}).join('')}</div>`;
-  if(P.done)return vPetReport(P);
-  const it=P.items[P.i],tot=P.items.length,pct=Math.round(P.i/tot*100);
-  return`<div class="qtop"><button class="btn" data-act="pet-quit">Çık</button><div class="bar"><i style="width:${pct}%"></i></div><span class="mono muted">${P.i+1}/${tot}</span></div>
-  <div class="card qcard"><div class="row" style="margin-bottom:8px"><span class="badge">${esc(PET_PN[it.k])} · ${it.n}</span></div>
-  ${it.n===1?`<div class="small muted" style="margin-bottom:8px">${esc(it.ins)}</div>`:''}
-  ${it.au?`<div data-exaud="${esc(it.au)}" style="margin-bottom:10px"></div>`:''}
-  ${it.pass?`<details class="card small" lang="en" style="margin-bottom:10px" open><summary style="cursor:pointer;font-weight:600">${esc(it.pt||'Metin')}</summary><div class="stack" style="margin-top:8px">${it.pass.map(t=>`<p style="margin:0;line-height:1.6;white-space:pre-line">${esc(t)}</p>`).join('')}</div></details>`:''}
-  <h2 lang="en">${esc(it.q)}</h2>
-  ${it.txt?`<div class="row"><input id="petans" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Cevabını yaz" style="flex:1;min-width:0"><button class="btn primary" data-act="pet-text">Cevapla</button></div>`
-  :`<div class="opts" lang="en">${it.o.map((o,i)=>`<button class="opt" data-act="pet-ans" data-v="${i}"><kbd>${String.fromCharCode(65+i)}</kbd><span>${esc(o)}</span></button>`).join('')}</div>`}
-  </div>`;
+  if(UI.sxe)return vSxExam();
+  sxSync();
+  const m=UI.sxm||'x',SN=window.SINAV,seg=`<div class="seg"><button class="chip" aria-pressed="${m==='x'}" data-act="sx-m" data-v="x">📝 Sınavlar</button><button class="chip" aria-pressed="${m==='p'}" data-act="sx-m" data-v="p">🏋️ Çalışma</button></div>`;
+  if(m==='x'){const R=sxRecs();
+    return`<div class="top"><h1>Sınavlar</h1></div><div class="stack">${seg}
+    <div class="card small">Cambridge sınavlarının gerçek formatında <b>okuma, dinleme, yazma ve konuşma</b>. Her sınav <b>bir kez</b> çözülür; sonunda bölüm puanların, Cambridge ölçeğine yakın genel puanın, seviyen ve çalışman gereken konular çıkar. Yazma ve konuşma yapay zekâ ile değerlendirilir (günde 1 hak). Resmî Cambridge sınavı değildir.${UI.sxErr?'<div style="color:#b35a00;margin-top:6px">Sunucuyla eşitlenemedi; ilerlemen bu cihazda saklanıyor.</div>':''}</div>
+    ${SX_LV.map(lv=>{const L=SN.exams.filter(x=>x.lv===lv);if(!L.length)return'';return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>${esc(SX_NM[lv])}</b><span class="badge">${lv} · ${SX_SHORT[lv]}</span></div>
+      ${L.map(X=>{const r=R[X.id],o=r&&r.status==='done'?sxScores(X,r):null,nd=r?['R','L','W','S'].filter(k=>r.state.sec[k].done).length:0;
+        return`<button class="btn block" style="text-align:left" data-act="sx-open" data-v="${X.id}"><div class="row" style="justify-content:space-between"><b>${esc(X.t)}</b><span class="small ${o?'':'muted'}">${o?'Bitti · '+(o.all??'–')+' · '+esc(o.all!=null?sxLevel(lv,o.all):''):r?'Devam ediyor · '+nd+'/4 bölüm':'Başlamadın'}</span></div></button>`}).join('')}</div>`}).join('')}</div>`}
+  const lv=UI.sxl||'B1',k=UI.sxk||'R',P=SN.prac[lv]||{},L=P[k]||[];
+  return`<div class="top"><h1>Çalışma</h1></div><div class="stack">${seg}
+  <div class="seg">${SX_LV.filter(x=>SN.prac[x]).map(x=>`<button class="chip" aria-pressed="${x===lv}" data-act="sx-l" data-v="${x}">${x}</button>`).join('')}</div>
+  <div class="seg">${['R','L','W','S'].map(x=>`<button class="chip" aria-pressed="${x===k}" data-act="sx-k" data-v="${x}">${SX_IC[x]} ${esc(sxSkName(lv,x))}</button>`).join('')}</div>
+  <div class="card small muted">${k==='R'||k==='L'?'Sınavdaki bölüm türlerinden örnekler. Süre yok, istediğin kadar tekrar çözebilirsin; sonunda açıklamalar ve çalışman gereken konular çıkar.':k==='W'?'Yazarken kelime sayısı, maddeler, bağlaçlar ve yapılar canlı kontrol edilir. Bitirince öz değerlendirme ve örnek cevap açılır.':'Soru sesli okunur, sen İngilizce konuşursun; konuşman yazıya dökülür, süre, kelime sayısı ve kalıplar gösterilir, sonra örnek cevapla karşılaştırırsın.'}</div>
+  ${L.length?L.map(x=>{if(k==='R'||k==='L'){const b=sxBest(x.id);return`<button class="btn block" style="text-align:left" data-act="sx-prac" data-v="${lv}|${esc(x.id)}"><b>${esc(x.t)}</b><div class="small muted">${esc(x.nm)}${b?' · en iyi: '+b[0]+'/'+b[1]:''}</div></button>`}
+    if(k==='W'){const d=(S.pw||{})[x.id];return`<button class="btn block" style="text-align:left" data-act="pw-open" data-v="${esc(x.id)}"><b>${esc(x.t)}</b><div class="small muted">${x.min}–${x.max} kelime${d&&d.t?' · taslak: '+sxWc(d.t)+' kelime'+(d.f?' · tamamlandı':''):''}</div></button>`}
+    return`<button class="btn block" style="text-align:left" data-act="ps-open" data-v="${esc(x.id)}"><b>${esc(x.t)}</b><div class="small muted">${x.q.length>1?x.q.length+' soru':Math.round(x.q[0][1]/6)/10+' dakika'}</div></button>`}).join(''):'<div class="empty card">Bu seviye için çalışma yakında.</div>'}</div>`;
 }
-/* ===== PET yazma ve konuşma (beta, 1. aşama: canlı kontrol + örnek cevap + öz değerlendirme) ===== */
+/* yönetici: sınav sonuçları */
+async function sxAdmLoad(){const A=UI.adm;A.sxBusy=true;render();try{const r=await sb.rpc('exam_admin_list');if(r.error)throw r.error;A.sxList=r.data||[];A.sxErr=false}catch(e){A.sxErr=true}A.sxBusy=false;render()}
+async function sxAdmReset(uid,ex){try{const r=await sb.rpc('exam_admin_reset',{p_user:uid,p_exam:ex});if(r.error)throw r.error;toast('Sınav sıfırlandı.');UI.adm.sxDel=null;sxAdmLoad()}catch(e){toast('Sıfırlanamadı.',3000)}}
+function adminSxCard(){
+  sxLoad();const A=UI.adm,L=A.sxList,d=s=>s?new Date(s).toLocaleString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'–';
+  const nm=id=>{const X=sxExam(id);return X?SX_NM[X.lv]+' · '+X.t:id};
+  return`<div class="card stack"><div class="row" style="justify-content:space-between"><b>Sınav sonuçları</b><button class="btn" data-act="adm-sx" ${A.sxBusy?'disabled':''}>${A.sxBusy?'Yükleniyor…':L?'Yenile':'Yükle'}</button></div>
+  ${A.sxErr?'<div class="small" style="color:var(--bad)">Alınamadı. supabase-sinav.sql çalıştırıldı mı?</div>':''}
+  ${L?(L.length?L.map(x=>{const X=sxExam(x.exam_id),res=x.result||{},o=X&&x.status==='done'?sxScores(X,{result:res}):null,key=x.user_id+'|'+x.exam_id;
+    return`<div class="small" style="border-top:1px solid var(--line);padding:6px 0"><div class="row" style="justify-content:space-between;gap:6px"><span><b>${esc(x.name||x.username)}</b> <span class="muted">@${esc(x.username||'')}</span></span><span class="badge ${x.status==='done'?'ok':'warn'}">${x.status==='done'?'Bitti':'Devam ediyor'}</span></div>
+    <div>${esc(nm(x.exam_id))}</div>
+    <div class="muted">${o?`Genel ${o.all??'–'} (${esc(o.all!=null?sxLevel(X.lv,o.all):'')}) · Okuma ${esc((o.R||{}).raw||'–')} · Dinleme ${esc((o.L||{}).raw||'–')} · Yazma ${esc((o.W||{}).raw||'–')} · Konuşma ${esc((o.S||{}).raw||'–')}${res.ai?'':' · YZ yok'}`:'Bölümler: '+['R','L','W','S'].map(k=>SX_SK[k]+((x.secs||{})[k]?' ✓':' –')).join(', ')} · ${d(x.finished_at||x.updated_at)}</div>
+    <div class="row" style="margin-top:4px">${A.sxDel===key?`<button class="btn danger" data-act="adm-sx-reset" data-u="${esc(x.user_id)}" data-v="${esc(x.exam_id)}">Evet, sıfırla</button><button class="btn" data-act="adm-sx-no">Vazgeç</button><span class="muted">Kullanıcı sınavı baştan çözebilir.</span>`:`<button class="btn" style="padding:4px 10px;font-size:.8rem" data-act="adm-sx-del" data-v="${esc(key)}">Sınavı sıfırla</button>`}</div></div>`}).join(''):'<div class="small muted">Henüz sınava başlayan yok.</div>'):'<div class="small muted">Kullanıcıların sınav ilerlemesi ve sonuçları burada listelenir.</div>'}</div>`;
+}
+
+/* ===== çalışma: yazma ve konuşma (canlı kontrol, örnek cevap, öz değerlendirme) ===== */
 const PW_LINK=['and','but','because','so','however','also','although','then','first','finally','after that','in my opinion','for example','for instance','on the other hand','in the end','luckily','suddenly','while','when','as soon as','if','unless','which','who','that'];
 const PW_FN=new Set('i me my mine myself you your yours yourself he him his himself she her hers herself it its itself we us our ours ourselves they them their theirs themselves a an the this that these those there here and but or so because if when while as than then also too very really just only not no yes of in on at to for from with by about into onto over under up down out off after before during until since between through without within around near far some any many much more most less least few little lot lots all both each every other another such what which who whom whose where why how am is are was were be been being have has had having do does did done doing will would shall should can could may might must ought ok okay hi hello dear thanks thank please sorry best wishes love regards yours sincerely mum dad mr mrs ms o clock am pm etc one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand first second third half quarter monday tuesday wednesday thursday friday saturday sunday'.split(' '));
 let PW_FORMS=null;
@@ -3651,34 +3890,32 @@ const PW_SELF=[['İçerik','Tüm maddelere değindim.','Okuyucu ne demek istedi�
   ['Düzen','Paragraflara ayırdım.','Bağlaçlarla cümleleri bağladım (because, however, so...).','Fikirler mantıklı bir sırada.'],
   ['Dil','Farklı zamanlar ve yapılar kullandım.','Kelime seçimim çeşitli, aynı kelimeyi tekrar etmedim.','Yazım ve dilbilgisi hatalarımı kontrol ettim.']];
 function vPetW(){
-  const L=(window.PETWS||{}).w||[],P=UI.pw;
-  if(!P.id)return`<div class="top"><h1>PET Yazma</h1></div><div class="stack"><div class="card small">PET yazma bölümü iki parçadır: <b>Part 1</b> e-posta (zorunlu), <b>Part 2</b> makale ya da hikâye (birini seçersin). Her biri yaklaşık 100 kelime. Yazarken kelime sayısı, maddeler, bağlaçlar ve yapılar canlı kontrol edilir; bitirince örnek cevap ve öz değerlendirme çıkar. Taslağın kaydedilir.</div>
-    ${L.map(T=>{const d=(S.pw||{})[T.id];return`<button class="btn block" style="text-align:left" data-act="pw-open" data-v="${T.id}"><b>Part ${T.part} · ${esc(T.t)}</b>${d&&d.t?`<div class="small muted">taslak: ${(d.t.match(/\S+/g)||[]).length} kelime${d.f?' · tamamlandı':''}</div>`:''}</button>`}).join('')}
-    <button class="btn" data-act="pw-back-list">PET menüsüne dön</button></div>`;
-  const T=L.find(x=>x.id===P.id);if(!T){UI.pw={};return''}
+  const P=UI.pw,T=sxWTask(P.id);if(!T){UI.pw=null;return vSx()}
   const d=(S.pw||{})[T.id]||{},txt=d.t||'';
-  return`<div class="top"><h1>Part ${T.part}</h1></div><div class="stack">
+  return`<div class="top"><h1>${esc(sxLvOfTask(T.id))} · Part ${T.part}</h1></div><div class="stack">
   <div class="card stack"><b>${esc(T.t)}</b><div class="small muted" lang="en">${esc(T.in)}</div><div class="card small" lang="en" style="white-space:pre-line">${esc(T.mail)}</div></div>
   <div class="card stack"><textarea id="petw" lang="en" spellcheck="false" autocapitalize="sentences" rows="11" style="width:100%;box-sizing:border-box;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit" placeholder="Cevabını İngilizce yaz…">${esc(txt)}</textarea><div id="petwck">${pwCkHtml(T,txt)}</div>
   ${P.done?'':`<button class="btn primary block" data-act="pw-done">Bitir: örnek cevap ve değerlendirme</button>`}</div>
   ${P.done?`<div class="card stack"><h3 style="margin:0">Öz değerlendirme</h3><div class="small muted">PET yazma 4 ölçütle puanlanır (her biri 0–5). Doğru olanları işaretle.</div>
     ${PW_SELF.map((c,ci)=>`<div><b>${c[0]}</b> <span class="small muted" id="pws${ci}"></span>${c.slice(1).map((x,i)=>`<label class="small" style="display:flex;gap:8px;align-items:flex-start;margin-top:4px"><input type="checkbox" data-pwc="${ci}-${i}" ${(d.c||{})[ci+'-'+i]?'checked':''}> <span>${esc(x)}</span></label>`).join('')}</div>`).join('')}
     <div id="pwsum" class="small"></div></div>
-    ${aiCard('w',d.ai&&d.ai.res,d.ai&&d.ai.n!==(txt.match(/\S+/g)||[]).length)}
     <div class="card stack"><h3 style="margin:0">Örnek cevap</h3><div class="small" lang="en" style="white-space:pre-line;line-height:1.6">${esc(T.model)}</div><div class="small muted">${(T.model.match(/\S+/g)||[]).length} kelime. Kendi cevabınla karşılaştır: maddeler, bağlaçlar ve farklı zamanlar nasıl kullanılmış?</div></div>`:''}
-  <div class="row"><button class="btn" data-act="pw-back">Görevlere dön</button></div></div>`;
+  <div class="row"><button class="btn" data-act="pw-back">Çalışmaya dön</button></div></div>`;
 }
-function pwSelfUpd(){const d=((S.pw||{})[UI.pw.id])||{},c=d.c||{};let tot=0;PW_SELF.forEach((x,ci)=>{const n=[0,1,2].filter(i=>c[ci+'-'+i]).length,sc=[0,2,4,5][n];tot+=sc;const el=document.getElementById('pws'+ci);if(el)el.textContent=sc+'/5'});const s=document.getElementById('pwsum');if(s)s.innerHTML='<b>Tahmini toplam: '+tot+'/20</b> <span class="muted">(PET\'te B1 için yaklaşık 12/20 ve üstü)</span>'}
+function pwSelfUpd(){const d=((S.pw||{})[UI.pw.id])||{},c=d.c||{};let tot=0;PW_SELF.forEach((x,ci)=>{const n=[0,1,2].filter(i=>c[ci+'-'+i]).length,sc=[0,2,4,5][n];tot+=sc;const el=document.getElementById('pws'+ci);if(el)el.textContent=sc+'/5'});const s=document.getElementById('pwsum');if(s)s.innerHTML='<b>Tahmini toplam: '+tot+'/20</b> <span class="muted">(seviyene uygun bir cevap için yaklaşık 12/20 ve üstü)</span>'}
 let PW_T=null;
 document.addEventListener('input',e=>{
-  if(e.target&&e.target.id==='petw'&&UI.pw&&UI.pw.id){const T=((window.PETWS||{}).w||[]).find(x=>x.id===UI.pw.id);if(!T)return;S.pw=S.pw||{};const d=S.pw[T.id]||(S.pw[T.id]={});d.t=e.target.value.slice(0,3000);d.d=today();
+  if(e.target&&e.target.id==='petw'&&UI.pw&&UI.pw.id){const T=sxWTask(UI.pw.id);if(!T)return;S.pw=S.pw||{};const d=S.pw[T.id]||(S.pw[T.id]={});d.t=e.target.value.slice(0,3000);d.d=today();
     const ck=document.getElementById('petwck');if(ck)ck.innerHTML=pwCkHtml(T,d.t);clearTimeout(PW_T);PW_T=setTimeout(save,1500)}
 });
+document.addEventListener('input',e=>{const w=e.target&&e.target.getAttribute&&e.target.getAttribute('data-sxw');if(!w||!UI.sxw)return;const r=sxRec(UI.sxw);if(!r||r.state.sec.W.done)return;
+  r.state.sec.W.t[w]=e.target.value.slice(0,6000);const T=sxWTasks(sxExam(UI.sxw)).flatMap(t=>t.choice||[t]).find(t=>t.id===w),n=sxWc(e.target.value),el=document.getElementById('sxwc-'+w);
+  if(el&&T){el.textContent=n+' kelime';el.style.color=n<T.min||n>T.max?'#b35a00':'#2e9e5b'}sxSave(UI.sxw)});
 document.addEventListener('change',e=>{const k=e.target&&e.target.getAttribute&&e.target.getAttribute('data-pwc');if(!k||!UI.pw||!UI.pw.id)return;S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.c=d.c||{};d.c[k]=e.target.checked?1:0;save();pwSelfUpd()});
 /* konuşma */
 const PS_REC=window.SpeechRecognition||window.webkitSpeechRecognition;
 let PSR=null;
-function psStop(){const P=UI.ps;if(PSR){try{PSR.onend=null;PSR.stop()}catch(e){}PSR=null}if(P&&P.st==='rec'){P.st='done';P.dur=Math.min(P.lim,(Date.now()-P.t0)/1000);if(P.lastAt)P.pz=Math.max(P.pz||0,(Math.min(Date.now(),P.t0+P.lim*1000)-P.lastAt)/1000);clearInterval(P.tm);render()}}
+function psStop(){const P=UI.ps;if(PSR){try{PSR.onend=null;PSR.stop()}catch(e){}PSR=null}if(P&&P.st==='rec'){P.st='done';P.dur=Math.min(P.lim,(Date.now()-P.t0)/1000);if(P.lastAt)P.pz=Math.max(P.pz||0,(Math.min(Date.now(),P.t0+P.lim*1000)-P.lastAt)/1000);clearInterval(P.tm);if(P.exam)sxSpSave();render()}}
 function psStart(){
   const P=UI.ps,T=psTask(),q=T.q[P.qi];if(!PS_REC){toast('Bu tarayıcıda konuşma tanıma yok. Chrome ya da Safari\'nin güncel sürümünü dene.',5000);return}
   try{speechSynthesis.cancel()}catch(e){}
@@ -3692,12 +3929,9 @@ function psStart(){
   P.tm=setInterval(()=>{const left=Math.ceil(P.t0/1000+P.lim-Date.now()/1000),el=document.getElementById('pstm');if(el)el.textContent=left>0?left+' sn':'süre doldu';if(left<=0){P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';psStop()}},250);
   render();
 }
-const psTask=()=>(((window.PETWS||{}).s)||[]).find(x=>x.id===UI.ps.id);
+const psTask=()=>UI.ps&&UI.ps.T;
 function vPetS(){
-  const L=(window.PETWS||{}).s||[],P=UI.ps;
-  if(!P.id)return`<div class="top"><h1>PET Konuşma</h1></div><div class="stack"><div class="card small">Soru sesli okunur, sen süre bitene kadar İngilizce konuşursun. Söylediklerin telefonun konuşma tanımasıyla yazıya dökülür; sonra konuşma süren, kelime sayın, hızın, en uzun duraklaman ve kullandığın kalıplar gösterilir, örnek cevapla karşılaştırırsın.${PS_REC?'':' <b style="color:#e5484d">Bu tarayıcıda konuşma tanıma desteklenmiyor; Chrome (Android) ya da Safari (iPhone) kullan.</b>'}</div>
-    ${L.map(T=>`<button class="btn block" style="text-align:left" data-act="ps-open" data-v="${T.id}"><b>${esc(T.t)}</b><div class="small muted">${T.q.length>1?T.q.length+' soru':'1 dakika'}</div></button>`).join('')}
-    <button class="btn" data-act="pw-back-list">PET menüsüne dön</button></div>`;
+  const P=UI.ps;
   const T=psTask(),q=T.q[P.qi];
   let res='';
   if(P.st==='done'){
@@ -3707,40 +3941,20 @@ function vPetS(){
       <div class="small">Süre: <b>${Math.round(dur)}</b>/${q[1]} sn · Kelime: <b>${wn}</b> · Hız: <b>${wpm}</b> kelime/dk${P.pz>=3?` · En uzun duraklama: <b>${Math.round(P.pz)}</b> sn`:''}${fill?` · Dolgu sesi (um, er): ${fill}`:''}</div>
       <div class="small muted">${wn<q[1]*0.9?'Biraz daha uzun konuş: PET\'te sessiz kalmak ya da çok kısa cevap vermek puan kaybettirir.':wpm<70?'Akıcılığı artırmak için cümleleri önceden düşünmeden, kısa ve bağlantılı söylemeye çalış.':'Güzel uzunluk. Şimdi cümleleri because, so, however ile bağlamaya ve farklı zamanlar kullanmaya odaklan.'}</div>
       <div class="small"><b>Kullanışlı kalıplar:</b> ${kw.map(([k,ok])=>`<span class="badge" style="${ok?'background:rgba(46,158,91,.15);color:#2e9e5b':''}">${ok?'✓ ':''}${esc(k)}</span>`).join(' ')}</div></div>
-      ${aiCard('s',(P.ai||{})[P.qi])}
       <div class="card stack"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Örnek cevap</h3><button class="btn" data-act="ps-say" data-v="m">🔊 Dinle</button></div><div class="small" lang="en" style="line-height:1.6">${esc(q[3])}</div></div>`;
   }
-  return`<div class="top"><h1>${esc(T.t)}</h1></div><div class="stack">
+  return`<div class="top"><h1>${esc(T.t)}</h1><span class="muted small">${esc(sxLvOfTask(T.id))}</span></div><div class="stack">
   <div class="card stack"><div class="small muted">${esc(T.ins)}</div>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}
    <div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><h2 lang="en" style="margin:0">${esc(q[0])}</h2><button class="btn" data-act="ps-say" data-v="q" aria-label="Soruyu dinle">🔊</button></div>
    <div class="small muted">Konuşma süresi: ${q[1]} saniye</div>
    ${P.st==='rec'?`<div class="row" style="justify-content:space-between"><b style="color:#e5484d">● Kayıtta</b><b id="pstm">${q[1]} sn</b></div><div id="pstr" class="small" lang="en" style="min-height:3em;white-space:pre-line"></div><button class="btn primary block" data-act="ps-stop">Bitir</button>`
    :`<button class="btn primary block" data-act="ps-start" ${PS_REC?'':'disabled'}>${P.st==='done'?'Tekrar konuş':'🎤 Konuşmaya başla'}</button>`}</div>
   ${res}
-  <div class="row">${P.st==='done'&&P.qi+1<T.q.length?`<button class="btn primary" data-act="ps-next">Sonraki soru</button>`:''}<button class="btn" data-act="ps-back">Görevlere dön</button></div></div>`;
+  <div class="row">${P.st==='done'&&P.qi+1<T.q.length?`<button class="btn primary" data-act="ps-next">Sonraki soru</button>`:''}<button class="btn" data-act="ps-back">Çalışmaya dön</button></div></div>`;
 }
 /* PET 2. aşama: yapay zekâ değerlendirmesi (Supabase Edge Function: pet-eval) */
 const AI_ERR={limit:'Bugünkü değerlendirme hakkın bitti. Yarın tekrar deneyebilirsin.',setup:'Yapay zekâ değerlendirmesi henüz kurulmadı (yönetici ayarı eksik).',auth:'Oturum doğrulanamadı. Çıkış yapıp tekrar giriş yap.',short:'Değerlendirme için en az birkaç cümle yaz ya da söyle.',ai:'Değerlendirme şu an yapılamadı, hakkın geri verildi. Biraz sonra tekrar dene.',db:'Sunucu kurulumu eksik (SQL).',net:'Bağlantı hatası. İnternetini kontrol edip tekrar dene.'};
 async function aiLeft(){try{const r=await sb.rpc('pet_eval_left');if(!r.error&&typeof r.data==='number'){UI.aiLeft=r.data;const el=document.getElementById('aileft');if(el)el.textContent=r.data}}catch(e){}}
-async function aiEval(kind){
-  if(!sb||!CLOUD.uid||UI.aiBusy)return;
-  let body;
-  if(kind==='w'){const T=((window.PETWS||{}).w||[]).find(x=>x.id===UI.pw.id),d=((S.pw||{})[T.id])||{},txt=d.t||'';
-    body={kind:'w',id:T.id,part:T.part,genre:T.kind||'email',task:T.in+'\n\n'+T.mail,points:T.pts.map(p=>'- '+p[0]).join('\n'),text:txt,words:(txt.match(/\S+/g)||[]).length}}
-  else{const P=UI.ps,T=psTask(),q=T.q[P.qi];body={kind:'s',id:T.id+'-'+P.qi,part:T.p,task:q[0],limit:q[1],dur:Math.round(P.dur||0),text:P.fin||''}}
-  body.topics=(window.GRAMMAR||[]).map(t=>({id:t.id,t:t.title}));
-  UI.aiBusy=true;render();
-  let res=null,err=null;
-  try{const r=await sb.functions.invoke('pet-eval',{body});
-    if(r.error){let c='net';try{const j=await r.error.context.json();c=j.error||c}catch(e){if(/404|not found/i.test(String(r.error.message)))c='setup'}err=c}
-    else if(r.data&&r.data.ok){res=r.data.res;UI.aiLeft=r.data.left}else err=(r.data&&r.data.error)||'ai'}
-  catch(e){err='net'}
-  UI.aiBusy=false;
-  if(err){toast(AI_ERR[err]||AI_ERR.ai,5000)}
-  else if(kind==='w'){const d=S.pw[UI.pw.id];d.ai={res,d:today(),n:(d.t.match(/\S+/g)||[]).length};save()}
-  else{const P=UI.ps;(P.ai=P.ai||{})[P.qi]=res}
-  render();if(kind==='w')pwSelfUpd();
-}
 function aiHtml(res,kind){
   if(!res)return'';const sc=res.scores||{},keys=kind==='w'?[['content','İçerik'],['communicative','İletişim'],['organisation','Düzen'],['language','Dil']]:[['grammar_vocab','Dilbilgisi ve kelime'],['discourse','Konuşma düzeni']];
   const tot=keys.reduce((t,[k])=>t+(+sc[k]||0),0),mx=keys.length*5;
@@ -3752,35 +3966,6 @@ function aiHtml(res,kind){
   ${(res.tips||[]).length?`<div class="small"><b>Öneriler</b>${res.tips.map(x=>`<div>• ${esc(x)}</div>`).join('')}</div>`:''}
   ${res.improved||res.better?`<details class="small"><summary style="cursor:pointer;font-weight:600">Geliştirilmiş hâli</summary><div lang="en" style="white-space:pre-line;line-height:1.6;margin-top:6px">${esc(res.improved||res.better)}</div></details>`:''}
   <div class="small muted">Yapay zekâ değerlendirmesidir; resmî puan değildir, ara sıra hata yapabilir.</div>`;
-}
-function aiCard(kind,res,stale){
-  return`<div class="card stack"><div class="row" style="justify-content:space-between;gap:8px"><h3 style="margin:0">🤖 Yapay zekâ değerlendirmesi</h3><span class="small muted">bugün kalan: <b id="aileft">${UI.aiLeft!=null?UI.aiLeft:'…'}</b></span></div>
-  ${res?aiHtml(res,kind):'<div class="small muted">PET ölçütlerine göre puan, düzeltmeler ve çalışman gereken gramer konuları.</div>'}
-  ${stale?'<div class="small" style="color:#b35a00">Metnini değerlendirmeden sonra değiştirdin; yeni hâli için tekrar değerlendir.</div>':''}
-  <button class="btn ${res?'':'primary'} block" data-act="ai-eval" data-v="${kind}" ${UI.aiBusy?'disabled':''}>${UI.aiBusy?'Değerlendiriliyor… (15–30 sn)':res?'Tekrar değerlendir':'Değerlendir'}</button></div>`;
-}
-function vPetReport(P){
-  const R=P.items.filter(i=>i.k[0]==='R'),L=P.items.filter(i=>i.k[0]==='L'),r=R.filter(i=>i.ok).length,l=L.filter(i=>i.ok).length;
-  const parts=Object.keys(PET_PN).map(k=>{const a=P.items.filter(i=>i.k===k);return[k,a.filter(i=>i.ok).length,a.length]});
-  const G={},Gn={};P.items.forEach(it=>(it.tg||[]).forEach(t=>{(Gn[t]=Gn[t]||[0,0])[1]++;if(!it.ok){Gn[t][0]++;(G[t]=G[t]||[]).push(it)}}));
-  const gram=Object.keys(G).filter(t=>!PET_SK[t]).sort((a,b)=>G[b].length-G[a].length),sk=Object.keys(G).filter(t=>PET_SK[t]).sort((a,b)=>G[b].length-G[a].length);
-  const gt=id=>((window.GRAMMAR||[]).find(t=>t.id===id)||{title:id}).title;
-  const wrong=P.items.filter(i=>!i.ok);
-  const LT=it=>['R2','R4'].includes(it.k)?i=>String.fromCharCode(65+i)+'. ':()=>'';
-  const ua=it=>it.txt?(it.ua||'(boş)'):it.ua!=null?LT(it)(it.ua)+it.o[it.ua]:'(boş)',ca=it=>it.txt?it.txt[0]:LT(it)(it.a)+it.o[it.a];
-  const top=[gram[0]&&gt(gram[0]),gram[1]&&gt(gram[1]),sk[0]&&PET_SK[sk[0]][0]].filter(Boolean);
-  return`<div class="top"><h1>Sonuç</h1></div><div class="stack">
-  <div class="card stack"><div class="row" style="gap:18px;flex-wrap:wrap"><div><div class="small muted">Okuma</div><div class="score" style="font-size:2rem">${r}/32</div><span class="badge">${petLevel('R',r)}</span></div><div><div class="small muted">Dinleme</div><div class="score" style="font-size:2rem">${l}/25</div><span class="badge">${petLevel('L',l)}</span></div></div>
-   <div class="small muted">Seviye tahmini yaklaşıktır (PET'te B1 için okumada yaklaşık 23/32, dinlemede 18/25 gerekir).</div>
-   <div class="small">${parts.map(([k,a,n])=>`<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding:3px 0"><span>${esc(PET_PN[k])}</span><b style="color:${a===n?'var(--ok,#2e9e5b)':a/n<0.6?'var(--bad)':'inherit'}">${a}/${n}</b></div>`).join('')}</div></div>
-  <div class="card stack"><h3 style="margin:0">Neye çalışmalısın?</h3>
-   ${!wrong.length?'<div>Tüm soruları doğru yaptın. Bir sonraki denemeye geçebilirsin.</div>':`<div style="padding:8px 10px;border-radius:8px;border-left:3px solid #e0a020;background:rgba(224,160,32,.1)">Öncelikli çalışma: <b>${top.map(esc).join(', ')}</b>. Aşağıdaki konulara dokunarak doğrudan anlatıma gidebilirsin; sonra konunun mini testini çöz ve denemeyi tekrar et.</div>`}
-   ${gram.length?`<div class="small muted">Gramer: yanlış yaptığın konular (en çok hatadan aza)</div>${gram.map(t=>`<div class="row" style="justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding:6px 0"><div><b>${esc(gt(t))}</b><div class="small muted">${G[t].length} hata · ${Gn[t][1]} sorudan</div></div><button class="btn" data-act="pet-gram" data-v="${esc(t)}">Konuyu çalış</button></div>`).join('')}`:''}
-   ${sk.length?`<div class="small muted" style="margin-top:6px">Beceriler</div>${sk.map(t=>`<div style="border-top:1px solid var(--line);padding:6px 0"><b>${esc(PET_SK[t][0])}</b> <span class="small muted">· ${G[t].length} hata / ${Gn[t][1]} soru</span><div class="small">${esc(PET_SK[t][1])}</div></div>`).join('')}`:''}</div>
-  ${wrong.length?`<div class="card stack"><h3 style="margin:0">Yanlışların (${wrong.length})</h3>${wrong.map(it=>`<details class="small" style="border-top:1px solid var(--line);padding:6px 0"><summary style="cursor:pointer"><b>${esc(PET_PN[it.k])} · ${it.n}</b> <span lang="en">${esc(it.q)}</span></summary>
-     <div style="margin-top:6px">Senin cevabın: <span style="color:#e5484d;text-decoration:line-through">${esc(ua(it))}</span><br>Doğru cevap: <b>${esc(ca(it))}</b>${it.txt&&it.txt.length>1?` <span class="muted">(${it.txt.slice(1).map(esc).join(', ')} de kabul)</span>`:''}</div>
-     <div class="muted" style="margin-top:4px">${esc(it.e||'')}</div>${it.sc?`<details style="margin-top:4px"><summary style="cursor:pointer" class="muted">Konuşma metni</summary><div lang="en" style="white-space:pre-line;margin-top:4px">${esc(it.sc)}</div></details>`:''}</details>`).join('')}</div>`:''}
-  <div class="row"><button class="btn primary" data-act="pet-list">Denemelere dön</button><button class="btn" data-act="pet-start" data-v="${P.id}">Tekrar çöz</button></div></div>`;
 }
 function vReview(){
   const keys=Object.keys(S.wrong).filter(k=>BYWORD.has(k)),dl=dueLearned().length,due=dueWrong(false).length+dl;
@@ -5337,24 +5522,40 @@ document.addEventListener('click',async e=>{
     case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=UI.tab==='saved'?savedList():dictList();break}
     case'sv-w':{const w=g('data-w');toggleSaved(w);toast(isSaved(w)?'Kaydedildi.':'Kayıttan çıkarıldı.');if(UI.tab==='saved'&&!isSaved(w))UI.dict.open=null;const dl=$('#dlist');if(dl)dl.innerHTML=UI.tab==='saved'?savedList():dictList();if(UI.tab==='saved'){const t=document.querySelector('.top .muted');if(t)t.textContent=nf(savedWords().length)+' kelime'}break}
     case'gm-open':UI.gm=g('data-v');render();window.scrollTo(0,0);break;
-    case'pet-start':petStart(g('data-v'));break;
-    case'pw-list':UI.pw={};UI.ps=null;render();window.scrollTo(0,0);break;
-    case'ps-list':psStop();UI.ps={};UI.pw=null;render();window.scrollTo(0,0);break;
-    case'pw-back-list':psStop();UI.pw=null;UI.ps=null;render();window.scrollTo(0,0);break;
-    case'pw-open':aiLeft();UI.pw={id:g('data-v'),done:!!(((S.pw||{})[g('data-v')]||{}).f)};render();window.scrollTo(0,0);if(UI.pw.done)pwSelfUpd();break;
-    case'ai-eval':aiEval(g('data-v'));break;
-    case'pw-done':{aiLeft();S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.f=1;save();UI.pw.done=true;render();pwSelfUpd();break}
-    case'pw-back':save();UI.pw={};render();window.scrollTo(0,0);break;
-    case'ps-open':UI.ps={id:g('data-v'),qi:0,st:'idle'};render();window.scrollTo(0,0);setTimeout(()=>{const T=psTask();if(T)say(T.q[0][0])},300);break;
+    case'sx-m':UI.sxm=g('data-v');render();break;
+    case'sx-l':UI.sxl=g('data-v');render();break;
+    case'sx-k':UI.sxk=g('data-v');render();break;
+    case'sx-open':UI.sxe=g('data-v');UI.sxres=true;sxRec(UI.sxe);render();window.scrollTo(0,0);break;
+    case'sx-home':sxAudioStop();UI.sq=null;UI.sxe=null;UI.sxres=false;render();window.scrollTo(0,0);break;
+    case'sx-sec':sxStartSec(UI.sxe,g('data-v'));break;
+    case'sx-res':UI.sxres=true;aiLeft();render();window.scrollTo(0,0);break;
+    case'sx-ai':sxAi();break;
+    case'sx-prac':{const[lv,id]=g('data-v').split('|');sxPracStart(lv,id);break}
+    case'sx-ans':sxAnswer(+g('data-v'));break;
+    case'sx-text':{const el=document.getElementById('sxans');sxAnswer(el?el.value.trim():'');break}
+    case'sx-go':sxGo(+g('data-v'));break;
+    case'sx-play':sxPlay(g('data-v'));break;
+    case'sx-submit':if(UI.sq&&UI.sq.mode==='x'&&!confirm('Bölüm teslim edilsin mi? Sonra değiştiremezsin.'))break;sxSubmit();break;
+    case'sx-quit':sxAudioStop();if(UI.sq&&UI.sq.mode==='x'){sxSave(UI.sq.id,true);const id=UI.sq.id;UI.sq=null;UI.sxe=id;UI.sxres=false}else if(UI.sq&&UI.sq.ans.some(x=>x!=null)&&!confirm('Çıkılsın mı? Cevapların kaybolur.'))break;else UI.sq=null;render();window.scrollTo(0,0);break;
+    case'sxw-ch':{const r=sxRec(UI.sxw);r.state.sec.W.ch=g('data-v')||null;sxSave(UI.sxw);render();break}
+    case'sxw-pause':{const id=UI.sxw;sxSave(id,true);UI.sxw=null;UI.sxe=id;UI.sxres=false;render();window.scrollTo(0,0);break}
+    case'sxw-submit':{const r=sxRec(UI.sxw),X=sxExam(UI.sxw),T=sxWTasks(X),miss=T.filter(t=>sxWc(r.state.sec.W.t[t.choice?r.state.sec.W.ch:t.id])<10).length;if(!confirm((miss?miss+' görev boş ya da çok kısa. ':'')+'Yazma bölümü teslim edilsin mi? Sonra değiştiremezsin.'))break;sxWSubmit();break}
+    case'sxs-pause':{psStop();const id=UI.ps.exam;UI.ps=null;UI.sxe=id;UI.sxres=false;render();window.scrollTo(0,0);break}
+    case'sxs-next':sxSpNext();break;
+    case'sxs-skip':{const P=UI.ps;P.fin='';P.dur=0;sxSpSave();sxSpNext();break}
+    case'pw-open':UI.pw={id:g('data-v'),done:!!(((S.pw||{})[g('data-v')]||{}).f)};render();window.scrollTo(0,0);if(UI.pw.done)pwSelfUpd();break;
+    case'pw-done':{S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.f=1;save();UI.pw.done=true;render();pwSelfUpd();break}
+    case'pw-back':save();UI.pw=null;render();window.scrollTo(0,0);break;
+    case'ps-open':{const r=sxPracAll().find(x=>x[1]==='S'&&x[2].id===g('data-v'));if(!r)break;UI.ps={T:r[2],qi:0,st:'idle'};render();window.scrollTo(0,0);setTimeout(()=>{const T=psTask();if(T)say(T.q[0][0])},300);break}
     case'ps-say':{const T=psTask();if(T)say(g('data-v')==='m'?T.q[UI.ps.qi][3]:T.q[UI.ps.qi][0]);break}
-    case'ps-start':if(UI.ps.ai)delete UI.ps.ai[UI.ps.qi];aiLeft();psStart();break;
+    case'ps-start':psStart();break;
     case'ps-stop':{const P=UI.ps;P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';psStop();break}
     case'ps-next':{UI.ps.qi++;UI.ps.st='idle';UI.ps.fin='';render();const T=psTask();if(T)setTimeout(()=>say(T.q[UI.ps.qi][0]),200);break}
-    case'ps-back':psStop();UI.ps={};render();window.scrollTo(0,0);break;
-    case'pet-ans':petAnswer(+g('data-v'));break;
-    case'pet-text':{const el=document.getElementById('petans');petAnswer(el?el.value:'');break}
-    case'pet-quit':if(confirm('Denemeden çıkılsın mı? Cevapların kaybolur.')){UI.pt=null;render()}break;
-    case'pet-list':UI.pt=null;render();window.scrollTo(0,0);break;
+    case'ps-back':psStop();UI.ps=null;render();window.scrollTo(0,0);break;
+    case'adm-sx':sxAdmLoad();break;
+    case'adm-sx-del':UI.adm.sxDel=g('data-v');render();break;
+    case'adm-sx-no':UI.adm.sxDel=null;render();break;
+    case'adm-sx-reset':sxAdmReset(g('data-u'),g('data-v'));break;
     case'pet-gram':UI.tab='gram';UI.gm=g('data-v');lastStudy='gram';render();window.scrollTo(0,0);break;
     case'gm-back':UI.gm=null;render();window.scrollTo(0,0);break;
     case'gm-ans':{const T=gramList().find(t=>t.id===UI.gm);if(T){UI.gp=UI.gp||{};const o=UI.gp[T.id]||(UI.gp[T.id]={a:{},cur:0});if(o.a[o.cur]==null){o.a[o.cur]=+g('data-o');const y=window.scrollY;render();window.scrollTo(0,y)}}break}
