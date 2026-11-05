@@ -89,6 +89,9 @@ def part(p,owner,P):
     else:E(P+': bilinmeyen tür '+str(ty))
 def wtask(w,P):
     P=P+'.'+w.get('id','?')
+    for lb,tx in w.get('more',[]):
+        n=len(tx.split())
+        if not(w['min']<=n<=w['max']+25):warn.append(P+': ek örnek %d kelime'%n)
     for f in('id','part','t','in','mail','pts','min','max','model'):
         if f not in w:E(P+': '+f+' yok')
     if w.get('min',0)>=w.get('max',0):E(P+': min/max')
@@ -100,6 +103,9 @@ def spart(s,P):
         if not s.get(f):E(P+': '+f+' yok')
     for q in s['q']:
         if len(q)!=4 or q[1]<10 or not q[3]:E(P+': soru biçimi')
+        for a in (q[3] if isinstance(q[3],list) else [q[3]]):
+            n=len(a.split()); r={'a2':1.5,'b1':1.8,'b2':2.0,'c1':2.1}.get(s['id'][:2],1.8)
+            if isinstance(q[3],list) and not(q[1]*r*0.6<=n<=q[1]*r*1.45):warn.append(P+': konuşma örneği %d kelime (%d sn)'%(n,q[1]))
 LV=['A2','B1','B2','C1'];NAME={'A2':'A2 Key','B1':'B1 Preliminary','B2':'B2 First','C1':'C1 Advanced'}
 exams=[];prac={}
 ONLY=[x for x in os.environ.get('KD_LV','').split(',') if x]   # örn. KD_LV=A2,B1: yalnızca bu seviyeler (sesi hazır olmayanları yayına almamak için)
@@ -118,6 +124,17 @@ for lv in LV:
         for s in X['sec']['S']['parts']:spart(s,P)
         exams.append(X)
     pr=m.PRAC;P='prac-'+lv
+    xf=os.path.join(HERE,'src','extra_'+lv.lower()+'.py')   # ek örnek cevaplar
+    if os.path.exists(xf):
+        sp=importlib.util.spec_from_file_location('x'+lv,xf);xm=importlib.util.module_from_spec(sp);sp.loader.exec_module(xm)
+        for w in pr.get('W',[]):
+            if w['id'] in xm.W:w['more']=[list(x) for x in xm.W[w['id']]]
+            else:warn.append(P+': ek yazma örneği yok '+w['id'])
+        for t in pr.get('S',[]):
+            if t['id'] not in xm.S:warn.append(P+': ek konuşma örneği yok '+t['id']);continue
+            ms=xm.S[t['id']]
+            if len(ms)!=len(t['q']):E(P+'.'+t['id']+': ek örnek sayısı soru sayısıyla uyuşmuyor');continue
+            t['q']=[[q[0],q[1],q[2],list(m2)] for q,m2 in zip(t['q'],ms)]
     for sk in('R','L','W','S'):
         if len(pr.get(sk,[]))<5:warn.append(P+': %s çalışma sayısı %d'%(sk,len(pr.get(sk,[]))))
     ids=[x['id'] for sk in 'RLWS' for x in pr.get(sk,[])]

@@ -3899,7 +3899,8 @@ function vPetW(){
   ${P.done?`<div class="card stack"><h3 style="margin:0">Öz değerlendirme</h3><div class="small muted">Cambridge yazma bölümü 4 ölçütle puanlanır (her biri 0–5). Doğru olanları işaretle.</div>
     ${PW_SELF.map((c,ci)=>`<div><b>${c[0]}</b> <span class="small muted" id="pws${ci}"></span>${c.slice(1).map((x,i)=>`<label class="small" style="display:flex;gap:8px;align-items:flex-start;margin-top:4px"><input type="checkbox" data-pwc="${ci}-${i}" ${(d.c||{})[ci+'-'+i]?'checked':''}> <span>${esc(x)}</span></label>`).join('')}</div>`).join('')}
     <div id="pwsum" class="small"></div></div>
-    <div class="card stack"><h3 style="margin:0">Örnek cevap</h3><div class="small" lang="en" style="white-space:pre-line;line-height:1.6">${esc(T.model)}</div><div class="small muted">${(T.model.match(/\S+/g)||[]).length} kelime. Kendi cevabınla karşılaştır: maddeler, bağlaçlar ve farklı zamanlar nasıl kullanılmış?</div></div>`:''}
+    <div class="card stack"><h3 style="margin:0">Örnek cevaplar (${1+(T.more||[]).length})</h3><div class="small muted">Kendi cevabınla karşılaştır: maddeler, bağlaçlar, farklı zamanlar ve paragraf düzeni nasıl kullanılmış? Aynı görev farklı fikirlerle de iyi cevaplanabilir.</div>
+    ${[['Örnek 1 · seviyeye uygun',T.model]].concat(T.more||[]).map(([lb,tx],i)=>`<details ${i===0?'open':''} style="border-top:1px solid var(--line);padding:6px 0"><summary style="cursor:pointer"><b>${esc(lb)}</b> <span class="small muted">· ${(tx.match(/\S+/g)||[]).length} kelime</span></summary><div class="small" lang="en" style="white-space:pre-line;line-height:1.6;margin-top:6px">${esc(tx)}</div></details>`).join('')}</div>`:''}
   <div class="row"><button class="btn" data-act="pw-back">Çalışmaya dön</button></div></div>`;
 }
 function pwSelfUpd(){const d=((S.pw||{})[UI.pw.id])||{},c=d.c||{};let tot=0;PW_SELF.forEach((x,ci)=>{const n=[0,1,2].filter(i=>c[ci+'-'+i]).length,sc=[0,2,4,5][n];tot+=sc;const el=document.getElementById('pws'+ci);if(el)el.textContent=sc+'/5'});const s=document.getElementById('pwsum');if(s)s.innerHTML='<b>Tahmini toplam: '+tot+'/20</b> <span class="muted">(seviyene uygun bir cevap için yaklaşık 12/20 ve üstü)</span>'}
@@ -3941,7 +3942,7 @@ function vPetS(){
       <div class="small">Süre: <b>${Math.round(dur)}</b>/${q[1]} sn · Kelime: <b>${wn}</b> · Hız: <b>${wpm}</b> kelime/dk${P.pz>=3?` · En uzun duraklama: <b>${Math.round(P.pz)}</b> sn`:''}${fill?` · Dolgu sesi (um, er): ${fill}`:''}</div>
       <div class="small muted">${wn<q[1]*0.9?'Biraz daha uzun konuş: sınavda sessiz kalmak ya da çok kısa cevap vermek puan kaybettirir.':wpm<70?'Akıcılığı artırmak için cümleleri önceden düşünmeden, kısa ve bağlantılı söylemeye çalış.':'Güzel uzunluk. Şimdi cümleleri because, so, however ile bağlamaya ve farklı zamanlar kullanmaya odaklan.'}</div>
       <div class="small"><b>Kullanışlı kalıplar:</b> ${kw.map(([k,ok])=>`<span class="badge" style="${ok?'background:rgba(46,158,91,.15);color:#2e9e5b':''}">${ok?'✓ ':''}${esc(k)}</span>`).join(' ')}</div></div>
-      <div class="card stack"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Örnek cevap</h3><button class="btn" data-act="ps-say" data-v="m">🔊 Dinle</button></div><div class="small" lang="en" style="line-height:1.6">${esc(q[3])}</div></div>`;
+      <div class="card stack"><h3 style="margin:0">Örnek cevaplar</h3><div class="small muted">Aynı soruya iki farklı bakış açısıyla, süreyi dolduracak uzunlukta örnekler. Dinleyip kendi cevabınla karşılaştır.</div>${(Array.isArray(q[3])?q[3]:[q[3]]).map((m,i)=>`<div style="border-top:1px solid var(--line);padding:8px 0"><div class="row" style="justify-content:space-between;gap:8px"><b class="small">Örnek ${i+1} <span class="muted">· ${(m.match(/\S+/g)||[]).length} kelime</span></b><button class="btn" style="padding:4px 10px" data-act="ps-say" data-v="m${i}">🔊 Dinle</button></div><div class="small" lang="en" style="line-height:1.6;margin-top:4px">${esc(m)}</div></div>`).join('')}</div>`;
   }
   return`<div class="top"><h1>${esc(T.t)}</h1><span class="muted small">${esc(sxLvOfTask(T.id))}</span></div><div class="stack">
   <div class="card stack"><div class="small muted">${esc(T.ins)}</div>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}
@@ -5547,7 +5548,7 @@ document.addEventListener('click',async e=>{
     case'pw-done':{S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.f=1;save();UI.pw.done=true;render();pwSelfUpd();break}
     case'pw-back':save();UI.pw=null;render();window.scrollTo(0,0);break;
     case'ps-open':{const r=sxPracAll().find(x=>x[1]==='S'&&x[2].id===g('data-v'));if(!r)break;UI.ps={T:r[2],qi:0,st:'idle'};render();window.scrollTo(0,0);setTimeout(()=>{const T=psTask();if(T)say(T.q[0][0])},300);break}
-    case'ps-say':{const T=psTask();if(T)say(g('data-v')==='m'?T.q[UI.ps.qi][3]:T.q[UI.ps.qi][0]);break}
+    case'ps-say':{const T=psTask();if(!T)break;const v=g('data-v'),q=T.q[UI.ps.qi],m=Array.isArray(q[3])?q[3]:[q[3]];say(v[0]==='m'?m[+v.slice(1)||0]:q[0]);break}
     case'ps-start':psStart();break;
     case'ps-stop':{const P=UI.ps;P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';psStop();break}
     case'ps-next':{UI.ps.qi++;UI.ps.st='idle';UI.ps.fin='';render();const T=psTask();if(T)setTimeout(()=>say(T.q[UI.ps.qi][0]),200);break}
