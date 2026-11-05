@@ -145,6 +145,19 @@ for lv in LV:
     for w in pr.get('W',[]):wtask(w,P)
     for s in pr.get('S',[]):spart(s,P)
     prac[lv]=pr
+XF=os.path.join(HERE,'src','extra_exam.py')   # sınav sonuç ekranı için ek örnek cevaplar
+if os.path.exists(XF):
+    sp=importlib.util.spec_from_file_location('xexam',XF);xm=importlib.util.module_from_spec(sp);sp.loader.exec_module(xm)
+    for X in exams:
+        for t in X['sec']['W']['tasks']:
+            for w in (t['choice'] if 'choice' in t else [t]):
+                if w['id'] in xm.W:w['more']=[list(x) for x in xm.W[w['id']]];wtask(w,X['id'])
+                else:warn.append(X['id']+': ek yazma örneği yok '+w['id'])
+        for sp_ in X['sec']['S']['parts']:
+            if sp_['id'] not in xm.S:warn.append(X['id']+': ek konuşma örneği yok '+sp_['id']);continue
+            ms=xm.S[sp_['id']]
+            if len(ms)!=len(sp_['q']):E(X['id']+'.'+sp_['id']+': ek örnek sayısı');continue
+            sp_['q']=[[q[0],q[1],q[2],list(m2)] for q,m2 in zip(sp_['q'],ms)];spart(sp_,X['id'])
 names=[a[0] for a in audio]
 if len(names)!=len(set(names)):E('ses adı tekrarı: '+str([n for n in names if names.count(n)>1]))
 for w in warn:print('UYARI:',w)
