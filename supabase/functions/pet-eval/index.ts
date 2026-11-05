@@ -151,7 +151,7 @@ Deno.serve(async (req) => {
     let res: any;
     if (b.kind === "x") {
       const lv = EXAMS[b.lv] ? b.lv : "B1";
-      const wl = Array.isArray(b.w) ? b.w : [];
+      const wl = (Array.isArray(b.w) ? b.w : []).slice(0, 4);
       const ss = (Array.isArray(b.s) ? b.s : []).filter((t: any) => words(t.text) >= 1);
       const [w, s] = await Promise.all([
         Promise.all(wl.map((t: any) => words(t.text) >= 5 ? ask(wPrompt(b, t, lv), ids) : Promise.resolve(null))),
