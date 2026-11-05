@@ -504,7 +504,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.152.7';
+const APP_VERSION='4.152.8';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1787,7 +1787,7 @@ function vHelp(){
     '<b>Maç</b>: İki oyuncu aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Maç puanı yüksek olan kazanır, eşitse beraberlik olur.',
     '<b>Doğru cevap</b> = 100 × seviye çarpanı (A1 ×1,00 … C2 ×1,85) × hız çarpanı. Hız çarpanı ilk 1,5 saniyede ×1,50, sonra her saniye 0,20 düşer (4. saniyede ×1,00), en az ×0,50.',
     '<b>Yanlış cevap puan düşürür</b>: klasikte 75 × seviye çarpanı; dereceli düelloda doğru bilseydin alacağın puanın %66\'sı (hızlı yanlış daha çok kaybettirir). Süre dolunca klasikte bunun yarısı, dereceli düelloda yine %66\'sı düşer. Bilmediğin soruda tahmin etmek zarar getirir.',
-    '<b>Rakip koparsa</b>: bir oyuncudan <b>30 saniye</b> boyunca hiç cevap gelmezse maç kapanır; kalan soruları cevapsız sayılır (klasikte soru başına −100, derecelide −200) ve puan her zamanki kurala göre aktarılır. Maç geçmişe hemen düşer.',
+    '<b>Rakip koparsa</b>: taraflardan biri 20 soruyu bitirdikten sonra diğerinden <b>30 saniye</b> boyunca hiç cevap gelmezse maç kapanır; kalan soruları cevapsız sayılır (klasikte soru başına −100, derecelide −200) ve puan her zamanki kurala göre aktarılır. Maç geçmişe hemen düşer.',
     '<b>Yarıda bırakma</b>: Maçtan çıkarsan cevaplamadığın her soru için dereceli düelloda 200, klasikte 100 puan düşer.',
     '<b>Genel puana etkisi</b>: Düellodaki doğru/yanlışların normal test gibi işlenir (bilinenler ve yanlışlar kelime ilerlemene gider), bu sorulardan gelen test puanı yarıya iner. Düello kazancı günlük soru puanı sınırına girmez.',
     '<b>Klasik düello</b> her zaman açıktır. Rakip arayabilir ya da salondaki kullanıcıya teklif gönderebilirsin (teklif 15 saniye geçerli). Kimse yoksa botla alıştırma yapabilirsin; bot maçı puanı etkilemez.',
@@ -4706,8 +4706,9 @@ function duelTick(){
 }
 function duelHud(){const el=document.getElementById('dhud');if(el)el.innerHTML=dHudHtml();const a=document.getElementById('dafk');if(a)a.textContent=dAfkTxt()}
 // rakip 30 sn boyunca hiç cevap göndermezse sunucu maçı kapatır (kalan sorular cevapsız sayılır)
-function dAfkTxt(){const d=DUEL.d;if(!d||DUEL.bot||!('act1' in d))return'';const t=dIsP1()?d.act2:d.act1,b=Math.max(t?new Date(t).getTime():0,new Date(d.start_at).getTime());
-  const left=Math.ceil((b+30000-dNow())/1000);return left>0&&left<=30?`Rakipten ${left} sn içinde cevap gelmezse maç biter, kalan soruları cevapsız sayılır.`:left<=0?'Rakip yanıt vermiyor, maç kapatılıyor…':''}
+function dAfkTxt(){const d=DUEL.d;if(!d||DUEL.bot||!('act1' in d))return'';const ms=x=>x?new Date(x).getTime():0;
+  const b=Math.max(ms(d.act1),ms(d.act2),ms(d.start_at)),left=Math.ceil((b+30000-dNow())/1000);   // sayaç: bitirdiğin andan ya da rakibin son cevabından başlar
+  return left>0&&left<=30?`Rakipten ${left} sn içinde cevap gelmezse maç biter, kalan soruları cevapsız sayılır.`:left<=0?'Rakip yanıt vermiyor, maç kapatılıyor…':''}
 function duelAnswer(i){
   if(DUEL.phase!=='play'||DUEL.sel!==null)return;
   const it=DUEL.qs[DUEL.idx],ok=i>=0&&it.options[i]===it.correct;
