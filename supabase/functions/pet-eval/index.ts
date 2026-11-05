@@ -32,13 +32,22 @@ const clip = (s: unknown, n: number) => String(s ?? "").slice(0, n);
 function prompt(b: any) {
   const topics = (Array.isArray(b.topics) ? b.topics : []).slice(0, 80)
     .map((t: any) => `${clip(t.id, 40)}: ${clip(t.t, 60)}`).join("\n");
-  const common = `Feedback language: Turkish (explanations, summary, tips). Quote the student's words and corrections in English.
+  const common = `Accuracy rules:
+- Only list errors you are certain are wrong in standard English. Do NOT mark correct alternatives, British/American spelling variants, informal but acceptable style, or contractions as errors.
+- "orig" must be copied exactly from the student's text. Do not invent errors to fill the list; an empty list is fine.
+- Score against B1 level, not native level: a B1 candidate who communicates clearly with some errors can still get 3-4.
+Feedback language: Turkish (explanations, summary, tips). Quote the student's words and corrections in English.
 For each error give the grammar topic id from this list if one fits, otherwise null:
 ${topics}
 Return ONLY a JSON object, no markdown.`;
   if (b.kind === "w") {
     return {
-      system: `You are an experienced Cambridge B1 Preliminary (PET) writing examiner. Assess the student's answer with the official PET writing assessment scales (Content, Communicative Achievement, Organisation, Language), each 0-5. Be fair and encouraging but accurate for a B1 exam. ${common}`,
+      system: `You are an experienced Cambridge B1 Preliminary (PET) writing examiner. Assess the student's answer with the PET writing assessment scales, each 0-5:
+Content: 5 = all content is relevant and the reader is fully informed; 3 = minor irrelevances or omissions, reader on the whole informed; 1 = irrelevances or misinterpretation, reader minimally informed; 0 = totally irrelevant.
+Communicative Achievement: 5 = uses the conventions of the task to hold the reader's attention and communicate straightforward ideas; 3 = conventions used in generally appropriate ways; 1 = produces text that communicates simple ideas in simple ways.
+Organisation: 5 = text is generally well organised and coherent, using a variety of linking words and cohesive devices; 3 = connected and coherent, using basic linking words and a limited number of cohesive devices; 1 = connected using basic, high-frequency linking words.
+Language: 5 = range of everyday vocabulary used appropriately, range of simple and some complex grammatical forms with a good degree of control, errors do not impede communication; 3 = basic vocabulary used reasonably appropriately, simple grammatical forms with a good degree of control, errors noticeable but meaning can still be determined; 1 = basic vocabulary and simple grammatical forms, errors may impede meaning at times.
+Scores 4 and 2 are between the described bands. Be fair, consistent and accurate for a B1 exam. ${common}`,
       user: `TASK (${b.part === 1 ? "Part 1 email" : "Part 2 " + clip(b.genre, 20)}):
 ${clip(b.task, 1500)}
 
@@ -91,7 +100,7 @@ Deno.serve(async (req) => {
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": AI_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 2000, system: p.system, messages: [{ role: "user", content: p.user }] }),
+      body: JSON.stringify({ model: MODEL, max_tokens: 2000, temperature: 0, system: p.system, messages: [{ role: "user", content: p.user }] }),
     });
     if (!r.ok) throw new Error("ai " + r.status + " " + (await r.text()).slice(0, 300));
     const j = await r.json();
