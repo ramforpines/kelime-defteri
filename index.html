@@ -3551,7 +3551,7 @@ function vResult(){
     ${qz.wrong.length?`<div class="card stack"><h3>Yanlışlar</h3>${qz.wrong.map(it=>`<div><b>${esc(it.w.word)}</b> <span class="muted">${esc(FEAT[it.f])}</span><div class="small">Doğru: ${esc(it.correct)}</div></div>`).join('')}</div>`:''}
     <div class="row"><button class="btn primary" data-act="again">${qz.mode==='exam'?'Vize listesine dön':'Yeni test'}</button><button class="btn" data-act="home">Bugün'e dön</button></div></div>`;
 }
-/* ===== PET denemeleri (beta): B1 Preliminary formatında okuma + dinleme; sonunda konu raporu ===== */
+/* ===== Seviye sınavları ve çalışma (beta) =====
 /* ===== Seviye sınavları (A2 Key, B1 Preliminary, B2 First, C1 Advanced) ve çalışma bölümü (beta) =====
    Veri: sinav.js (tools/sinav/build.py). Sınav ilerlemesi sunucuda (supabase-sinav.sql: exam_runs), her sınav bir kez çözülür. */
 const PET_SK={gist:['Ana fikir','Metnin tamamını bir kez hızlıca oku, sonra soruya dön. İlk ve son paragraf çoğu zaman ana fikri verir.'],
@@ -3585,7 +3585,7 @@ function sxItems(p,owner){
   else if(p.ty==='gap'){const lab=p.opts.map(o=>o[0]);p.a.forEach((a,i)=>out.push(b(i+1,{q:'Boşluk ('+(i+1)+') için hangisi uygun?',o:p.opts.map(o=>o[1]),lab,a:lab.indexOf(a),tg:p.tg[i],e:p.e[i]})))}
   else if(p.ty==='cloze')p.o.forEach(([o,a,t],i)=>out.push(b(i+1,{q:'Boşluk ('+(i+1)+') için doğru seçenek hangisi?',o,a,tg:t,e:p.e[i]})));
   else if(p.ty==='open')p.a.forEach((a,i)=>out.push(b(i+1,{q:p.st?'Boşluk ('+(i+1)+'): '+p.st[i]+' kelimesinin doğru biçimini yaz.':'Boşluk ('+(i+1)+') için '+(p.sc?'kelime, sayı ya da tarih':'TEK kelime')+' yaz.',txt:a,tg:p.tg[i],e:p.e[i]})));
-  else if(p.ty==='kwt')p.q.forEach((q,i)=>out.push(b(i+1,{pass:null,q:q.s1,kw:q.key,s2:q.s2,mx:q.mx||5,txt:q.a,tg:q.tg,e:q.e})));
+  else if(p.ty==='kwt')p.q.forEach((q,i)=>out.push(b(i+1,{ins:'',pass:null,q:q.s1,kw:q.key,s2:q.s2,mx:q.mx||5,txt:q.a,tg:q.tg,e:q.e})));
   return out;
 }
 const petNorm=s=>String(s||'').trim().toLowerCase().replace(/[’‘`]/g,"'").replace(/\s+/g,' ').replace(/[.!?]$/,'').replace(/^£/,'');
@@ -3896,7 +3896,7 @@ function vPetW(){
   <div class="card stack"><b>${esc(T.t)}</b><div class="small muted" lang="en">${esc(T.in)}</div><div class="card small" lang="en" style="white-space:pre-line">${esc(T.mail)}</div></div>
   <div class="card stack"><textarea id="petw" lang="en" spellcheck="false" autocapitalize="sentences" rows="11" style="width:100%;box-sizing:border-box;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit" placeholder="Cevabını İngilizce yaz…">${esc(txt)}</textarea><div id="petwck">${pwCkHtml(T,txt)}</div>
   ${P.done?'':`<button class="btn primary block" data-act="pw-done">Bitir: örnek cevap ve değerlendirme</button>`}</div>
-  ${P.done?`<div class="card stack"><h3 style="margin:0">Öz değerlendirme</h3><div class="small muted">PET yazma 4 ölçütle puanlanır (her biri 0–5). Doğru olanları işaretle.</div>
+  ${P.done?`<div class="card stack"><h3 style="margin:0">Öz değerlendirme</h3><div class="small muted">Cambridge yazma bölümü 4 ölçütle puanlanır (her biri 0–5). Doğru olanları işaretle.</div>
     ${PW_SELF.map((c,ci)=>`<div><b>${c[0]}</b> <span class="small muted" id="pws${ci}"></span>${c.slice(1).map((x,i)=>`<label class="small" style="display:flex;gap:8px;align-items:flex-start;margin-top:4px"><input type="checkbox" data-pwc="${ci}-${i}" ${(d.c||{})[ci+'-'+i]?'checked':''}> <span>${esc(x)}</span></label>`).join('')}</div>`).join('')}
     <div id="pwsum" class="small"></div></div>
     <div class="card stack"><h3 style="margin:0">Örnek cevap</h3><div class="small" lang="en" style="white-space:pre-line;line-height:1.6">${esc(T.model)}</div><div class="small muted">${(T.model.match(/\S+/g)||[]).length} kelime. Kendi cevabınla karşılaştır: maddeler, bağlaçlar ve farklı zamanlar nasıl kullanılmış?</div></div>`:''}
@@ -3939,7 +3939,7 @@ function vPetS(){
     const fill=(tr.match(/\b(um+|uh+|er+m*|ehm)\b/gi)||[]).length,kw=q[2].map(k=>[k,low.includes(k.toLowerCase())]);
     res=`<div class="card stack"><h3 style="margin:0">Sonuç</h3><div class="small" lang="en" style="white-space:pre-line;padding:8px;border-radius:8px;background:rgba(120,120,120,.08)">${tr?esc(tr):'<span class="muted">Konuşma algılanmadı.</span>'}</div>
       <div class="small">Süre: <b>${Math.round(dur)}</b>/${q[1]} sn · Kelime: <b>${wn}</b> · Hız: <b>${wpm}</b> kelime/dk${P.pz>=3?` · En uzun duraklama: <b>${Math.round(P.pz)}</b> sn`:''}${fill?` · Dolgu sesi (um, er): ${fill}`:''}</div>
-      <div class="small muted">${wn<q[1]*0.9?'Biraz daha uzun konuş: PET\'te sessiz kalmak ya da çok kısa cevap vermek puan kaybettirir.':wpm<70?'Akıcılığı artırmak için cümleleri önceden düşünmeden, kısa ve bağlantılı söylemeye çalış.':'Güzel uzunluk. Şimdi cümleleri because, so, however ile bağlamaya ve farklı zamanlar kullanmaya odaklan.'}</div>
+      <div class="small muted">${wn<q[1]*0.9?'Biraz daha uzun konuş: sınavda sessiz kalmak ya da çok kısa cevap vermek puan kaybettirir.':wpm<70?'Akıcılığı artırmak için cümleleri önceden düşünmeden, kısa ve bağlantılı söylemeye çalış.':'Güzel uzunluk. Şimdi cümleleri because, so, however ile bağlamaya ve farklı zamanlar kullanmaya odaklan.'}</div>
       <div class="small"><b>Kullanışlı kalıplar:</b> ${kw.map(([k,ok])=>`<span class="badge" style="${ok?'background:rgba(46,158,91,.15);color:#2e9e5b':''}">${ok?'✓ ':''}${esc(k)}</span>`).join(' ')}</div></div>
       <div class="card stack"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Örnek cevap</h3><button class="btn" data-act="ps-say" data-v="m">🔊 Dinle</button></div><div class="small" lang="en" style="line-height:1.6">${esc(q[3])}</div></div>`;
   }
@@ -3952,7 +3952,7 @@ function vPetS(){
   ${res}
   <div class="row">${P.st==='done'&&P.qi+1<T.q.length?`<button class="btn primary" data-act="ps-next">Sonraki soru</button>`:''}<button class="btn" data-act="ps-back">Çalışmaya dön</button></div></div>`;
 }
-/* PET 2. aşama: yapay zekâ değerlendirmesi (Supabase Edge Function: pet-eval) */
+/* yapay zekâ: yapay zekâ değerlendirmesi (Supabase Edge Function: pet-eval) */
 const AI_ERR={limit:'Bugünkü değerlendirme hakkın bitti. Yarın tekrar deneyebilirsin.',setup:'Yapay zekâ değerlendirmesi henüz kurulmadı (yönetici ayarı eksik).',auth:'Oturum doğrulanamadı. Çıkış yapıp tekrar giriş yap.',short:'Değerlendirme için en az birkaç cümle yaz ya da söyle.',ai:'Değerlendirme şu an yapılamadı, hakkın geri verildi. Biraz sonra tekrar dene.',db:'Sunucu kurulumu eksik (SQL).',net:'Bağlantı hatası. İnternetini kontrol edip tekrar dene.'};
 async function aiLeft(){try{const r=await sb.rpc('pet_eval_left');if(!r.error&&typeof r.data==='number'){UI.aiLeft=r.data;const el=document.getElementById('aileft');if(el)el.textContent=r.data}}catch(e){}}
 function aiHtml(res,kind){

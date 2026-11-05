@@ -41,7 +41,7 @@ def part(p,owner,P):
     for f in('k','nm','ins'):
         if not p.get(f):E(P+': '+f+' yok')
     txt=p.get('p');txt='\n'.join(txt) if isinstance(txt,list) else (txt or '')
-    if p.get('sc'):aud(owner,p.get('id'),p['sc'],P)
+    if p.get('sc') and not p.get('noaud'):aud(owner,p.get('id'),p['sc'],P)
     if ty=='mc':
         for i,q in enumerate(p['q']):
             n=len(q['o'])
@@ -102,7 +102,9 @@ def spart(s,P):
         if len(q)!=4 or q[1]<10 or not q[3]:E(P+': soru biçimi')
 LV=['A2','B1','B2','C1'];NAME={'A2':'A2 Key','B1':'B1 Preliminary','B2':'B2 First','C1':'C1 Advanced'}
 exams=[];prac={}
+ONLY=[x for x in os.environ.get('KD_LV','').split(',') if x]   # örn. KD_LV=A2,B1: yalnızca bu seviyeler (sesi hazır olmayanları yayına almamak için)
 for lv in LV:
+    if ONLY and lv not in ONLY:continue
     f=os.path.join(HERE,'src',lv.lower()+'.py')
     if not os.path.exists(f):continue
     spec=importlib.util.spec_from_file_location(lv.lower(),f);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
@@ -153,7 +155,7 @@ if '--no-audio' not in sys.argv:
         subprocess.run(['ffmpeg','-y','-loglevel','error','-i',wav,'-ac','1','-ar','22050','-b:a','40k',mp3],check=True);os.remove(wav)
         open(sg,'w').write(sig);print('ses:',name,flush=True)
     keep=set(n+'.mp3' for n in names)|set(n+'.mp3.sig' for n in names)
-    for f in os.listdir(AD):
+    for f in ([] if ONLY else os.listdir(AD)):
         if f not in keep:os.remove(os.path.join(AD,f));print('silindi:',f)
 out='/* Seviye sınavları ve çalışma bölümü (beta). tools/sinav/build.py ile üretilir; elle düzenleme. */\nwindow.SINAV='+json.dumps({'exams':exams,'prac':prac},ensure_ascii=False,separators=(',',':'))+';\n'
 open(os.path.join(ROOT,'sinav.js'),'w',encoding='utf8').write(out)
