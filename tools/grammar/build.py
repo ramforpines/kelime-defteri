@@ -156,7 +156,7 @@ if len(warn)>60:print('... %d uyarı daha'%(len(warn)-60))
 if errs:
     for e in errs:print('HATA:',e)
     print('%d hata'%len(errs));sys.exit(1)
-PLAN={'C1':['Inversion','Cleft sentences','Participle clauses','Advanced linkers'],'C2':['İnce anlam farkları ve üslup']}
+PLAN={'C1':['Mixed conditionals','Advanced passive and reporting'],'C2':['İnce anlam farkları ve üslup']}
 out='/* Gramer konu anlatımları (beta). Bu dosya tools/grammar/build.py ile üretilir; elle düzenleme. *...* = vurgulanan gramer parçası. */\nwindow.GRAMMAR='+json.dumps(topics,ensure_ascii=False,separators=(',',':'))+';\nwindow.GRAMMAR_PLAN='+json.dumps(PLAN,ensure_ascii=False,separators=(',',':'))+';\n'
 open(os.path.join(ROOT,'grammar.js'),'w',encoding='utf8').write(out)
 print('tamam: %d konu, %d KB'%(len(topics),len(out)//1024))
