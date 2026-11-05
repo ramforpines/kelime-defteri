@@ -1,21 +1,21 @@
--- Sınavlar 2. adım (4.156.0): sıralama tablosu, seviye kilidi, haftada 1 sınav, haftada 1 yapay zekâ değerlendirmesi
+-- Sınavlar 2. adım (4.156.0): sıralama tablosu, Sınav 1 kilidi, haftada 1 yapay zekâ değerlendirmesi
 -- Hafta: Türkiye saatiyle pazartesi 00:00 – pazar 23:59. (Daha önce çalıştırdıysan yeniden çalıştırman yeterli.)
 -- Önce supabase-sinav.sql çalıştırılmış olmalı.
 
--- Seviye sırası: a2 → b1 → b2 → c1. Bir seviyenin sınavı, bir önceki seviyeden en az bir sınav bitmeden başlatılamaz.
--- Haftada 1 sınav: bu hafta (pazartesi–pazar) başka bir sınava başlanmışsa yenisi başlatılamaz. Yöneticiler bu kurallardan muaftır.
+-- Kilit (yalnızca her seviyenin Sınav 1'i, örn. b1-1): A2 her zaman açık. Sonraki seviyenin Sınav 1'i,
+-- önceki seviyenin Sınav 1'i bittikten sonraki pazartesi (Türkiye saati 00:00) açılır. Diğer sınavlarda kilit yok. Yöneticiler muaf.
 create or replace function public.exam_can_start(p_exam text)
 returns void language plpgsql security definer stable set search_path = public as $$
-declare uid uuid := auth.uid(); lv text[] := array['a2','b1','b2','c1']; i int; last timestamptz;
+declare uid uuid := auth.uid(); lv text[] := array['a2','b1','b2','c1']; i int; fin timestamptz;
 begin
   if exists(select 1 from public.admins where user_id = uid) then return; end if;
+  if right(p_exam, 2) <> '-1' then return; end if;
   i := array_position(lv, left(p_exam, 2));
   if i is null then raise exception 'bad exam'; end if;
-  if i > 1 and not exists(select 1 from public.exam_runs where user_id = uid and left(exam_id, 2) = lv[i-1] and status = 'done') then
-    raise exception 'locked';
-  end if;
-  select max(started_at) into last from public.exam_runs where user_id = uid and exam_id <> p_exam;
-  if last is not null and last >= (date_trunc('week', now() at time zone 'Europe/Istanbul') at time zone 'Europe/Istanbul') then raise exception 'week'; end if;
+  if i = 1 then return; end if;
+  select finished_at into fin from public.exam_runs where user_id = uid and exam_id = lv[i-1] || '-1' and status = 'done';
+  if fin is null then raise exception 'locked'; end if;
+  if fin >= (date_trunc('week', now() at time zone 'Europe/Istanbul') at time zone 'Europe/Istanbul') then raise exception 'week'; end if;
 end $$;
 
 create or replace function public.exam_save(p_exam text, p_state jsonb)
