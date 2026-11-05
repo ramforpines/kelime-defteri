@@ -10,7 +10,7 @@ git worktree add -q --detach "$WT" FETCH_HEAD
 FILES="index.html grammar.js sinav.js words.js extr.js examples.js senses.js gloss.js reading.js reading-tr.js reading2.js reading3.js exam.js mock.js supabase.js sw.js manifest.webmanifest icon-192.png icon-512.png icon-maskable-512.png apple-touch-icon.png duel-nav.svg duel-swords.svg"
 mkdir -p "$WT/beta"
 for f in $FILES; do [ -f "$f" ] && cp "$f" "$WT/beta/$f"; done
-rm -rf "$WT/beta/audio"; cp -r audio "$WT/beta/audio"
+rm -rf "$WT/beta/audio" "$WT/beta/img"; cp -r audio "$WT/beta/audio"; [ -d img ] && cp -r img "$WT/beta/img"
 sed -i "s#fetch('maintenance.json?t=#fetch('../maintenance.json?t=#" "$WT/beta/index.html"   # bakım durumu tek yerden (main) okunur
 cd "$WT"
 git add beta

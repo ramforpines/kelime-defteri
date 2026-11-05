@@ -3750,7 +3750,7 @@ function vSxW(){
 }
 function sxWSubmit(auto){const id=UI.sxw;if(!id)return;const r=sxRec(id);r.state.sec.W.done=true;sxSave(id,true);clearInterval(SXT);SXT=null;UI.sxw=null;UI.sxe=id;sxCheckFinish(id);render();window.scrollTo(0,0)}
 /* --- sınav: konuşma bölümü (PS kayıt altyapısını kullanır) --- */
-function sxScene(T){return`${(T.img||[]).map(([em,cap])=>`<div class="card" style="text-align:center"><div style="font-size:2.6rem;line-height:1.3;letter-spacing:.1em">${esc(em)}</div><div class="small muted" style="margin-top:6px">${esc(cap)}</div></div>`).join('')}
+function sxScene(T){const n=(T.img||[]).length;return`${(T.img||[]).map(([em,cap,im],i)=>im?`<div class="card" style="padding:8px">${n>1?`<div class="small muted" style="margin:0 0 6px 4px"><b>Fotoğraf ${i+1}</b></div>`:''}<img src="img/sx/${esc(im)}.svg?v=${APP_VERSION}" alt="Fotoğraf ${i+1}" style="display:block;width:100%;height:auto;border-radius:10px"></div>`:`<div class="card" style="text-align:center"><div style="font-size:2.6rem;line-height:1.3;letter-spacing:.1em">${esc(em)}</div><div class="small muted" style="margin-top:6px">${esc(cap)}</div></div>`).join('')}
   ${T.opts?`<div class="card"><div class="row" style="flex-wrap:wrap;gap:6px;justify-content:center">${T.opts.map(o=>`<span class="badge" style="font-size:.95rem;padding:6px 10px">${esc(o)}</span>`).join('')}</div></div>`:''}`}
 function sxSpSave(){const P=UI.ps;if(!P||!P.exam)return;const r=sxRec(P.exam);r.state.sec.S.tr[P.pi+'-'+P.qi]={t:(P.fin||'').trim(),dur:Math.round(P.dur||0)};sxSave(P.exam,true)}
 function sxSpNext(){const P=UI.ps,X=sxExam(P.exam),parts=X.sec.S.parts,r=sxRec(P.exam),s=r.state.sec.S;
@@ -4005,7 +4005,7 @@ function vPetS(){
       <div class="card stack"><h3 style="margin:0">Örnek cevaplar</h3><div class="small muted">Aynı soruya iki farklı bakış açısıyla, süreyi dolduracak uzunlukta örnekler. Dinleyip kendi cevabınla karşılaştır.</div>${(Array.isArray(q[3])?q[3]:[q[3]]).map((m,i)=>`<div style="border-top:1px solid var(--line);padding:8px 0"><div class="row" style="justify-content:space-between;gap:8px"><b class="small">Örnek ${i+1} <span class="muted">· ${(m.match(/\S+/g)||[]).length} kelime</span></b><button class="btn" style="padding:4px 10px" data-act="ps-say" data-v="m${i}">🔊 Dinle</button></div><div class="small" lang="en" style="line-height:1.6;margin-top:4px">${esc(m)}</div></div>`).join('')}</div>`;
   }
   return`<div class="top"><h1>${esc(T.t)}</h1><span class="muted small">${esc(sxLvOfTask(T.id))}</span></div><div class="stack">
-  <div class="card stack"><div class="small muted">${esc(T.ins)}</div>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}
+  ${sxScene(T)}  <div class="card stack"><div class="small muted">${esc(T.ins)}</div>${T.q.length>1?`<span class="badge">Soru ${P.qi+1}/${T.q.length}</span>`:''}
    <div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><h2 lang="en" style="margin:0">${esc(q[0])}</h2><button class="btn" data-act="ps-say" data-v="q" aria-label="Soruyu dinle">🔊</button></div>
    <div class="small muted">Konuşma süresi: ${q[1]} saniye</div>
    ${P.st==='rec'?`<div class="row" style="justify-content:space-between"><b style="color:#e5484d">● Kayıtta</b><b id="pstm">${q[1]} sn</b></div><div id="pstr" class="small" lang="en" style="min-height:3em;white-space:pre-line"></div><button class="btn primary block" data-act="ps-stop">Bitir</button>`
