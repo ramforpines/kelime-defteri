@@ -1,0 +1,32 @@
+# Çalışma bölümündeki görevlerin listede görünen İngilizce adları
+T={'a2r1':'Shop and School Notices','a2r2':'New Schools','a2r3':'A Young Swimmer','a2r4':'Coffee','a2r5':'A Message from Camp',
+'a2l1':'Everyday Situations','a2l2':'A Bike Tour','a2l3':'The New Sports Club','a2l4':'Short Messages','a2l5':'Birthday Presents',
+'a2w1':'A Birthday Party','a2w2':'Borrowing a Book','a2w3':'My New Phone','a2w4':'The Lost Dog','a2w5':'A Day at the Beach',
+'a2s1':'School and Home','a2s2':'Weekends and Holidays','a2s3':'Types of Holiday','a2s4':'Food and Drink','a2s5':'Places in Town',
+'b1r1':'Notices and Messages','b1r2':'Choosing a Book','b1r3':'Learning the Drums','b1r4':'A School Without Homework','b1r5':'The Village Festival','b1r6':'A Letter to Mr Lee',
+'b1l1':'Short Recordings','b1l2':'Opinions','b1l3':'Summer Camp','b1l4':'Volunteering Abroad','b1l5':'A Cookery Course',
+'b1w1':'The New Sports Club','b1w2':'The Class Trip','b1w3':'Free Time','b1w4':'Technology at School','b1w5':'The Midnight Phone Call','b1w6':'The Missing Key',
+'b1s1':'About You (1)','b1s2':'About You (2)','b1s3':'A Favourite Place','b1s4':'A Busy Moment','b1s5':'Making New Friends','b1s6':'Friendship',
+'b2r1':'Why Volunteer?','b2r2':'Teenagers and Sleep','b2r3':'Working from Home','b2r4':'Key Word Transformations','b2r6':'A Year in Antarctica',
+'b2l1':'Short Extracts (1)','b2l2':'Beekeeping','b2l3':'Moving to a New City','b2l4':'A Wildlife Photographer','b2l5':'Short Extracts (2)',
+'b2w1':'Social Media and Young People','b2w2':'Tourism','b2w3':'My Perfect Weekend','b2w4':'A TV Series','b2w5':'Advice on a Summer Job',
+'b2s1':'Habits and Routines','b2s2':'Ways of Learning','b2s3':'Celebrations','b2s4':'A School Trip','b2s5':'Education',
+'c1r1':'Digital Minimalism','c1r3':'Bilingualism and the Brain','c1r4':'Key Word Transformations','c1r7':'Walking the Length of a Country','c1r8':'Four Cities',
+'c1l1':'A Podcast','c1l2':'An Ancient Shipwreck','c1l3':'Procrastination','c1l4':'A New Hobby','c1l5':'Two Colleagues',
+'c1w1':'Public Support for the Arts','c1w2':'An Ageing Population','c1w3':'Student Clubs','c1w4':'A Town Festival','c1w5':'Saving the Library',
+'c1s1':'Opinions and Experiences','c1s2':'Learning from Others','c1s3':'Choosing a Job','c1s4':'Technology and Society','c1s5':'The Environment'}
+
+# Konuşma fotoğraflarının altında görünen basit İngilizce açıklamalar
+IMG={'b1-cooking':'Three young people are cooking together in a kitchen: one is making a pizza, one is preparing a salad and one is checking the oven.',
+'b2-office':'A young woman is working on a laptop in a busy open-plan office. Two colleagues are working behind her, and there is a coffee machine.',
+'b2-farm':'A farmer in a cap is standing in a green field next to a red tractor on a sunny day.',
+'b2-classroom':'A teacher is writing on the board in a classroom while three students sit at their desks and take notes.',
+'b2-online':'A young man with headphones is following an online lesson on his laptop at home.',
+'b2-birthday':'A family is celebrating a birthday at home. There is a cake with candles on the table and balloons in the room.',
+'b2-fireworks':'A big crowd is watching fireworks over a city at night.',
+'c1-fire':'Two firefighters are using a hose to put out a fire in a building.',
+'c1-rescue':'Two mountain rescuers are carrying an injured person on a stretcher in the snow.',
+'c1-doctor':'A doctor is checking on a patient in a hospital at night. A heart monitor is on the wall.',
+'c1-phone':'A teenage boy is showing his grandmother how to use a smartphone on the sofa.',
+'c1-mechanic':'An experienced mechanic is showing a young apprentice how to repair a car in a garage.',
+'c1-globe':'A teacher is showing a globe to a group of young children in a classroom.'}
