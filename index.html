@@ -511,7 +511,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.157.0';
+const APP_VERSION='4.157.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3714,7 +3714,7 @@ const sxPlays=src=>{const Q=UI.sq;if(!Q||Q.mode!=='x')return 0;const r=sxRec(Q.i
 function sxPlayBtn(src){const n=sxPlays(src),on=SXA&&!SXA.paused&&SXA.dataset.src===src;
   return`<div id="sxpb" class="row" style="gap:8px;margin-bottom:10px"><button class="btn ${on?'':'primary'}" data-act="sx-play" data-v="${esc(src)}" ${n>=2&&!on?'disabled':''}>${on?'⏹ Durdur':'▶ Dinle'}</button><span class="small muted">${on?'Çalıyor…':n>=2?'Dinleme hakkın bitti (2/2).':'Gerçek sınavdaki gibi en fazla 2 kez: '+(2-n)+' hakkın kaldı.'}</span></div>`}
 function sxPlay(src){const Q=UI.sq;if(!Q)return;const r=sxRec(Q.id),pl=r.state.sec.L.pl||(r.state.sec.L.pl={});
-  if(!SXA){SXA=new Audio();SXA.onended=SXA.onpause=()=>{const b=document.getElementById('sxpb');if(b&&SXA.dataset.src)b.outerHTML=sxPlayBtn(SXA.dataset.src)}}
+  if(!SXA){SXA=new Audio();SXA.onended=SXA.onpause=()=>{const b=document.getElementById('sxpb'),bt=b&&b.querySelector('[data-act="sx-play"]');if(bt)b.outerHTML=sxPlayBtn(bt.getAttribute('data-v'))}}
   if(!SXA.paused&&SXA.dataset.src===src){SXA.pause();return}
   if((pl[src]||0)>=2)return;sxAudioStop();pl[src]=(pl[src]||0)+1;sxSave(Q.id);SXA.dataset.src=src;SXA.src=src;
   SXA.play().then(()=>{const b=document.getElementById('sxpb');if(b)b.outerHTML=sxPlayBtn(src)}).catch(()=>{pl[src]--;toast('Ses çalınamadı.',3000)})}
@@ -3759,11 +3759,13 @@ function vSxRun(){
   const Q=UI.sq;if(Q.done)return vSxPracRep(Q);
   const A=sxAns(),tot=Q.items.length,X=Q.mode==='x'?sxExam(Q.id):null,s=X?sxRec(Q.id).state.sec[Q.sk]:null;
   const head=`<div class="qtop"><button class="btn" data-act="sx-quit">${Q.mode==='x'?'Ara ver':'Çık'}</button><div class="bar"><i style="width:${Math.round(A.filter(x=>x!=null&&x!=='').length/tot*100)}%"></i></div>${s?`<b class="mono" id="sxtm" style="${s.left<=300?'color:var(--bad)':''}">${sxMMSS(s.left)}</b>`:`<span class="mono muted">${Math.min(Q.i+1,tot)}/${tot}</span>`}</div>`;
+  if(Q.i>=tot&&Q.mode==='x'&&SXA&&!SXA.paused)SXA.pause();
   if(Q.i>=tot){const empty=Q.items.filter((it,i)=>A[i]==null||A[i]==='').length;
     return head+`<div class="card stack"><h2 style="margin:0">${Q.mode==='x'?'Bölümü teslim et':'Bitir'}</h2>
     <div class="small">${empty?`<b style="color:var(--bad)">${empty} soru boş.</b> Numaraya dokunarak dönebilirsin.`:'Tüm soruları cevapladın.'}${Q.mode==='x'?' Teslim ettikten sonra bu bölümdeki cevaplarını değiştiremezsin.':''}</div>
     ${sxGrid(Q,A)}<button class="btn primary block" data-act="sx-submit">${Q.mode==='x'?'Teslim et':'Bitir ve sonucu gör'}</button></div>`}
   const it=Q.items[Q.i],ua=A[Q.i];
+  if(Q.mode==='x'&&SXA&&!SXA.paused&&SXA.dataset.src!==it.au)SXA.pause();   // yeni soruya geçilince önceki sorunun sesi durur
   const au=it.au?(Q.mode==='x'?sxPlayBtn(it.au):`<div data-exaud="${esc(it.au)}" style="margin-bottom:10px"></div>`):'';
   const body=it.kw?`<div class="small muted">Birinci cümleyle aynı anlamı verecek şekilde ikinci cümleyi tamamla. Kalın kelimeyi değiştirmeden kullan; 2–${it.mx} kelime yaz.</div>
      <div lang="en" style="font-size:1.05rem;line-height:1.6">${esc(it.q)}</div><div><span class="badge" style="font-size:1rem;letter-spacing:.06em">${esc(it.kw)}</span></div>
