@@ -511,7 +511,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.157.2';
+const APP_VERSION='4.157.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3840,6 +3840,9 @@ function vSxS(){
    :PS_REC?`<button class="btn primary block" data-act="ps-start">🎤 Konuşmaya başla</button><button class="btn block" data-act="sxs-skip">Bu soruyu boş geç</button>`
    :`<div class="small" style="color:var(--bad)">Bu tarayıcıda konuşma tanıma yok (Chrome ya da Safari'nin güncel sürümünü kullan). Bu soruyu boş geçebilirsin.</div><button class="btn block" data-act="sxs-skip">Boş geç</button>`}</div></div>`;
 }
+/* tanıma sonuçları: bazı Android Chrome sürümleri her ara sonucu ayrı kayıt olarak ekler; bitmemiş kayıtlar yenisiyle değişir, kesinleşen kayıt öncekinin yerini alır */
+function srParts(rs){const out=[];for(let i=0;i<rs.length;i++){const x=(rs[i][0].transcript||'').trim(),f=!!rs[i].isFinal;if(out.length&&!out[out.length-1].f)out[out.length-1]={x,f};else out.push({x,f})}
+  return{fin:out.filter(o=>o.f).map(o=>o.x).join(' ').trim(),tmp:out.filter(o=>!o.f).map(o=>o.x).join(' ').trim(),all:out.map(o=>o.x).filter(Boolean).join(' ')}}
 /* --- konuşma öncesi mikrofon testi --- */
 let SXMR=null;
 function sxMicStop(){if(SXMR){try{SXMR.onend=null;SXMR.stop()}catch(e){}SXMR=null}}
@@ -3847,7 +3850,7 @@ function sxMicTest(){const M=UI.sxmic;if(!PS_REC)return;sxMicStop();M.st='rec';M
   let r;try{r=new PS_REC()}catch(e){M.st='fail';M.err='nosupport';render();return}
   r.lang='en-GB';r.continuous=true;r.interimResults=true;SXMR=r;
   const end=()=>{sxMicStop();if(M.st!=='rec')return;M.st=(M.tr.trim().split(/\s+/).filter(Boolean).length>=2)?'ok':'fail';if(M.st==='fail'&&!M.err)M.err='nowords';render()};
-  r.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;M.tr=t;const el=document.getElementById('sxmictr');if(el)el.textContent=t};
+  r.onresult=e=>{const t=srParts(e.results).all;M.tr=t;const el=document.getElementById('sxmictr');if(el)el.textContent=t};
   r.onerror=e=>{M.err=(e.error==='not-allowed'||e.error==='service-not-allowed')?'perm':e.error==='no-speech'?'nowords':'other'};
   r.onend=end;try{r.start()}catch(e){M.st='fail';M.err='other';render();return}
   setTimeout(()=>{if(M.st==='rec'&&SXMR===r){try{r.stop()}catch(e){end()}}},7000)}
@@ -4054,7 +4057,7 @@ function psStart(){
   try{speechSynthesis.cancel()}catch(e){}
   Object.assign(P,{st:'rec',tr:'',fin:'',t0:Date.now(),lim:q[1],dur:0,pz:0,lastAt:Date.now()});
   const start=()=>{const r=new PS_REC();r.lang='en-GB';r.continuous=true;r.interimResults=true;
-    r.onresult=e=>{let fin='',tmp='';for(let i=0;i<e.results.length;i++){const x=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=x+' ';else tmp+=x}const now=Date.now();P.pz=Math.max(P.pz||0,(now-P.lastAt)/1000);P.lastAt=now;P.cur=(fin+tmp).trim();const el=document.getElementById('pstr');if(el)el.textContent=((P.fin?P.fin+' ':'')+P.cur).trim();P.part=fin};
+    r.onresult=e=>{const sp=srParts(e.results),fin=sp.fin,tmp=sp.tmp;const now=Date.now();P.pz=Math.max(P.pz||0,(now-P.lastAt)/1000);P.lastAt=now;P.cur=(fin+(fin&&tmp?' ':'')+tmp).trim();const el=document.getElementById('pstr');if(el)el.textContent=((P.fin?P.fin+' ':'')+P.cur).trim();P.part=fin};
     r.onend=()=>{if(UI.ps&&UI.ps.st==='rec'&&Date.now()<P.t0+P.lim*1000){P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';try{start()}catch(e){psStop()}}else{P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';psStop()}};
     r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){toast('Mikrofon izni verilmedi.',4000);P.st='idle';clearInterval(P.tm);render()}};
     PSR=r;r.start()};
