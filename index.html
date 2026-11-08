@@ -511,7 +511,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.157.3';
+const APP_VERSION='4.157.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3841,7 +3841,9 @@ function vSxS(){
    :`<div class="small" style="color:var(--bad)">Bu tarayıcıda konuşma tanıma yok (Chrome ya da Safari'nin güncel sürümünü kullan). Bu soruyu boş geçebilirsin.</div><button class="btn block" data-act="sxs-skip">Boş geç</button>`}</div></div>`;
 }
 /* tanıma sonuçları: bazı Android Chrome sürümleri her ara sonucu ayrı kayıt olarak ekler; bitmemiş kayıtlar yenisiyle değişir, kesinleşen kayıt öncekinin yerini alır */
-function srParts(rs){const out=[];for(let i=0;i<rs.length;i++){const x=(rs[i][0].transcript||'').trim(),f=!!rs[i].isFinal;if(out.length&&!out[out.length-1].f)out[out.length-1]={x,f};else out.push({x,f})}
+function srParts(rs){const out=[],W=t=>t.toLowerCase().replace(/[^\p{L}\p{N}' ]/gu,'').split(/\s+/).filter(Boolean);
+  const cum=(a,b)=>{const x=W(a),y=W(b);let p=0;while(p<x.length&&p<y.length&&x[p]===y[p])p++;return p>0&&p>=Math.min(x.length,3)};   // yeni kayıt öncekinin devamı / düzeltilmişi mi
+  for(let i=0;i<rs.length;i++){const x=(rs[i][0].transcript||'').trim(),f=!!rs[i].isFinal,l=out[out.length-1];if(l&&(!l.f||cum(l.x,x)))out[out.length-1]={x,f};else out.push({x,f})}
   return{fin:out.filter(o=>o.f).map(o=>o.x).join(' ').trim(),tmp:out.filter(o=>!o.f).map(o=>o.x).join(' ').trim(),all:out.map(o=>o.x).filter(Boolean).join(' ')}}
 /* --- konuşma öncesi mikrofon testi --- */
 let SXMR=null;
