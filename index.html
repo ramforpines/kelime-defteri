@@ -511,7 +511,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.157.4';
+const APP_VERSION='4.157.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3903,7 +3903,7 @@ function vSxRes(X,r){
      if(!UI.aiBusy&&!er&&!(UI.aiTry||{})[X.id])setTimeout(()=>sxAi(X.id),50);
      return UI.aiBusy||!er?`<div class="small"><b>⏳ Yazma ve konuşman değerlendiriliyor…</b> <span class="muted">(30–60 saniye sürebilir; bu sayfadan çıkabilirsin, sonuç kaydedilir.)</span></div>`
      :er==='limit'?`<div class="small" style="color:#b35a00">Bu haftaki değerlendirme hakkın kullanılmış. Pazartesi bu sayfayı açtığında otomatik değerlendirilecek.</div>`
-     :`<div class="small" style="color:#b35a00">${esc(AI_ERR[er]||AI_ERR.ai)}</div><button class="btn block" data-act="sx-ai">Tekrar dene</button>`})()}</div>
+     :`<div class="small" style="color:#b35a00">${esc(AI_ERR[er]||AI_ERR.ai)}</div>${(CLOUD.admin||CLOUD.beta)&&(UI.aiDet||{})[X.id]?`<div class="small muted" style="word-break:break-all">Ayrıntı (yönetici): ${esc(UI.aiDet[X.id])}</div>`:''}<button class="btn block" data-act="sx-ai">Tekrar dene</button>`})()}</div>
   ${sxAnalysis(items,ans)}
   <div class="card stack"><h3 style="margin:0">✍️ Yazma</h3>${WT.map((w,i)=>{const t=st.sec.W.t[w.id]||'',a=ai&&ai.w&&ai.w[i];return`<details class="small" style="border-top:1px solid var(--line);padding:6px 0" ${i===0?'open':''}><summary style="cursor:pointer"><b>${esc(w.t)}</b> <span class="muted">· ${sxWc(t)} kelime${a&&a.scores?' · '+['content','communicative','organisation','language'].reduce((x,k)=>x+(+a.scores[k]||0),0)+'/20':''}</span></summary>
      <div class="stack" style="margin-top:6px"><div><b>Senin cevabın</b><div lang="en" style="white-space:pre-line;line-height:1.6">${t?esc(t):'<span class="muted">(boş)</span>'}</div></div>${a?aiHtml(a,'w'):''}${[['Örnek 1 · seviyeye uygun',w.model]].concat(w.more||[]).map(([lb,tx],j)=>`<details ${j===0?'open':''} style="border-top:1px solid var(--line);padding:4px 0"><summary style="cursor:pointer"><b>${esc(lb)}</b> <span class="muted">· ${sxWc(tx)} kelime</span></summary><div lang="en" style="white-space:pre-line;line-height:1.6;margin-top:4px">${esc(tx)}</div></details>`).join('')}</div></details>`}).join('')}</div>
@@ -3919,7 +3919,7 @@ async function sxAi(id0){
     s:X.sec.S.parts.flatMap((T,pi)=>T.q.map((q,qi)=>{const x=st.sec.S.tr[pi+'-'+qi]||{};return{part:T.p||pi+1,task:q[0],limit:q[1],dur:x.dur||0,text:x.t||''}}))};
   UI.aiBusy=true;render();let res=null,err=null;
   try{const x=await sb.functions.invoke('pet-eval',{body});
-    if(x.error){let c='net';try{const j=await x.error.context.json();c=j.error||c}catch(e){if(/404|not found/i.test(String(x.error.message)))c='setup'}err=c}
+    if(x.error){let c='net';try{const j=await x.error.context.json();c=j.error||c;UI.aiDet=UI.aiDet||{};UI.aiDet[id]=j.detail||''}catch(e){if(/404|not found/i.test(String(x.error.message)))c='setup'}err=c}
     else if(x.data&&x.data.ok){res=x.data.res;UI.aiLeft=x.data.left}else err=(x.data&&x.data.error)||'ai'}
   catch(e){err='net'}
   UI.aiBusy=false;UI.aiErr=UI.aiErr||{};

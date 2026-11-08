@@ -107,19 +107,35 @@ List at most 8 errors. Unanswered or empty answers lower the discourse score.`,
   };
 }
 
-async function ask(p: { system: string; user: string }, ids: Set<string>) {
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
+async function call(p: { system: string; user: string }, withTemp: boolean) {
+  const body: Record<string, unknown> = { model: MODEL, max_tokens: 4000, system: p.system, messages: [{ role: "user", content: p.user }] };
+  if (withTemp) body.temperature = 0;
+  return await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": AI_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: MODEL, max_tokens: 2500, temperature: 0, system: p.system, messages: [{ role: "user", content: p.user }] }),
+    body: JSON.stringify(body),
   });
-  if (!r.ok) throw new Error("ai " + r.status + " " + (await r.text()).slice(0, 300));
-  const j = await r.json();
-  const txt = (j.content ?? []).map((c: any) => c.text ?? "").join("");
-  const s = txt.indexOf("{"), e = txt.lastIndexOf("}");
-  const res = JSON.parse(txt.slice(s, e + 1));
-  (res.errors ?? []).forEach((x: any) => { if (x.topic && !ids.has(x.topic)) x.topic = null; });
-  return res;
+}
+async function ask(p: { system: string; user: string }, ids: Set<string>) {
+  let withTemp = true, lastErr = "";
+  for (let k = 0; k < 3; k++) {
+    let r = await call(p, withTemp);
+    if (!r.ok) {
+      const t = (await r.text()).slice(0, 300);
+      if (r.status === 400 && withTemp && /temperature/i.test(t)) { withTemp = false; r = await call(p, false); if (r.ok) { /* devam */ } else throw new Error("ai " + r.status + " " + (await r.text()).slice(0, 300)); }
+      else if (r.status === 429 || r.status >= 500) { lastErr = "ai " + r.status + " " + t; await new Promise((z) => setTimeout(z, 1500)); continue; }
+      else throw new Error("ai " + r.status + " " + t);
+    }
+    try {
+      const j = await r.json();
+      const txt = (j.content ?? []).map((c: any) => c.text ?? "").join("");
+      const s = txt.indexOf("{"), e = txt.lastIndexOf("}");
+      const res = JSON.parse(txt.slice(s, e + 1));
+      (res.errors ?? []).forEach((x: any) => { if (x.topic && !ids.has(x.topic)) x.topic = null; });
+      return res;
+    } catch (e) { lastErr = "json " + String((e as Error).message).slice(0, 120); }
+  }
+  throw new Error(lastErr || "ai");
 }
 const words = (t: unknown) => String(t ?? "").trim().split(/\s+/).filter(Boolean).length;
 
@@ -166,6 +182,6 @@ Deno.serve(async (req) => {
   } catch (e) {
     console.error(e);
     await rpc("pet_eval_save", { p_id: take.id, p_out: null }, auth).catch(() => {}); // hak geri verilir
-    return out({ error: "ai" }, 502);
+    return out({ error: "ai", detail: String((e as Error).message ?? e).slice(0, 240) }, 502);
   }
 });
