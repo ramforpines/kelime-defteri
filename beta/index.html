@@ -511,7 +511,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.157.1';
+const APP_VERSION='4.157.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3766,7 +3766,9 @@ function vSxRun(){
     ${sxGrid(Q,A)}<button class="btn primary block" data-act="sx-submit">${Q.mode==='x'?'Teslim et':'Bitir ve sonucu gör'}</button></div>`}
   const it=Q.items[Q.i],ua=A[Q.i];
   if(Q.mode==='x'&&SXA&&!SXA.paused&&SXA.dataset.src!==it.au)SXA.pause();   // yeni soruya geçilince önceki sorunun sesi durur
-  const au=it.au?(Q.mode==='x'?sxPlayBtn(it.au):`<div data-exaud="${esc(it.au)}" style="margin-bottom:10px"></div>`):'';
+  const shr=(()=>{if(!it.au)return'';const ix=Q.items.map((x,i)=>x.au===it.au?i+1:0).filter(Boolean);if(ix.length<2)return'';const rg=ix[ix.length-1]-ix[0]===ix.length-1?ix[0]+'–'+ix[ix.length-1]:ix.join(', ');
+    return`<div class="small" style="margin-bottom:8px;padding:8px 10px;border-radius:10px;background:rgba(43,78,255,.08)">Bu ses kaydı <b>${ix.length} soru</b> için tek parça: <b>${rg}. soruları</b> bu kayda göre cevapla.</div>`})();
+  const au=it.au?shr+(Q.mode==='x'?sxPlayBtn(it.au):`<div data-exaud="${esc(it.au)}" style="margin-bottom:10px"></div>`):'';
   const body=it.kw?`<div class="small muted">Birinci cümleyle aynı anlamı verecek şekilde ikinci cümleyi tamamla. Kalın kelimeyi değiştirmeden kullan; 2–${it.mx} kelime yaz.</div>
      <div lang="en" style="font-size:1.05rem;line-height:1.6">${esc(it.q)}</div><div><span class="badge" style="font-size:1rem;letter-spacing:.06em">${esc(it.kw)}</span></div>
      <div lang="en" style="font-size:1.05rem;line-height:1.6">${esc(it.s2)}</div>`:`<h2 lang="en" style="white-space:pre-line">${esc(it.q)}</h2>`;
