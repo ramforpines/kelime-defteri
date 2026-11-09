@@ -94,3 +94,22 @@ def apply(pr,warn):
                     if len(o)!=len(q['o']):warn.append('opt_fix '+k+': şık sayısı')
                     q['a']=a;q['o']=list(o);n+=1
     return n
+
+# ---- Okuma: cümle yerleştirme (gap) çeldiricileri: doğru cümlelerle benzer uzunlukta ve daha inandırıcı ----
+GAPFIX={
+ 'b1r4':{'F':"Older students, however, still have to do homework every evening.",
+         'G':"Several students said they would rather go home an hour earlier.",
+         'H':"Even so, a few parents have asked the school to bring homework back."},
+ 'b2r6':{'F':"The temperature rarely rose above minus twenty, even in the summer months."},
+ 'c1r7':{'G':"I had trained for months beforehand, walking twenty miles every weekend and studying the whole route in detail."},
+}
+GAPADD={'b2r6':[['H',"Most of my colleagues had worked in similar places for several years."]]}
+GAPE={'b1r4':(3,"Sınav sonuçları aynı kaldı; \"However\" ile olumlu fark: D (F, G, H boşluklara uymaz).")}
+def apply_gap(pr):
+    for p in pr.get('R',[]):
+        if p.get('ty')!='gap':continue
+        fx=GAPFIX.get(p['id'],{})
+        for o in p['opts']:
+            if o[0] in fx:o[1]=fx[o[0]]
+        for o in GAPADD.get(p['id'],[]):p['opts'].append(list(o))
+        if p['id'] in GAPE:i,t=GAPE[p['id']];p['e'][i]=t

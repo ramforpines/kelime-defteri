@@ -128,7 +128,7 @@ for lv in LV:
     try:
         import importlib;_of=importlib.import_module('opt_fix') if True else None
     except Exception:_of=None
-    if _of:_of.apply(pr,warn)
+    if _of:_of.apply(pr,warn);_of.apply_gap(pr)
     xf=os.path.join(HERE,'src','extra_'+lv.lower()+'.py')   # ek örnek cevaplar
     if os.path.exists(xf):
         sp=importlib.util.spec_from_file_location('x'+lv,xf);xm=importlib.util.module_from_spec(sp);sp.loader.exec_module(xm)
