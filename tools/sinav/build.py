@@ -106,6 +106,7 @@ def spart(s,P):
         for a in (q[3] if isinstance(q[3],list) else [q[3]]):
             n=len(a.split()); r={'a2':1.5,'b1':1.8,'b2':2.0,'c1':2.1}.get(s['id'][:2],1.8)
             if isinstance(q[3],list) and not(q[1]*r*0.6<=n<=q[1]*r*1.45):warn.append(P+': konuşma örneği %d kelime (%d sn)'%(n,q[1]))
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.abspath(__file__)),'src'))
 LV=['A2','B1','B2','C1'];NAME={'A2':'A2 Key','B1':'B1 Preliminary','B2':'B2 First','C1':'C1 Advanced'}
 exams=[];prac={}
 ONLY=[x for x in os.environ.get('KD_LV','').split(',') if x]   # örn. KD_LV=A2,B1: yalnızca bu seviyeler (sesi hazır olmayanları yayına almamak için)
@@ -124,6 +125,10 @@ for lv in LV:
         for s in X['sec']['S']['parts']:spart(s,P)
         exams.append(X)
     pr=m.PRAC;P='prac-'+lv
+    try:
+        import importlib;_of=importlib.import_module('opt_fix') if True else None
+    except Exception:_of=None
+    if _of:_of.apply(pr,warn);_of.apply_gap(pr)
     xf=os.path.join(HERE,'src','extra_'+lv.lower()+'.py')   # ek örnek cevaplar
     if os.path.exists(xf):
         sp=importlib.util.spec_from_file_location('x'+lv,xf);xm=importlib.util.module_from_spec(sp);sp.loader.exec_module(xm)

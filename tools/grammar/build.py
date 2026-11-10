@@ -7,11 +7,22 @@ LEVELS=['A1','A2','B1','B2','C1','C2']
 errs=[];warn=[]
 def E(m):errs.append(m)
 def W(m):warn.append(m)
-words={w[0].lower() for w in json.load(open('/tmp/gram/words.json'))}
+def _words():
+    f='/tmp/gram/words.json'
+    if os.path.exists(f):return json.load(open(f))
+    import subprocess;os.makedirs('/tmp/gram',exist_ok=True)   # taze oturumda words.js'den üret
+    subprocess.check_call(['node','-e',"global.window={};eval(require('fs').readFileSync('%s/words.js','utf8'));const W=window.WORDS||window.W||Object.values(window).find(Array.isArray);require('fs').writeFileSync('%s',JSON.stringify(W))"%(ROOT,f)])
+    return json.load(open(f))
+words={w[0].lower() for w in _words()}
 topics=json.load(open(os.path.join(HERE,'existing.json')))
 for f in sorted(glob.glob(os.path.join(HERE,'src','*.py'))):
     spec=importlib.util.spec_from_file_location(os.path.basename(f)[:-3],f);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
     topics+=m.TOPICS
+# bugünün testi için ek gramer soruları: dq/<konu id>.py içinde DQ=[{lv,t,stem,right,wrongs,why},...] (konu mini testinden FARKLI sorular)
+DQ={}
+for f in sorted(glob.glob(os.path.join(HERE,'dq','*.py'))):
+    spec=importlib.util.spec_from_file_location('dq_'+os.path.basename(f)[:-3],f);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+    DQ[os.path.basename(f)[:-3]]=m.DQ
 SAFE=re.compile(r'<(?!/?(b|i|br)\b)[^>]*>')
 def conv_quiz(t):
     if t['quiz'] and 'stem' in t['quiz'][0]:
@@ -116,6 +127,19 @@ for t in topics:
     cnt=[sum(1 for q in qz if q['a']==i) for i in range(3)]
     if min(cnt[:2])<4:W('%s: cevap konumu dağılımı %s'%(P,cnt))
     t['_n']=len(qz)
+    # ek sorular (dq)
+    if P in DQ:
+        dq=conv_quiz({'id':P+'|dq','quiz':[dict(q) for q in DQ[P]]})['quiz']
+        qkeys={(q['q'],q['o'][q['a']]) for q in qz}
+        for k,q in enumerate(dq):
+            pth='%s.dq[%d]'%(P,k);S(pth+'.q',q['q']);S(pth+'.w',q['w']);S(pth+'.t',q['t'])
+            if len(set(q['o']))!=len(q['o']):E(pth+': yinelenen şık')
+            if (q['q'],q['o'][q['a']]) in qkeys:E(pth+': mini testte zaten var')
+            qkeys.add((q['q'],q['o'][q['a']]))
+            L=[len(o) for o in q['o']];c=L[q['a']];d=[x for i,x in enumerate(L) if i!=q['a']]
+            if c>max(d)+3:W(pth+': doğru şık belirgin biçimde en uzun')
+            if '___' in q['q']:addEN(pth,q['q'].replace('___',q['o'][q['a']]))
+        t['dq']=dq
     # LT için doğru cümleler
     for k,q in enumerate(qz):
         if '___' in q['q']:
@@ -156,7 +180,7 @@ if len(warn)>60:print('... %d uyarı daha'%(len(warn)-60))
 if errs:
     for e in errs:print('HATA:',e)
     print('%d hata'%len(errs));sys.exit(1)
-PLAN={'C1':['Mixed conditionals','Advanced passive and reporting'],'C2':['İnce anlam farkları ve üslup']}
+PLAN={'B1':['so / such / too / enough','-ed / -ing sıfatlar ve sıfat sırası','Sıfat + edat kalıpları','Ön ekler ve son ekler'],'C1':['Mixed conditionals','Advanced passive and reporting'],'C2':['İnce anlam farkları ve üslup']}
 out='/* Gramer konu anlatımları (beta). Bu dosya tools/grammar/build.py ile üretilir; elle düzenleme. *...* = vurgulanan gramer parçası. */\nwindow.GRAMMAR='+json.dumps(topics,ensure_ascii=False,separators=(',',':'))+';\nwindow.GRAMMAR_PLAN='+json.dumps(PLAN,ensure_ascii=False,separators=(',',':'))+';\n'
 open(os.path.join(ROOT,'grammar.js'),'w',encoding='utf8').write(out)
 print('tamam: %d konu, %d KB'%(len(topics),len(out)//1024))

@@ -413,20 +413,79 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <nav aria-label="Ana menü"><div class="in" id="nav"></div></nav>
 <div id="toast" class="toast" hidden></div>
 
-<script src="words.js"></script>
-<script src="grammar.js"></script>
-<script src="extr.js"></script>
-<script src="examples.js"></script>
-<script src="senses.js"></script>
-<script src="reading.js"></script>
-<script src="reading-tr.js"></script>
-<script src="reading2.js"></script>
-<script src="reading3.js"></script>
-<script src="reading-fix.js"></script>
-<script src="gloss.js"></script>
-<script src="exam.js"></script>
-<script src="mock.js"></script>
-<script src="supabase.js"></script>
+<!--ASSETS: tools/release/assets.py üretir, elle düzenleme-->
+<script src="d/w00-5d1da6725c.js"></script>
+<script src="d/w01-587ea355df.js"></script>
+<script src="d/w02-a9cc5e9251.js"></script>
+<script src="d/w03-a56bd95d8e.js"></script>
+<script src="d/w04-03c3f52c65.js"></script>
+<script src="d/w05-9f865a2fcb.js"></script>
+<script src="d/w06-dfd2dbc043.js"></script>
+<script src="d/w07-9d375ac546.js"></script>
+<script src="d/w08-112f52ff84.js"></script>
+<script src="d/w09-22dea443b4.js"></script>
+<script src="d/w10-4b999e51b7.js"></script>
+<script src="d/w11-c70e86ee25.js"></script>
+<script src="d/grammar-893da0409f.js"></script>
+<script src="d/x00-f86d17b433.js"></script>
+<script src="d/x01-ef03f3761c.js"></script>
+<script src="d/x02-0d852bcdbe.js"></script>
+<script src="d/x03-c9a32979af.js"></script>
+<script src="d/x04-1721654d24.js"></script>
+<script src="d/x05-66bf0c776d.js"></script>
+<script src="d/x06-04131f9399.js"></script>
+<script src="d/x07-27782f0e7c.js"></script>
+<script src="d/x08-597db6d6af.js"></script>
+<script src="d/x09-44aadb855c.js"></script>
+<script src="d/x10-403a103052.js"></script>
+<script src="d/x11-e938b57e3b.js"></script>
+<script src="d/x12-375d385b2d.js"></script>
+<script src="d/x13-1af6b20b08.js"></script>
+<script src="d/x14-391bb8bb4d.js"></script>
+<script src="d/x15-87cf904138.js"></script>
+<script src="d/e00-397da61684.js"></script>
+<script src="d/e01-8cdb7634fa.js"></script>
+<script src="d/e02-1d41957a73.js"></script>
+<script src="d/e03-3bf467bf0e.js"></script>
+<script src="d/e04-b519d7dde8.js"></script>
+<script src="d/e05-a7827bd6c2.js"></script>
+<script src="d/e06-c50d2fdb7f.js"></script>
+<script src="d/e07-3af3660d0d.js"></script>
+<script src="d/e08-0342cbca17.js"></script>
+<script src="d/e09-a2cdd23554.js"></script>
+<script src="d/e10-c7816135db.js"></script>
+<script src="d/e11-8a83d96e6d.js"></script>
+<script src="d/e12-0042cfb9e2.js"></script>
+<script src="d/e13-a0fca50487.js"></script>
+<script src="d/e14-37e64efc67.js"></script>
+<script src="d/e15-43a735b6f9.js"></script>
+<script src="d/s00-a72e9ca13e.js"></script>
+<script src="d/s01-dc608590c7.js"></script>
+<script src="d/s02-f6cbcf999d.js"></script>
+<script src="d/s03-141356be38.js"></script>
+<script src="d/s04-6e070bed40.js"></script>
+<script src="d/s05-00716f528f.js"></script>
+<script src="d/s06-fc6dd70133.js"></script>
+<script src="d/s07-d5873499ff.js"></script>
+<script src="d/s08-6b2e220497.js"></script>
+<script src="d/s09-60e92c6b70.js"></script>
+<script src="d/s10-0811ebf310.js"></script>
+<script src="d/s11-497fb75bc4.js"></script>
+<script src="d/s12-e5599390e3.js"></script>
+<script src="d/s13-3cd706a7be.js"></script>
+<script src="d/s14-9e51e48750.js"></script>
+<script src="d/s15-7d54860c38.js"></script>
+<script src="d/reading-2325feb62e.js"></script>
+<script src="d/reading-tr-f7fbbc1063.js"></script>
+<script src="d/reading2-30c32b47e3.js"></script>
+<script src="d/reading3-84eb18e0db.js"></script>
+<script src="d/reading-fix-6a77343e4d.js"></script>
+<script src="d/gloss-6e4fa53eb6.js"></script>
+<script src="d/exam-f2a953ad23.js"></script>
+<script src="d/mock-7f97eb403e.js"></script>
+<script src="d/supabase-7c13da89ef.js"></script>
+<script>window.ASSET={"phrases.js": "d/phrases-ce69a9a123.js", "sinav.js": "d/sinav-e1c2ca987f.js"};</script>
+<!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
 (function(){
@@ -510,7 +569,7 @@ const has=s=>!!s&&s!=='-';
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const PARTM=new Map();
 const parts=s=>{s=String(s);let r=PARTM.get(s);if(!r){r=s.toLowerCase().split(/[,;]/).map(x=>x.trim()).filter(Boolean);if(PARTM.size>60000)PARTM.clear();PARTM.set(s,r)}return r.slice()};   // önbellekli (sözlük taramalarında çok çağrılır)
-const posKey=w=>str(w.pos).toLowerCase().split(/[,\/ (]/)[0];
+const posKey=w=>{if(w&&w._pk!==undefined&&w._pkp===w.pos)return w._pk;const k=str(w.pos).toLowerCase().split(/[,\/ (]/)[0];if(w&&typeof w==='object'){w._pk=k;w._pkp=w.pos}return k};
 const today=()=>new Date().toLocaleDateString('sv-SE');
 const addDays=(d,n)=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return x.toLocaleDateString('sv-SE')};
 const fmt=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'short'})}catch(e){return d}};
@@ -518,7 +577,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.160.1';
+const APP_VERSION='4.162.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2001,12 +2060,14 @@ function orthoDistractors(word){
 }
 const SWORDS=new Set('a an the of to in on at for and or is are was were be been it its this that with as by from'.split(' '));
 const TOKM=new Map();
-const toks=x=>{x=x||'';let r=TOKM.get(x);if(!r){r=parts(x).map(t=>t.replace(/\(.*?\)/g,'').trim()).filter(t=>t&&t!=='-');if(TOKM.size>60000)TOKM.clear();TOKM.set(x,r)}return r.slice()};
-const cont=x=>String(x||'').toLowerCase().replace(/[^a-z0-9ğüşıöç ]/g,' ').split(/\s+/).filter(t=>t.length>2&&!SWORDS.has(t));
+const toksR=x=>{x=x||'';let r=TOKM.get(x);if(!r){r=parts(x).map(t=>t.replace(/\(.*?\)/g,'').trim()).filter(t=>t&&t!=='-');if(TOKM.size>60000)TOKM.clear();TOKM.set(x,r)}return r};   // salt okunur (kopyasız)
+const toks=x=>toksR(x).slice();
+const CONTM=new Map();
+const cont=x=>{x=String(x||'');let r=CONTM.get(x);if(!r){r=x.toLowerCase().replace(/[^a-z0-9ğüşıöç ]/g,' ').split(/\s+/).filter(t=>t.length>2&&!SWORDS.has(t));if(CONTM.size>60000)CONTM.clear();CONTM.set(x,r)}return r};   // önbellekli (çeldirici taramasında çok çağrılır; dönen dizi değiştirilmez)
 function related(a,b){
   const aw=a.word.toLowerCase(),bw=b.word.toLowerCase();
-  const as=toks(a.syn),bs=toks(b.syn);
-  if(as.indexOf(bw)!==-1||bs.indexOf(aw)!==-1||toks(a.ant).indexOf(bw)!==-1||toks(b.ant).indexOf(aw)!==-1)return true;
+  const as=a._sy||(a._sy=toksR(a.syn)),bs=b._sy||(b._sy=toksR(b.syn));   // kelime başına önbellek
+  if(as.indexOf(bw)!==-1||bs.indexOf(aw)!==-1||(a._an||(a._an=toksR(a.ant))).indexOf(bw)!==-1||(b._an||(b._an=toksR(b.ant))).indexOf(aw)!==-1)return true;
   return as.some(x=>bs.indexOf(x)!==-1);
 }
 let ADJ=null,BYL=null;
@@ -2383,7 +2444,7 @@ function pickDistractors(t,textFn,filterFn,closed,near){
     for(const r of shuffle(closedMates(t))){const txt=textFn(r);if(!txt||used[txt.toLowerCase()])continue;used[txt.toLowerCase()]=1;out.push(txt);if(out.length===3)return out}
   }
   // havuzdan rastgele örnekle; aynı türdekiler önce
-  const tries=Math.min(W.length,near?2600:900);
+  const tries=Math.min(W.length,near?1500:900);   // hız: yakın çeldirici taraması 1500 kelimeyle sınırlı
   const start=Math.floor(Math.random()*W.length);
   const same=[],other=[];
   for(let k=0;k<tries;k++){
@@ -2447,9 +2508,10 @@ function senseOk(t,n){const s=(t.sn||[])[n];return !!(s&&s.t&&s.d&&s.e&&trFirst(
 const trOv=(a,b)=>trOverlap(noPar(a),noPar(b));   // parantez içi açıklamalar karşılaştırmaya girmez
 function trClash(a,b){   // iki kelimenin (ana + ek anlamlarıyla) herhangi bir Türkçe karşılığı çakışıyor mu
   if(xtrBan(a,b.tr)||xtrBan(b,a.tr))return true;
-  const A=[a.tr].concat((a.sn||[]).map(s=>s.t)),B=[b.tr].concat((b.sn||[]).map(s=>s.t));
-  return A.some(x=>B.some(y=>trOv(x,y)));
+  const A=trParts(a),B=trParts(b);   // önbellekli: her kelimenin tüm Türkçe karşılık parçaları bir kez hesaplanır
+  return A.some(x=>B.some(y=>x===y||(x.length>=4&&y.length>=4&&(x.startsWith(y)||y.startsWith(x)))));
 }
+function trParts(w){if(w._trp&&w._trs===w.sn)return w._trp;const r=[];[w.tr].concat((w.sn||[]).map(s=>s.t)).forEach(x=>{parts(noPar(x||'')).forEach(t=>r.push(t))});w._trp=r;w._trs=w.sn;return r}
 const DGEN=new Set('something someone especially person people usually another between without through different certain because'.split(' ')) ;
 function keyShare(a,b){   // iki tanım ortak bir anlamlı sözcük (örn. 'problem') paylaşıyorsa o kelime yakın anlam şıkkı olamaz
   const g=x=>cont(x).map(t=>t.replace(/s$/,'')).filter(t=>t.length>=6&&!DGEN.has(t));
@@ -2930,7 +2992,7 @@ const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
 const NEWF={phr:1,pet:1};   // yeni menüler: ilk açılışta 'Yeni' işareti kalkar
 const nwSeen=()=>{try{return JSON.parse(localStorage.getItem('kd-new1')||'{}')}catch(e){return{}}};
-const NEWT=[];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
+const NEWT=['p:directions','p:offers'];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
 const NT={gram:'g:',phr:'p:'};
 const nwIs=k=>NT[k]?(NEWT.some(x=>x.startsWith(NT[k])&&!nwSeen()[x])||(!!NEWF[k]&&!nwSeen()[k])):((NEWT.includes(k)||!!NEWF[k])&&!nwSeen()[k]);
 const nwBd=k=>nwIs(k)?' <span class="nw">Yeni</span>':'';
@@ -3643,7 +3705,7 @@ function vResult(){
 }
 /* ===== Kalıplar (beta): fikir belirtme vb. ifade kalıpları. Veri: phrases.js (tools/phrases/build.py) ===== */
 let PH_LOADING=false;
-function phLoad(){if(window.PHRASES||PH_LOADING)return;PH_LOADING=true;const s=document.createElement('script');s.src='phrases.js?v='+APP_VERSION;s.onload=()=>{PH_LOADING=false;phReg();if(UI.tab==='phr'||UI.tab==='saved'||UI.tab==='review')render()};s.onerror=()=>{PH_LOADING=false;if(UI.tab==='phr')toast('Kalıplar yüklenemedi.',3000)};document.head.appendChild(s)}
+function phLoad(){if(window.PHRASES||PH_LOADING)return;PH_LOADING=true;const s=document.createElement('script');s.src=(window.ASSET&&window.ASSET['phrases.js'])||('phrases.js?v='+APP_VERSION);s.onload=()=>{PH_LOADING=false;phReg();if(UI.tab==='phr'||UI.tab==='saved'||UI.tab==='review')render()};s.onerror=()=>{PH_LOADING=false;if(UI.tab==='phr')toast('Kalıplar yüklenemedi.',3000)};document.head.appendChild(s)}
 const PH_LV=['A1','A2','B1','B2','C1','C2'];
 const PH_FN=['Kalıp: diyalog','Kalıp: boşluk','Kalıp: kullanım','Kalıp: işlev','Kalıp: yakın anlam','Kalıp: üslup'];
 PH_FN.forEach((t,i)=>{FEAT[100+i]=t});
@@ -3715,7 +3777,7 @@ const SX_SK={R:'Okuma',L:'Dinleme',W:'Yazma',S:'Konuşma'},SX_IC={R:'📖',L:'�
 const sxSkName=(lv,k)=>k==='R'&&(lv==='B2'||lv==='C1')?'Okuma ve dil kullanımı':SX_SK[k];
 const SX_VO={M:'Erkek',F:'Kadın',M2:'Erkek 2',F2:'Kadın 2'};
 let SX_LOADING=false;
-function sxLoad(){if(window.SINAV||SX_LOADING)return;SX_LOADING=true;const s=document.createElement('script');s.src='sinav.js?v='+APP_VERSION;s.onload=()=>{SX_LOADING=false;if(UI.tab==='pet'||UI.tab==='rank'||UI.me==='adm')render()};s.onerror=()=>{SX_LOADING=false;toast('Sınav dosyası yüklenemedi. İnternetini kontrol et.',4000)};document.head.appendChild(s)}
+function sxLoad(){if(window.SINAV||SX_LOADING)return;SX_LOADING=true;const s=document.createElement('script');s.src=(window.ASSET&&window.ASSET['sinav.js'])||('sinav.js?v='+APP_VERSION);s.onload=()=>{SX_LOADING=false;if(UI.tab==='pet'||UI.tab==='rank'||UI.me==='adm')render()};s.onerror=()=>{SX_LOADING=false;toast('Sınav dosyası yüklenemedi. İnternetini kontrol et.',4000)};document.head.appendChild(s)}
 const sxAud=n=>'audio/sx/'+n+'.mp3';
 const sxScTxt=sc=>{const many=new Set(sc.map(x=>x[0])).size>1;return sc.filter(x=>!String(x[1]).startsWith('#')).map(x=>(many?SX_VO[x[0]]+': ':'')+x[1]).join('\n')};
 const sxPara=p=>p==null?null:Array.isArray(p)?p:String(p).split('\n');
@@ -5959,7 +6021,7 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__bi
 window.addEventListener('online',()=>{schedulePush();refreshBoard()});
 setInterval(()=>{if(!document.hidden&&(UI.tab==='rank'||UI.tab==='today'))refreshBoard()},JIT(120000));
 setInterval(()=>{if(document.hidden||!CLOUD.uid||CLOUD.approved===false||!navigator.onLine)return;loadMyFb();loadFlags();if(CLOUD.admin)loadAdminFb()},JIT(240000));
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(()=>navigator.serviceWorker.ready).then(r=>{const keep=[...document.querySelectorAll('script[src^="d/"]')].map(x=>x.src).concat(Object.values(window.ASSET||{}).map(u=>new URL(u,location.href).href));(r.active||navigator.serviceWorker.controller)&&(r.active||navigator.serviceWorker.controller).postMessage({keep})}).catch(()=>{})})}   // değişmeyen parçalar önbellekte kalır, eskiler silinir
 wodBackfill();render();maybeNotify();initAuth();
 })();
 </script>

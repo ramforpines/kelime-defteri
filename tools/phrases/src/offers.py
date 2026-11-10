@@ -1,0 +1,28 @@
+# Kalıplar: Teklif, kabul/ret ve söz verme. P(İngilizce, Türkçe, seviye, üslup, örnek İngilizce, örnek Türkçe, diyalog)
+def P(en,tr,lv,reg,ex,extr,d):return {'en':en,'tr':tr,'lv':lv,'reg':reg,'ex':[ex,extr],'d':d}
+GROUP={'id':'offers','t':'Teklif ve söz verme','en':'Offers and promises',
+'ins':'Yardım teklif etmek, bir teklifi kabul etmek ya da kibarca geri çevirmek ve söz vermek için kalıplar.',
+'sub':[
+ {'k':'off','t':'Teklif etmek','en':'Making an offer','items':[
+  P("Shall I ...?","... yapayım mı?","A2","","Shall I open the window?","Pencereyi açayım mı?",("It's really hot in here.","___ open the window?",["That's very kind of you.","I promise I'll ..."])),
+  P("I'll ...","Ben ... yaparım / yapayım","A2","","Don't worry, I'll carry your bag.","Merak etme, çantanı ben taşırım.",("This bag is so heavy!","Don't worry, ___ carry it for you.",["No, thanks. I can manage.","Thanks, that would be great."])),
+  P("Would you like me to ...?","... yapmamı ister misin?","B1","","Would you like me to call a taxi?","Taksi çağırmamı ister misiniz?",("I'm going to be late for my train.","___ call a taxi for you?",["Don't worry, I won't forget.","That's very kind of you."])),
+  P("Can I help you with ...?","... konusunda yardım edebilir miyim?","A2","","Can I help you with those boxes?","O kutularda sana yardım edebilir miyim?",("I have to move all these boxes today.","___ those boxes?",["I'll make sure ...","No, thanks. I can manage."])),
+  P("Do you want me to ...?","... yapmamı ister misin?","A2","samimi","Do you want me to pick you up from the station?","Seni istasyondan almamı ister misin?",("My train arrives at ten tonight.","___ pick you up from the station?",["I promise I'll ...","Thanks, that would be great."])),
+  P("Let me ...","Bırak ben ... yapayım","B1","","Let me pay for the coffees this time.","Bu sefer kahveleri ben ödeyeyim.",("How much do I owe you for the coffee?","Nothing. ___ pay this time.",["That's very kind of you.","I'll make sure ..."])),
+  P("Would you like some help?","Yardım ister misiniz?","A2","resmî","You look lost. Would you like some help?","Kaybolmuş gibisiniz. Yardım ister misiniz?",("I can't find the right platform.","___ The trains to Ankara go from platform 3.",["No, thanks. I can manage.","I won't let you down."]))]},
+ {'k':'offyes','t':'Teklifi kabul etmek','en':'Accepting an offer','items':[
+  P("Thanks, that would be great.","Teşekkürler, çok iyi olur.","A2","","A lift home? Thanks, that would be great.","Eve bırakmak mı? Teşekkürler, çok iyi olur.",("Shall I give you a lift home?","___ It's raining so hard.",["No, thanks. I can manage.","Shall I ...?"])),
+  P("That's very kind of you.","Çok naziksiniz.","B1","resmî","You'll show me the way? That's very kind of you.","Bana yolu mu göstereceksiniz? Çok naziksiniz.",("I can walk with you to the hospital.","___ I don't know this area at all.",["It's OK, I'm fine, thanks.","Let me ..."])),
+  P("Yes, please. If you don't mind.","Evet, lütfen. Sizin için sakıncası yoksa.","B1","","Help with the shopping? Yes, please. If you don't mind.","Alışverişe yardım mı? Evet, lütfen. Sizin için sakıncası yoksa.",("Can I carry some of your shopping?","___ My arms are tired.",["No, thanks. I can manage.","I'll ..."]))]},
+ {'k':'offno','t':'Teklifi geri çevirmek','en':'Refusing an offer politely','items':[
+  P("No, thanks. I can manage.","Hayır, teşekkürler. Hallederim.","B1","","The suitcase? No, thanks. I can manage.","Valiz mi? Hayır, teşekkürler. Hallederim.",("Shall I carry your suitcase?","___ It's not very heavy.",["Thanks, that would be great.","Would you like me to ...?"])),
+  P("It's OK, I'm fine, thanks.","Sorun yok, iyiyim, teşekkürler.","A2","samimi","More coffee? It's OK, I'm fine, thanks.","Biraz daha kahve? Sorun yok, iyiyim, teşekkürler.",("Do you want another drink?","___ I've already had two.",["Yes, please. If you don't mind.","Let me ..."])),
+  P("That's kind of you, but ...","Çok naziksin ama ...","B1","","That's kind of you, but my brother is coming to help.","Çok naziksin ama kardeşim yardıma geliyor.",("Do you want me to help you paint the room?","___ my brother is coming to help.",["Thanks, that would be great.","I promise I'll ..."]))]},
+ {'k':'prom','t':'Söz vermek','en':'Making a promise','items':[
+  P("I promise I'll ...","Söz veriyorum ... yapacağım","A2","","I promise I'll be home before midnight.","Söz veriyorum gece yarısından önce evde olacağım.",("You came home very late last night.","Sorry. ___ be home before midnight tonight.",["Shall I ...?","No, thanks. I can manage."])),
+  P("Don't worry, I won't forget.","Merak etme, unutmam.","A2","","Your book? Don't worry, I won't forget.","Kitabın mı? Merak etme, unutmam.",("Remember to bring my book back tomorrow.","___ I'll put it in my bag now.",["Would you like some help?","That's very kind of you."])),
+  P("I'll make sure ...","... olmasını sağlayacağım / ... yapacağım, emin ol","B1","","I'll make sure the door is locked.","Kapının kilitli olduğundan emin olacağım.",("Don't leave the door open when you go out.","___ it's locked.",["Can I help you with ...?","It's OK, I'm fine, thanks."])),
+  P("I won't let you down.","Seni hayal kırıklığına uğratmayacağım.","B2","","Thank you for this job. I won't let you down.","Bu iş için teşekkürler. Sizi hayal kırıklığına uğratmayacağım.",("I'm trusting you with this important project.","Thank you. ___",["Thanks, that would be great.","Would you like some help?"])),
+  P("You have my word.","Söz veriyorum. / Sözüm söz.","B2","resmî","I'll keep it a secret. You have my word.","Bunu sır olarak saklayacağım. Söz veriyorum.",("Please don't tell anyone about this.","I won't. ___",["Shall I ...?","That's kind of you, but ..."]))]}
+]}
