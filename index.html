@@ -510,7 +510,7 @@ const has=s=>!!s&&s!=='-';
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const PARTM=new Map();
 const parts=s=>{s=String(s);let r=PARTM.get(s);if(!r){r=s.toLowerCase().split(/[,;]/).map(x=>x.trim()).filter(Boolean);if(PARTM.size>60000)PARTM.clear();PARTM.set(s,r)}return r.slice()};   // önbellekli (sözlük taramalarında çok çağrılır)
-const posKey=w=>str(w.pos).toLowerCase().split(/[,\/ (]/)[0];
+const posKey=w=>{if(w&&w._pk!==undefined&&w._pkp===w.pos)return w._pk;const k=str(w.pos).toLowerCase().split(/[,\/ (]/)[0];if(w&&typeof w==='object'){w._pk=k;w._pkp=w.pos}return k};
 const today=()=>new Date().toLocaleDateString('sv-SE');
 const addDays=(d,n)=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return x.toLocaleDateString('sv-SE')};
 const fmt=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'short'})}catch(e){return d}};
@@ -518,7 +518,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.161.1';
+const APP_VERSION='4.161.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2001,12 +2001,14 @@ function orthoDistractors(word){
 }
 const SWORDS=new Set('a an the of to in on at for and or is are was were be been it its this that with as by from'.split(' '));
 const TOKM=new Map();
-const toks=x=>{x=x||'';let r=TOKM.get(x);if(!r){r=parts(x).map(t=>t.replace(/\(.*?\)/g,'').trim()).filter(t=>t&&t!=='-');if(TOKM.size>60000)TOKM.clear();TOKM.set(x,r)}return r.slice()};
-const cont=x=>String(x||'').toLowerCase().replace(/[^a-z0-9ğüşıöç ]/g,' ').split(/\s+/).filter(t=>t.length>2&&!SWORDS.has(t));
+const toksR=x=>{x=x||'';let r=TOKM.get(x);if(!r){r=parts(x).map(t=>t.replace(/\(.*?\)/g,'').trim()).filter(t=>t&&t!=='-');if(TOKM.size>60000)TOKM.clear();TOKM.set(x,r)}return r};   // salt okunur (kopyasız)
+const toks=x=>toksR(x).slice();
+const CONTM=new Map();
+const cont=x=>{x=String(x||'');let r=CONTM.get(x);if(!r){r=x.toLowerCase().replace(/[^a-z0-9ğüşıöç ]/g,' ').split(/\s+/).filter(t=>t.length>2&&!SWORDS.has(t));if(CONTM.size>60000)CONTM.clear();CONTM.set(x,r)}return r};   // önbellekli (çeldirici taramasında çok çağrılır; dönen dizi değiştirilmez)
 function related(a,b){
   const aw=a.word.toLowerCase(),bw=b.word.toLowerCase();
-  const as=toks(a.syn),bs=toks(b.syn);
-  if(as.indexOf(bw)!==-1||bs.indexOf(aw)!==-1||toks(a.ant).indexOf(bw)!==-1||toks(b.ant).indexOf(aw)!==-1)return true;
+  const as=a._sy||(a._sy=toksR(a.syn)),bs=b._sy||(b._sy=toksR(b.syn));   // kelime başına önbellek
+  if(as.indexOf(bw)!==-1||bs.indexOf(aw)!==-1||(a._an||(a._an=toksR(a.ant))).indexOf(bw)!==-1||(b._an||(b._an=toksR(b.ant))).indexOf(aw)!==-1)return true;
   return as.some(x=>bs.indexOf(x)!==-1);
 }
 let ADJ=null,BYL=null;
@@ -2383,7 +2385,7 @@ function pickDistractors(t,textFn,filterFn,closed,near){
     for(const r of shuffle(closedMates(t))){const txt=textFn(r);if(!txt||used[txt.toLowerCase()])continue;used[txt.toLowerCase()]=1;out.push(txt);if(out.length===3)return out}
   }
   // havuzdan rastgele örnekle; aynı türdekiler önce
-  const tries=Math.min(W.length,near?2600:900);
+  const tries=Math.min(W.length,near?1500:900);   // hız: yakın çeldirici taraması 1500 kelimeyle sınırlı
   const start=Math.floor(Math.random()*W.length);
   const same=[],other=[];
   for(let k=0;k<tries;k++){
@@ -2447,9 +2449,10 @@ function senseOk(t,n){const s=(t.sn||[])[n];return !!(s&&s.t&&s.d&&s.e&&trFirst(
 const trOv=(a,b)=>trOverlap(noPar(a),noPar(b));   // parantez içi açıklamalar karşılaştırmaya girmez
 function trClash(a,b){   // iki kelimenin (ana + ek anlamlarıyla) herhangi bir Türkçe karşılığı çakışıyor mu
   if(xtrBan(a,b.tr)||xtrBan(b,a.tr))return true;
-  const A=[a.tr].concat((a.sn||[]).map(s=>s.t)),B=[b.tr].concat((b.sn||[]).map(s=>s.t));
-  return A.some(x=>B.some(y=>trOv(x,y)));
+  const A=trParts(a),B=trParts(b);   // önbellekli: her kelimenin tüm Türkçe karşılık parçaları bir kez hesaplanır
+  return A.some(x=>B.some(y=>x===y||(x.length>=4&&y.length>=4&&(x.startsWith(y)||y.startsWith(x)))));
 }
+function trParts(w){if(w._trp&&w._trs===w.sn)return w._trp;const r=[];[w.tr].concat((w.sn||[]).map(s=>s.t)).forEach(x=>{parts(noPar(x||'')).forEach(t=>r.push(t))});w._trp=r;w._trs=w.sn;return r}
 const DGEN=new Set('something someone especially person people usually another between without through different certain because'.split(' ')) ;
 function keyShare(a,b){   // iki tanım ortak bir anlamlı sözcük (örn. 'problem') paylaşıyorsa o kelime yakın anlam şıkkı olamaz
   const g=x=>cont(x).map(t=>t.replace(/s$/,'')).filter(t=>t.length>=6&&!DGEN.has(t));
