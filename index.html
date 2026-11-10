@@ -515,7 +515,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.159.3';
+const APP_VERSION='4.159.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3172,6 +3172,9 @@ function vToday(){
     <div class="stack"><h2>${left?`Hedefe ${left} doğru cevap kaldı`:'Bugünkü hedef tamam'}</h2>
     <div class="muted small">${due?`${due} kelime tekrar zamanı gelmiş. Bugünün testi bunları öne alır.`:'Tekrar bekleyen kelime yok.'}</div>
     <button class="btn primary" data-act="start-today">Bugünün testini başlat (${TODAY_N} soru)</button></div></div>
+  <div class="card small" style="padding:10px 12px"><div style="font-weight:700;margin-bottom:6px">Bugünün testi nereden geliyor?</div>
+    <table class="tdq" style="width:100%;border-collapse:collapse">${[['Tekrar zamanı gelen kelimeler','en çok '+TD.rev],['Yanlış defteri',TD.wlog],['Günün kelimeleri','3'],['Gramer (ağırlık B1–B2)',TD.gram],['Kalıp (ağırlık B1–B2)',TD.phr],['Yeni kelimeler (%5 A2 · %35 B1 · %40 B2 · %15 C1 · %5 C2)','kalanı']].map(r=>`<tr><td style="padding:3px 0;border-top:1px solid var(--line)">${r[0]}</td><td style="padding:3px 0 3px 8px;border-top:1px solid var(--line);text-align:right;white-space:nowrap;font-weight:600">${r[1]}</td></tr>`).join('')}</table>
+    <div class="muted" style="margin-top:6px">Tekrar ya da Yanlış defteri azsa yerini yeni kelime alır. Seviye ayarından bağımsızdır.</div></div>
   <div class="kpis"><div class="kpi"><b>${nf(learnedCount())}</b><span>öğrendiğin kelime</span></div><div class="kpi"><b>${nf(W.length-learnedCount())}</b><span>öğrenmediğin kelime</span></div><div class="kpi"><b>${nf(Object.keys(S.wrong).length)}</b><span>tekrar listendeki kelime</span></div></div>
   ${wds.length?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimeleri</span><span class="badge ${wq.left?'':'ok'}">${wq.done}/${wq.total} soru</span></div>
     ${wds.map(wd=>`<div class="stack" style="gap:2px;padding-top:8px;border-top:1px solid var(--line)"><div class="row" style="justify-content:space-between"><span class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span></span>${lvTag(wd.level)}</div><div class="row"><span>${esc(wd.tr)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i>${exTr(wd)}</div></div>`).join('')}
