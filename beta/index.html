@@ -515,7 +515,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.159.0';
+const APP_VERSION='4.159.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1788,7 +1788,7 @@ function vHelp(){
     '<b>Dinle</b>: örnek cümleye dokununca sesli okunur. Kelimeleri ☆ ile Kaydedilenler\'e ekleyebilirsin.',
     '<b>Mini test</b>: her konunun sonunda kolaydan zora 20 soru (6 kolay, 6 orta, 5 zor, 3 çok zor). Her cevaptan sonra açıklama çıkar, sonunda puanın ve yanlışların görünür. Bu test <b>puan vermez</b>, sıralamayı etkilemez; istediğin kadar tekrar çözebilirsin.']))}
   ${sec('📝 Testler ve soru türleri',li([
-    '<b>Bugünün testi</b>: her zaman 30 soru; en çok 7 tekrar zamanı gelen kelime, 5 Yanlış defteri sorusu, 3 günün kelimesi, 2 kalıp, 3 gramer sorusu ve kalanı (en az 10) yeni kelimelerden karışık hazırlanır. Tekrar ya da defter azsa yerini yeni kelime alır. Çalışma ekranındaki soru sayısı bunu etkilemez.',
+    '<b>Bugünün testi</b>: her zaman 30 soru; en çok 7 tekrar zamanı gelen kelime, 5 Yanlış defteri sorusu, 3 günün kelimesi, 2 kalıp, 3 gramer sorusu ve kalanı (en az 10) yeni kelimelerden karışık hazırlanır. Seviye ayarından bağımsızdır: kalıp ve gramer her seviyeden, yeni kelimeler %5 A2, %35 B1, %40 B2, %15 C1, %5 C2 gelir. Tekrar ya da defter azsa yerini yeni kelime alır. Çalışma ekranındaki soru sayısı bunu etkilemez.',
     '<b>Yeni test</b>: seçtiğin seviye ve türden henüz öğrenmediğin kelimeler gelir.',
     '<b>Soru türleri</b>: Türkçe karşılık (bazen Türkçeden İngilizceye), İngilizce tanım, kelime türü, boşluk doldurma, yakın anlam, karşıt anlam, V2/V3 (düzensiz fiiller), atasözü, edat kalıbı, ek ve ifade. Ek sorularında (ör. -less, -ness) kelimeden ek çıkarılır, hangi ekle türetildiğini seçersin.',
     '<b>Cevaptan sonra</b>: doğru cevap, okunuş, Türkçesi, tanımı ve örnek cümle görünür. Çalışma testinde kısa bir "Neden?" açıklaması da çıkar. Yakın/karşıt anlam sorularında tüm şıkların, Türkçe ve tanım sorularında her şıkkın hangi kelimeye ait olduğu gösterilir; yanlışta işaretlediğin kelimenin anlamını böylece öğrenirsin.',
@@ -2708,11 +2708,11 @@ function mtToggle(sel,v,order){
 }
 const lvToggle=(sel,v)=>mtToggle(sel,v,LEVELS);
 const typeOK=w=>lvOk(S.set.type,posGroup(w));
-function newItems(n,level,skip){
+function newItems(n,level,skip,wt0){   // wt0 verilirse seviye filtresi yok, seviye ağırlıkları wt0 (bugünün testi)
   const bk={};LEVELS.forEach(l=>{bk[l]=[]});
-  W.forEach(w=>{if(!S.learned[w.word]&&lvOk(level,w.level)&&typeOK(w)&&!skip.has(w.word))(bk[w.level]||(bk[w.level]=[])).push(w)});
+  W.forEach(w=>{if(!S.learned[w.word]&&(wt0||lvOk(level,w.level))&&typeOK(w)&&!skip.has(w.word))(bk[w.level]||(bk[w.level]=[])).push(w)});
   LEVELS.forEach(l=>{bk[l]=shuffle(bk[l])});
-  const wt=LVW[Math.min(myLeague(),LVW.length-1)],out=[];
+  const wt=wt0||LVW[Math.min(myLeague(),LVW.length-1)],out=[];
   while(out.length<n){
     let tot=0;const av=LEVELS.map((l,i)=>{const x=bk[l].length?wt[i]:0;tot+=x;return x});
     if(!tot)break;
@@ -2773,7 +2773,8 @@ function savedItems(n){   // kaydedilen kelimelerin tüm soruları; daha önce d
   return shuffle(out).slice(0,n);
 }
 const TODAY_N=30;   // Bugünün testi her zaman 30 soru (Çalışma'daki soru sayısı ayarından etkilenmez)
-const TD={rev:7,wlog:5,phr:2,gram:3};   // bugünün testi: en çok 7 tekrar, 5 Yanlış defteri, 2 kalıp, 3 gramer; günün kelimeleri her 10 soruda 1 (3); kalanı yeni kelime
+const TD={rev:7,wlog:5,phr:2,gram:3};
+const TODAY_W=[0,5,35,40,15,5];   // bugünün testi yeni kelime seviye ağırlıkları (A1,A2,B1,B2,C1,C2): seviye ayarından bağımsız; hedef B1→B2   // bugünün testi: en çok 7 tekrar, 5 Yanlış defteri, 2 kalıp, 3 gramer; günün kelimeleri her 10 soruda 1 (3); kalanı yeni kelime
 function startQuiz(mode,all){
   const n=mode==='today'?TODAY_N:S.set.count;
   let items=[];
@@ -2791,7 +2792,7 @@ function startQuiz(mode,all){
         const it=makeItem(w,e.f,'wlog');if(it){it.lk=e.k;wl.push(it);skip.add(w.word);break}
       }
     }
-    items=rv.concat(wl,newItems(n-rv.length-wl.length,S.set.level,skip));
+    items=rv.concat(wl,newItems(n-rv.length-wl.length,'Hepsi',skip,TODAY_W));
     items=wodPick(items,true);
     const put=pi=>{const z=items.map(x=>x.kind).lastIndexOf('new');if(z!==-1)items.splice(z,1,pi);else items.push(pi)};   // kalıp/gramer soruları yeni kelime sorularının yerine geçer; toplam 30 kalır
     if(GRAM_BETA)phDailyItems(TD.phr).forEach(put);
@@ -3642,10 +3643,10 @@ function phDailyItem(){return phDailyItems(1)[0]||null}
 function phDailyItems(n){if(!window.PHRASES)return[];phReg();const done=S.php||{},inLog=new Set((S.wlog||[]).map(e=>e.w)),c=[];
   window.PHRASES.forEach(G=>G.sub.forEach(sb=>sb.items.forEach(p=>{if(inLog.has(p.en))return;p.qs.forEach(q=>{if(!done[p.en+'|'+(100+q.f)])c.push([p,q])})})));
   const out=[],used=new Set();for(const[p,q]of shuffle(c)){if(out.length>=n)break;if(used.has(p.en))continue;const it=phItem(BYWORD.get(p.en),100+q.f,'phr');if(it){out.push(it);used.add(p.en)}}return out}
-/* Gramer: seviyeye uyan konuların mini test sorularından; doğru çözülen tekrar gelmez, havuz bitince baştan döner */
+/* Gramer: tüm seviyelerin konu mini test sorularından; doğru çözülen tekrar gelmez, havuz bitince baştan döner */
 function gmItem(w,f,kind){const q=w.gram.quiz[f-200];if(!q)return null;return{w,f,kind,question:String(q.q).replace(/\*/g,''),correct:q.o[q.a],options:shuffle(q.o.slice()),chosen:null,gmq:q}}
 function gmDailyItems(n){const G=window.GRAMMAR||[];if(!G.length||!n)return[];
-  const inLog=new Set((S.wlog||[]).map(e=>e.k));let T=G.filter(t=>lvOk(S.set.level,t.lv));if(!T.length)T=G;
+  const inLog=new Set((S.wlog||[]).map(e=>e.k));const T=G;   // bugünün testi: tüm seviyelerden
   const pool=()=>{const c=[];T.forEach(t=>t.quiz.forEach((q,i)=>{const k=GRMK(t)+'|'+(200+i);if(!(S.gmd||{})[k]&&!inLog.has(k))c.push([t,i])}));return c};
   let c=pool();if(c.length<n){const o=S.gmd||{};T.forEach(t=>t.quiz.forEach((q,i)=>delete o[GRMK(t)+'|'+(200+i)]));S.gmd=o;c=pool()}   // havuz bitti: bu seviyelerin soruları yeniden açılır
   const out=[],used=new Set();for(const[t,i]of shuffle(c)){if(out.length>=n)break;if(used.has(t.id))continue;const it=gmItem(BYWORD.get(GRMK(t)),200+i,'gram');if(it){out.push(it);used.add(t.id)}}
