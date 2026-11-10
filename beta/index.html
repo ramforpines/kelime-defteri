@@ -512,7 +512,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.158.1';
+const APP_VERSION='4.158.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -630,7 +630,7 @@ function leagueMap(){
   lgMemo={key,lb:CLOUD.lb,m,pre};return m;
 }
 const isAdm=id=>id===CLOUD.uid?!!CLOUD.admin:!!((CLOUD.lb.find(x=>x.id===id)||(typeof CHAT!=='undefined'&&CHAT.peers[id])||{}).ad);
-const FLAGS=[{id:'maker',n:'Test eden yapımcı',l:['TEST EDEN','YAPIMCI']}];
+const FLAGS=[{id:'maker',n:'Tester',l:['TESTER']}];
 const BYFLAG=new Map(FLAGS.map(f=>[f.id,f]));
 const WEEKFLAG={id:'weekchamp',n:'Geçen haftanın birincisi',auto:true};   // otomatik: geçen haftanın lideri, tüm hafta boyunca
 const AUTOFLAG={id:'daychamp',n:'Dünün birincisi',auto:true};   // otomatik: yalnızca dünün günlük lideri, 1 gün boyunca
@@ -4423,7 +4423,7 @@ function profFeatures(){
     tile(king,'Fatih flaması',kingFlag('x',true,kingPos(CLOUD.uid)||1),how(king,'Fatih flaması','dereceli düello ilk üçündekilerin satırında ve kartında, tacın üstünde sıra numarası (1, 2 ya da 3) yazan kırmızı flama dalgalanır. Yalnızca birinci ayrıca havlayan köpeği ve "HAV!" sesini alır.','Dereceli düello tablosunda (Tüm zamanlar) ilk üçe gir. Sıralamayla birlikte gelir, ilk üçten çıkınca kalkar.'),true),
     tile(dayc,'Dünün birincisi',flagHtml('x',AUTOFLAG),how(dayc,'Dünün birincisi flaması','altın defne dallı flama; önceki günün günlük birincisine ertesi gün boyunca verilir.','Günlük sıralamayı birinci bitir. Flama ertesi gün gelir ve bir gün kalır.'),true),
     tile(weekc,'Haftanın birincisi',flagHtml('x',WEEKFLAG),how(weekc,'Geçen haftanın birincisi flaması','dört yapraklı yoncalı altın flama; geçen haftayı sıralamada birinci bitirene yeni hafta boyunca verilir.','Haftalık sıralamayı birinci bitir. Flama ertesi hafta gelir ve bir hafta kalır.'),true),
-    tile(sp,'Test eden yapımcı',flagHtml('x',BYFLAG.get('maker')),how(sp,'Özel flama','yönetici tarafından seçilmiş kişilere verilen özel flama.','yönetici verir; başvuruyla ya da puanla kazanılmaz.'),true)]);
+    tile(sp,'Tester',flagHtml('x',BYFLAG.get('maker')),how(sp,'Özel flama','yönetici tarafından seçilmiş kişilere verilen özel flama.','yönetici verir; başvuruyla ya da puanla kazanılmaz.'),true)]);
   return`${m4}${m5}<div class="muted small">Kilitli olanlar soluk durur; dokununca nasıl kazanılacağı yazar. Gün / Hafta Lideri: günü ya da haftayı birinci bitirdikçe profil kartında "3 x Gün Lideri" gibi sayaçlar birikir.</div>`;
 }
 function vProfile(){
