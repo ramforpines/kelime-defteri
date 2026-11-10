@@ -1,0 +1,67 @@
+# B1 Preliminary çalışma seti 3 (özgün metinler; konular B1 sınav konu listesinden: günlük yaşam, sağlık, yerler, eğitim, hava, insanlar)
+TEST={'parts':[
+{'k':'R1','ti':'Reading Part 1','ins':'Her kısa metni oku ve metnin ne söylediğini en iyi anlatan seçeneği bul.','q':[
+ {'x':'SWIMMING POOL\nThe pool will close at 6 p.m. on Thursday for cleaning. Evening classes will take place on Friday instead.',
+  'q':'What does the notice say?','o':['Thursday evening classes are moving to another day.','The pool is closed all day on Thursday.','Friday classes are cancelled because of cleaning.'],'a':0,'tg':['detail','will-going-to'],
+  'e':'Perşembe akşamı temizlik var; akşam dersleri cuma yapılacak.'},
+ {'x':'Hi Sam,\nI\'ve left the keys with Mrs Green at number 12 because I\'ll be at work when you arrive. She\'s home all afternoon.\nLucy',
+  'q':'Why has Lucy written this message?','o':['to ask Sam to visit Mrs Green','to tell Sam where to collect the keys','to say she will be home in the afternoon'],'a':1,'tg':['purpose'],
+  'e':'Anahtarları komşuya bıraktı; Sam onları oradan alacak.'},
+ {'x':'CITY MUSEUM\nPhotos are allowed in all rooms except the Egyptian gallery. Please do not use flash anywhere in the building.',
+  'q':'What does the notice say?','o':['You cannot take any photos in the museum.','You can take photos without flash in most rooms.','Flash is only allowed in the Egyptian gallery.'],'a':1,'tg':['detail','can-cant'],
+  'e':'Mısır galerisi dışında fotoğraf serbest, ama hiçbir yerde flaş yok.'},
+ {'x':'Mum,\nDr Patel\'s receptionist called. Your appointment has been moved from Tuesday to Wednesday, same time. Call her if that\'s a problem.\nAli',
+  'q':'What does Ali tell his mother?','o':['She must phone the doctor on Tuesday.','Her appointment is now on a different day.','The doctor can see her earlier on Wednesday.'],'a':1,'tg':['detail','passive-voice'],
+  'e':'Randevu salıdan çarşambaya alındı, saat aynı.'},
+ {'x':'SALE\nAll winter jackets half price this week only. Sorry, no refunds on sale items.',
+  'q':'What does the notice say?','o':['You can return sale jackets for your money back.','The jackets will be cheaper next week.','You cannot get your money back if you buy a sale jacket.'],'a':2,'tg':['inference','vocab'],
+  'e':'"no refunds on sale items" = indirimli ürünlerde para iadesi yok.'}]},
+
+{'k':'R2','ti':'Reading Part 2','ins':'Aşağıdaki beş kişi bir spor ya da sağlık etkinliği arıyor. Her kişi için en uygun etkinliği (A–H) seç.',
+ 'people':[
+  ('Can','Can wants to get fit but hates gyms. He would like to exercise outdoors with other people early in the morning.'),
+  ('Elif','Elif has a bad back. Her doctor told her to do gentle exercise in water, and she can only go at weekends.'),
+  ('Mark','Mark is a beginner who wants to learn a team sport. He works until six, so he needs evening sessions.'),
+  ('Zeynep','Zeynep wants to learn about healthy cooking because she often eats fast food. She would like to do it online.'),
+  ('Tom','Tom enjoys running and wants to take part in a race for charity later this year.')],
+ 'texts':[
+  ('A','Sunrise Walkers','Join our friendly group for a fast walk in the park every weekday at 6.30 a.m. All ages welcome, no equipment needed.'),
+  ('B','City Gym','Modern machines and personal trainers. Open 24 hours, with a special price for early-morning members.'),
+  ('C','Aqua Fit','Slow, relaxing exercises in a warm pool, recommended for people with back or knee problems. Saturday and Sunday mornings.'),
+  ('D','Swim Club','Training for competitive swimmers. Sessions every weekday at 7 a.m. You must be able to swim 1 km.'),
+  ('E','Friday Volleyball','Never played before? No problem! Our coach teaches beginners every Friday from 7 to 9 p.m.'),
+  ('F','Fresh Kitchen','A live cooking class in our town centre kitchen. Learn to make tasty, healthy meals in two hours.'),
+  ('G','Eat Well at Home','Short video lessons showing how to cook healthy food quickly. Watch from your computer or phone whenever you like.'),
+  ('H','Run for Hope','Training plans and group runs for anyone who wants to run the 10 km charity race in October.')],
+ 'a':['A','C','E','G','H'],'tg':['detail','detail','detail','detail','detail'],
+ 'e':['Açık havada, grupla, sabah erken: A (B spor salonu).','Suda hafif egzersiz, hafta sonu: C (D yarışmacı yüzücüler, hafta içi).','Yeni başlayan, takım sporu, akşam: E.','Sağlıklı yemek, internetten: G (F yüz yüze).','Hayır amaçlı koşu yarışı: H.']},
+
+{'k':'R3','ti':'Reading Part 3','ins':'Metni oku ve soruları cevapla.','title':'My year as a teaching assistant',
+ 'p':['When I finished university, I had no idea what job I wanted. My aunt, who runs a small primary school in a village near the mountains, suggested that I spend a year working there as a teaching assistant. I said yes, mainly because I needed time to think.',
+  'The first few weeks were harder than I expected. The children were lovely, but they had a lot of energy, and I was exhausted by the end of every day. I also had to get used to living without the shops and cafés I was used to in the city. The nearest town was an hour away by bus.',
+  'Things changed when the head teacher asked me to start an after-school music club. I had played the guitar since I was a teenager, but I had never taught anyone. To my surprise, twenty children signed up in the first week. By the end of the year, they gave a concert for their parents, and I was prouder than they were.',
+  'I am now training to be a music teacher. People sometimes ask me if I regret not getting a "proper" job straight after university. I always tell them that the year in the village was the most useful thing I have ever done, because it showed me what I really enjoy.'],
+ 'q':[
+  {'q':'Why did the writer accept the job at the school?','o':['He had always wanted to be a teacher.','He needed time to decide about his future.','His aunt offered him a very good salary.','He wanted to live near the mountains.'],'a':1,'tg':['detail'],'e':'"mainly because I needed time to think"'},
+  {'q':'What did the writer find difficult at first?','o':['The children were badly behaved.','He did not like his aunt.','He was very tired and missed city life.','The bus to work took an hour.'],'a':2,'tg':['detail','used-to'],'e':'"I was exhausted" ve şehirdeki dükkân ve kafeleri özledi.'},
+  {'q':'How did the writer feel about the music club?','o':['surprised that so many children joined','worried because he had never played the guitar','bored because it took too much time','disappointed with the final concert'],'a':0,'tg':['attitude'],'e':'"To my surprise, twenty children signed up"'},
+  {'q':'What does the writer say about his year in the village?','o':['He wishes he had started a proper job sooner.','It helped him discover what he likes doing.','He would not recommend it to other people.','It was the only job he could find.'],'a':1,'tg':['inference','past-simple'],'e':'"it showed me what I really enjoy"'},
+  {'q':'What would the writer probably say to a friend who doesn\'t know what to do after university?','o':['"Find a well-paid job in the city as soon as you can."','"Try something different for a while. You might find out what you love."','"Don\'t work with children – it\'s too tiring."','"Ask your family to find you a job."'],'a':1,'tg':['gist','inference'],'e':'Bir yıl farklı bir şey denemek ona ne istediğini gösterdi.'}]},
+
+{'k':'R4','ti':'Reading Part 4','ins':'Metinden beş cümle çıkarıldı. Her boşluk için uygun cümleyi (A–H) seç. Üç cümle fazladır.','title':'The town that said no to cars',
+ 'p':'Ten years ago, the centre of Millford was full of traffic every morning. The air was dirty and the streets were noisy. (1) ______ So the town council made a brave decision: no private cars in the centre between 7 a.m. and 7 p.m.\nAt first, many shop owners were angry. (2) ______ In fact, the opposite happened. Because the streets became quieter and safer, more people started walking and cycling into town to do their shopping.\nThe council also improved public transport. (3) ______ It is free for anyone over sixty-five and for school students.\nToday, visitors often say how pleasant the centre is. (4) ______ Cafés have put tables outside, and children play in streets that used to be dangerous.\nOther towns are now studying Millford\'s example. (5) ______ But Millford shows that, with a bit of courage, a town can change.',
+ 's':[('A','Many parents were afraid to let their children walk to school.'),('B','They thought nobody would come to their shops without a car.'),('C','A small electric bus now goes round the centre every ten minutes.'),('D','There are flowers and trees where there used to be parking spaces.'),('E','Not all of them will find it easy to make the same change.'),('F','The cars were moved to a new car park outside the town.'),('G','Most of them closed in the first year.'),('H','The price of petrol went up at the same time.')],
+ 'a':['A','B','C','D','E'],'tg':['coherence','reference','coherence','coherence','reference'],
+ 'e':['Kirli hava ve gürültünün sonucu: aileler korkuyordu, "So the council made a brave decision": A.','Dükkân sahipleri kızgındı çünkü kimsenin gelmeyeceğini düşündüler; "In fact, the opposite happened": B (G çelişir).','Toplu taşıma geliştirildi; "It is free for ..." otobüsü anlatıyor: C.','Merkezin ne kadar hoş olduğu: çiçekler ve ağaçlar: D.','"Other towns ... Not all of them": E.']},
+
+{'k':'R5','ti':'Reading Part 5','ins':'Metni oku ve her boşluk için doğru kelimeyi seç.','title':'A storm to remember',
+ 'p':'Last January, a terrible storm (1) ______ the coast where my grandparents live. The wind was so strong that it (2) ______ down several trees in their street, and the electricity was off for three days. Luckily, my grandparents had (3) ______ of candles and food in the house. Their neighbours, who are much younger, (4) ______ on them every morning to make sure they were all right. When the storm finally ended, everyone in the street worked together to (5) ______ up the mess. My grandfather says the storm was frightening, but it also (6) ______ him realise how kind people can be.',
+ 'o':[(['hit','arrived','landed','happened'],0,['vocab']),(['broke','fell','blew','threw'],2,['vocab','past-simple']),(['much','many','plenty','several'],2,['countable-uncountable']),(['looked','checked','visited','controlled'],1,['collocation']),(['wash','make','clean','put'],2,['collocation']),(['made','let','got','had'],0,['causative'])],
+ 'e':['A storm hit the coast: fırtına kıyıyı vurdu.','blow down: (rüzgâr) devirmek; geçmiş: blew.','plenty of + isim: bolca.','check on someone: birinin iyi olup olmadığını kontrol etmek.','clean up the mess: ortalığı temizlemek.','make someone + yalın fiil: birine bir şey yaptırmak / hissettirmek (let, get, had bu yapıya uymaz).']},
+
+{'k':'R6','ti':'Reading Part 6','ins':'Metni oku ve her boşluğa TEK kelime yaz.','title':'Hi Deniz',
+ 'p':'Hi Deniz,\nGuess what? I\'ve just joined a photography club! We meet (1) ______ Wednesday evenings in the library. There are about fifteen members, and most of (2) ______ are older than me, but they are really friendly. Last week we went to the old harbour to take photos of the boats. It was (3) ______ cold that my fingers hurt! Next month there\'s a competition, and the winner\'s photo will be printed (4) ______ the local newspaper. I don\'t think I\'ll win, but it\'s a good reason to practise. Why don\'t you come with me next time? You\'ve always been good (5) ______ taking pictures. Let me know (6) ______ you\'re free.\nLove,\nMaya',
+ 'a':[['on'],['them'],['so'],['in'],['at'],['if','whether','when']],
+ 'tg':[['prepositions-in-on-at'],['vocab'],['linkers-contrast-purpose'],['prepositions-in-on-at'],['prepositions-in-on-at'],['reported-speech']],
+ 'e':['Gün adı: on Wednesday evenings.','most of them: çoğu (nesne zamiri).','so + sıfat + that: o kadar ... ki.','printed in the newspaper: gazetede basılmak.','good at + -ing.','Let me know if / whether / when ...']},
+]}

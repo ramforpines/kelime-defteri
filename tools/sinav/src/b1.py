@@ -2,9 +2,9 @@
 import os,sys
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.abspath(__file__)),'..'))
 from common import load,pet,PETDIR
-P1=load(os.path.join(PETDIR,'src','pet1.py'));P2=load(os.path.join(PETDIR,'src','pet2.py'))
+P1=load(os.path.join(PETDIR,'src','pet1.py'));P2=load(os.path.join(PETDIR,'src','pet2.py'));P3=load(os.path.join(PETDIR,'src','pet3.py'))
 WS=load(os.path.join(PETDIR,'ws.py'),'W');SS=load(os.path.join(PETDIR,'ws.py'),'S')
-PP1={p['k']:p for p in P1['parts']};PP2={p['k']:p for p in P2['parts']}
+PP1={p['k']:p for p in P1['parts']};PP2={p['k']:p for p in P2['parts']};PP3={p['k']:p for p in P3['parts']}
 
 W_EXAM=[
  {'id':'b1x-w1','part':1,'t':'Part 1 · E-posta: İngilizce kulübü',
@@ -64,6 +64,7 @@ RT={'R1':'Kısa metinler: duyurular ve mesajlar','R2':'Eşleştirme: kitap seçi
 LT={'L1':'Kısa kayıtlar (7 soru)','L2':'Kısa konuşmalar: görüşler','L3':'Not tamamlama: yaz kampı','L4':'Röportaj: gönüllü çalışma'}
 def wid(w):w=dict(w);w['id']='b1'+w['id'];return w
 def sid(s):s=dict(s);s['id']='b1'+s['id'];return s
-PRAC={'R':[tt(PP2[k],RT[k],'b1r'+k[1]) for k in RT],
+RT3={'R1':'Kısa metinler: duyurular ve notlar 2','R2':'Eşleştirme: spor ve sağlık','R3':'Uzun metin: köy okulunda bir yıl','R4':'Cümle yerleştirme: arabasız kasaba','R5':'Çoktan seçmeli boşluk: fırtına','R6':'Açık boşluk: fotoğraf kulübü'}
+PRAC={'R':[tt(PP2[k],RT[k],'b1r'+k[1]) for k in RT]+[tt(PP3[k],RT3[k],'b1r'+k[1]+'b') for k in RT3],
  'L':[tt(PP2[k],LT[k],'b1l'+k[1]) for k in LT]+[L_EXTRA],
  'W':[wid(w) for w in WS],'S':[sid(s) for s in SS]}
