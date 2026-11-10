@@ -18,6 +18,11 @@ topics=json.load(open(os.path.join(HERE,'existing.json')))
 for f in sorted(glob.glob(os.path.join(HERE,'src','*.py'))):
     spec=importlib.util.spec_from_file_location(os.path.basename(f)[:-3],f);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
     topics+=m.TOPICS
+# bugünün testi için ek gramer soruları: dq/<konu id>.py içinde DQ=[{lv,t,stem,right,wrongs,why},...] (konu mini testinden FARKLI sorular)
+DQ={}
+for f in sorted(glob.glob(os.path.join(HERE,'dq','*.py'))):
+    spec=importlib.util.spec_from_file_location('dq_'+os.path.basename(f)[:-3],f);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+    DQ[os.path.basename(f)[:-3]]=m.DQ
 SAFE=re.compile(r'<(?!/?(b|i|br)\b)[^>]*>')
 def conv_quiz(t):
     if t['quiz'] and 'stem' in t['quiz'][0]:
@@ -122,6 +127,19 @@ for t in topics:
     cnt=[sum(1 for q in qz if q['a']==i) for i in range(3)]
     if min(cnt[:2])<4:W('%s: cevap konumu dağılımı %s'%(P,cnt))
     t['_n']=len(qz)
+    # ek sorular (dq)
+    if P in DQ:
+        dq=conv_quiz({'id':P+'|dq','quiz':[dict(q) for q in DQ[P]]})['quiz']
+        qkeys={(q['q'],q['o'][q['a']]) for q in qz}
+        for k,q in enumerate(dq):
+            pth='%s.dq[%d]'%(P,k);S(pth+'.q',q['q']);S(pth+'.w',q['w']);S(pth+'.t',q['t'])
+            if len(set(q['o']))!=len(q['o']):E(pth+': yinelenen şık')
+            if (q['q'],q['o'][q['a']]) in qkeys:E(pth+': mini testte zaten var')
+            qkeys.add((q['q'],q['o'][q['a']]))
+            L=[len(o) for o in q['o']];c=L[q['a']];d=[x for i,x in enumerate(L) if i!=q['a']]
+            if c>max(d)+3:W(pth+': doğru şık belirgin biçimde en uzun')
+            if '___' in q['q']:addEN(pth,q['q'].replace('___',q['o'][q['a']]))
+        t['dq']=dq
     # LT için doğru cümleler
     for k,q in enumerate(qz):
         if '___' in q['q']:
