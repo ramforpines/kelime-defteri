@@ -512,7 +512,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.158.2';
+const APP_VERSION='4.158.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2904,7 +2904,10 @@ const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
 const NEWF={phr:1,pet:1};   // yeni menüler: ilk açılışta 'Yeni' işareti kalkar
 const nwSeen=()=>{try{return JSON.parse(localStorage.getItem('kd-new1')||'{}')}catch(e){return{}}};
-const nwIs=k=>!!NEWF[k]&&!nwSeen()[k];
+const NEWT=[];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
+const NT={gram:'g:',phr:'p:'};
+const nwIs=k=>NT[k]?(NEWT.some(x=>x.startsWith(NT[k])&&!nwSeen()[x])||(!!NEWF[k]&&!nwSeen()[k])):((NEWT.includes(k)||!!NEWF[k])&&!nwSeen()[k]);
+const nwBd=k=>nwIs(k)?' <span class="nw">Yeni</span>':'';
 const nwMark=k=>{if(!nwIs(k))return;try{const o=nwSeen();o[k]=1;localStorage.setItem('kd-new1',JSON.stringify(o))}catch(e){}};
 const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['phr','Kalıplar'],['pet','Sınav']]:[]);   // seviye sınavları ve çalışma: yalnızca beta
 const isStudy=t=>(t==='gram'&&GRAM_ON)||((t==='pet'||t==='phr')&&GRAM_BETA)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
@@ -2959,7 +2962,7 @@ function vGram(){
     const lv=['A1','A2','B1','B2','C1','C2'];
     return css+`<div class="card stack"><h2 style="margin:0">Gramer</h2><div class="muted small">Konu anlatımı; kurallar, örnek cümleler, sık yapılan hatalar ve o konuyla öğrenmen gereken kelimeler. </div></div>`+
     lv.map(L=>{const ready=G.filter(t=>t.lv===L),plan=((window.GRAMMAR||[]).filter(t=>t.lv===L&&!G.includes(t)).map(t=>t.title)).concat((window.GRAMMAR_PLAN||{})[L]||[]);if(!ready.length&&!plan.length)return'';
-      return`<div class="card stack"><h3 style="margin:0">${L}</h3>${ready.map(t=>`<button class="btn block" data-act="gm-open" data-v="${t.id}" style="text-align:left"><b>${esc(t.title)}</b><div class="muted small">${esc(t.form_name)}</div></button>`).join('')}${plan.filter(n=>!ready.some(t=>t.title===n)).map(n=>`<div class="small muted" style="padding:4px 2px">• ${esc(n)} <span class="badge">yakında</span></div>`).join('')}</div>`}).join('');
+      return`<div class="card stack"><h3 style="margin:0">${L}</h3>${ready.map(t=>`<button class="btn block" data-act="gm-open" data-v="${t.id}" style="text-align:left"><b>${esc(t.title)}</b>${nwBd('g:'+t.id)}<div class="muted small">${esc(t.form_name)}</div></button>`).join('')}${plan.filter(n=>!ready.some(t=>t.title===n)).map(n=>`<div class="small muted" style="padding:4px 2px">• ${esc(n)} <span class="badge">yakında</span></div>`).join('')}</div>`}).join('');
   }
   const done=(UI.gp&&UI.gp[T.id])||{};
   const set=a=>`<div class="gxl">${a.map(e=>gEx(e[0],e[1])).join('')}</div>`;
@@ -2992,7 +2995,7 @@ function studySeg(){
 function renderNav(){
   const adm=true,inDuel=UI.tab==='quiz'&&UI.qmode==='duel';   // ortadaki düello butonu herkeste
   const nv=$('#nav');nv.classList.toggle('adm5',adm);
-  const btn=([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab)&&!(adm&&inDuel):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}</span>${k==='study'&&!isStudy(UI.tab)&&Object.keys(NEWF).some(nwIs)?'<i class="nbd">Yeni</i>':''}</button>`;
+  const btn=([k,l])=>`<button data-tab="${k}" ${(k==='study'?isStudy(UI.tab)&&!(adm&&inDuel):UI.tab===k)?'aria-current="page"':''}>${ICON[k]}<span>${l}</span>${k==='study'&&!isStudy(UI.tab)&&['phr','pet','gram'].some(nwIs)?'<i class="nbd">Yeni</i>':''}</button>`;
   const duel=`<button class="duelb" data-act="qmode" data-v="duel" aria-label="Düello" ${inDuel?'aria-current="page"':''}><img src="duel-nav.svg" alt="" width="92" height="120"><span>Düello</span></button>`;
   nv.innerHTML=adm?TABS.slice(0,2).map(btn).join('')+duel+TABS.slice(2).map(btn).join(''):TABS.map(btn).join('');
   fabUpdate();
@@ -3633,7 +3636,7 @@ function vPhr(){
   if(!window.PHRASES){phLoad();return'<div class="card"><div class="muted">Kalıplar yükleniyor…</div></div>'}
   const G=UI.phg&&window.PHRASES.find(g=>g.id===UI.phg);
   if(!G)return`<div class="top"><h1>Kalıplar</h1></div><div class="stack"><div class="card small">Günlük konuşmada ve sınavlarda en çok kullanılan ifade kalıpları. Her kalıbın Türkçesi ve örnek cümlesi var; dinleyebilir ve kaydedebilirsin. Kaydettiğin kalıplar Kaydedilenler'de görünür, soruları testlerde karşına çıkar.</div>
-    ${window.PHRASES.map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><div class="row" style="justify-content:space-between"><b lang="en">${esc(g.en)}</b><span class="small muted">${g.sub.reduce((a,x)=>a+x.items.length,0)}</span></div><div class="small muted">${esc(g.t)}</div></button>`).join('')}
+    ${window.PHRASES.map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><div class="row" style="justify-content:space-between"><span><b lang="en">${esc(g.en)}</b>${nwBd('p:'+g.id)}</span><span class="small muted">${g.sub.reduce((a,x)=>a+x.items.length,0)}</span></div><div class="small muted">${esc(g.t)}</div></button>`).join('')}
     <div class="card small">${(window.PHRASES_PLAN||[]).map(t=>`<div style="padding:3px 0">• ${esc(t)} <span class="badge">yakında</span></div>`).join('')}</div></div>`;
   const sv=phSaved(),show=()=>true;
   return`<div class="row" style="margin-bottom:8px"><button class="btn" data-act="phr-home">Çık</button></div><div class="top"><h1 lang="en">${esc(G.en)}</h1><span class="muted small">${esc(G.t)}</span></div><div class="stack">
@@ -5700,8 +5703,8 @@ document.addEventListener('click',async e=>{
     case'home':UI.quiz=null;setTab('today');break;
     case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=UI.tab==='saved'?savedList():dictList();break}
     case'sv-w':{const w=g('data-w');toggleSaved(w);toast(isSaved(w)?'Kaydedildi.':'Kayıttan çıkarıldı.');if(UI.tab==='saved'&&!isSaved(w))UI.dict.open=null;const dl=$('#dlist');if(dl)dl.innerHTML=UI.tab==='saved'?savedList():dictList();if(UI.tab==='saved'){const t=document.querySelector('.top .muted');if(t)t.textContent=nf(savedWords().length)+' kelime'}break}
-    case'gm-open':UI.gm=g('data-v');render();window.scrollTo(0,0);break;
-    case'phr-g':UI.phg=g('data-v');UI.phq=null;render();window.scrollTo(0,0);break;
+    case'gm-open':UI.gm=g('data-v');nwMark('g:'+UI.gm);render();window.scrollTo(0,0);break;
+    case'phr-g':UI.phg=g('data-v');nwMark('p:'+UI.phg);UI.phq=null;render();window.scrollTo(0,0);break;
     case'phr-home':UI.phg=null;UI.phq=null;render();window.scrollTo(0,0);break;
     case'phr-l':UI.phl=g('data-v');render();break;
     case'phr-say':say(g('data-v').replace(/\.\.\./g,' '));break;

@@ -7,7 +7,13 @@ LEVELS=['A1','A2','B1','B2','C1','C2']
 errs=[];warn=[]
 def E(m):errs.append(m)
 def W(m):warn.append(m)
-words={w[0].lower() for w in json.load(open('/tmp/gram/words.json'))}
+def _words():
+    f='/tmp/gram/words.json'
+    if os.path.exists(f):return json.load(open(f))
+    import subprocess;os.makedirs('/tmp/gram',exist_ok=True)   # taze oturumda words.js'den üret
+    subprocess.check_call(['node','-e',"global.window={};eval(require('fs').readFileSync('%s/words.js','utf8'));const W=window.WORDS||window.W||Object.values(window).find(Array.isArray);require('fs').writeFileSync('%s',JSON.stringify(W))"%(ROOT,f)])
+    return json.load(open(f))
+words={w[0].lower() for w in _words()}
 topics=json.load(open(os.path.join(HERE,'existing.json')))
 for f in sorted(glob.glob(os.path.join(HERE,'src','*.py'))):
     spec=importlib.util.spec_from_file_location(os.path.basename(f)[:-3],f);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
