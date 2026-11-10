@@ -515,7 +515,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.159.2';
+const APP_VERSION='4.159.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3652,14 +3652,14 @@ function phDailyItem(){return phDailyItems(1)[0]||null}
 function phDailyItems(n){if(!window.PHRASES)return[];phReg();const done=S.php||{},inLog=new Set((S.wlog||[]).map(e=>e.w)),c=[];
   window.PHRASES.forEach(G=>G.sub.forEach(sb=>sb.items.forEach(p=>{if(inLog.has(p.en))return;p.qs.forEach(q=>{if(!done[p.en+'|'+(100+q.f)])c.push([p,q])})})));
   return pickLv(c,x=>x[0].lv,x=>x[0].en,n).map(([p,q])=>phItem(BYWORD.get(p.en),100+q.f,'phr')).filter(Boolean)}
-/* Gramer: tüm seviyelerin konu mini test sorularından; doğru çözülen tekrar gelmez, havuz bitince baştan döner */
+/* Gramer: tüm seviyelerin konu mini test ve ek (dq) sorularından; doğru çözülen tekrar gelmez, biten havuza dönülmez */
 const gmQ=(t,f)=>f>=300?(t.dq||[])[f-300]:t.quiz[f-200];   // 200+: konu mini testi, 300+: bugünün testi için ek sorular (dq)
 function gmItem(w,f,kind){const q=gmQ(w.gram,f);if(!q)return null;return{w,f,kind,question:String(q.q).replace(/\*/g,''),correct:q.o[q.a],options:shuffle(q.o.slice()),chosen:null,gmq:q}}
 function gmDailyItems(n){const G=window.GRAMMAR||[];if(!G.length||!n)return[];
   const inLog=new Set((S.wlog||[]).map(e=>e.k));const T=G;   // bugünün testi: tüm seviyelerden
   const fs=t=>t.quiz.map((q,i)=>200+i).concat((t.dq||[]).map((q,i)=>300+i));
   const pool=()=>{const c=[];T.forEach(t=>fs(t).forEach(f=>{const k=GRMK(t)+'|'+f;if(!(S.gmd||{})[k]&&!inLog.has(k))c.push([t,f])}));return c};
-  let c=pool();if(c.length<n*4){S.gmd={};c=pool()}   // havuz bitmek üzere: sorular yeniden açılır
+  const c=pool();   // biten seviyeye dönülmez: o seviyenin payı diğer seviyelere geçer; hepsi biterse yerini yeni kelime alır
   let sel=pickLv(c,x=>x[0].lv,x=>x[0].id,n);
   if(sel.length<n)sel=sel.concat(shuffle(c.filter(x=>!sel.includes(x))).slice(0,n-sel.length));
   return sel.map(([t,f])=>gmItem(BYWORD.get(GRMK(t)),f,'gram')).filter(Boolean)}
