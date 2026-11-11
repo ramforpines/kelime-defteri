@@ -577,7 +577,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.162.1';
+const APP_VERSION='4.162.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4561,10 +4561,10 @@ function leadersCard(){
 }
 function myRankLine(){
   if(!CLOUD.ready||!CLOUD.lbReady||!S.prof.name)return'';
-  const rows=rankData().filter(r=>r.week.p>0).sort((a,b)=>b.week.p-a.week.p);
+  const rows=rankData().filter(r=>r.week.p>0||r.week.n>0).sort((a,b)=>b.week.p-a.week.p||b.week.n-a.week.n);
   const i=rows.findIndex(r=>r.me);
   if(i<0)return'';
-  let rk=i+1;while(rk>1&&rows[rk-2].week.p===rows[i].week.p)rk--;
+  let rk=i+1;while(rk>1&&rows[rk-2].week.p===rows[i].week.p&&(rows[i].week.p!==0||rows[rk-2].week.n===rows[i].week.n))rk--;
   return`<button class="card" style="text-align:left" data-tab="rank"><span class="muted small" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Bu hafta sıran</span><div><b style="font-family:var(--font-display);font-size:1.5rem">${rk}.</b> <span class="muted">/ ${rows.length} kişi, ${nf(rows[i].week.p)} puan</span></div></button>`;
 }
 function vRank(){
@@ -4580,8 +4580,8 @@ function vRank(){
     if(per==='ranked'&&!drkLocked()){body=rankedBoardHtml('all')}else{
     const rows=rankData().map(r=>Object.assign(r,{x:r[per]}));
     const lgm=per==='all'?leagueMap():null,lgOf=r=>lgm?(lgm[r.id]|0):0;   // tüm zamanlar: önce (şartlar dahil) lig, sonra puan
-    const ranked=rows.filter(r=>r.x.p>0||(per==='day'&&r.x.p<0)).sort((a,b)=>lgOf(b)-lgOf(a)||b.x.p-a.x.p||b.x.n-a.x.n);
-    ranked.forEach((r,i)=>{r.rank=(i>0&&ranked[i-1].x.p===r.x.p&&lgOf(ranked[i-1])===lgOf(r))?ranked[i-1].rank:i+1});
+    const ranked=rows.filter(r=>r.x.p>0||r.x.n>0||(per==='day'&&r.x.p<0)).sort((a,b)=>lgOf(b)-lgOf(a)||b.x.p-a.x.p||b.x.n-a.x.n);   // soru çözen herkes görünür (lig tavanı yüzünden 0 puan alan da); 0 puanlılar soru sayısına göre sıralanır
+    ranked.forEach((r,i)=>{const q=ranked[i-1];r.rank=(i>0&&q.x.p===r.x.p&&lgOf(q)===lgOf(r)&&(r.x.p!==0||q.x.n===r.x.n))?q.rank:i+1});
     const acc=r=>r.x.n?Math.round(r.x.c/r.x.n*100):0;
     const wt=weekTop();
     const row=r=>`<div class="rk ${r.me?'me':''} ${r.rank&&r.rank<=3?'top':''}${flCls(r.id)}${isKing(r.id)?' king kv':''}" ${lgAttr(r.id)} data-pc="${esc(r.id)}"><span class="pos">${r.rank||'–'}</span>${avatar(r.name,r.color,false,r.av,frameFor(r.id,r.fr),wt[r.id],0,r.id)}<div class="nm">${esc(r.name)}${r.me?' <span class="badge">sen</span>':''}<div class="small muted" style="font-weight:400;line-height:1.35"><div>${r.x.n} soru</div><div>%${acc(r)} doğruluk</div>${r.st?`<div>🔥 ${r.st} gün seri</div>`:''}</div></div><div class="vw">${flsHtml(r.id)}<div class="val">${nf(Math.round(r.x.p*10)/10)}<small>puan</small></div></div></div>`;
@@ -4589,7 +4589,7 @@ function vRank(){
     const me=rows.find(r=>r.me);
     let mine='';
     if(me&&!top.some(r=>r.me)){
-      mine=`<div class="gap" aria-hidden="true">···</div>${row(me)}${me.rank?'':'<div class="small muted">Bu dönemde sıraya girmek için soru çöz ve en az bir doğru yap.</div>'}`;
+      mine=`<div class="gap" aria-hidden="true">···</div>${row(me)}${me.rank?'':'<div class="small muted">Bu dönemde sıraya girmek için soru çöz.</div>'}`;
     }
     body=`${rkSeg(per)}
     <div class="muted small">${per==='day'?'Bugünün puanı. Her gün gece yarısı sıfırlanır.':per==='week'?'Bu haftanın puanı. Hafta pazartesi başlar.':'Bugüne kadarki toplam puan.'} İlk ${TOPN} gösterilir${ranked.length?`, ${ranked.length} kişi sırada`:''}.</div>
