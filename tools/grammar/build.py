@@ -215,6 +215,8 @@ for t in topics:
             addEN('%s.quiz[%d]'%(P,k),q['q'].replace('___',q['o'][q['a']]))
         elif q['q'].startswith('Hangi') or q['q'].startswith('Which'):pass
     topics[topics.index(next(x for x in topics if x.get('id')==P))]=t
+for _k in NOTES:
+    if _k not in NOTE_USED:E('hiçbir soruyla eşleşmeyen not: %s | %s'%(_k[0][:50],_k[1][:30]))
 topics.sort(key=lambda t:(LEVELS.index(t['lv']),t.get('ord',50)))
 if '--lt' in sys.argv:
     import language_tool_python as lt
