@@ -426,7 +426,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/w09-22dea443b4.js"></script>
 <script src="d/w10-4b999e51b7.js"></script>
 <script src="d/w11-5108a05828.js"></script>
-<script src="d/grammar-384b69cd66.js"></script>
+<script src="d/grammar-30d1ae6742.js"></script>
 <script src="d/x00-f86d17b433.js"></script>
 <script src="d/x01-ef03f3761c.js"></script>
 <script src="d/x02-0d852bcdbe.js"></script>
@@ -577,7 +577,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.163.0';
+const APP_VERSION='4.163.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2734,7 +2734,9 @@ function dueWrong(all){
 /* cevaptan sonra "Neden?" açıklaması (yalnızca çalışma testinde): sözlük verisinden şablonla üretilir, emin olunmayan durumda boş kalır */
 function whyText(it){
   if(it&&it.phrq)return esc(it.phrq.e).replace(/\n/g,'<br>');
-  if(it&&it.gmq)return esc(it.gmq.w||'');
+  if(it&&it.gmq){const g=it.gmq;let h=esc(g.w||'');
+    if(g.n&&g.n.some(Boolean)){h+='<div style="margin-top:8px">'+g.o.map((o,i)=>{const r=i===g.a;return`<div style="margin-top:4px;padding-left:2px"><span style="color:var(--${r?'ok':'bad'})">${r?'✓':'✗'}</span> <b lang="en">${esc(String(o).replace(/\*/g,''))}</b>${g.n[i]?` — ${esc(g.n[i])}`:''}</div>`}).join('')+'</div>'}
+    return h}
   try{
     const w=it.w,f=it.f,B=x=>'<b>'+esc(x)+'</b>',tr=str(w.tr),c=it.correct;
     if(!w||!tr)return'';

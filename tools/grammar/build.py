@@ -78,7 +78,9 @@ def variants(P,qz):
         k=sents[q['a']]
         if k in seen or k in VAR_SKIP or re.search('[çğıöşüÇĞİÖŞÜ]',st):continue
         seen.add(k)
-        out.append(dict(lv=q['lv'],t='Doğru cümle',q='Hangi cümle dilbilgisi açısından doğru?',o=sents,a=q['a'],w=q['w']))
+        _d=dict(lv=q['lv'],t='Doğru cümle',q='Hangi cümle dilbilgisi açısından doğru?',o=sents,a=q['a'],w=q['w'])
+        if q.get('n'):_d['n']=q['n']
+        out.append(_d)
         wr=[o for i,o in enumerate(q['o']) if i!=q['a'] and o!='(boş)' and len(o)<=25]
         if not wr:continue
         w=rng.choice(wr);bad=_fill(st,w)
@@ -86,11 +88,34 @@ def variants(P,qz):
         words=[x for x in re.findall(r"[A-Za-z']+",re.sub(r'\([^)]*\)','',st).replace('___',' ')) if len(x)>=3 and x.lower() not in w.lower().split() and x.lower() not in ('the','and')]
         _st=re.sub(r'\([^)]*\)','',st);_l=re.findall(r"[A-Za-z']+",_st.split('___')[0]);_r=re.findall(r"[A-Za-z']+",_st.split('___')[1])
         near={x.lower() for x in (_l[-1:]+_r[:1])}   # boşluğa bitişik kelimeler çeldirici olmasın (eksik kelime hatasında onlar da 'hatalı' sayılabilir)
-        words=[x for x in dict.fromkeys(words) if x.lower() not in near and x.lower() not in VERBS]
+        _lw={};[_lw.setdefault(x.lower(),x) for x in words]
+        words=[x for x in _lw.values() if x.lower() not in near and x.lower() not in VERBS and x.lower() not in w.lower().split()]
         if len(words)<2:continue
-        other=rng.sample(words,2);opts=[w]+other;rng.shuffle(opts)
+        words.sort(key=lambda x:abs(len(x)-len(w)))   # çeldiriciler hatalı parçaya uzunlukça yakın olsun (cevap uzunluktan belli olmasın)
+        other=rng.sample(words[:4],2)
+        if len(w)>max(len(x) for x in other)+8:continue
+        opts=[w]+other;rng.shuffle(opts)
         out.append(dict(lv=q['lv'],t='Hatayı bul',q='Bu cümlede hatalı olan kısım hangisi? → '+bad,o=opts,a=opts.index(w),w='Doğrusu: '+_fill(st,q['o'][q['a']])+' — '+q['w']))
     return out
+
+# ---- öğretici açıklamalar: notes/*.py içindeki N(...) kayıtları (soru metni + doğru şık ile eşleşir) ----
+import glob,importlib.util
+NOTES={};NOTE_USED=set()
+def N(stem,right,why,wrongs=None):return dict(stem=stem,right=right,why=why,wrongs=wrongs or {})
+for _p in sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)),'notes','*.py'))):
+    _sp=importlib.util.spec_from_file_location('n_'+os.path.basename(_p)[:-3],_p);_m=importlib.util.module_from_spec(_sp);_m.N=N;_sp.loader.exec_module(_m)
+    for _e in _m.NOTES:NOTES[(_e['stem'],_e['right'])]=_e
+def applyN(P,items,E):
+    for k,q in enumerate(items):
+        e=NOTES.get((q['q'],q['o'][q['a']]))
+        if not e:continue
+        NOTE_USED.add((q['q'],q['o'][q['a']]))
+        for w in e['wrongs']:
+            if w not in q['o']:E('%s: not şıkkı bulunamadı: %s | %s'%(P,q['q'][:40],w))
+        if e['why']:q['w']=e['why']
+        q['n']=[e['wrongs'].get(o,'') if i!=q['a'] else '' for i,o in enumerate(q['o'])]
+        miss=[o for i,o in enumerate(q['o']) if i!=q['a'] and not e['wrongs'].get(o)]
+        if miss:E('%s: eksik şık notu: %s | %s'%(P,q['q'][:40],miss))
 ids=set();EN=[];  # (yol, cümle) — İngilizce denetim için
 def addEN(path,s):EN.append((path,s.replace('*','')))
 for t in topics:
@@ -154,6 +179,7 @@ for t in topics:
     if len(qz)!=20:E('%s: test %d soru (20 olmalı)'%(P,len(qz)))
     d=[q['lv'] for q in qz]
     if [d.count(i) for i in(1,2,3,4)]!=[6,6,5,3] or d!=sorted(d):E('%s: zorluk dağılımı 6/6/5/3 ve artan olmalı: %s'%(P,d))
+    applyN(P,qz,E)
     seen=set()
     for k,q in enumerate(qz):
         pth='%s.quiz[%d]'%(P,k);S(pth+'.q',q['q']);S(pth+'.w',q['w']);S(pth+'.t',q['t'])
@@ -171,6 +197,7 @@ for t in topics:
     # ek sorular (dq) + mini test sorularından türetilen yeni soru tipleri (Doğru cümle / Hatayı bul) — sona eklenir, eski sıralar bozulmaz
     if P in DQ or VAR:
         dq=conv_quiz({'id':P+'|dq','quiz':[dict(q) for q in DQ.get(P,[])]})['quiz'] if P in DQ else []
+        applyN(P,dq,E)
         dq+=variants(P,t['quiz'])
         qkeys={(q['q'],q['o'][q['a']]) for q in qz}
         for k,q in enumerate(dq):

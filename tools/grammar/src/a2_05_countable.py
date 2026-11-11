@@ -53,7 +53,7 @@ TOPICS=[{
 'quiz':[
  Q(1,'some / any','I have ___ apples.','some',['any','much'],'Olumlu cümlede some kullanılır.'),
  Q(1,'some / any',"I don't have ___ money.",'any',['some','many'],'Olumsuzda any kullanılır.'),
- Q(1,'some / any','Do you have ___ brothers?','any',['some','much'],'Soruda any kullanılır.'),
+ Q(1,'some / any','Do you have ___ brothers?','any',['a little','much'],'Soruda any kullanılır.'),
  Q(1,'many / much','How ___ students are there?','many',['much','a little'],'students sayılabilir: many.'),
  Q(1,'many / much','How ___ water do you drink?','much',['many','a few'],'water sayılamaz: much.'),
  Q(1,'Sayılabilirlik','Hangisi sayılamaz?','milk',['egg','apple'],'milk sayılamaz.'),
