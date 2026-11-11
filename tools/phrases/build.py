@@ -121,6 +121,6 @@ for f in sorted(glob.glob(os.path.join(HERE,'src','*.py')),key=lambda x:ORDER.in
         q.append({'q':sit,'o':o,'a':o.index(ok),'e':why,'lv':lv})
     G['quiz']=q;groups.append(G)
 if errs:print('\n'.join('HATA: '+e for e in errs));raise SystemExit(1)
-PLAN=['Beğeni ve tercih','İlgi gösterme ve tepki','Başka sözcüklerle anlatma','Rica ve izin','Teşekkür ve özür','Konuşmayı yönetme','Açıklama isteme','Tavsiye ve uyarı','Duygu belirtme','Tebrik ve iyi dilekler','Telefon ve e-posta','Yazmada sonuç cümleleri']
+PLAN=['Akademik: görüş bildirme ve tartışma','Akademik: kesinlik derecesi (hedging)','Akademik: karşılaştırma ve sonuç','Sunum yapma','Beğeni ve tercih','İlgi gösterme ve tepki','Başka sözcüklerle anlatma','Rica ve izin','Teşekkür ve özür','Konuşmayı yönetme','Açıklama isteme','Tavsiye ve uyarı','Duygu belirtme','Tebrik ve iyi dilekler','Telefon ve e-posta','Yazmada sonuç cümleleri']
 open(os.path.join(ROOT,'phrases.js'),'w',encoding='utf8').write('/* Kalıplar (beta). tools/phrases/build.py ile üretilir; elle düzenleme. */\nwindow.PHRASES='+json.dumps(groups,ensure_ascii=False,separators=(',',':'))+';\nwindow.PHRASES_PLAN='+json.dumps(PLAN,ensure_ascii=False)+';\n')
 print('tamam')
