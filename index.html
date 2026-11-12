@@ -425,8 +425,8 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/w08-112f52ff84.js"></script>
 <script src="d/w09-22dea443b4.js"></script>
 <script src="d/w10-4b999e51b7.js"></script>
-<script src="d/w11-c70e86ee25.js"></script>
-<script src="d/grammar-f3b209c77c.js"></script>
+<script src="d/w11-c5e2b93b04.js"></script>
+<script src="d/grammar-f5d0ee7130.js"></script>
 <script src="d/x00-f86d17b433.js"></script>
 <script src="d/x01-ef03f3761c.js"></script>
 <script src="d/x02-0d852bcdbe.js"></script>
@@ -484,7 +484,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-22cc542c4e.js", "sinav.js": "d/sinav-e1c2ca987f.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-5aadc96708.js", "sinav.js": "d/sinav-e1c2ca987f.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -494,7 +494,7 @@ const LEVELS=['A1','A2','B1','B2','C1','C2'];
 const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu','2. anlam','3. anlam','Cümlede anlam','Türkçe cümle → İngilizce','Cümlede yakın anlam','Cümlede karşıt anlam'];
 const REVERSE_RATE=0.4, STREAK_GOAL=3, INTERVALS=[1,3];
 const RMX=new Set(["academic", "academy", "actor", "alarm", "algorithm", "amateur", "ambulance", "ancestors", "animation", "anthropology", "antibiotic", "arena", "assistant", "astronomer", "astronomy", "automobile", "bacteria", "bipolar", "bravo", "cameraman", "capitalism", "captain", "carbon", "cartel", "category", "cement", "ceramic", "chances", "cholesterol", "cinema", "courts", "crater", "crystal", "cultural", "culture", "decorative", "delta", "democratic", "descendants", "diagram", "digital", "diploma", "diplomacy", "diplomat", "dollar", "drama", "dramatic", "dynamic", "economic", "economist", "economy", "ecosystem", "editor", "electron", "electronic", "emissions", "employees", "expenses", "federal", "federation", "fees", "festival", "figures", "formula", "fossil", "funds", "gallery", "gallon", "garments", "genetic", "genome", "geometry", "germs", "graffiti", "hormone", "ideal", "industrial", "industry", "inhabitants", "insults", "jewels", "leftovers", "legends", "lemon", "liberalism", "litre", "machine", "manifesto", "mathematics", "maximum", "media", "median", "melody", "metabolism", "metal", "metre", "microscope", "milligram", "millimetre", "mineral", "minibus", "minimum", "mittens", "module", "molecule", "motivation", "motor", "musical", "mutation", "normally", "nuclear", "obesity", "opera", "orchestra", "organic", "organism", "organizer", "origins", "panel", "panic", "parliament", "patent", "pedal", "piano", "pilot", "placebo", "plastic", "platform", "pollen", "polyester", "principles", "professional", "professor", "profile", "program", "programme", "programmer", "propaganda", "quarantine", "records", "referendum", "reform", "repairs", "reservation", "robot", "robotics", "romantic", "roots", "rotor", "routine", "scenario", "sector", "seminar", "senate", "senator", "sensor", "slogan", "spectrum", "spiral", "standards", "statistics", "strategic", "strategy", "studio", "symbol", "symbolic", "symbolism", "syndrome", "talks", "telescope", "therapist", "therapy", "tourist", "tractor", "traffic", "trauma", "trillion", "tsunami", "tunes", "tunnel", "turbine", "uniform", "virus", "voltage", "weapons", "writings"]);
-const RMW=new Set(["Internet", "TRUE", "a few", "a little", "a lot", "a lot of", "aeroplane", "airplane", "app", "april", "august", "banana", "basketball", "be", "black", "blog", "blue", "brown", "burger", "cafe", "camera", "can't", "centimetre", "championship", "computer", "cop", "curry", "dad", "december", "diesel", "do", "doctor", "donut", "download", "earlier", "eighth", "eightieth", "eighty", "email", "farm animals", "farmers", "february", "ferry", "fifteenth", "fifth", "fiftieth", "fifty", "filled", "film", "fireman", "football", "for", "fortieth", "forty", "fourteenth", "fourth", "friday", "from", "giraffe", "go", "golf", "goodbye", "granddad", "grandma", "grandpa", "granny", "gray", "greatest", "green", "grey", "guitar", "hacker", "hamburger", "hashtag", "have", "helicopter", "hello", "hi", "highest", "hotel", "how are you", "how's it going", "in", "january", "july", "june", "ketchup", "kick a ball", "kilogram", "kilometre", "laptop", "lemonade", "light rain", "like this", "lips", "mango", "marathon", "menu", "metro", "million", "mister", "mom", "monday", "motorbike", "movie theater", "muffin", "mum", "must", "nearer", "nearest", "newest", "next day", "ninetieth", "ninety", "ninth", "no thanks", "noodles", "novels", "november", "october", "of", "okay", "on", "one more", "one time", "online", "ow", "paid", "parents", "password", "pasta", "pc", "penguin", "pink", "pizza", "plants", "please", "podcast", "policeman", "pony", "protein", "purple", "puzzle", "radio", "red", "relatives", "ride a bus", "rules", "sandwich", "saturday", "seen", "selfie", "september", "seventh", "seventieth", "seventy", "shampoo", "should", "singers", "sir", "sixth", "sixtieth", "sixty", "ski", "sleeping", "small child", "small group", "small lake", "smartphone", "so", "soda", "soldiers", "spaghetti", "spam", "stadium", "started", "steps", "stories", "subway", "sunday", "sushi", "sweets", "taco", "taken", "taxi", "telephone", "television", "tell me", "tennis", "tenth", "thank you", "thanks", "things", "third", "thirteenth", "thirtieth", "thirty", "thursday", "time of year", "to", "tomato sauce", "tournament", "tram", "tuesday", "tuna", "tv", "twelfth", "twelve months", "twentieth", "two times", "understood", "up", "upload", "username", "vegan", "very healthy", "very much", "very thankful", "video", "visa", "vitamin", "waffle", "watching", "wednesday", "what number", "what price", "what's the price", "what's your job", "white", "why", "with", "woods", "written", "yeah", "years", "yellow", "yes", "yoga", "yogurt", "you", "yummy", "zebra", "zero"]);
+const RMW=new Set(["Internet", "TRUE", "a few", "a little", "a lot", "a lot of", "aeroplane", "airplane", "app", "banana", "basketball", "be", "black", "blog", "blue", "brown", "burger", "cafe", "camera", "can't", "centimetre", "championship", "computer", "cop", "curry", "dad", "diesel", "do", "doctor", "donut", "download", "earlier", "eighth", "eightieth", "eighty", "email", "farm animals", "farmers", "ferry", "fifteenth", "fifth", "fiftieth", "fifty", "filled", "film", "fireman", "football", "for", "fortieth", "forty", "fourteenth", "fourth", "from", "giraffe", "go", "golf", "goodbye", "granddad", "grandma", "grandpa", "granny", "gray", "greatest", "green", "grey", "guitar", "hacker", "hamburger", "hashtag", "have", "helicopter", "hello", "hi", "highest", "hotel", "how are you", "how's it going", "in", "ketchup", "kick a ball", "kilogram", "kilometre", "laptop", "lemonade", "like this", "lips", "mango", "marathon", "menu", "metro", "million", "mister", "mom", "motorbike", "movie theater", "muffin", "mum", "must", "nearer", "nearest", "newest", "next day", "ninetieth", "ninety", "ninth", "no thanks", "noodles", "novels", "of", "okay", "on", "one more", "one time", "online", "ow", "paid", "parents", "password", "pasta", "pc", "penguin", "pink", "pizza", "plants", "please", "podcast", "policeman", "pony", "protein", "purple", "puzzle", "radio", "red", "relatives", "ride a bus", "rules", "sandwich", "seen", "selfie", "seventh", "seventieth", "seventy", "shampoo", "should", "singers", "sir", "sixth", "sixtieth", "sixty", "ski", "sleeping", "small child", "small group", "small lake", "smartphone", "so", "soda", "soldiers", "spaghetti", "spam", "stadium", "started", "steps", "stories", "subway", "sushi", "sweets", "taco", "taken", "taxi", "telephone", "television", "tell me", "tennis", "tenth", "thank you", "thanks", "things", "third", "thirteenth", "thirtieth", "thirty", "time of year", "to", "tomato sauce", "tournament", "tram", "tuna", "tv", "twelfth", "twelve months", "twentieth", "two times", "understood", "up", "upload", "username", "vegan", "very healthy", "very much", "very thankful", "video", "visa", "vitamin", "waffle", "watching", "what number", "what price", "what's the price", "what's your job", "white", "why", "with", "woods", "written", "yeah", "years", "yellow", "yes", "yoga", "yogurt", "you", "yummy", "zebra", "zero"]);
 /* Çok basit A1/A2 kelimeleri sözlük ve sorulardan çıkarıldı (veri words.js'te duruyor) */
 const W=DATA.map((r,i)=>({id:i,word:r[0],def:r[1],tr:r[2],pos:r[3],ex:r[4],syn:r[5],ant:r[6],level:(r[7]||'').toUpperCase(),pron:r[8],v2:r[9],v3:r[10],sn:(window.SENSES&&window.SENSES[r[0]])||[],exs:(window.EXS&&window.EXS[r[0]])||[]})).filter(w=>!(((w.level==='A1'||w.level==='A2')&&RMW.has(w.word))||(RMX.has(w.word)&&/^(B1|B2|C1)$/.test(w.level))));
 const BYWORD=new Map(W.map(w=>[w.word,w]));
@@ -577,7 +577,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.162.5';
+const APP_VERSION='4.163.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1413,7 +1413,7 @@ function rkAdHtml(){
   const t=(v,a,b)=>`<div class="rka-t"><div class="pfv2" aria-hidden="true">${v}</div><b>${a}</b><i>${b}</i></div>`;
   return`<div class="rkad"><img class="rka-sw" src="duel-swords.svg" alt=""><h2>DERECELİ DÜELLO</h2><span class="rka-p">⏳ SAAT KISITLI</span>
   <div class="rka-b"><small>HER GÜN</small><b>00.00–01.55</b></div>
-  <div class="rka-b"><small>HAFTA İÇİ</small><b class="s">13.00–19.00 HER SAAT BAŞI 15 DK</b><b>+ 20.30–21.30 · 22.25–23.55</b></div>
+  <div class="rka-b"><small>HAFTA İÇİ</small><b class="s">08.00–19.00 HER SAAT BAŞI 15 DK</b><b>+ 20.30–21.30 · 22.25–23.55</b></div>
   <div class="rka-b"><small>HAFTA SONU</small><b class="s">14.00'TEN İTİBAREN HER SAAT BAŞI 15 DK</b><b>+ 23.00–23.55</b></div>
   <div class="rka-h">DERECELİ DÜELLO ÖDÜLLERİ</div>
   <div class="rka-g">${t(avl(DRAGON_AV),'1 GALİBİYET','DÜELLO EJDERİ')}${t('<div class="pfvl"><span class="av sm" style="background:#475569"></span><b style="margin:0;font-size:.62rem;color:#ffe08a">AD</b><u style="margin-left:auto;text-decoration:none;font-weight:800">1.</u></div>','İLK 3','KIZIL KADİFE')}${t(kingFlag('x',true,1),'İLK 3','FATİH FLAMASI')}${t(dogAvatar(true,false),'1. SIRA','HAVLAYAN KÖPEK')}</div>
@@ -1910,7 +1910,7 @@ function vHelp(){
     '<b>Genel puana etkisi</b>: Düellodaki doğru/yanlışların normal test gibi işlenir (bilinenler ve yanlışlar kelime ilerlemene gider), bu sorulardan gelen test puanı yarıya iner. Düello kazancı günlük soru puanı sınırına girmez.',
     '<b>Klasik düello</b> her zaman açıktır. Rakip arayabilir ya da salondaki kullanıcıya teklif gönderebilirsin (teklif 15 saniye geçerli). Kimse yoksa botla alıştırma yapabilirsin; bot maçı puanı etkilemez.',
     '<b>Klasik bahis</b>: Herkes '+DSTAKE+' puan koyar, sistem 5 puan ekler, toplam 45 puan dağıtılır: 25\'ini kazanan alır, kalan 20 maç puanlarına göre paylaşılır. Beraberlikte 22,5 – 22,5 bölünür.',
-    '<b>Dereceli düello saatleri</b> (Türkiye saati): Her gün <b>00.00–01.55</b> (bakım bitince, 00.10\'dan itibaren oynanabilir). Hafta içi <b>13.00–19.00 arası her saat başı 15 dakika</b> (13.00–13.15, 14.00–14.15 … 19.00–19.15), <b>20.30–21.30</b> ve <b>22.25–23.55</b>. Hafta sonu <b>14.00\'ten itibaren her saat başı 15 dakika</b> (14.00–14.15, 15.00–15.15 … 22.00–22.15) ve <b>23.00–23.55</b>. Saatler dışında dereceli arama kapalıdır: ekranda sonraki pencereye geri sayım görünür, pencere açılırken bildirim gelir. Başlamış maç pencere kapansa da biter.',
+    '<b>Dereceli düello saatleri</b> (Türkiye saati): Her gün <b>00.00–01.55</b> (bakım bitince, 00.10\'dan itibaren oynanabilir). Hafta içi <b>08.00–19.00 arası her saat başı 15 dakika</b> (08.00–08.15, 09.00–09.15 … 19.00–19.15), <b>20.30–21.30</b> ve <b>22.25–23.55</b>. Hafta sonu <b>14.00\'ten itibaren her saat başı 15 dakika</b> (14.00–14.15, 15.00–15.15 … 22.00–22.15) ve <b>23.00–23.55</b>. Saatler dışında dereceli arama kapalıdır: ekranda sonraki pencereye geri sayım görünür, pencere açılırken bildirim gelir. Başlamış maç pencere kapansa da biter.',
     '<b>Dereceli eşleşme</b>: Arama en fazla <b>30 saniye</b> sürer, rakip çıkmazsa lobiye dönersin. Lig farkı en çok 1 olan oyuncularla eşleşirsin. Aynı anda arayanlar birlikte değerlendirilir; mümkünse daha önce oynamadığın biri öncelikli olur. Ekranda eşleşmeye uygun kaç kişinin aradığı yazar.',
     '<b>Aynı rakiple sınır</b>: Aynı kişiyle 24 saatte oynayabileceğin dereceli maç sayısı, iki oyuncudan gerçek ligi yüksek olana göre belirlenir: Altın ve altı 3, Platin ve Zümrüt 2, Elmas ve üstü 1.',
     '<b>Gizlilik</b>: Dereceli maçtan önce kimsenin adı görünmez, listelerde yalnızca "Gizli kullanıcı" ve ligi yazar. Rakibini maç başlayınca öğrenirsin.',
@@ -2734,7 +2734,9 @@ function dueWrong(all){
 /* cevaptan sonra "Neden?" açıklaması (yalnızca çalışma testinde): sözlük verisinden şablonla üretilir, emin olunmayan durumda boş kalır */
 function whyText(it){
   if(it&&it.phrq)return esc(it.phrq.e).replace(/\n/g,'<br>');
-  if(it&&it.gmq)return esc(it.gmq.w||'');
+  if(it&&it.gmq){const g=it.gmq;let h=esc(g.w||'');
+    if(g.n&&g.n.some(Boolean)){h+='<div style="margin-top:8px">'+g.o.map((o,i)=>{const r=i===g.a;return`<div style="margin-top:4px;padding-left:2px"><span style="color:var(--${r?'ok':'bad'})">${r?'✓':'✗'}</span> <b lang="en">${esc(String(o).replace(/\*/g,''))}</b>${g.n[i]?` — ${esc(g.n[i])}`:''}</div>`}).join('')+'</div>'}
+    return h}
   try{
     const w=it.w,f=it.f,B=x=>'<b>'+esc(x)+'</b>',tr=str(w.tr),c=it.correct;
     if(!w||!tr)return'';
@@ -2997,7 +2999,7 @@ const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
 const NEWF={phr:1,pet:1};   // yeni menüler: ilk açılışta 'Yeni' işareti kalkar
 const nwSeen=()=>{try{return JSON.parse(localStorage.getItem('kd-new1')||'{}')}catch(e){return{}}};
-const NEWT=['p:directions','p:offers','g:so-such-too-enough','p:restaurant'];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
+const NEWT=['p:directions','p:offers','g:so-such-too-enough','p:restaurant','g:adjectives-ed-ing','p:plans'];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
 const NT={gram:'g:',phr:'p:'};
 const nwIs=k=>NT[k]?(NEWT.some(x=>x.startsWith(NT[k])&&!nwSeen()[x])||(!!NEWF[k]&&!nwSeen()[k])):((NEWT.includes(k)||!!NEWF[k])&&!nwSeen()[k]);
 const nwBd=k=>nwIs(k)?' <span class="nw">Yeni</span>':'';
@@ -5066,13 +5068,13 @@ function seededQs(seed,n,lg){
 }
 const dNow=()=>Date.now()+DUEL.off;
 /* ---- dereceli düello saat pencereleri (Türkiye saati, UTC+3) ---- sunucu da aynı kuralı uygular
-   Her gün 00.00-01.55; hafta içi 13.00'ten 19.00'a her saat başı ilk 15 dk (19.00-19.15 dahil), 20.30-21.30 ve 22.25-23.55; hafta sonu 14.00'ten itibaren her saat başı ilk 15 dk (22.00-22.15'e kadar) ve 23.00-23.55 */
+   Her gün 00.00-01.55; hafta içi 08.00'den 19.00'a her saat başı ilk 15 dk (19.00-19.15 dahil), 20.30-21.30 ve 22.25-23.55; hafta sonu 14.00'ten itibaren her saat başı ilk 15 dk (22.00-22.15'e kadar) ve 23.00-23.55 */
 const RKW={live0:Date.parse('2026-11-03T00:00:00+03:00')};
 const rkLive=()=>!!CLOUD.admin||dNow()>=RKW.live0;
 function rkOpenAt(ms){const t=new Date(ms+3*36e5),dw=t.getUTCDay(),h=t.getUTCHours(),m=t.getUTCMinutes(),mn=h*60+m;
   if(mn<115)return true;   // her gün 00.00-01.55 (00.00-00.09 bakım arası uygulama zaten kapalı)
   if(dw===0||dw===6)return(mn>=1380&&mn<1435)||(h>=14&&h<=22&&m<15);
-  return(h>=13&&h<=19&&m<15)||(mn>=1230&&mn<1290)||(mn>=1345&&mn<1435)}   // hafta içi: 13.00-19.15 arası her saat başı 15 dk + akşam pencereleri
+  return(h>=8&&h<=19&&m<15)||(mn>=1230&&mn<1290)||(mn>=1345&&mn<1435)}   // hafta içi: 08.00-19.15 arası her saat başı 15 dk + akşam pencereleri
 function rkEdge(ms,open){let t=Math.floor(ms/6e4)*6e4+6e4;for(let i=0;i<11520;i++,t+=6e4)if(rkOpenAt(t)===open)return t;return null}   // sonraki açılış (open=true) ya da kapanış (open=false)
 const rkHM=ms=>new Date(ms+3*36e5).toISOString().slice(11,16).replace(':','.');
 const rkDur=ms=>{ms=Math.max(0,Math.round(ms/1000));const h=Math.floor(ms/3600),m=Math.floor(ms%3600/60),s=ms%60;return h?h+' sa '+m+' dk':m?m+' dk '+s+' sn':s+' sn'};

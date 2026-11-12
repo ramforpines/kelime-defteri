@@ -14,6 +14,10 @@ def _words():
     subprocess.check_call(['node','-e',"global.window={};eval(require('fs').readFileSync('%s/words.js','utf8'));const W=window.WORDS||window.W||Object.values(window).find(Array.isArray);require('fs').writeFileSync('%s',JSON.stringify(W))"%(ROOT,f)])
     return json.load(open(f))
 words={w[0].lower() for w in _words()}
+VERBS={'am','is','are','was','were','be','been','being','do','does','did','done','have','has','had','will','would','shall','should','can','could','may','might','must','ought',"don't","doesn't","didn't","won't","wouldn't","can't","couldn't","isn't","aren't","wasn't","weren't","hasn't","haven't","hadn't","i'll","i'm","i've","i'd"}
+for _r in _words():   # 'Hatayı bul' çeldiricisi fiil olmasın (zaman uyumu hatalarında başka fiil de 'hatalı' sayılabilir)
+    if 'verb' in str(_r[3]).lower() and ' ' not in _r[0]:
+        _b=_r[0].lower();VERBS.update({_b,_b+'s',_b+'es',_b+'ed',_b+'d',_b+'ing',_b[:-1]+'ing',_b[:-1]+'ies',_b[:-1]+'ied',str(_r[9]).lower(),str(_r[10]).lower()})
 topics=json.load(open(os.path.join(HERE,'existing.json')))
 for f in sorted(glob.glob(os.path.join(HERE,'src','*.py'))):
     spec=importlib.util.spec_from_file_location(os.path.basename(f)[:-3],f);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
@@ -50,6 +54,68 @@ def pairs(path,L,minn=1):
         if not(isinstance(e,(list,tuple)) and len(e)==2):E('%s[%d]: [en,tr] olmalı'%(path,k));continue
         S('%s[%d].en'%(path,k),e[0]);S('%s[%d].tr'%(path,k),e[1])
         if '*' not in e[0]:W('%s[%d]: vurgu yok: %s'%(path,k,e[0]))
+VAR=True
+# elle gözden geçirildi: yanlış şıkkı da dilbilgisel olan (yalnız anlamca yanlış) sorular türetilmez
+VAR_SKIP=set(['What is your name?', "He can't drive.", 'What can you do?', 'The house was built in 1990.', 'If you study, you will pass the exam.', 'What will you do if you miss the bus?', 'If you heat ice, it melts.', 'I have a dog which likes swimming.', 'She is so kind.', 'The tickets have been sold.', "I didn't get my car fixed yet.", 'What we need is more volunteers.', 'You can go out as long as you finish your homework first.', 'Take some money in case you need a taxi.', 'I prefer the sea, whereas my husband prefers the mountains.', 'The car is cheap. Furthermore, it uses very little fuel.', 'Given that he had never played before, he did very well.', 'The work was hard. Nonetheless, everyone enjoyed it.', 'The hotel was dirty, not to mention noisy.'])
+# yalnızca yanlış şıkların bağlamdan bağımsız olarak dilbilgisi hatası olduğu konular (ör. 'goed', 'can to', 'despite he'); bağlama bağlı konular (articles, will/going to, -ed/-ing...) dışarıda
+VAR_OK={'to-be','plural-nouns','there-is-are','can-cant','past-simple','comparatives-superlatives','present-perfect','used-to','gerund-infinitive','relative-clauses','first-conditional','second-conditional','third-conditional','wish-if-only','passive-voice','passive-advanced','causative','so-such-too-enough','reporting-verbs','linkers-contrast-purpose','inversion','cleft-sentences','participle-clauses','advanced-linkers'}
+def _fill(stem,o):
+    o='' if o=='(boş)' else o
+    stem=re.sub(r'\s*\([^)]*\)','',stem)   # ipucu parantezlerini at: (go), (Türkçe: ...)
+    r=re.sub(r'\s*___\s*',(' '+o+' ') if o else ' ',stem).strip()
+    return re.sub(r'\s+([,.?!;:])',r'\1',re.sub(r'\s{2,}',' ',r)).replace('*','')
+def variants(P,qz):
+    """Mini testteki boşluk sorularından iki yeni soru tipi üretir:
+    Doğru cümle: üç tam cümleden dilbilgisi açısından doğru olanı seç.
+    Hatayı bul: yanlış şıkla kurulmuş cümlede hatalı kısmı seç (diğer iki şık cümlenin doğru parçaları)."""
+    if P not in VAR_OK:return []
+    rng=random.Random(P+'|var');out=[];seen=set()
+    for q in qz:
+        st=q['q']
+        if st.count('___')!=1 or '(' in st.split('___')[0][-2:]:continue
+        sents=[_fill(st,o) for o in q['o']]
+        if max(len(x) for x in sents)>120 or len(set(sents))<3:continue
+        k=sents[q['a']]
+        if k in seen or k in VAR_SKIP or re.search('[çğıöşüÇĞİÖŞÜ]',st):continue
+        seen.add(k)
+        _d=dict(lv=q['lv'],t='Doğru cümle',q='Hangi cümle dilbilgisi açısından doğru?',o=sents,a=q['a'],w=q['w'])
+        if q.get('n'):_d['n']=q['n']
+        out.append(_d)
+        wr=[o for i,o in enumerate(q['o']) if i!=q['a'] and o!='(boş)' and len(o)<=25]
+        if not wr:continue
+        w=rng.choice(wr);bad=_fill(st,w)
+        if len(re.findall(r'\b'+re.escape(w)+r'\b',bad))!=1 or '→' in st:continue   # hatalı parça cümlede tek olmalı
+        words=[x for x in re.findall(r"[A-Za-z']+",re.sub(r'\([^)]*\)','',st).replace('___',' ')) if len(x)>=3 and x.lower() not in w.lower().split() and x.lower() not in ('the','and')]
+        _st=re.sub(r'\([^)]*\)','',st);_l=re.findall(r"[A-Za-z']+",_st.split('___')[0]);_r=re.findall(r"[A-Za-z']+",_st.split('___')[1])
+        near={x.lower() for x in (_l[-1:]+_r[:1])}   # boşluğa bitişik kelimeler çeldirici olmasın (eksik kelime hatasında onlar da 'hatalı' sayılabilir)
+        _lw={};[_lw.setdefault(x.lower(),x) for x in words]
+        words=[x for x in _lw.values() if x.lower() not in near and x.lower() not in VERBS and x.lower() not in w.lower().split()]
+        if len(words)<2:continue
+        words.sort(key=lambda x:abs(len(x)-len(w)))   # çeldiriciler hatalı parçaya uzunlukça yakın olsun (cevap uzunluktan belli olmasın)
+        other=rng.sample(words[:4],2)
+        if len(w)>max(len(x) for x in other)+8:continue
+        opts=[w]+other;rng.shuffle(opts)
+        out.append(dict(lv=q['lv'],t='Hatayı bul',q='Bu cümlede hatalı olan kısım hangisi? → '+bad,o=opts,a=opts.index(w),w='Doğrusu: '+_fill(st,q['o'][q['a']])+' — '+q['w']))
+    return out
+
+# ---- öğretici açıklamalar: notes/*.py içindeki N(...) kayıtları (soru metni + doğru şık ile eşleşir) ----
+import glob,importlib.util
+NOTES={};NOTE_USED=set()
+def N(stem,right,why,wrongs=None):return dict(stem=stem,right=right,why=why,wrongs=wrongs or {})
+for _p in sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)),'notes','*.py'))):
+    _sp=importlib.util.spec_from_file_location('n_'+os.path.basename(_p)[:-3],_p);_m=importlib.util.module_from_spec(_sp);_m.N=N;_sp.loader.exec_module(_m)
+    for _e in _m.NOTES:NOTES[(_e['stem'],_e['right'])]=_e
+def applyN(P,items,E):
+    for k,q in enumerate(items):
+        e=NOTES.get((q['q'],q['o'][q['a']]))
+        if not e:continue
+        NOTE_USED.add((q['q'],q['o'][q['a']]))
+        for w in e['wrongs']:
+            if w not in q['o']:E('%s: not şıkkı bulunamadı: %s | %s'%(P,q['q'][:40],w))
+        if e['why']:q['w']=e['why']
+        q['n']=[e['wrongs'].get(o,'') if i!=q['a'] else '' for i,o in enumerate(q['o'])]
+        miss=[o for i,o in enumerate(q['o']) if i!=q['a'] and not e['wrongs'].get(o)]
+        if miss:E('%s: eksik şık notu: %s | %s'%(P,q['q'][:40],miss))
 ids=set();EN=[];  # (yol, cümle) — İngilizce denetim için
 def addEN(path,s):EN.append((path,s.replace('*','')))
 for t in topics:
@@ -113,6 +179,7 @@ for t in topics:
     if len(qz)!=20:E('%s: test %d soru (20 olmalı)'%(P,len(qz)))
     d=[q['lv'] for q in qz]
     if [d.count(i) for i in(1,2,3,4)]!=[6,6,5,3] or d!=sorted(d):E('%s: zorluk dağılımı 6/6/5/3 ve artan olmalı: %s'%(P,d))
+    applyN(P,qz,E)
     seen=set()
     for k,q in enumerate(qz):
         pth='%s.quiz[%d]'%(P,k);S(pth+'.q',q['q']);S(pth+'.w',q['w']);S(pth+'.t',q['t'])
@@ -127,9 +194,11 @@ for t in topics:
     cnt=[sum(1 for q in qz if q['a']==i) for i in range(3)]
     if min(cnt[:2])<4:W('%s: cevap konumu dağılımı %s'%(P,cnt))
     t['_n']=len(qz)
-    # ek sorular (dq)
-    if P in DQ:
-        dq=conv_quiz({'id':P+'|dq','quiz':[dict(q) for q in DQ[P]]})['quiz']
+    # ek sorular (dq) + mini test sorularından türetilen yeni soru tipleri (Doğru cümle / Hatayı bul) — sona eklenir, eski sıralar bozulmaz
+    if P in DQ or VAR:
+        dq=conv_quiz({'id':P+'|dq','quiz':[dict(q) for q in DQ.get(P,[])]})['quiz'] if P in DQ else []
+        applyN(P,dq,E)
+        dq+=variants(P,t['quiz'])
         qkeys={(q['q'],q['o'][q['a']]) for q in qz}
         for k,q in enumerate(dq):
             pth='%s.dq[%d]'%(P,k);S(pth+'.q',q['q']);S(pth+'.w',q['w']);S(pth+'.t',q['t'])
@@ -146,6 +215,8 @@ for t in topics:
             addEN('%s.quiz[%d]'%(P,k),q['q'].replace('___',q['o'][q['a']]))
         elif q['q'].startswith('Hangi') or q['q'].startswith('Which'):pass
     topics[topics.index(next(x for x in topics if x.get('id')==P))]=t
+for _k in NOTES:
+    if _k not in NOTE_USED:E('hiçbir soruyla eşleşmeyen not: %s | %s'%(_k[0][:50],_k[1][:30]))
 topics.sort(key=lambda t:(LEVELS.index(t['lv']),t.get('ord',50)))
 if '--lt' in sys.argv:
     import language_tool_python as lt
@@ -180,7 +251,7 @@ if len(warn)>60:print('... %d uyarı daha'%(len(warn)-60))
 if errs:
     for e in errs:print('HATA:',e)
     print('%d hata'%len(errs));sys.exit(1)
-PLAN={'B1':['-ed / -ing sıfatlar ve sıfat sırası','Sıfat + edat kalıpları','Ön ekler ve son ekler'],'C1':['Mixed conditionals','Advanced passive and reporting'],'C2':['İnce anlam farkları ve üslup']}
+PLAN={'B1':['Question tags ve kısa cevaplar (so do I / neither do I)','Indirect questions (Do you know where ...?)','Pronouns: me / mine / myself','Quantifiers: both / either / neither / all / every / each','Adjectives vs adverbs (quick / quickly, hard / hardly)','Verb + object + to-infinitive (want you to, ask him to)','Phrasal verbs: ayrılabilen / ayrılamayan','Prepositions of time and movement (until, by, during, through)','Sıfat + edat kalıpları','Ön ekler ve son ekler'],'B2':['had better / would rather / it\'s time','Past modals: had to, needn\'t have, should have','Future in the past (was going to, would)','Articles: ileri kullanımlar','Emphasis: do / does, so / such, what'],'A2':['Imperatives ve let\'s','somebody / anything / nowhere','Adverbs of frequency ve kelime sırası','do / make / have / get'],'C1':['Mixed conditionals','Advanced passive and reporting','Ellipsis and substitution (so, not, do so)','Subjunctive and formal structures','Academic hedging and nominalisation'],'C2':['İnce anlam farkları ve üslup']}
 out='/* Gramer konu anlatımları (beta). Bu dosya tools/grammar/build.py ile üretilir; elle düzenleme. *...* = vurgulanan gramer parçası. */\nwindow.GRAMMAR='+json.dumps(topics,ensure_ascii=False,separators=(',',':'))+';\nwindow.GRAMMAR_PLAN='+json.dumps(PLAN,ensure_ascii=False,separators=(',',':'))+';\n'
 open(os.path.join(ROOT,'grammar.js'),'w',encoding='utf8').write(out)
 print('tamam: %d konu, %d KB'%(len(topics),len(out)//1024))

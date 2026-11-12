@@ -16,14 +16,16 @@ NEAR={'give':['ask','unsure','partly'],'ask':['give','unsure'],'agree':['partly'
       'sim':['con','deg','pre'],'con':['sim','deg','pre'],'deg':['sim','con','pre'],'pre':['sim','con','deg'],
       'cert':['poss','unlik'],'prob':['poss','unlik'],'poss':['cert','unlik'],'unlik':['cert','poss'],'guess':['cert','unlik'],
       'dask':['dgive','dcheck','dland'],'dgive':['dland','dask','dcheck'],'dland':['dgive','dask','dcheck'],'dcheck':['dask','dgive','dland'],
-      'off':['offyes','offno','prom'],'rbook':['rorder','rreq','rpay'],'rorder':['rbook','rreq','rpay'],'rreq':['rorder','rbook','rpay'],'rpay':['rreq','rorder','rbook'],'offyes':['offno','off','prom'],'offno':['offyes','off','prom'],'prom':['off','offyes','offno']}
+      'off':['offyes','offno','prom'],'rbook':['rorder','rreq','rpay'],'rorder':['rbook','rreq','rpay'],'rreq':['rorder','rbook','rpay'],'rpay':['rreq','rorder','rbook'],'offyes':['offno','off','prom'],'offno':['offyes','off','prom'],'prom':['off','offyes','offno'],
+      'pinv':['pfree','pyes','pmeet'],'pfree':['pinv','pmeet','pno'],'pyes':['pno','pinv','pchg'],'pno':['pyes','pchg','pinv'],'pmeet':['pinv','pchg','pfree'],'pchg':['pno','pmeet','pyes']}
 NOF1={'guess':['unlik'],'prob':['unlik']}  # boşluk sorusunda gramer olarak da uyabilecek çeldiricileri önler
 FUNC_EN={'give':'giving an opinion','ask':'asking for an opinion','agree':'complete agreement','partly':'partial agreement','polite':'polite disagreement','strong':'strong disagreement','unsure':'being undecided',
         'make':'making a suggestion','accept':'accepting a suggestion','decline':'turning down a suggestion',
         'sim':'showing similarity','con':'showing contrast','deg':'comparing things','pre':'saying what you prefer',
         'cert':'being almost sure','prob':'saying something is probably true','poss':'saying something is only possible (not likely)','unlik':'saying something is unlikely','guess':'guessing from what you can see',
         'dask':'asking the way','dgive':'giving directions','dland':'describing where a place is','dcheck':'checking you understood the directions',
-        'off':'offering to help','offyes':'accepting an offer','offno':'refusing an offer politely','prom':'making a promise','rbook':'getting a table in a restaurant','rorder':'ordering food and drink','rreq':'asking the waiter for something or complaining','rpay':'asking for and paying the bill'}
+        'off':'offering to help','offyes':'accepting an offer','offno':'refusing an offer politely','prom':'making a promise','rbook':'getting a table in a restaurant','rorder':'ordering food and drink','rreq':'asking the waiter for something or complaining','rpay':'asking for and paying the bill',
+        'pinv':'suggesting a plan','pfree':'checking if someone is free','pyes':'accepting an invitation','pno':'turning down an invitation','pmeet':'fixing a time and place to meet','pchg':'changing, cancelling or being late for a plan'}
 FUNC={'give':'Fikrini söylemek','ask':'Karşındakinin fikrini sormak','agree':'Tamamen katılmak','partly':'Kısmen katılmak','polite':'Kibarca katılmamak','strong':'Kesinlikle katılmamak','unsure':'Kararsız olmak'}
 def core(en):
     c=re.sub(r'\(([^)]*)\)',r'\1',en).replace('...','').strip()
@@ -39,7 +41,7 @@ def opts(rng,right,pool,k=2):
         if x not in out:out.append(x)
         if len(out)==k:break
     o=[right]+out;rng.shuffle(o);return o
-ORDER=['opinion','suggest','speculate','contrast','directions','offers','restaurant']
+ORDER=['opinion','suggest','speculate','contrast','directions','offers','restaurant','plans']
 for f in sorted(glob.glob(os.path.join(HERE,'src','*.py')),key=lambda x:ORDER.index(os.path.basename(x)[:-3]) if os.path.basename(x)[:-3] in ORDER else 99):
     if f.endswith('_dlg.py'):continue
     G=load(f,'GROUP');dlg=load(f[:-3]+'_dlg.py','D') if os.path.exists(f[:-3]+'_dlg.py') else {}
@@ -119,6 +121,6 @@ for f in sorted(glob.glob(os.path.join(HERE,'src','*.py')),key=lambda x:ORDER.in
         q.append({'q':sit,'o':o,'a':o.index(ok),'e':why,'lv':lv})
     G['quiz']=q;groups.append(G)
 if errs:print('\n'.join('HATA: '+e for e in errs));raise SystemExit(1)
-PLAN=['Plan yapma ve buluşma','Beğeni ve tercih','İlgi gösterme ve tepki','Başka sözcüklerle anlatma','Rica ve izin','Teşekkür ve özür','Konuşmayı yönetme','Açıklama isteme','Tavsiye ve uyarı','Duygu belirtme','Tebrik ve iyi dilekler','Telefon ve e-posta','Yazmada sonuç cümleleri']
+PLAN=['Akademik: görüş bildirme ve tartışma','Akademik: kesinlik derecesi (hedging)','Akademik: karşılaştırma ve sonuç','Sunum yapma','Beğeni ve tercih','İlgi gösterme ve tepki','Başka sözcüklerle anlatma','Rica ve izin','Teşekkür ve özür','Konuşmayı yönetme','Açıklama isteme','Tavsiye ve uyarı','Duygu belirtme','Tebrik ve iyi dilekler','Telefon ve e-posta','Yazmada sonuç cümleleri']
 open(os.path.join(ROOT,'phrases.js'),'w',encoding='utf8').write('/* Kalıplar (beta). tools/phrases/build.py ile üretilir; elle düzenleme. */\nwindow.PHRASES='+json.dumps(groups,ensure_ascii=False,separators=(',',':'))+';\nwindow.PHRASES_PLAN='+json.dumps(PLAN,ensure_ascii=False)+';\n')
 print('tamam')

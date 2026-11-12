@@ -50,11 +50,11 @@ TOPICS=[{
 'vocab':['rarely','seldom','hardly','scarcely','realise','admit','situation','account','formal','emphasis'],
 'quiz':[
  Q(1,'Never','Never ___ such a beautiful place.','have I seen',['I have seen','I saw'],"Never ile başlayınca yardımcı fiil + özne: have I seen."),
- Q(1,'Rarely','Rarely ___ out on weekdays.','do I go',['I go','I do go'],'Yardımcı fiil yok: do I go.'),
+ Q(1,'Rarely','Rarely ___ out on weekdays. (devrik yapı)','do I go',['I go','I do go'],'Yardımcı fiil yok: do I go.'),
  Q(1,'No sooner','No sooner had we sat down ___ the music started.','than',['when','then'],'No sooner ... than.'),
  Q(1,'Hardly','Hardly had I closed my eyes ___ the alarm went off.','when',['than','that'],'Hardly ... when.'),
  Q(1,'Not only','Not only ___ the exam, but she also got the highest mark.','did she pass',['she passed','she did pass'],'Not only + did + özne + yalın fiil.'),
- Q(1,'Seldom','Seldom ___ so angry.','was he',['he was','did he be'],'be fiilinde doğrudan yer değiştirme: was he.'),
+ Q(1,'Seldom','Seldom ___ so angry. (devrik yapı)','was he',['he was','did he be'],'be fiilinde doğrudan yer değiştirme: was he.'),
  Q(2,'Only when','Only when the lights came on ___ how many people were there.','did we see',['we saw','we did see'],'Only when ile ana cümle devrik olur.'),
  Q(2,'Not until','Not until he lost his job ___ the value of money.','did he understand',['he understood','he did understand'],'Not until ile ana cümle devrik.'),
  Q(2,'Little','Little ___ that we were planning a party for her.','did she know',['she knew','knew she'],'Little did she know: hiç haberi yoktu.'),
@@ -68,5 +68,5 @@ TOPICS=[{
  Q(3,'Karışık','Hangi cümle doğru?','On no account must you touch the wires.',['On no account you must touch the wires.','On no account must touch you the wires.'],'On no account + must + özne + fiil.'),
  Q(4,'Karışık','Hangi cümle YANLIŞ?','Only after the meeting I understood the problem.',['Only after the meeting did I understand the problem.','Not until after the meeting did I understand the problem.'],'Only after ile ana cümle devrik olmalı.'),
  Q(4,'Karışık','Hangi cümle doğru?','Not only was the hotel expensive, but it was also dirty.',['Not only the hotel was expensive, but it was also dirty.','Not only was expensive the hotel, but it was also dirty.'],'be fiilinde: was the hotel.'),
- Q(4,'Karışık','Hangi cümle doğru?','Seldom do we see such talent in young players.',['Seldom we see such talent in young players.','Seldom see we such talent in young players.'],'Yardımcı fiil yok: do we see.'),
+ Q(4,'Karışık','Hangi cümle devrik yapıyla doğru kurulmuş?','Seldom do we see such talent in young players.',['Seldom we see such talent in young players.','Seldom see we such talent in young players.'],'Yardımcı fiil yok: do we see.'),
 ]}]
