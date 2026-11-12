@@ -43,7 +43,7 @@ TOPICS=[{
  Q(1,'It was ... who','It was my brother ___ found the money.','who',['which','what'],'Kişi için who.'),
  Q(1,'What ... is','___ I need is a holiday.','What',['That','Which'],'What cleft.'),
  Q(1,'It was ... that','It was in Paris ___ they got married.','that',['where it','what'],'It was + yer + that.'),
- Q(1,'What cleft fiil','What we need ___ more volunteers.','is',['are','be'],'What kısmı tekil sayılır: is.'),
+ Q(1,'What cleft fiil','What we need ___ more volunteers.','is',['be','being'],'What ile başlayan kısım cümlenin öznesidir; ardından is gelir (çoğul tamlayanla are de duyulur, ama is standarttır).'),
  Q(1,'What ... did','What she did ___ call the police.','was',['were','did'],'What she did was + yalın fiil.'),
  Q(1,'All','All I want ___ some sleep.','is',['are','do'],'All I want is: tek istediğim.'),
  Q(2,'What ... did','What he did was ___ the door.','lock',['locked','locking'],'did was\'tan sonra yalın fiil.'),
@@ -57,7 +57,7 @@ TOPICS=[{
  Q(3,'Dönüşüm','"You should ask for help." Vurgulu hâli hangisi?','What you should do is ask for help.',['What you should do it is ask for help.','What should you do is ask for help.'],'What + özne + should do + is.'),
  Q(3,'Karışık','Hangi cümle doğru?','The reason why she left is that she was tired.',['The reason why she left is because of she was tired.','The reason why she left is she tired.'],'The reason ... is that + cümle.'),
  Q(3,'Karışık','Hangi cümle doğru?','It was in 2015 that I started working here.',['It was in 2015 when that I started working here.','It was 2015 in that I started working here.'],'It was + zaman + that.'),
- Q(4,'Karışık','Hangi cümle YANLIŞ?','What I love are the long evenings.',['What I love is the long evenings.','The long evenings are what I love.'],'What cleft\'te is kullanılır.'),
+ Q(4,'Karışık','Hangi cümle YANLIŞ?','What I love it is the long evenings.',['What I love is the long evenings.','The long evenings are what I love.'],'What cleft\'te ek bir özne (it) gelmez: What I love is ...'),
  Q(4,'Karışık','Hangi cümle doğru?','What we did was start again from the beginning.',['What we did was started again from the beginning.','What we did it was start again from the beginning.'],'did was + yalın fiil.'),
  Q(4,'Karışık','Hangi cümle doğru?','All he ever does is complain.',['All he ever does are complain.','All what he ever does is complain.'],'All + özne + does is + yalın fiil.'),
 ]}]
