@@ -105,6 +105,17 @@ def N(stem,right,why,wrongs=None):return dict(stem=stem,right=right,why=why,wron
 for _p in sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)),'notes','*.py'))):
     _sp=importlib.util.spec_from_file_location('n_'+os.path.basename(_p)[:-3],_p);_m=importlib.util.module_from_spec(_sp);_m.N=N;_sp.loader.exec_module(_m)
     for _e in _m.NOTES:NOTES[(_e['stem'],_e['right'])]=_e
+# notes/deep/*.py: D(stem,right,{yanlış şık: daha ayrıntılı not}) — mevcut notun üzerine yazar (kısa notları derinleştirmek için)
+def D(stem,right,wrongs,why=None):return dict(stem=stem,right=right,wrongs=wrongs,why=why)
+for _p in sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)),'notes','deep','*.py'))):
+    _sp=importlib.util.spec_from_file_location('d_'+os.path.basename(_p)[:-3],_p);_m=importlib.util.module_from_spec(_sp);_m.D=D;_sp.loader.exec_module(_m)
+    for _e in _m.DEEP:
+        _t=NOTES.get((_e['stem'],_e['right']))
+        if not _t:E('deep: not bulunamadı: %s | %s'%(_e['stem'][:40],_e['right']));continue
+        for _w,_x in _e['wrongs'].items():
+            if _w not in _t['wrongs']:E('deep: şık bulunamadı: %s | %s'%(_e['stem'][:40],_w))
+            else:_t['wrongs'][_w]=_x
+        if _e['why']:_t['why']=_e['why']
 def applyN(P,items,E):
     for k,q in enumerate(items):
         e=NOTES.get((q['q'],q['o'][q['a']]))
