@@ -105,6 +105,23 @@ def N(stem,right,why,wrongs=None):return dict(stem=stem,right=right,why=why,wron
 for _p in sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)),'notes','*.py'))):
     _sp=importlib.util.spec_from_file_location('n_'+os.path.basename(_p)[:-3],_p);_m=importlib.util.module_from_spec(_sp);_m.N=N;_sp.loader.exec_module(_m)
     for _e in _m.NOTES:NOTES[(_e['stem'],_e['right'])]=_e
+# notes/deep/*.py: D(stem,right,{yanlış şık: daha ayrıntılı not}) — mevcut notun üzerine yazar (kısa notları derinleştirmek için)
+def D(stem,right,wrongs,why=None):return dict(stem=stem,right=right,wrongs=wrongs,why=why)
+for _p in sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)),'notes','deep','*.py'))):
+    if os.path.basename(_p).startswith('_'):continue
+    _sp=importlib.util.spec_from_file_location('d_'+os.path.basename(_p)[:-3],_p);_m=importlib.util.module_from_spec(_sp);_m.D=D;_sp.loader.exec_module(_m)
+    for _e in _m.DEEP:
+        _t=NOTES.get((_e['stem'],_e['right']))
+        if not _t:E('deep: not bulunamadı: %s | %s'%(_e['stem'][:40],_e['right']));continue
+        for _w,_x in _e['wrongs'].items():
+            if _w not in _t['wrongs']:E('deep: şık bulunamadı: %s | %s'%(_e['stem'][:40],_w))
+            else:_t['wrongs'][_w]=_x
+        if _e['why']:_t['why']=_e['why']
+# notes/deep/_upgrade.py: UP[(konu,kısa not)] = uzun not — yalnızca ilgili konuda ve notun birebir aynı olduğu yerlerde uygulanır
+UP={}
+_up=os.path.join(os.path.dirname(os.path.abspath(__file__)),'notes','deep','_upgrade.py')
+if os.path.exists(_up):
+    _sp=importlib.util.spec_from_file_location('d__up',_up);_m=importlib.util.module_from_spec(_sp);_sp.loader.exec_module(_m);UP=_m.UP
 def applyN(P,items,E):
     for k,q in enumerate(items):
         e=NOTES.get((q['q'],q['o'][q['a']]))
@@ -113,7 +130,7 @@ def applyN(P,items,E):
         for w in e['wrongs']:
             if w not in q['o']:E('%s: not şıkkı bulunamadı: %s | %s'%(P,q['q'][:40],w))
         if e['why']:q['w']=e['why']
-        q['n']=[e['wrongs'].get(o,'') if i!=q['a'] else '' for i,o in enumerate(q['o'])]
+        q['n']=[UP.get((P,e['wrongs'].get(o,'')),e['wrongs'].get(o,'')) if i!=q['a'] else '' for i,o in enumerate(q['o'])]
         miss=[o for i,o in enumerate(q['o']) if i!=q['a'] and not e['wrongs'].get(o)]
         if miss:E('%s: eksik şık notu: %s | %s'%(P,q['q'][:40],miss))
 ids=set();EN=[];  # (yol, cümle) — İngilizce denetim için

@@ -1,0 +1,18 @@
+DEEP=[
+D('I wish I ___ a car.','had',{'will have':'wish ile will kullanılmaz; şimdiki gerçek dışı istek için wish + Past Simple (had).'}),
+D('I wish I ___ taller.','were',{'will be':'wish + will olmaz; dilek şimdiki durumun tersini ister (were).'}),
+D('I wish I ___ swim.','could',{'will':'wish + will olmaz; yetenek isteği wish + could ile anlatılır.'}),
+D('I wish I ___ studied harder.','had',{'have':'Geçmiş pişmanlık için had + V3 gerekir; have + V3 Present Perfect olur.'}),
+D('I wish you ___ stop talking.','would',{'will':'wish + will olmaz; başkasının can sıkıcı davranışı wish + would ile anlatılır.'}),
+D('I wish I ___ have to work today.','didn\'t',{'won\'t':'wish + won\'t olmaz; şimdiki gerçek dışı istek için didn\'t + yalın fiil.'}),
+D('If only I ___ known earlier!','had',{'have':'Geçmiş pişmanlık için If only + had + V3 gerekir.','did':'did + V3 yapısı yoktur.'}),
+D("It's time we ___ home.",'went',{'will go':'It\'s time + özne + Past Simple; will kullanılmaz. Anlam: gitme zamanı geldi.'}),
+D('I wish he ___ shout all the time.','wouldn\'t',{'won\'t':'wish + won\'t olmaz; sinir bozucu alışkanlık için wouldn\'t kullanılır.'}),
+D('Hangi cümle doğru?','I wish I hadn\'t eaten so much.',{'I wish I haven\'t eaten so much.':'Geçmiş pişmanlık için had + V3 (hadn\'t eaten) gerekir; haven\'t Present Perfect\'tir.'}),
+D('Hangi cümle doğru?','I hope you have a good time.',{'I wish you have a good time.':'wish gerçek dışı durum içindir; olası bir dilek için hope kullanılır.','I wish you would have a good time.':'wish + would başkasının davranışındaki şikâyeti anlatır, iyi dilek için uygun değildir.'}),
+D('"Arabam yok ve buna üzülüyorum." Hangi cümle bu anlamı verir?','I wish I had a car.',{'I wish I had had a car.':'had had geçmişteki durumu anlatır ("daha önce olsaydı"); şimdiki durum için Past Simple.','I hope I have a car.':'hope gerçek bir ihtimal için kullanılır; arabanın olmadığı ve olmasını istediğin gerçek dışı durumu anlatmaz.'}),
+D('"Partiye gitmedim ve pişmanım." Hangi cümle bu anlamı verir?','I wish I had gone to the party.',{'I wish I went to the party.':'went şimdiki gerçek dışı isteği anlatır; geçmiş pişmanlık için had gone gerekir.','I wish I would go to the party.':'would kendi durumun için kullanılmaz ve geçmişi anlatmaz.'}),
+D('Hangi cümle doğru?','I\'d rather you didn\'t smoke here.',{'I\'d rather you don\'t smoke here.':'I\'d rather + başka özne ile Past Simple gerekir (didn\'t).','I\'d rather you not to smoke here.':'to bu kalıpta kullanılmaz; kalıp I\'d rather + özne + Past Simple.'}),
+D('Hangi cümle YANLIŞ?','If only I can swim!',{'I wish I could swim.':'Doğru: wish sonrası could.','If only I could swim!':'Doğru: If only + could.'}),
+D('Hangi cümle doğru?','It\'s high time you found a job.',{'It\'s high time you find a job.':'It\'s high time + Past Simple gerekir.','It\'s high time you will find a job.':'will kullanılmaz; kalıp It\'s (high) time + Past Simple.'}),
+]

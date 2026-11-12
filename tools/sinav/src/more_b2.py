@@ -1,0 +1,34 @@
+# B2 First: ek Use of English çalışma parçaları (özgün metin ve cümleler)
+def mk(k,id,t,ty,nm,ins,**o):
+    d={'k':k,'id':id,'t':t,'ty':ty,'nm':nm,'ti':'Reading and Use of English Part '+k[1],'ins':ins};d.update(o);return d
+def kw(s1,key,s2,a,tg,e,mx=5):return {'s1':s1,'key':key,'s2':s2,'a':a,'tg':tg,'e':e,'mx':mx}
+KI='İkinci cümleyi, birinciyle aynı anlamı verecek şekilde tamamla. Verilen kelimeyi değiştirmeden kullan; 2–5 kelime yaz.'
+MORE={'R':[
+mk('R4','b2r4b','Cümle dönüştürme 2: günlük yapılar (8 soru)','kwt','Okuma 4 · Cümle dönüştürme',KI,title='Key word transformations 2',q=[
+ kw('I haven\'t seen her since 2019.','LAST','The ______ her was in 2019.',['last time i saw'],['present-perfect'],'The last time + özne + V2: en son ... -tiğim zaman.'),
+ kw('"Don\'t forget to lock the door," Mum said to me.','REMINDED','Mum ______ the door.',['reminded me to lock'],['reporting-verbs'],'remind + kişi + to + yalın fiil.'),
+ kw('Unless you hurry, you\'ll miss the bus.','IF','You\'ll miss the bus ______ hurry.',['if you don\'t'],['first-conditional'],'unless = if ... not.'),
+ kw('It isn\'t necessary for you to wait for me.','NEED','You ______ for me.',['don\'t need to wait','needn\'t wait','do not need to wait'],['can-cant'],'don\'t need to / needn\'t + yalın fiil: gerek yok.'),
+ kw('They are repairing our street at the moment.','BEING','Our street ______ repaired at the moment.',['is being'],['passive-advanced'],'Present Continuous pasif: is being + V3.'),
+ kw('I\'d prefer to stay at home tonight than go out.','RATHER','I ______ at home tonight than go out.',['would rather stay','\'d rather stay'],['wish-if-only'],'would rather + yalın fiil + than + yalın fiil.'),
+ kw('She is too young to drive a car.','ENOUGH','She isn\'t ______ drive a car.',['old enough to'],['so-such-too-enough'],'enough sıfattan sonra gelir: old enough to.'),
+ kw('Although the film was long, we enjoyed it.','DESPITE','We enjoyed the film ______ so long.',['despite it being','despite its being','despite the fact it was','despite the fact that it was'],['linkers-contrast-purpose'],'despite + isim/-ing ya da despite the fact that + cümle.',6)]),
+mk('R4','b2r4c','Cümle dönüştürme 3: pasif, dilek, aktarma (8 soru)','kwt','Okuma 4 · Cümle dönüştürme',KI,title='Key word transformations 3',q=[
+ kw('I started learning Spanish three years ago.','BEEN','I ______ Spanish for three years.',['have been learning'],['present-perfect-continuous'],'for three years: süren eylem, have been + -ing.'),
+ kw('People say he is a millionaire.','SAID','He ______ a millionaire.',['is said to be'],['passive-advanced'],'is said to + fiil.'),
+ kw('Someone broke into our house last night.','BROKEN','Our house ______ into last night.',['was broken'],['passive-voice'],'Geçmiş pasif: was broken into.'),
+ kw('I regret not studying harder.','WISH','I ______ harder.',['wish i had studied','wish i\'d studied'],['wish-if-only'],'Geçmiş pişmanlık: wish + had + V3.'),
+ kw('You should have asked me first.','OUGHT','You ______ me first.',['ought to have asked'],['modals-deduction'],'ought to have + V3: geçmiş eleştiri.'),
+ kw('Lena doesn\'t earn as much as her sister does.','MORE','Lena\'s sister ______ Lena.',['earns more than'],['comparatives-superlatives'],'not as much as = daha fazla kazanır: earns more than.'),
+ kw('"I\'ll call you tomorrow," she said.','PROMISED','She ______ me the next day.',['promised to call','promised to phone','promised to ring'],['reporting-verbs'],'promise + to + yalın fiil.'),
+ kw('I find it hard to get up early.','USED','I\'m not ______ up early.',['used to getting'],['used-to'],'be used to + -ing: alışkın olmak.')]),
+mk('R1','b2r1b','Çoktan seçmeli boşluk: Ödünç eşya kütüphanesi','cloze','Okuma 1 · Çoktan seçmeli boşluk','Metni oku ve her boşluk için en uygun kelimeyi (A, B ya da C) seç.',title='The umbrella',
+ p='Umbrellas are such a (1) ______ sight today that it is hard to imagine a time without them. Yet for centuries they were used mainly to (2) ______ people from the sun, not the rain. In ancient China, rain umbrellas were made by (3) ______ paper with wax. In Europe, men refused to carry them for a long time, (4) ______ they were considered a feminine accessory. The situation changed in the eighteenth century, when a traveller named Jonas Hanway began to use one in London, and people (5) ______ fun of him. Eventually the idea (6) ______ on. Modern designs can (7) ______ up to strong winds, although most of us have seen one turn inside out. In (8) ______ of its simple design, the umbrella remains a remarkable invention.',
+ o=[(['common','frequent','regular'],0,['collocation']),(['protect','defend','save'],0,['collocation']),(['treating','dressing','washing'],0,['vocab']),(['although','since','unless'],1,['linkers-contrast-purpose']),(['made','had','took'],0,['collocation']),(['caught','held','kept'],0,['vocab']),(['stand','stay','run'],0,['vocab']),(['spite','view','case'],0,['collocation'])],
+ e=['such a common sight: çok yaygın bir görüntü.','protect someone from: -den korumak.','treat paper with wax: kâğıdı mumla işlemek.','since = çünkü (neden). although zıtlık, unless koşul bildirir.','make fun of: alay etmek.','catch on: tutmak, yaygınlaşmak.','stand up to: -e dayanmak.','in spite of: -e rağmen.']),
+mk('R2','b2r2b','Açık boşluk: Eşya kütüphaneleri','open','Okuma 2 · Açık boşluk','Metni oku ve her boşluğa TEK kelime yaz.',title='Libraries of things',one=True,
+ p='A growing number of towns are opening "libraries of things", where members can borrow tools, kitchen equipment and even musical instruments (1) ______ of buying them. The idea is simple: most of us use a drill only a few minutes a year, so there is little point in everyone owning (2) ______. Members pay a small fee, and (3) ______ they join, they can borrow as many items as they like. Organisers say the scheme has been (4) ______ success, not only because it saves money but also because it brings neighbours together. One volunteer told me she had never spoken to anyone on her street until she (5) ______ a ladder from the library. (6) ______ the benefits, some people worry that borrowed tools may not be as safe as new ones. To deal with this, every item is checked carefully (7) ______ it is lent out. The scheme\'s founder hopes that, in the future, (8) ______ town will have its own library of things.',
+ a=[['instead'],['one'],['once','when','after'],['a'],['borrowed'],['despite'],['before'],['every','each']],
+ tg=[['gerund-infinitive'],['vocab'],['vocab'],['articles'],['past-simple'],['linkers-contrast-purpose'],['vocab'],['vocab']],
+ e=['instead of + -ing: -mek yerine.','owning one: birer tane sahip olmak (one = a drill).','once they join: üye olur olmaz.','a success: başarı (sayılabilir isim, a).','borrowed: ödünç aldı (past simple).','despite the benefits: yararlarına rağmen.','before it is lent out: ödünç verilmeden önce.','every/each town: her kasaba.']),
+]}
