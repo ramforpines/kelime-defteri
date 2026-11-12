@@ -1,0 +1,31 @@
+# C1 Advanced: ek Use of English çalışma parçaları (özgün metin ve cümleler)
+def mk(k,id,t,ty,nm,ins,**o):
+    d={'k':k,'id':id,'t':t,'ty':ty,'nm':nm,'ti':'Reading and Use of English Part '+k[1],'ins':ins};d.update(o);return d
+def kw(s1,key,s2,a,tg,e,mx=6):return {'s1':s1,'key':key,'s2':s2,'a':a,'tg':tg,'e':e,'mx':mx}
+KI='İkinci cümleyi, birinciyle aynı anlamı verecek şekilde tamamla. Verilen kelimeyi değiştirmeden kullan; 3–6 kelime yaz.'
+MORE={'R':[
+mk('R4','c1r4b','Cümle dönüştürme 2 (6 soru)','kwt','Okuma 4 · Cümle dönüştürme',KI,title='Key word transformations 2',q=[
+ kw('People think that the company has lost millions.','THOUGHT','The company ______ lost millions.',['is thought to have'],['passive-advanced'],'is thought to have + V3: geçmişe dönük yaygın kanı.'),
+ kw('I only found out about the problem when you told me.','DID','Not until you told me ______ about the problem.',['did i find out','did i learn','did i know','did i hear'],['inversion'],'Not until ... + devrik yapı: did I + yalın fiil.'),
+ kw('She regrets not accepting the job offer.','WISHES','She ______ the job offer.',['wishes she had accepted','wishes she\'d accepted'],['wish-if-only'],'Geçmiş pişmanlık: wish + had + V3.'),
+ kw('The manager made us work late.','MADE','We ______ work late by the manager.',['were made to'],['passive-voice'],'make aktifte to almaz, pasifte to alır: were made to work.'),
+ kw('He took no notice of the warning.','ATTENTION','He ______ to the warning.',['paid no attention','paid little attention','paid no attention'],['vocab'],'pay attention to: dikkat etmek.'),
+ kw('Despite his injury, he finished the race.','ALTHOUGH','He finished the race ______ injured.',['although he was','although he had been','although he were'],['linkers-contrast-purpose'],'although + özne + fiil: despite + isim yerine.')]),
+mk('R4','c1r4c','Cümle dönüştürme 3 (6 soru)','kwt','Okuma 4 · Cümle dönüştürme',KI,title='Key word transformations 3',q=[
+ kw('I last visited the museum five years ago.','BEEN','I ______ the museum for five years.',['haven\'t been to','have not been to'],['present-perfect'],'for five years: have not been to.'),
+ kw('You\'re not allowed to park here.','MUST','You ______ here.',['must not park','mustn\'t park'],['may-might'],'mustn\'t: yasak.'),
+ kw('The film was so boring that we left early.','SUCH','It was ______ we left early.',['such a boring film that'],['so-such-too-enough'],'such a + sıfat + isim + that.'),
+ kw('Someone is going to cut my hair tomorrow.','HAVING','I ______ cut tomorrow.',['am having my hair'],['causative'],'have + nesne + V3: başkasına yaptırma.'),
+ kw('He was so nervous that he couldn\'t speak.','TOO','He ______ nervous to speak.',['was too'],['so-such-too-enough'],'too + sıfat + to: -emeyecek kadar.'),
+ kw('If you hadn\'t helped me, I would have failed.','BUT','I would have failed ______ your help.',['but for'],['third-conditional'],'but for + isim: -in olmaması durumunda.')]),
+mk('R1','c1r1b','Çoktan seçmeli boşluk: Kent arıcılığı','cloze','Okuma 1 · Çoktan seçmeli boşluk','Metni oku ve her boşluk için en uygun kelimeyi (A, B, C ya da D) seç.',title='Urban beekeeping',
+ p='Beekeeping has long been associated with the countryside, but in recent years it has (1) ______ a surprising foothold in cities. Rooftop hives now (2) ______ the skylines of London, Paris and New York. Supporters point (3) ______ that urban bees are healthier than their rural cousins, which often face pesticides and a lack of variety in their diet. City gardens, (4) ______, offer flowers that bloom throughout the year. Nevertheless, some ecologists (5) ______ a note of caution, arguing that too many hives may (6) ______ with wild pollinators for scarce resources. They suggest that planting more flowers would be far more (7) ______ in supporting insects than adding hives. The debate is likely to (8) ______ as the trend grows.',
+ o=[(['gained','earned','obtained','taken'],0,['collocation']),(['dominate','dot','dye','dig'],1,['vocab']),(['out','up','at','to'],0,['vocab']),(['however','therefore','moreover','otherwise'],0,['advanced-linkers']),(['sound','ring','give','play'],0,['collocation']),(['compete','combat','rival','oppose'],0,['vocab']),(['effective','productive','capable','powerful'],0,['collocation']),(['intensify','intend','intervene','intrude'],0,['vocab'])],
+ e=['gain a foothold: ayak basmak, yerleşmek.','dot the skylines: ufuk çizgisine serpiştirilmiş olmak.','point out that: -diğine dikkat çekmek.','however: ama. therefore/moreover bu karşılaştırmaya uymaz.','sound a note of caution: temkinli olunması gerektiğini söylemek.','compete with ... for: -le ... için rekabet etmek.','effective in + -ing: -mede etkili.','intensify: şiddetlenmek, yoğunlaşmak.']),
+mk('R3','c1r3b','Kelime türetme: Yavaş yemek hareketi','open','Okuma 3 · Kelime türetme','Her boşluk için verilen kök kelimeyi uygun biçime getir.',title='The slow food movement',
+ st=['EXPAND','EMPHASISE','CARE','REAL','ENVIRONMENT','ACHIEVE','SURPRISE','SOFT'],
+ p='The (1) ______ of fast-food chains in the late twentieth century transformed the way many people eat. In response, a group of Italian campaigners launched a movement that (2) ______ the value of traditional cooking. Its members argue that meals should be (3) ______ prepared from local ingredients and enjoyed without hurry. Critics dismiss the idea as (4) ______ for those who cannot afford fresh produce, yet supporters point to the (5) ______ benefits of eating seasonally, from better flavour to reduced waste. Whatever one\'s view, the movement\'s greatest (6) ______ lies in having made people think about where their food comes from. Its (7) ______ rapid spread to over a hundred countries has even (8) ______ some of its harshest critics.',
+ a=[['expansion'],['emphasises','emphasizes'],['carefully'],['unrealistic'],['environmental'],['achievement'],['surprisingly'],['softened']],
+ tg=[['word-formation']]*8,
+ e=['The + isim: expansion (yayılma).','that + fiil: emphasises (3. tekil, geniş zaman).','fiili niteleyen zarf: carefully.','olumsuz sıfat: unrealistic (gerçekçi olmayan).','benefits niteleyen sıfat: environmental.','greatest + isim: achievement (başarı).','sıfatı niteleyen zarf: surprisingly rapid.','has + V3: softened (yumuşattı).']),
+]}

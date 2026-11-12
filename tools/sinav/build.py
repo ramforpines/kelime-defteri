@@ -125,6 +125,10 @@ for lv in LV:
         for s in X['sec']['S']['parts']:spart(s,P)
         exams.append(X)
     pr=m.PRAC;P='prac-'+lv
+    mf=os.path.join(HERE,'src','more_'+lv.lower()+'.py')   # ek çalışma parçaları (özgün Use of English alıştırmaları)
+    if os.path.exists(mf):
+        sp0=importlib.util.spec_from_file_location('more'+lv,mf);mm=importlib.util.module_from_spec(sp0);sp0.loader.exec_module(mm)
+        for sk,L in mm.MORE.items():pr.setdefault(sk,[]).extend(L)
     try:
         import importlib;_of=importlib.import_module('opt_fix') if True else None
     except Exception:_of=None
