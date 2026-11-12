@@ -577,7 +577,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.163.3';
+const APP_VERSION='4.163.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -896,8 +896,23 @@ function addPts(delta,kind){
   return eff;
 }
 function pruneEv(){const lim=addDays(today(),-EV_DAYS);Object.keys(S.days).forEach(k=>{if(k<lim&&S.days[k].ev)delete S.days[k].ev})}
+/* bulut verisi (başka cihazdaki günler) henüz çekilmediyse eski bir cihaz yanlışlıkla 'hedefi tutturmadın' cezası keser; ilk senkrondan önce kesinti uygulanmaz */
+const cloudWait=()=>!!(CLOUD.uid&&CLOUD.approved!==false&&!CLOUD.pulled);
+/* birleştirme sonrası: günü aslında tamamlanmış (ya da izin günü) olan eksik-hedef cezalarını geri verir */
+function fixFalsePen(){
+  if(!S.pen||!S.pen.length)return 0;let back=0;
+  S.pen=S.pen.filter(x=>{
+    const need=x.need|0;
+    if(!need||dayC(x.d)<need)return true;
+    back+=+x.amt||0;
+    Object.keys(S.days).forEach(k=>{const ev=S.days[k].ev;if(ev&&ev['pn|'+x.d])delete ev['pn|'+x.d]});
+    return false;
+  });
+  if(back>0){S.tp=r1((S.tp||0)+back)}
+  return back;
+}
 function applyDecay(){
-  if(!S.pc)return 0;
+  if(!S.pc||cloudWait())return 0;
   const t=today();let d=addDays(S.pc,1);
   const lim=addDays(t,-60);if(d<lim)d=lim;
   let total=0,n=0,rn=0;
@@ -918,7 +933,7 @@ const rqReq=()=>{const g=myLeague();return g>=6?3:g>=5?1:0};
 const RQ={today:null,busy:false};
 const localDay=ms=>new Date(ms).toLocaleDateString('sv-SE');
 async function rqApply(){
-  if(RQ.busy||!sb||!CLOUD.uid||CLOUD.approved===false)return;
+  if(RQ.busy||!sb||!CLOUD.uid||CLOUD.approved===false||cloudWait())return;
   RQ.busy=true;
   try{
     const t=today(),y=addDays(t,-1);
@@ -1083,6 +1098,7 @@ async function pullState(){
   const m=rst||stEmpty(S)?normState(cl):mergeStates(S,normState(cl));
   const changed=stSig(m)!==before;
   if(changed){S=m;S.upd=Date.now();persistLocal()}
+  CLOUD.pulled=true;try{if(fixFalsePen()>0){S.upd=Date.now();persistLocal();schedulePush()}}catch(e){}
   CLOUD.known=stAns(S);CLOUD.pulled=true;
   seenMigrate();capFix();
   if(stSig(S)!==stSig(normState(cl))||(S.rs||0)>(cl.rs||0))schedulePush();   // bulutta olmayan yerel ilerleme varsa yukarı gönder
@@ -1093,6 +1109,7 @@ async function syncPull(retry){
   CLOUD.pulling=true;
   try{
     const ch=await pullState();
+    {const dc=applyDecay();rqApply();if(dc>0)persistLocal()}
     if(ch){applyDecay();evalAwards();persistLocal();if(!UI.quiz&&!DUEL.bot&&['play','count','search','wait'].indexOf(DUEL.phase)===-1&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render()}
   }catch(e){if(!CLOUD.pulled)schedulePull(15000)}
   finally{CLOUD.pulling=false}
@@ -3238,7 +3255,7 @@ function vToday(){
   const wds=wodWords(),wqq=wodQueue(),wql=wodLeft(),wq={total:wqq.length,left:wql.length,done:wqq.length-wql.length};
   const ann=CLOUD.ann?(()=>{const nw=CLOUD.ann.updated_at!==annSeen(),open=UI.annOpen,long=CLOUD.ann.body.length>220;return`<div class="card" style="border-color:var(--accent);margin-bottom:12px" role="status"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b>📢 Duyuru${nw?' <span class="badge ok">yeni</span>':''}</b><span class="muted small">${fmt(String(CLOUD.ann.updated_at).slice(0,10))}</span></div><div style="overflow-wrap:anywhere;white-space:pre-wrap;${long&&!open?'max-height:5.4em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)':''}">${esc(CLOUD.ann.body)}</div>${long?`<button class="btn" style="margin-top:8px" data-act="ann-toggle">${open?'Daralt':'Tamamını göster'}</button>`:''}</div>`})():'';
   return`${ann}<div class="top"><div><h1>Bugün</h1><div class="muted small">${new Date().toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long'})}</div></div>
-    <span class="badge ${streak()?'warn':''}" title="Günlük hedefi tutturduğun ardışık gün">🔥 ${streak()} gün seri</span></div>
+    <span class="badge ${streak()?'warn':''}" title="Günlük hedefi tutturduğun ardışık gün">🔥 ${cloudWait()?'…':streak()} gün seri</span></div>
   <div class="stack">
   <div class="card hero"><div class="ring">${ring(p)}<div class="n"><div>${d.c}/${g}<small>doğru</small></div></div></div>
     <div class="stack"><h2>${left?`Hedefe ${left} doğru cevap kaldı`:'Bugünkü hedef tamam'}</h2>
