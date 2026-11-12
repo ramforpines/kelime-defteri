@@ -577,7 +577,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.163.6';
+const APP_VERSION='4.163.7';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3353,7 +3353,7 @@ function vRead(){
   const R=UI.rd||(UI.rd={id:null,pick:{},done:false,lv:'Hepsi'}),all=window.READINGS||[],rd=S.rd||{};
   const P=R.id&&all.find(x=>x.id===R.id);
   if(P)return vReadOne(P,R);
-  const list=all.filter(x=>R.lv==='Hepsi'||x.lv===R.lv);
+  const list0=all.filter(x=>R.lv==='Hepsi'||x.lv===R.lv),list=list0.filter(x=>!rd[x.id]).concat(list0.filter(x=>rd[x.id]));   // çözülenler listenin sonuna iner
   const doneN=all.filter(x=>rd[x.id]).length;
   return`<div class="top"><h1>Okuma</h1></div><div class="stack">
   <div class="card stack"><div class="muted small">Kısa İngilizce metinleri oku, ardından metinle ilgili soruları cevapla. Doğru cevap başına ${RD_PT} × seviye katsayısı puan kazanırsın; puan, ceza ve hedef bonusu bir parçanın yalnızca ilk çözümünde işler. Cevapların günlük hedefine, doğruluk oranına, seviye istatistiklerine ve serilerine sayılır; yalnızca kelime ilerlemeni (öğrenildi/tekrar listesi) etkilemez.</div>
