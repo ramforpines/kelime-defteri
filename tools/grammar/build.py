@@ -130,7 +130,7 @@ def applyN(P,items,E):
         for w in e['wrongs']:
             if w not in q['o']:E('%s: not şıkkı bulunamadı: %s | %s'%(P,q['q'][:40],w))
         if e['why']:q['w']=e['why']
-        q['n']=[UP.get((P,e['wrongs'].get(o,'')),e['wrongs'].get(o,'')) if i!=q['a'] else '' for i,o in enumerate(q['o'])]
+        q['n']=[UP.get((P,e['wrongs'].get(o,'')),UP.get(('*',e['wrongs'].get(o,'')),e['wrongs'].get(o,''))) if i!=q['a'] else '' for i,o in enumerate(q['o'])]
         miss=[o for i,o in enumerate(q['o']) if i!=q['a'] and not e['wrongs'].get(o)]
         if miss:E('%s: eksik şık notu: %s | %s'%(P,q['q'][:40],miss))
 ids=set();EN=[];  # (yol, cümle) — İngilizce denetim için
