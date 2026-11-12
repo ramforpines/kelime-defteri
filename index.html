@@ -577,7 +577,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.163.5';
+const APP_VERSION='4.163.6';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3829,6 +3829,7 @@ const sxExam=id=>((window.SINAV||{}).exams||[]).find(x=>x.id===id);
 const SXI={};
 const sxExamItems=(X,k)=>SXI[X.id+k]||(SXI[X.id+k]=X.sec[k].parts.flatMap(p=>sxItems(p,X.id)));
 const sxWTasks=X=>X.sec.W.tasks.map(t=>t.choice?{choice:t.choice}:t);
+const sxDone=(k,x)=>{try{if(k==='W'){const d=(S.pw||{})[x.id];return !!(d&&d.f)}return !!sxBest(x.id)}catch(e){return false}};   // tamamlanan çalışmalar listenin sonuna iner
 const sxPracAll=()=>{const P=(window.SINAV||{}).prac||{},o=[];Object.keys(P).forEach(lv=>['R','L','W','S'].forEach(k=>(P[lv][k]||[]).forEach(x=>o.push([lv,k,x]))));return o};
 const sxWTask=id=>{const r=sxPracAll().find(([lv,k,x])=>k==='W'&&x.id===id);return r?r[2]:null};
 const sxLvOfTask=id=>{const r=sxPracAll().find(x=>x[2].id===id);return r?r[0]:'B1'};
@@ -4121,7 +4122,7 @@ function vSx(){
   <div class="seg">${SX_LV.filter(x=>SN.prac[x]).map(x=>`<button class="chip" aria-pressed="${x===lv}" data-act="sx-l" data-v="${x}">${x}</button>`).join('')}</div>
   <div class="seg">${['R','L','W','S'].map(x=>`<button class="chip" aria-pressed="${x===k}" data-act="sx-k" data-v="${x}">${SX_IC[x]} ${esc(sxSkName(lv,x))}</button>`).join('')}</div>
   <div class="card small muted">${k==='R'||k==='L'?'Sınavdaki bölüm türlerinden örnekler. Süre yok, istediğin kadar tekrar çözebilirsin; sonunda açıklamalar ve çalışman gereken konular çıkar.':k==='W'?'Yazarken kelime sayısı, maddeler, bağlaçlar ve yapılar canlı kontrol edilir. Bitirince öz değerlendirme ve örnek cevap açılır.':'Soru sesli okunur, sen İngilizce konuşursun; konuşman yazıya dökülür, süre, kelime sayısı ve kalıplar gösterilir, sonra örnek cevapla karşılaştırırsın.'}</div>
-  ${L.length?L.map(x=>{if(k==='R'||k==='L'){const b=sxBest(x.id);return`<button class="btn block" style="text-align:left" data-act="sx-prac" data-v="${lv}|${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${b?`<span class="small muted">${b[0]}/${b[1]}</span>`:''}</div></button>`}
+  ${L.length?(k==='R'||k==='L'||k==='W'?L.filter(x=>!sxDone(k,x)).concat(L.filter(x=>sxDone(k,x))):L).map(x=>{if(k==='R'||k==='L'){const b=sxBest(x.id);return`<button class="btn block" style="text-align:left" data-act="sx-prac" data-v="${lv}|${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${b?`<span class="small muted">${b[0]}/${b[1]}</span>`:''}</div></button>`}
     if(k==='W'){const d=(S.pw||{})[x.id];return`<button class="btn block" style="text-align:left" data-act="pw-open" data-v="${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${d&&d.f?'<span class="small muted">✓</span>':''}</div></button>`}
     return`<button class="btn block" style="text-align:left" data-act="ps-open" data-v="${esc(x.id)}" lang="en"><b>${esc(x.t)}</b></button>`}).join(''):'<div class="empty card">Bu seviye için çalışma yakında.</div>'}</div>`;
 }
