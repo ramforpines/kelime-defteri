@@ -1,0 +1,23 @@
+NOTES=[
+N('The doctor suggested that he ___ more rest.','get','suggest that sonrası fiil yalın kalır.',{'gets':'Subjunctive\'de he için -s eklenmez.','getting':'that cümlesinde -ing kullanılmaz.'}),
+N('It is essential that she ___ on time.','arrive','essential that sonrası yalın fiil gelir.',{'arrives':'Resmî subjunctive\'de -s eklenmez.','arriving':'that cümlesinde -ing kullanılmaz.'}),
+N('I insist that he ___ the truth.','tell','insist that sonrası yalın fiil gelir.',{'tells':'Fiil kişiye göre çekimlenmez.','telling':'that cümlesinde -ing kullanılmaz.'}),
+N('They demand that the manager ___ at once.','resign','demand that sonrası yalın fiil gelir.',{'resigns':'-s eklenmez.','resigned':'Zaman değişmez; yalın fiil kalır.'}),
+N('If I ___ you, I would stay.','were','Hayali durumda tüm öznelerle were kullanılır.',{'am':'Gerçek olmayan durumda am kullanılmaz.','was being':'Bu yapı If I were kalıbına uymaz.'}),
+N('I propose that the meeting ___ postponed.','be','Edilgen subjunctive: be + V3.',{'is':'Subjunctive\'de is yerine be gelir.','being':'that cümlesinde tek başına being olmaz.'}),
+N('She recommended that he ___ the course.','take','recommend that sonrası yalın fiil.',{'takes':'-s eklenmez.','took':'Zaman değişmez; yalın fiil kalır.'}),
+N('It is vital that every student ___ the rules.','follow','vital that sonrası yalın fiil.',{'follows':'Subjunctive\'de -s eklenmez.','following':'that cümlesinde -ing kullanılmaz.'}),
+N('He requested that the window ___ closed.','be','request that + be + V3 edilgen yapıdır.',{'was':'Subjunctive\'de was değil be gelir.','is being':'Bu yapı that cümlesinde kullanılmaz.'}),
+N('The law requires that all drivers ___ a licence.','have','require that sonrası yalın fiil.',{'has':'Çoğul özne zaten have alır; subjunctive de yalın fiil ister, has yanlış olur.','having':'that cümlesinde -ing kullanılmaz.'}),
+N('It is crucial that the data ___ be lost.','not','Olumsuzda not doğrudan yalın fiilin önüne gelir.',{'does not':'Subjunctive\'de do desteği kullanılmaz.','is not':'is not be yapısı kurulamaz.'}),
+N('She insisted that he ___ sorry.','be','insist that + be.',{'was':'Subjunctive\'de was değil be kullanılır.','is being':'Bu yapı anlam olarak uymaz.'}),
+N('Hangi cümle doğru?','I suggest that he see a specialist.','Subjunctive: he see, -s eklenmez.',{'I suggest that he sees a specialist.':'-s ekli biçim bu resmî yapıda kullanılmaz.','I suggest that he seeing a specialist.':'that sonrası -ing olmaz.'}),
+
+N('Hangi cümle doğru?','It is necessary that she attend the meeting.','necessary that sonrası yalın fiil gelir.',{'It is necessary that she attends the meeting.':'-s ekli biçim resmî subjunctive\'e uymaz.','It is necessary that she to attend the meeting.':'that cümlesinde to kullanılmaz.'}),
+N('Hangi cümle doğru?','They demanded that he not leave.','Olumsuzda not + yalın fiil kullanılır.',{'They demanded that he does not leave.':'Subjunctive\'de do desteği kullanılmaz.','They demanded that he not to leave.':'not\'tan sonra to gelmez.'}),
+N('Hangi cümle doğru?','It is essential that the form be signed.','Edilgen subjunctive: be + V3.',{'It is essential that the form is sign.':'is + yalın fiil edilgen yapı kurmaz.','It is essential that the form signed.':'Yardımcı fiil be eksik.'}),
+N('Hangi cümle doğru?','He insisted that she apologise.','Zaman değişmez, fiil yalın kalır.',{'He insisted that she apologised.':'Subjunctive\'de geçmiş zaman eki kullanılmaz.','He insisted her to apologise.':'insist sonrası nesne + to-infinitive gelmez.'}),
+N('Hangi cümle doğru?','The committee proposed that the rule be changed.','propose that + be + V3.',{'The committee proposed that the rule was change.':'was + yalın fiil edilgen kurmaz.','The committee proposed the rule to be changed that.':'that yanlış yerde, yapı bozuk.'}),
+N('Hangi cümle doğru?','It is vital that we act now.','vital that sonrası yalın fiil.',{'It is vital that we acting now.':'that sonrası -ing olmaz.','It is vital that we to act now.':'that cümlesinde to kullanılmaz.'}),
+N('Hangi cümle doğru?','I recommend that you not travel alone.','recommend that + özne + not + yalın fiil.',{'I recommend that you do not to travel alone.':'do not + to birlikte kullanılmaz.','I recommend you not that travel alone.':'that sözcüğü yanlış yerde.'}),
+]

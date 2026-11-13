@@ -31,4 +31,18 @@ mk('R2','b2r2b','Açık boşluk: Eşya kütüphaneleri','open','Okuma 2 · Açı
  a=[['instead'],['one'],['once','when','after'],['a'],['borrowed'],['despite'],['before'],['every','each']],
  tg=[['gerund-infinitive'],['vocab'],['vocab'],['articles'],['past-simple'],['linkers-contrast-purpose'],['vocab'],['vocab']],
  e=['instead of + -ing: -mek yerine.','owning one: birer tane sahip olmak (one = a drill).','once they join: üye olur olmaz.','a success: başarı (sayılabilir isim, a).','borrowed: ödünç aldı (past simple).','despite the benefits: yararlarına rağmen.','before it is lent out: ödünç verilmeden önce.','every/each town: her kasaba.']),
+mk('R4','b2r4d','Cümle dönüştürme 4: ileri yapılar (6 soru)','kwt','Okuma 4 · Cümle dönüştürme',KI,title='Key word transformations 4',q=[
+ kw('It was a mistake to ignore his advice.','SHOULD','You ______ his advice.',['should not have ignored','shouldn\'t have ignored'],['modals-deduction'],'Geçmişte yanlış yapılan şey: should not have + V3.'),
+ kw('We have very little time left.','HARDLY','We have ______ time left.',['hardly any'],['quantifiers'],'hardly any: neredeyse hiç.'),
+ kw('Someone has stolen my bike.','HAD','I ______ stolen.',['had my bike'],['causative'],'have + nesne + V3: başıma gelen olay.'),
+ kw('She started working here two years ago.','BEEN','She ______ here for two years.',['has been working'],['present-perfect'],'for two years: has been working.'),
+ kw('It is possible that he missed the train.','MIGHT','He ______ the train.',['might have missed'],['modals-deduction'],'might have + V3: geçmiş olasılık.'),
+ kw('I wish I had more free time.','ONLY','If ______ more free time.',['only i had'],['wish-if-only'],'If only + Past Simple: keşke.')]),
+mk('R4','b2r4e','Cümle dönüştürme 5: It yapıları (6 soru)','kwt','Okuma 4 · Cümle dönüştürme',KI,title='Key word transformations 5',q=[
+ kw('Learning a language needs patience.','TAKES','It ______ to learn a language.',['takes patience'],['it-structures'],'It takes + isim + to-inf.'),
+ kw('Crying will not help you.','USE','It ______ crying.',['is no use','\'s no use'],['it-structures'],'It\'s no use + -ing.'),
+ kw('Visiting the old town is a good idea.','WORTH','The old town ______ visiting.',['is worth'],['it-structures'],'be worth + -ing.'),
+ kw('You were kind to lend me your car.','KIND','It was ______ to lend me your car.',['kind of you'],['it-structures'],'Kişi niteliği: kind of you.'),
+ kw('Is it easy for you to get up early?','FIND','Do ______ to get up early?',['you find it easy'],['it-structures'],'find it + adj + to-inf.'),
+ kw('He seems to be tired.','SEEMS','It ______ he is tired.',['seems that'],['it-structures'],'It seems that + cümle.')]),
 ]}
