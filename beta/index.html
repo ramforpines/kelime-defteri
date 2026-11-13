@@ -425,8 +425,8 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/w08-112f52ff84.js"></script>
 <script src="d/w09-22dea443b4.js"></script>
 <script src="d/w10-4b999e51b7.js"></script>
-<script src="d/w11-c5e2b93b04.js"></script>
-<script src="d/grammar-ba2c8d6a4d.js"></script>
+<script src="d/w11-c5b15c7410.js"></script>
+<script src="d/grammar-602e6f8979.js"></script>
 <script src="d/x00-f86d17b433.js"></script>
 <script src="d/x01-ef03f3761c.js"></script>
 <script src="d/x02-0d852bcdbe.js"></script>
@@ -479,12 +479,13 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/reading-tr-f7fbbc1063.js"></script>
 <script src="d/reading2-30c32b47e3.js"></script>
 <script src="d/reading3-84eb18e0db.js"></script>
+<script src="d/reading4-a15d4eeed3.js"></script>
 <script src="d/reading-fix-6a77343e4d.js"></script>
 <script src="d/gloss-6e4fa53eb6.js"></script>
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-5aadc96708.js", "sinav.js": "d/sinav-c4e76954de.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-1b51733805.js", "sinav.js": "d/sinav-7e29513e58.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -577,7 +578,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.163.4';
+const APP_VERSION='4.163.7';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3016,7 +3017,7 @@ const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
 const NEWF={phr:1,pet:1};   // yeni menüler: ilk açılışta 'Yeni' işareti kalkar
 const nwSeen=()=>{try{return JSON.parse(localStorage.getItem('kd-new1')||'{}')}catch(e){return{}}};
-const NEWT=['p:directions','p:offers','g:so-such-too-enough','p:restaurant','g:adjectives-ed-ing','p:plans'];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
+const NEWT=['p:directions','p:offers','g:so-such-too-enough','p:restaurant','g:adjectives-ed-ing','p:plans','g:question-tags','g:indirect-questions','p:acad_opinion'];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
 const NT={gram:'g:',phr:'p:'};
 const nwIs=k=>NT[k]?(NEWT.some(x=>x.startsWith(NT[k])&&!nwSeen()[x])||(!!NEWF[k]&&!nwSeen()[k])):((NEWT.includes(k)||!!NEWF[k])&&!nwSeen()[k]);
 const nwBd=k=>nwIs(k)?' <span class="nw">Yeni</span>':'';
@@ -3353,7 +3354,7 @@ function vRead(){
   const R=UI.rd||(UI.rd={id:null,pick:{},done:false,lv:'Hepsi'}),all=window.READINGS||[],rd=S.rd||{};
   const P=R.id&&all.find(x=>x.id===R.id);
   if(P)return vReadOne(P,R);
-  const list=all.filter(x=>R.lv==='Hepsi'||x.lv===R.lv);
+  const list0=all.filter(x=>R.lv==='Hepsi'||x.lv===R.lv),list=list0.filter(x=>!rd[x.id]).concat(list0.filter(x=>rd[x.id]));   // çözülenler listenin sonuna iner
   const doneN=all.filter(x=>rd[x.id]).length;
   return`<div class="top"><h1>Okuma</h1></div><div class="stack">
   <div class="card stack"><div class="muted small">Kısa İngilizce metinleri oku, ardından metinle ilgili soruları cevapla. Doğru cevap başına ${RD_PT} × seviye katsayısı puan kazanırsın; puan, ceza ve hedef bonusu bir parçanın yalnızca ilk çözümünde işler. Cevapların günlük hedefine, doğruluk oranına, seviye istatistiklerine ve serilerine sayılır; yalnızca kelime ilerlemeni (öğrenildi/tekrar listesi) etkilemez.</div>
@@ -3829,6 +3830,7 @@ const sxExam=id=>((window.SINAV||{}).exams||[]).find(x=>x.id===id);
 const SXI={};
 const sxExamItems=(X,k)=>SXI[X.id+k]||(SXI[X.id+k]=X.sec[k].parts.flatMap(p=>sxItems(p,X.id)));
 const sxWTasks=X=>X.sec.W.tasks.map(t=>t.choice?{choice:t.choice}:t);
+const sxDone=(k,x)=>{try{if(k==='W'){const d=(S.pw||{})[x.id];return !!(d&&d.f)}return !!sxBest(x.id)}catch(e){return false}};   // tamamlanan çalışmalar listenin sonuna iner
 const sxPracAll=()=>{const P=(window.SINAV||{}).prac||{},o=[];Object.keys(P).forEach(lv=>['R','L','W','S'].forEach(k=>(P[lv][k]||[]).forEach(x=>o.push([lv,k,x]))));return o};
 const sxWTask=id=>{const r=sxPracAll().find(([lv,k,x])=>k==='W'&&x.id===id);return r?r[2]:null};
 const sxLvOfTask=id=>{const r=sxPracAll().find(x=>x[2].id===id);return r?r[0]:'B1'};
@@ -4121,7 +4123,7 @@ function vSx(){
   <div class="seg">${SX_LV.filter(x=>SN.prac[x]).map(x=>`<button class="chip" aria-pressed="${x===lv}" data-act="sx-l" data-v="${x}">${x}</button>`).join('')}</div>
   <div class="seg">${['R','L','W','S'].map(x=>`<button class="chip" aria-pressed="${x===k}" data-act="sx-k" data-v="${x}">${SX_IC[x]} ${esc(sxSkName(lv,x))}</button>`).join('')}</div>
   <div class="card small muted">${k==='R'||k==='L'?'Sınavdaki bölüm türlerinden örnekler. Süre yok, istediğin kadar tekrar çözebilirsin; sonunda açıklamalar ve çalışman gereken konular çıkar.':k==='W'?'Yazarken kelime sayısı, maddeler, bağlaçlar ve yapılar canlı kontrol edilir. Bitirince öz değerlendirme ve örnek cevap açılır.':'Soru sesli okunur, sen İngilizce konuşursun; konuşman yazıya dökülür, süre, kelime sayısı ve kalıplar gösterilir, sonra örnek cevapla karşılaştırırsın.'}</div>
-  ${L.length?L.map(x=>{if(k==='R'||k==='L'){const b=sxBest(x.id);return`<button class="btn block" style="text-align:left" data-act="sx-prac" data-v="${lv}|${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${b?`<span class="small muted">${b[0]}/${b[1]}</span>`:''}</div></button>`}
+  ${L.length?(k==='R'||k==='L'||k==='W'?L.filter(x=>!sxDone(k,x)).concat(L.filter(x=>sxDone(k,x))):L).map(x=>{if(k==='R'||k==='L'){const b=sxBest(x.id);return`<button class="btn block" style="text-align:left" data-act="sx-prac" data-v="${lv}|${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${b?`<span class="small muted">${b[0]}/${b[1]}</span>`:''}</div></button>`}
     if(k==='W'){const d=(S.pw||{})[x.id];return`<button class="btn block" style="text-align:left" data-act="pw-open" data-v="${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${d&&d.f?'<span class="small muted">✓</span>':''}</div></button>`}
     return`<button class="btn block" style="text-align:left" data-act="ps-open" data-v="${esc(x.id)}" lang="en"><b>${esc(x.t)}</b></button>`}).join(''):'<div class="empty card">Bu seviye için çalışma yakında.</div>'}</div>`;
 }

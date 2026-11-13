@@ -58,6 +58,23 @@ jobs:
           rm -f "yedek-$D.tar.gz"
           ls -l yedek-*.gpg
 
+      - name: Yedeği doğrula (şifreyi çöz, veritabanı ve kod paketini kontrol et)
+        env:
+          PW: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          mkdir -p chk
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$PW" -d "yedek-$D.tar.gz.gpg" > chk/y.tar.gz
+          tar -C chk -xzf chk/y.tar.gz
+          echo "== veritabanı döküm içeriği =="
+          /usr/lib/postgresql/17/bin/pg_restore --list "chk/db-$D.dump" > chk/list.txt
+          echo "toplam madde: $(grep -vc '^;' chk/list.txt)"
+          echo "tablo verisi maddesi: $(grep -c 'TABLE DATA' chk/list.txt)"
+          grep 'TABLE DATA' chk/list.txt | sed 's/.*TABLE DATA //' | head -40
+          test "$(grep -c 'TABLE DATA' chk/list.txt)" -gt 0
+          echo "== kod paketi =="
+          git bundle verify "chk/kod-$D.bundle"
+          rm -rf chk
+
       - uses: actions/upload-artifact@v4
         with:
           name: yedek-${{ env.D }}
