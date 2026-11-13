@@ -18,9 +18,10 @@ NEAR={'give':['ask','unsure','partly'],'ask':['give','unsure'],'agree':['partly'
       'dask':['dgive','dcheck','dland'],'dgive':['dland','dask','dcheck'],'dland':['dgive','dask','dcheck'],'dcheck':['dask','dgive','dland'],
       'off':['offyes','offno','prom'],'rbook':['rorder','rreq','rpay'],'rorder':['rbook','rreq','rpay'],'rreq':['rorder','rbook','rpay'],'rpay':['rreq','rorder','rbook'],'offyes':['offno','off','prom'],'offno':['offyes','off','prom'],'prom':['off','offyes','offno'],
       'pinv':['pfree','pyes','pmeet'],'pfree':['pinv','pmeet','pno'],'pyes':['pno','pinv','pchg'],'pno':['pyes','pchg','pinv'],'pmeet':['pinv','pchg','pfree'],'pchg':['pno','pmeet','pyes'],
+      'gwish':['gcond','ghabit','gobl'],'gcond':['gwish','ghabit','gobl'],'ghabit':['gwish','gcond','gobl'],'gobl':['gwish','gcond','ghabit'],
       'astate':['asupp','acount','aconcl'],'asupp':['astate','acount','aconcl'],'acount':['astate','asupp','aconcl'],'aconcl':['astate','asupp','acount']}
 NOF1={'guess':['unlik'],'prob':['unlik']}  # boşluk sorusunda gramer olarak da uyabilecek çeldiricileri önler
-FUNC_EN={'give':'giving an opinion','ask':'asking for an opinion','agree':'complete agreement','partly':'partial agreement','polite':'polite disagreement','strong':'strong disagreement','unsure':'being undecided',
+FUNC_EN={'gwish':'expressing a wish or a regret','gcond':'talking about conditions and suppositions','ghabit':'talking about habits and getting used to things','gobl':'talking about obligation, permission and advice','give':'giving an opinion','ask':'asking for an opinion','agree':'complete agreement','partly':'partial agreement','polite':'polite disagreement','strong':'strong disagreement','unsure':'being undecided',
         'make':'making a suggestion','accept':'accepting a suggestion','decline':'turning down a suggestion',
         'sim':'showing similarity','con':'showing contrast','deg':'comparing things','pre':'saying what you prefer',
         'cert':'being almost sure','prob':'saying something is probably true','poss':'saying something is only possible (not likely)','unlik':'saying something is unlikely','guess':'guessing from what you can see',
@@ -43,7 +44,7 @@ def opts(rng,right,pool,k=2):
         if x not in out:out.append(x)
         if len(out)==k:break
     o=[right]+out;rng.shuffle(o);return o
-ORDER=['opinion','suggest','speculate','contrast','directions','offers','restaurant','plans','acad_opinion']
+ORDER=['opinion','suggest','speculate','contrast','directions','offers','restaurant','plans','acad_opinion','gframes']
 for f in sorted(glob.glob(os.path.join(HERE,'src','*.py')),key=lambda x:ORDER.index(os.path.basename(x)[:-3]) if os.path.basename(x)[:-3] in ORDER else 99):
     if f.endswith('_dlg.py'):continue
     G=load(f,'GROUP');dlg=load(f[:-3]+'_dlg.py','D') if os.path.exists(f[:-3]+'_dlg.py') else {}
