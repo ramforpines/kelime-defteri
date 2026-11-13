@@ -32,7 +32,7 @@ def buckets(o,var,stem,k=16):
     return [put('%s%02d'%(stem,i),'Object.assign(window.%s=window.%s||{},%s);\n'%(var,var,json.dumps(b,ensure_ascii=False,separators=(',',':')))) for i,b in enumerate(B)]
 # 3) betikleri özetli adla kopyala
 def copy(path):return put(os.path.basename(path)[:-3],open(os.path.join(ROOT,path),encoding='utf8').read())
-ORDER=['grammar.js','extr.js','examples.js','senses.js','reading.js','reading-tr.js','reading2.js','reading3.js','reading-fix.js','gloss.js','exam.js','mock.js','supabase.js']
+ORDER=['grammar.js','extr.js','examples.js','senses.js','reading.js','reading-tr.js','reading2.js','reading3.js','reading4.js','reading-fix.js','gloss.js','exam.js','mock.js','supabase.js']
 for f in ORDER:
     if f=='extr.js':tags+=buckets(G['X'],'EXTR','x')   # extr.js + examples.js içindeki ek EXTR girdileri birleşik
     elif f=='examples.js':tags+=buckets(G['E'],'EXS','e')
