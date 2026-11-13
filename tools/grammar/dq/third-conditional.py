@@ -1,0 +1,23 @@
+import sys,os;sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))));from gl import Q
+DQ=[
+ Q(1,'would have','If we had left earlier, we ___ the train.','would have caught',['would catch', 'would have catched'],'Üçüncü koşul: if + had + V3, would have + V3.'),
+ Q(1,'would have','If he had worked harder, he ___ the exam.','would have passed',['would pass', 'will have passed'],'if + had + V3 → would have + V3.'),
+ Q(1,'had + V3',"If they ___ the map, they wouldn't have got lost.",'had checked',['checked', 'would check'],'if cümlesi: had + V3.'),
+ Q(1,'had + V3','If I ___ a bit earlier, I would have seen him.','had arrived',['would arrive', 'have arrived'],'if + had + V3.'),
+ Q(1,'Olumsuz',"If he ___ so fast, he wouldn't have had an accident.","hadn't driven",["didn't drive", "wouldn't drive"],"Olumsuz if cümlesi: hadn't + V3."),
+ Q(1,'would have','I ___ you if I had had your number.','would have called',['would call', 'would have call'],'Sonuç cümlesi: would have + V3.'),
+ Q(2,'had + V3','She would have called if she ___ your number.','had had',['has had', 'would have had'],'have → had → had; if + had had.'),
+ Q(2,'had + V3',"If you ___ the instructions, you wouldn't have made that mistake.",'had read',['would read', 'have read'],'if + had + V3: had read.'),
+ Q(2,'Zaman',"We wouldn't have been late if the bus ___ on time.",'had arrived',['would arrive', 'arrived'],'Geçmişe dönük koşul: had + V3.'),
+ Q(2,'Karışık','If she ___ the job, she would have moved to Paris.','had accepted',['would accept', 'has accepted'],'if + had + V3.'),
+ Q(2,'Kısaltma',"If it hadn't rained, we ___ a picnic.",'would have had',['would had', 'would had had'],'would have + V3: would have had.'),
+ Q(2,'Inversion','___ you told me, I would have helped.','Had',['Have', 'Did'],'Resmî devrik koşul: Had + özne + V3.'),
+ Q(3,'Karışık','Hangi cümle doğru?','If I had seen the sign, I would have stopped.',['If I would have seen the sign, I would have stopped.', 'If I had seen the sign, I would stopped.'],'if + had + V3, would have + V3.'),
+ Q(3,'Karışık','Hangi cümle doğru?','If they had trained harder, they would have won.',['If they would have trained harder, they would have won.', 'If they had trained harder, they had won.'],'Üçüncü koşulun iki parçası: had + V3 / would have + V3.'),
+ Q(3,'Zaman','Without his advice last year, I ___ the job.',"wouldn't have got",["wouldn't get", "wouldn't have get"],"Without + isim = if ... hadn't; sonuç: would have + V3."),
+ Q(3,'Pişmanlık','You ___ the doctor earlier. (aramalıydın)','should have called',['should call', 'should have call'],'Geçmişe eleştiri: should have + V3.'),
+ Q(3,'Eş anlam','Aynı anlamdaki cümle hangisi? → "I missed the bus because I woke up late."',"If I hadn't woken up late, I wouldn't have missed the bus.",["If I hadn't woken up late, I would have missed the bus.", "If I didn't wake up late, I wouldn't have missed the bus."],"Geçmişin tersi: hadn't + V3, wouldn't have + V3."),
+ Q(4,'Eş anlam','Aynı anlamdaki cümle hangisi? → Had she known, she would have helped.','If she had known, she would have helped.',['If she knew, she would have helped.', 'If she has known, she would have helped.'],'Had + özne + V3 = if + had + V3.'),
+ Q(4,'Karışık','Hangi cümle YANLIŞ?','If he had told me, I would helped him.',['If she had asked, I would have helped her.', 'If we had known, we would have waited.'],'would sonrası have + V3 gerekir: would have helped.'),
+ Q(4,'might have','If you had told me, I ___ helped you. (belki)','might have',['might', 'might to'],'Belirsiz sonuç: might have + V3.'),
+]

@@ -1,0 +1,22 @@
+import sys,os;sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))));from gl import Q
+DQ=[
+ Q(1,'Şimdiki zaman','"I play tennis." → He said he ___ tennis.','played',['playing', 'play'],'Present Simple → Past Simple: play → played.'),
+ Q(1,'Şimdiki zaman','"I am working." → She said she ___ working.','was',['were', 'been'],'Present Continuous → Past Continuous: am → was.'),
+ Q(1,'Zaman ifadesi','"I will call you tomorrow." → He said he would call me ___.','the following day',['yesterday', 'the day before'],'tomorrow → the next day / the following day.'),
+ Q(1,'Zaman ifadesi','"I am here now." → She said she was there ___.','then',['now', 'here'],'now → then; here → there.'),
+ Q(1,'Soru','"Do you like pizza?" → She asked me ___ I liked pizza.','if',['that', 'what'],'Evet/hayır sorusu: asked + if / whether.'),
+ Q(1,'Emir','"Sit down." → The teacher told us ___ down.','to sit',['sit', 'sitting'],'Emir: told + kişi + to + yalın fiil.'),
+ Q(2,'Zaman ifadesi','"I saw her last week." → He said he had seen her ___.','the week before',['the next week', 'the week after'],'last week → the week before.'),
+ Q(2,'Present Perfect','"I have finished." → He said he ___ finished.','had',['having', 'been'],'Present Perfect → Past Perfect: have finished → had finished.'),
+ Q(2,'Modal','"I can help you." → She said she ___ help me.','could',['could to', 'was able'],'can → could.'),
+ Q(2,'Soru','"What time is it?" → He asked what time ___.','it was',['was it', 'is it'],'Aktarılan soru: soru sözcüğü + özne + fiil (zaman bir geri).'),
+ Q(2,'Soru','"Where did you go?" → She asked where I ___.','had gone',['did go', 'go'],'Past Simple soru → Past Perfect: did go → had gone.'),
+ Q(2,'Soru','"Can you swim?" → He asked me ___ I could swim.','whether',['what', 'which'],'Evet/hayır sorusu: whether / if.'),
+ Q(3,'Rica','"Please wait here." → She asked me ___ there.','to wait',['waiting', 'for wait'],'Rica: asked + kişi + to + yalın fiil.'),
+ Q(3,'Olumsuz emir','"Don\'t open the box." → She told him ___ the box.','not to open',["don't open", "to don't open"],'Olumsuz emir: told + kişi + not to + yalın fiil.'),
+ Q(3,'Soru sırası','Hangi cümle doğru?','He asked me where I was going.',['He asked me where was I going.', 'He asked me where I am going to.'],'Aktarılan soru: düz cümle sırası + zaman kayması.'),
+ Q(3,'Aynı anlam','Aynı anlamdaki cümle hangisi? → "I will help you," she said.','She said she would help me.',['She said she would helping me.', 'She said she will helps me.'],'will → would ve zamir değişimi: you → me.'),
+ Q(3,'Tavsiye','"You should see a doctor." → She advised me ___ a doctor.','to see',['see', 'seeing'],'advise + kişi + to + yalın fiil.'),
+ Q(4,'Soru','"How old are you?" → He asked me how old I ___.','was',['were', 'be'],'am → was; aktarılan soruda düz sıra.'),
+ Q(4,'Karışık','Hangi cümle YANLIŞ?','She asked was I ready.',['She asked if I was ready.', 'He said he was tired.'],'Aktarılan evet/hayır sorusu if/whether ile başlar, düz sıra kullanılır.'),
+]

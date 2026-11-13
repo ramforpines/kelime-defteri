@@ -25,7 +25,8 @@ NEAR={'banimal':['bbody','bcolor'],'bbody':['banimal','bcolor'],'bcolor':['banim
       'isim':['ibin', 'iprov'],'ibin':['isim', 'iprov'],'iprov':['isim', 'ibin'],
       'cbiz':['cecon', 'cjust'],'cecon':['cbiz', 'cjust'],'cjust':['cbiz', 'cecon'],
       'vget':['vtake', 'vgo', 'vkeep'],'vtake':['vget', 'vgo', 'vkeep'],'vgo':['vget', 'vtake', 'vkeep'],'vkeep':['vget', 'vtake', 'vgo'],
-      'astate':['asupp','acount','aconcl'],'asupp':['astate','acount','aconcl'],'acount':['astate','asupp','aconcl'],'aconcl':['astate','asupp','acount']}
+      'astate':['asupp','acount','aconcl'],'asupp':['astate','acount','aconcl'],'acount':['astate','asupp','aconcl'],'aconcl':['astate','asupp','acount'],
+      'hsoft':['hquant','hevid','hstrong'],'hquant':['hsoft','hevid','hstrong'],'hevid':['hsoft','hquant','hstrong'],'hstrong':['hsoft','hquant','hevid']}
 NOF1={'guess':['unlik'],'prob':['unlik']}  # boşluk sorusunda gramer olarak da uyabilecek çeldiricileri önler
 FUNC_EN={'banimal':'animal idioms','bbody':'body idioms','bcolor':'colour idioms','vget':'phrasal verbs with get','vtake':'phrasal verbs with take','vgo':'phrasal verbs with go and come','vkeep':'phrasal verbs with keep','cbiz':'business and marketing collocations','cecon':'economy and finance collocations','cjust':'crime and law collocations','isim':'comparing things with similes','ibin':'fixed two-word expressions (binomials)','iprov':'proverbs and sayings','atrend':'describing data and trends in academic writing','acause':'cause and effect in academic writing','ahedge':'hedging and generalising in academic writing','asource':'referring to sources and comparing in academic writing','pfeel':'feelings, interests and abilities (adjective + preposition)','pdep':'depending on, believing in or belonging to something','pcomm':'apologising, complaining and asking','pnoun':'noun + preposition combinations','pfix':'fixed prepositional phrases','pvrel':'relationships and feelings (phrasal verbs)','pvplan':'plans, delays and running out of things (phrasal verbs)','pvlearn':'finding out and understanding (phrasal verbs)','pvdaily':'everyday actions (phrasal verbs)','gwish':'expressing a wish or a regret','gcond':'talking about conditions and suppositions','ghabit':'talking about habits and getting used to things','gobl':'talking about obligation, permission and advice','give':'giving an opinion','ask':'asking for an opinion','agree':'complete agreement','partly':'partial agreement','polite':'polite disagreement','strong':'strong disagreement','unsure':'being undecided',
         'make':'making a suggestion','accept':'accepting a suggestion','decline':'turning down a suggestion',
@@ -34,7 +35,7 @@ FUNC_EN={'banimal':'animal idioms','bbody':'body idioms','bcolor':'colour idioms
         'dask':'asking the way','dgive':'giving directions','dland':'describing where a place is','dcheck':'checking you understood the directions',
         'off':'offering to help','offyes':'accepting an offer','offno':'refusing an offer politely','prom':'making a promise','rbook':'getting a table in a restaurant','rorder':'ordering food and drink','rreq':'asking the waiter for something or complaining','rpay':'asking for and paying the bill',
         'pinv':'suggesting a plan','pfree':'checking if someone is free','pyes':'accepting an invitation','pno':'turning down an invitation','pmeet':'fixing a time and place to meet','pchg':'changing, cancelling or being late for a plan',
-        'astate':'stating your position in an essay or talk','asupp':'supporting a point with evidence or an example','acount':'dealing with a counter-argument or concession','aconcl':'concluding an argument'}
+        'hsoft':'softening a claim so it sounds less certain','hquant':'generalising without saying always or everyone','hevid':'making a cautious claim based on evidence','hstrong':'saying you are completely certain','astate':'stating your position in an essay or talk','asupp':'supporting a point with evidence or an example','acount':'dealing with a counter-argument or concession','aconcl':'concluding an argument'}
 FUNC={'give':'Fikrini söylemek','ask':'Karşındakinin fikrini sormak','agree':'Tamamen katılmak','partly':'Kısmen katılmak','polite':'Kibarca katılmamak','strong':'Kesinlikle katılmamak','unsure':'Kararsız olmak'}
 def core(en):
     c=re.sub(r'\(([^)]*)\)',r'\1',en).replace('...','').strip()
@@ -50,7 +51,7 @@ def opts(rng,right,pool,k=2):
         if x not in out:out.append(x)
         if len(out)==k:break
     o=[right]+out;rng.shuffle(o);return o
-ORDER=['opinion','suggest','speculate','contrast','directions','offers','restaurant','plans','acad_opinion','gframes','gprep','gpv','gacad','gidiom','gcoll','gpv2','gbody']
+ORDER=['opinion','suggest','speculate','contrast','directions','offers','restaurant','plans','acad_opinion','acad_hedge','gframes','gprep','gpv','gacad','gidiom','gcoll','gpv2','gbody']
 for f in sorted(glob.glob(os.path.join(HERE,'src','*.py')),key=lambda x:ORDER.index(os.path.basename(x)[:-3]) if os.path.basename(x)[:-3] in ORDER else 99):
     if f.endswith('_dlg.py'):continue
     G=load(f,'GROUP');dlg=load(f[:-3]+'_dlg.py','D') if os.path.exists(f[:-3]+'_dlg.py') else {}
@@ -130,6 +131,6 @@ for f in sorted(glob.glob(os.path.join(HERE,'src','*.py')),key=lambda x:ORDER.in
         q.append({'q':sit,'o':o,'a':o.index(ok),'e':why,'lv':lv})
     G['quiz']=q;groups.append(G)
 if errs:print('\n'.join('HATA: '+e for e in errs));raise SystemExit(1)
-PLAN=['Akademik: kesinlik derecesi (hedging)','Akademik: karşılaştırma ve sonuç','Sunum yapma','Beğeni ve tercih','İlgi gösterme ve tepki','Başka sözcüklerle anlatma','Rica ve izin','Teşekkür ve özür','Konuşmayı yönetme','Açıklama isteme','Tavsiye ve uyarı','Duygu belirtme','Tebrik ve iyi dilekler','Telefon ve e-posta','Yazmada sonuç cümleleri']
+PLAN=['Akademik: karşılaştırma ve sonuç','Sunum yapma','Beğeni ve tercih','İlgi gösterme ve tepki','Başka sözcüklerle anlatma','Rica ve izin','Teşekkür ve özür','Konuşmayı yönetme','Açıklama isteme','Tavsiye ve uyarı','Duygu belirtme','Tebrik ve iyi dilekler','Telefon ve e-posta','Yazmada sonuç cümleleri']
 open(os.path.join(ROOT,'phrases.js'),'w',encoding='utf8').write('/* Kalıplar (beta). tools/phrases/build.py ile üretilir; elle düzenleme. */\nwindow.PHRASES='+json.dumps(groups,ensure_ascii=False,separators=(',',':'))+';\nwindow.PHRASES_PLAN='+json.dumps(PLAN,ensure_ascii=False)+';\n')
 print('tamam')
