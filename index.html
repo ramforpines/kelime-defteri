@@ -427,7 +427,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/w10-4b999e51b7.js"></script>
 <script src="d/w11-86bc485aab.js"></script>
 <script src="d/w12-3e2a387df9.js"></script>
-<script src="d/grammar-ede7827ac7.js"></script>
+<script src="d/grammar-aa1eb66b1f.js"></script>
 <script src="d/x00-f86d17b433.js"></script>
 <script src="d/x01-ef03f3761c.js"></script>
 <script src="d/x02-0d852bcdbe.js"></script>
@@ -486,7 +486,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-6b58e96ad4.js", "sinav.js": "d/sinav-798f5be9ee.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-72cc5328cd.js", "sinav.js": "d/sinav-798f5be9ee.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -579,7 +579,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.163.7';
+const APP_VERSION='4.163.8';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3018,7 +3018,7 @@ const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
 const NEWF={phr:1,pet:1};   // yeni menüler: ilk açılışta 'Yeni' işareti kalkar
 const nwSeen=()=>{try{return JSON.parse(localStorage.getItem('kd-new1')||'{}')}catch(e){return{}}};
-const NEWT=['p:directions','p:offers','g:so-such-too-enough','p:restaurant','g:adjectives-ed-ing','p:plans','g:question-tags','g:indirect-questions','p:acad_opinion'];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
+const NEWT=['p:directions','p:offers','g:so-such-too-enough','p:restaurant','g:adjectives-ed-ing','p:plans','g:question-tags','g:indirect-questions','p:acad_opinion','g:pronouns','g:both-either-neither-all-each','p:acad_hedge'];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
 const NT={gram:'g:',phr:'p:'};
 const nwIs=k=>NT[k]?(NEWT.some(x=>x.startsWith(NT[k])&&!nwSeen()[x])||(!!NEWF[k]&&!nwSeen()[k])):((NEWT.includes(k)||!!NEWF[k])&&!nwSeen()[k]);
 const nwBd=k=>nwIs(k)?' <span class="nw">Yeni</span>':'';
