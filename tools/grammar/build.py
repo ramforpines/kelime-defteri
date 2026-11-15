@@ -268,7 +268,7 @@ if len(warn)>60:print('... %d uyarı daha'%(len(warn)-60))
 if errs:
     for e in errs:print('HATA:',e)
     print('%d hata'%len(errs));sys.exit(1)
-PLAN={'B1':['Prepositions of time and movement (until, by, during, through)','Sıfat + edat kalıpları','Ön ekler ve son ekler'],'B2':['had better / would rather / it\'s time','Past modals: had to, needn\'t have, should have','Future in the past (was going to, would)','Articles: ileri kullanımlar','Emphasis: do / does, so / such, what'],'A2':[],'C1':['Mixed conditionals','Advanced passive and reporting','Ellipsis and substitution (so, not, do so)','Subjunctive and formal structures','Academic hedging and nominalisation'],'C2':['İnce anlam farkları ve üslup']}
+PLAN={'B1':['Sıfat + edat kalıpları','Ön ekler ve son ekler'],'B2':['had better / would rather / it\'s time','Past modals: had to, needn\'t have, should have','Future in the past (was going to, would)','Articles: ileri kullanımlar','Emphasis: do / does, so / such, what'],'A2':[],'C1':['Mixed conditionals','Advanced passive and reporting','Ellipsis and substitution (so, not, do so)','Subjunctive and formal structures','Academic hedging and nominalisation'],'C2':['İnce anlam farkları ve üslup']}
 out='/* Gramer konu anlatımları (beta). Bu dosya tools/grammar/build.py ile üretilir; elle düzenleme. *...* = vurgulanan gramer parçası. */\nwindow.GRAMMAR='+json.dumps(topics,ensure_ascii=False,separators=(',',':'))+';\nwindow.GRAMMAR_PLAN='+json.dumps(PLAN,ensure_ascii=False,separators=(',',':'))+';\n'
 open(os.path.join(ROOT,'grammar.js'),'w',encoding='utf8').write(out)
 print('tamam: %d konu, %d KB'%(len(topics),len(out)//1024))
