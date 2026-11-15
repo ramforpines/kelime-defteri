@@ -18,5 +18,5 @@ N('Hangi cümle doğru?','I hope not.','hope not.',{"I don't hope so.": "hope il
 N('Hangi cümle doğru?','She can swim, and so can I.','so + yardımcı + özne.',{'She can swim, and so I can.': 'Sıra bozuk.', 'She can swim, and I can so.': 'so yanlış yerde.'}),
 N('Hangi cümle doğru?',"I haven't seen the film, and neither has my brother.",'neither + has + özne.',{"I haven't seen the film, and neither my brother has.": 'Sıra bozuk.', "I haven't seen the film, and neither does my brother.": 'Yardımcı fiil uyumsuz.'}),
 N('Hangi cümle doğru?','He asked me to apologise, but I refused to do so.','do so.',{'He asked me to apologise, but I refused to do it so.': 'it fazladır.', 'He asked me to apologise, but I refused so.': 'Yapı bozuk.'}),
-N('Hangi cümle doğru?','I like the blue ones more than the green ones.','ones ile tekrar önlenir.',{'I like the blue ones more than the green.': 'Yapı eksik/hatalı.', 'I like the blue ones more than those green.': 'those ile doğal değil.'}),
+N('Hangi cümle doğru?','I like the blue ones more than the green ones.','ones çoğul isim yerini tutar.',{'I like the blue ones more than the green one.': 'one tekil, blue ones çoğul ile uyumsuz.', 'I like the blue ones more than the greens ones.': 'greens ones yazımı bozuk.'}),
 ]
