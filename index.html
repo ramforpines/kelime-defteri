@@ -486,7 +486,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-6b58e96ad4.js", "sinav.js": "d/sinav-798f5be9ee.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-5a59cf19c5.js", "sinav.js": "d/sinav-798f5be9ee.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -1857,7 +1857,7 @@ function vHelp(){
   return`<div class="card stack"><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün 3 kelimesi, bu haftaki sıran, dünün ve geçen haftanın lideri. Puan kesintisi riskin varsa "Bugün bitmeden" uyarısı ve son 14 gündeki cezaların listesi de burada.',
-    '<b>Çalışma</b>: üstteki düğmelerle Sözlük, Test, Okuma, Tekrar, Kaydedilenler ve Gramer arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
+    '<b>Çalışma</b>: üstteki düğmelerle Sözlük, Test, Okuma, Tekrar, Kaydedilenler, Gramer, Kalıplar ve Sınav arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
     '<b>⚔ Düello</b>: alttaki menünün ortasındaki düğme. Klasik ve Dereceli düello burada.',
     '<b>Sıralamalar</b>: günlük, haftalık, tüm zamanlar ve dereceli düello sıralaması.',
     '<b>Sohbet</b>: Bugün, Çalışma, Sıralamalar ve Ben → Profil ekranlarında sağ altta duran mesaj balonuyla açılır. Genel sohbet, özel mesajlar ve Kullanıcılar listesi (en son aktif olan üstte) vardır; okunmamış mesaj sayısı balonun üstünde görünür. Sağ üstteki "Sohbetten çık" ile kapanır.',
@@ -1865,14 +1865,17 @@ function vHelp(){
   ${sec('🚀 Hızlı başlangıç',li([
     'Bugün sekmesinde günün hedefini ve "Bugünün testini başlat" düğmesini görürsün. Her gün birkaç test çözmen yeter.',
     'Çalışma → <b>Test</b>: soru sayısını (10–40), seviyeyi (A1–C2, birden fazla seçilebilir) ve kelime türünü (birden fazla seçilebilir) seçip istediğin zaman test çözersin.',
-    'Çalışma → <b>Sözlük</b>: 10.000\'den fazla kelimenin Türkçesi, tanımı ve örnek cümlesi (Türkçe çevirisiyle) vardır; kelimeye dokunarak açarsın.',
+    'Çalışma → <b>Sözlük</b>: 11.000\'den fazla kelimenin Türkçesi, tanımı ve örnek cümlesi (Türkçe çevirisiyle) vardır; kelimeye dokunarak açarsın.',
     'İlk girişte yönetici onayı gerekebilir. Onaylanınca sıralamaya girer, sohbete ve düelloya katılırsın.',
     'İlerlemen hesabına kaydedilir. Başka cihazda aynı kullanıcı adı ve şifreyle girince kaldığın yerden devam edersin.']),true)}
   ${sec('📘 Gramer',li([
-    '<b>Konular</b>: A1, A2, B1 ve B2 seviyesinde 36 konu var (to be\'den Third Conditional ve Passive\'in tüm zamanlarına kadar). C1 ve C2 hazırlanıyor, listede "yakında" yazar.',
+    '<b>Konular</b>: A1\'den C1\'e '+((window.GRAMMAR||[]).length)+' konu var (to be\'den Inversion, Subjunctive, Word formation ve Error correction\'a kadar). C2 konuları hazırlanıyor, listede "yakında" yazar.',
     '<b>Her konuda</b>: kısa anlatım, kalıp tablosu, kullanımlar ve örnek cümleler (Türkçesiyle), istisnalar, zaman ifadeleri, hazır kalıplar, diyaloglar, sık yapılan hatalar ve konuyla ilgili kelimeler. Zaman konularında zaman çizgisi de vardır.',
     '<b>Dinle</b>: örnek cümleye dokununca sesli okunur. Kelimeleri ☆ ile Kaydedilenler\'e ekleyebilirsin.',
     '<b>Mini test</b>: her konunun sonunda kolaydan zora 20 soru (6 kolay, 6 orta, 5 zor, 3 çok zor). Her cevaptan sonra açıklama çıkar, sonunda puanın ve yanlışların görünür. Bu test <b>puan vermez</b>, sıralamayı etkilemez; istediğin kadar tekrar çözebilirsin.']))}
+  ${sec('🗣 Kalıplar ve Sınav',li([
+    '<b>Kalıplar</b>: günlük ve akademik ifade kalıpları, gruplar halinde (fikir belirtme, öneri, phrasal verb, deyim, kolokasyon vb.). Kalıba dokununca Türkçesi ve örnek cümlesi açılır; Dinle ile sesli duyabilir, ☆ ile kaydedebilirsin. Gruplardaki sorular kalıbı diyalogda ve boşlukta kullanmanı ister.',
+    '<b>Sınav</b>: A2, B1, B2 ve C1 seviyelerinde Cambridge tarzı okuma, dil bilgisi ve boşluk doldurma bölümleri. Bölüm bölüm çözer, sonunda cevap açıklamalarını görürsün.']))}
   ${sec('📝 Testler ve soru türleri',li([
     '<b>Bugünün testi</b>: her zaman 30 soru; en çok 7 tekrar zamanı gelen kelime, 5 Yanlış defteri sorusu, 3 günün kelimesi, 2 kalıp, 5 gramer sorusu ve kalanı (en az 8) yeni kelimelerden karışık hazırlanır. Seviye ayarından bağımsızdır: kalıp ve gramer her seviyeden (ağırlık B1–B2), yeni kelimeler %5 A2, %35 B1, %40 B2, %15 C1, %5 C2 gelir. Tekrar ya da defter azsa yerini yeni kelime alır. Çalışma ekranındaki soru sayısı bunu etkilemez.',
     '<b>Yeni test</b>: seçtiğin seviye ve türden henüz öğrenmediğin kelimeler gelir.',
