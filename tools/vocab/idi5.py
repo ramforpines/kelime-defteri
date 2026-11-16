@@ -55,7 +55,6 @@ R('a black mark','a record of something bad someone did','sicilde kara leke, kö
 R('in black and white','in writing or print','siyah beyaz, yazılı olarak','I want the agreement in black and white.','in writing','B2','in blek ın VAYT'),
 R('in someone\'s black books','out of favour with someone','birinin gözünden düşmüş','I\'m in the boss\'s black books after missing the meeting.','in disfavour','C2','in ... blek BUKS'),
 R('black ice','a thin invisible layer of ice on roads','görünmez buzlanma','Drive carefully; there may be black ice.','icy road','C1','blek AYS'),
-R('a black sheep','a person who is considered a disgrace by the family','ailenin kara koyunu','He is the black sheep of the family.','outcast','B2','ı blek ŞİP'),
 R('a bolt from the blue','a sudden unexpected piece of news','beklenmedik haber, ters köşe','His resignation was a bolt from the blue.','surprise','C1','ı boult fram dı BLU'),
 R('out of the blue','suddenly and without warning','durup dururken, beklenmedik anda','She called me out of the blue.','unexpectedly','B2','aut ıv dı BLU'),
 R('blue in the face','exhausted from repeating something without result','dili damağı kurumuş (boşuna anlatmaktan)','I can talk till I\'m blue in the face; he won\'t listen.','tired','C1','blu in dı FEYS'),
@@ -65,9 +64,7 @@ R('green fingers','skill at gardening','bahçıvanlıkta ustalık','My mother ha
 R('grey matter','intelligence, brainpower','beyin gücü, zekâ','Use your grey matter and solve it.','brain','C1','grey MA-tır'),
 R('red as a beetroot','very red in the face from embarrassment','kıpkırmızı kesilmiş (utançtan)','She went red as a beetroot.','blushing','C1','red ez ı Bİ-trut'),
 R('the red carpet','special treatment for an important guest','kırmızı halı, özel karşılama','They rolled out the red carpet for the president.','VIP treatment','C1','dı red KAR-pit'),
-R('a red-letter day','an important or happy day','unutulmaz özel gün','The day I graduated was a red-letter day.','memorable day','C1','ı red LE-tır DEY'),
 R('white as a sheet','very pale from fear or illness','bembeyaz, kağıt gibi bembeyaz','She went white as a sheet when she heard the news.','very pale','C1','vayt ez ı ŞİT'),
-R('a white lie','a harmless polite lie','masum yalan','I told a white lie to spare her feelings.','harmless lie','B2','ı vayt LAY'),
 # sayılar
 R('a back number','an old issue of a magazine or newspaper','eski sayı (dergi, gazete)','I found a back number of the magazine online.','old issue','C2','ı bek NAM-bır'),
 R('look after number one','to take care of yourself first','önce kendini düşünmek','In business, you must look after number one.','be selfish','C1','luk AF-tır NAM-bır VAN'),

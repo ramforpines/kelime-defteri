@@ -52,7 +52,7 @@ TOPICS=[{
 'quiz':[
  Q(1,'FC','This time tomorrow I ___ to Rome.','will be flying',['will flying','am fly'],'Gelecekte belli anda süren iş: will be + -ing.'),
  Q(1,'FP','By Friday I ___ the report.','will have finished',['will finished','have finish'],'by + zaman: will have + V3.'),
- Q(1,'FC','At 8 tomorrow, she ___ breakfast.','will be having',['has','had'],'Belirli gelecek anda süren iş.'),
+ Q(1,'FC','At 8 tomorrow, she ___ breakfast.','will be having',['will has','had been having'],'Belirli gelecek anda süren iş.'),
  Q(1,'FP','She will have ___ by six. (arrive)','arrived',['arrive','arriving'],'will have + V3.'),
  Q(1,'FC olumsuz',"I ___ be working tomorrow.","won't",["don't","haven't"],'Olumsuz: won\'t be + -ing.'),
  Q(1,'by / until','I will have finished ___ six.','by',['until','since'],'Tamamlanma için by kullanılır.'),

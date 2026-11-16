@@ -56,7 +56,7 @@ TOPICS=[{
  Q(2,'Noun + that','There is a possibility ___ prices will rise.','that',['of','which'],'possibility that + cümle.'),
  Q(2,'Noun + that','He is convinced ___ she is honest.','that',['of that','about'],'convinced that + cümle.'),
  Q(2,'Noun + that','The news ___ she won made us happy.','that',['what','which is'],'news that + tam cümle.'),
- Q(3,'Hangisi doğru?','Hangi cümle doğru?','In spite of the fact that she was tired, she worked.',['In spite of she was tired, she worked.','In spite of that she was tired, she worked.'],'In spite of + the fact that + cümle.'),
+ Q(3,'Hangisi doğru?','Hangi cümle doğru?','In spite of the fact that she was tired, she worked.',['In spite of she was tired, she worked.','In spite the fact that she was tired, she worked.'],'In spite of + the fact that + cümle.'),
  Q(3,'Hangisi doğru?','Hangi cümle doğru?','The claim that he lied is false.',['The claim of he lied is false.','The claim which he lied is false.'],'claim that + cümle.'),
  Q(3,'Hangisi doğru?','Hangi cümle doğru?','There is proof that he was there.',['There is proof of that he was there.','There is proof what he was there.'],'proof that + cümle.'),
  Q(3,'Hangisi doğru?','Hangi cümle doğru?','I am afraid that we will be late.',['I am afraid of that we will be late.','I am afraid for we will be late.'],'afraid that + cümle.'),

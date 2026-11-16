@@ -1,7 +1,7 @@
 NOTES=[
 N('This time tomorrow I ___ to Rome.','will be flying','Gelecekte belli bir anda süren iş: will be + -ing.',{'am fly':'be fiilinden sonra -ing gelir.','will flying':'will\'den sonra be gerekir.'}),
 N('By Friday I ___ the report.','will have finished','by + zaman: will have + V3 (tamamlanmış olacak).',{'have finish':'will eksik; V3 gerekir.','will finished':'will\'den sonra have gerekir.'}),
-N('At 8 tomorrow, she ___ breakfast.','will be having','Belirli gelecek anda süren iş: will be + -ing.',{'has':'Present Simple; gelecek anlamı yok.','had':'Past Simple; tomorrow gelecek.'}),
+N('At 8 tomorrow, she ___ breakfast.','will be having','Belirli gelecek anda süren iş: will be + -ing.',{'will has':'will\'den sonra fiil yalın gelir; has olmaz.','had been having':'Past Perfect Continuous geçmişi anlatır; tomorrow gelecek.'}),
 N('She will have ___ by six. (arrive)','arrived','will have + V3.',{'arriving':'will have\'den sonra -ing gelmez.','arrive':'will have\'den sonra yalın fiil gelmez.'}),
 N('I ___ be working tomorrow.','won\'t','Olumsuz: won\'t be + -ing.',{'don\'t':'don\'t gelecek için will ile kullanılmaz.','haven\'t':'haven\'t Present Perfect.'}),
 N('I will have finished ___ six.','by','Tamamlanma için by kullanılır.',{'until':'until süren iş için kullanılır.','since':'since başlangıç noktası ister.'}),

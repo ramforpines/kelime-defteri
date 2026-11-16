@@ -16,7 +16,7 @@ N('Hangi cümle doğru?','She might not come.','might not + yalın fiil.',{'She 
 N('Hangi cümle doğru?','He may be at home.','may be.',{'He may to be at home.':'may sonrası to gelmez.','He may is at home.':'may sonrası yalın fiil.'}),
 N('Hangi cümle "unutmuş olabilir" anlamındadır?','She may have forgotten.','Geçmiş olasılık: may have + V3.',{'She may forget.':'Şimdi/gelecek olasılığı.','She may be forgetting.':'Süren eylem.'}),
 N('Hangi cümle olasılık anlamındadır?','It might snow tonight.','might: olasılık.',{'It will snow tonight.':'Kesinlik bildirir.','It snows tonight.':'Tarife gibi kesin plan anlamı verir.'}),
-N('Hangi cümle YANLIŞ?','It can rain tomorrow. (olasılık)','Belirli bir gelecek olasılığı için may/might tercih edilir.',{'It may rain tomorrow.':'Doğru.','It might rain tomorrow.':'Doğru.'}),
+N('Hangi cümle YANLIŞ?','It can rain tomorrow.','Belirli bir gelecek olasılığı için may/might tercih edilir.',{'It may rain tomorrow.':'Doğru.','It might rain tomorrow.':'Doğru.'}),
 N('Hangi cümle doğru?','He can\'t have missed it.','can\'t have + V3.',{'He can\'t missed it.':'have + V3 gerekir.','He can\'t has missed it.':'have gerekir.'}),
 N('Hangi cümle doğru?','He must have missed the bus.','must have + V3: kesin çıkarım.',{'He must missed the bus.':'have eksik.','He must has missed the bus.':'Modal sonrası has gelmez.'}),
 ]

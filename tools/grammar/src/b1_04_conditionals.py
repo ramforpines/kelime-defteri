@@ -128,6 +128,6 @@ TOPICS=[{
  Q(3,'Tavsiye','Hangi cümle tavsiye verir?',"If I were you, I would call him.",["If I am you, I will call him.","If I were you, I will call him."],'If I were you, I would ...'),
  Q(3,'Karışık','Hangi cümle doğru?','What would you do if you won the lottery?',['What would you do if you will win the lottery?','What will you do if you won the lottery?'],'if + Past Simple, would.'),
  Q(4,'Karışık','Hangi cümle YANLIŞ?','If he would be rich, he would help.',['If he were rich, he would help.','If he was rich, he would help.'],'if cümlesinde would kullanılmaz.'),
- Q(4,'Nazik rica','Hangi cümle daha nazik bir rica ifade eder?','I would be grateful if you could help me.',['I am grateful if you help me.','Help me if you can.'],'would ve could daha kibar bir ton verir.'),
+ Q(4,'Nazik rica','Hangi cümle daha nazik bir rica ifade eder?','I would be grateful if you could help me.',['I am grateful if you help me today.','I want you to help me if you can.'],'would ve could daha kibar bir ton verir.'),
  Q(4,'Karışık','Hangi cümle doğru?','I would go if I had time.',['I would go if I will have time.','I will go if I had time.'],'Hayalî koşul: would + if + Past Simple.'),
 ]}]

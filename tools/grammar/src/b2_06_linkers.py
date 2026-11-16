@@ -67,6 +67,6 @@ TOPICS=[{
  Q(3,'Karışık','Hangi cümle doğru?','I came here to learn English.',['I came here for learn English.','I came here for to learn English.'],'Amaç: to + yalın fiil.'),
  Q(3,'Noktalama','Hangi cümle doğru?','The hotel was nice. However, the food was bad.',['The hotel was nice, however the food was bad.','The hotel was nice however, the food was bad.'],'however yeni cümle başında, virgülle.'),
  Q(4,'Karışık','Hangi cümle YANLIŞ?','In spite the noise, I slept.',['In spite of the noise, I slept.','Despite the noise, I slept.'],'in spite of: of zorunludur.'),
- Q(4,'despite the fact','Hangi cümle doğru?','Despite the fact that it was expensive, we bought it.',['Despite that it was expensive, we bought it.','Despite the fact it expensive, we bought it.'],'despite the fact that + cümle.'),
+ Q(4,'despite the fact','Hangi cümle doğru?','Despite the fact that it was expensive, we bought it.',['Despite that it was expensive, we bought it.','Despite of the fact it was expensive, we bought it.'],'despite the fact that + cümle.'),
  Q(4,'Amaç','Hangi cümle doğru?',"Take a map so that you won't get lost.",["Take a map so that not get lost.","Take a map in order to you won't get lost."],'so that + özne + fiil.'),
 ]}]

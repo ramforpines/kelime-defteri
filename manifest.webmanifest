@@ -1,7 +1,7 @@
 {
   "name": "Kelime Defteri",
   "short_name": "Kelime Defteri",
-  "description": "Sözlük, test, tekrar ve liderlik tablosu",
+  "description": "İngilizce sözlük, test, okuma, gramer, kalıplar, sınav, düello ve sıralama",
   "lang": "tr",
   "start_url": "./",
   "scope": "./",

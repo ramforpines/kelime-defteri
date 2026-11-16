@@ -9,7 +9,7 @@ if ! git diff --quiet -- index.html d || [ -n "$(git ls-files --others --exclude
   git add index.html d
   git -c user.name="${GIT_AUTHOR_NAME:-claude}" -c user.email="${GIT_AUTHOR_EMAIL:-noreply@anthropic.com}" commit -q -m "Veri parçaları güncellendi (tools/release/assets.py)
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_013Jg88Frs1mRvA72RG2WGa7"
   git push -q origin HEAD:next && echo "parçalar güncellendi ve next'e gönderildi"
 fi
@@ -28,7 +28,7 @@ git add beta
 if git diff --cached --quiet; then echo "beta zaten güncel"; else
   git -c user.name="${GIT_AUTHOR_NAME:-claude}" -c user.email="${GIT_AUTHOR_EMAIL:-noreply@anthropic.com}" commit -q -m "beta: next@$SRC (yalnızca beta/ klasörü, sürüm değişmez)
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_013Jg88Frs1mRvA72RG2WGa7"
   git push -q origin HEAD:main && echo "beta güncellendi: next@$SRC"
 fi
