@@ -917,6 +917,11 @@ function fixFalsePen(){
 function applyDecay(){
   if(!S.pc||cloudWait())return 0;
   const t=today();let d=addDays(S.pc,1);
+  /* Değerlendirilecek gün varsa önce bulut BUGÜN çekilmiş olmalı: başka cihazda çözülen günler bu cihazda eksik görünüp haksız kesinti yazılmasın
+     (günlerdir açık kalan sekme uyanınca ya da oturum hazır olmadan yapılan kayıtta oluyordu). Çekme bitince syncPull yeniden çağırır. */
+  if(d<t&&(!CLOUD.uid||CLOUD.pullDay!==t)){
+    if(CLOUD.uid&&CLOUD.approved!==false&&navigator.onLine&&!CLOUD.pulling&&Date.now()-(CLOUD.pullTry||0)>30000){CLOUD.pullTry=Date.now();setTimeout(()=>{try{syncPull(true)}catch(e){}},0)}
+    return 0}
   const lim=addDays(t,-60);if(d<lim)d=lim;
   let total=0,n=0,rn=0;
   while(d<t){
@@ -1093,7 +1098,7 @@ async function pullState(){
   CLOUD.pullAt=Date.now();
   const rst=!!(cl&&cl.rs&&cl.rs>(S.upd||0)&&cl.rs>(S.rs||0));   // bulutta, bu cihazdaki son değişiklikten yeni bir açık sıfırlama var
   if(!rst&&(!cl||stEmpty(cl))){
-    CLOUD.known=0;CLOUD.pulled=true;
+    CLOUD.known=0;CLOUD.pulled=true;CLOUD.pullDay=today();
     if(!stEmpty(S)||!d)save();
     return false;
   }
@@ -1101,7 +1106,7 @@ async function pullState(){
   const m=rst||stEmpty(S)?normState(cl):mergeStates(S,normState(cl));
   const changed=stSig(m)!==before;
   if(changed){S=m;S.upd=Date.now();persistLocal()}
-  CLOUD.pulled=true;try{if(fixFalsePen()>0){S.upd=Date.now();persistLocal();schedulePush()}}catch(e){}
+  CLOUD.pulled=true;CLOUD.pullDay=today();try{if(fixFalsePen()>0){S.upd=Date.now();persistLocal();schedulePush()}}catch(e){}
   CLOUD.known=stAns(S);CLOUD.pulled=true;
   seenMigrate();capFix();
   if(stSig(S)!==stSig(normState(cl))||(S.rs||0)>(cl.rs||0))schedulePush();   // bulutta olmayan yerel ilerleme varsa yukarı gönder
