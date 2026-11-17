@@ -10,7 +10,19 @@ LV=['A1','A2','B1','B2','C1','C2'];REG={'','resmî','samimi'};errs=[];groups=[];
 def load(f,name):
     sp=importlib.util.spec_from_file_location(os.path.basename(f)[:-3],f);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return getattr(m,name)
 # anlamca yakın gruplar (çeldirici kaynağı)
-NEAR={'banimal':['bbody','bcolor'],'bbody':['banimal','bcolor'],'bcolor':['banimal','bbody'],
+NEAR={'tcall':['tmsg', 'temail'],'tmsg':['tcall', 'temail'],'temail':['tcall', 'tmsg'],
+      'xcong':['xwish', 'xocc'],'xwish':['xcong', 'xocc'],'xocc':['xcong', 'xwish'],
+      'fpos':['fneg', 'fanx'],'fneg':['fpos', 'fanx'],'fanx':['fpos', 'fneg'],
+      'aask':['agive', 'awarn'],'agive':['aask', 'awarn'],'awarn':['aask', 'agive'],
+      'kmiss':['kconfirm', 'kmore'],'kconfirm':['kmiss', 'kmore'],'kmore':['kmiss', 'kconfirm'],
+      'cint':['cchange', 'cturn'],'cchange':['cint', 'cturn'],'cturn':['cint', 'cchange'],
+      'tthank':['tresp', 'tsorry', 'taccept'],'tresp':['tthank', 'tsorry', 'taccept'],'tsorry':['tthank', 'tresp', 'taccept'],'taccept':['tthank', 'tresp', 'tsorry'],
+      'qreq':['qperm', 'qrep'],'qperm':['qreq', 'qrep'],'qrep':['qreq', 'qperm'],
+      'wnoword':['wrephrase', 'wexample'],'wrephrase':['wnoword', 'wexample'],'wexample':['wnoword', 'wrephrase'],
+      'rint':['rsurp', 'rsym'],'rsurp':['rint', 'rsym'],'rsym':['rint', 'rsurp'],
+      'llike':['ldis', 'lpref'],'ldis':['llike', 'lpref'],'lpref':['llike', 'ldis'],
+      'pstart':['pmove', 'pend'],'pmove':['pstart', 'pend'],'pend':['pstart', 'pmove'],
+      'banimal':['bbody','bcolor'],'bbody':['banimal','bcolor'],'bcolor':['banimal','bbody'],
       'give':['ask','unsure','partly'],'ask':['give','unsure'],'agree':['partly','unsure','polite'],'partly':['agree','polite','unsure'],
       'polite':['partly','unsure','agree'],'strong':['agree','unsure','partly'],'unsure':['agree','ask'],
       'make':['accept','decline'],'accept':['decline','make'],'decline':['accept','make'],
@@ -26,9 +38,9 @@ NEAR={'banimal':['bbody','bcolor'],'bbody':['banimal','bcolor'],'bcolor':['banim
       'cbiz':['cecon', 'cjust'],'cecon':['cbiz', 'cjust'],'cjust':['cbiz', 'cecon'],
       'vget':['vtake', 'vgo', 'vkeep'],'vtake':['vget', 'vgo', 'vkeep'],'vgo':['vget', 'vtake', 'vkeep'],'vkeep':['vget', 'vtake', 'vgo'],
       'astate':['asupp','acount','aconcl'],'asupp':['astate','acount','aconcl'],'acount':['astate','asupp','aconcl'],'aconcl':['astate','asupp','acount'],
-      'hsoft':['hquant','hevid','hstrong'],'hquant':['hsoft','hevid','hstrong'],'hevid':['hsoft','hquant','hstrong'],'hstrong':['hsoft','hquant','hevid']}
+      'ccomp':['ccontr','cresult'],'ccontr':['ccomp','cresult'],'cresult':['ccomp','ccontr'],'hsoft':['hquant','hevid','hstrong'],'hquant':['hsoft','hevid','hstrong'],'hevid':['hsoft','hquant','hstrong'],'hstrong':['hsoft','hquant','hevid']}
 NOF1={'guess':['unlik'],'prob':['unlik']}  # boşluk sorusunda gramer olarak da uyabilecek çeldiricileri önler
-FUNC_EN={'banimal':'animal idioms','bbody':'body idioms','bcolor':'colour idioms','vget':'phrasal verbs with get','vtake':'phrasal verbs with take','vgo':'phrasal verbs with go and come','vkeep':'phrasal verbs with keep','cbiz':'business and marketing collocations','cecon':'economy and finance collocations','cjust':'crime and law collocations','isim':'comparing things with similes','ibin':'fixed two-word expressions (binomials)','iprov':'proverbs and sayings','atrend':'describing data and trends in academic writing','acause':'cause and effect in academic writing','ahedge':'hedging and generalising in academic writing','asource':'referring to sources and comparing in academic writing','pfeel':'feelings, interests and abilities (adjective + preposition)','pdep':'depending on, believing in or belonging to something','pcomm':'apologising, complaining and asking','pnoun':'noun + preposition combinations','pfix':'fixed prepositional phrases','pvrel':'relationships and feelings (phrasal verbs)','pvplan':'plans, delays and running out of things (phrasal verbs)','pvlearn':'finding out and understanding (phrasal verbs)','pvdaily':'everyday actions (phrasal verbs)','gwish':'expressing a wish or a regret','gcond':'talking about conditions and suppositions','ghabit':'talking about habits and getting used to things','gobl':'talking about obligation, permission and advice','give':'giving an opinion','ask':'asking for an opinion','agree':'complete agreement','partly':'partial agreement','polite':'polite disagreement','strong':'strong disagreement','unsure':'being undecided',
+FUNC_EN={'tcall':'starting a phone call','tmsg':'taking messages and ending a phone call','temail':'starting and ending emails','xcong':'congratulating someone','xwish':'wishing luck and recovery','xocc':'wishing on special occasions','fpos':'happiness and excitement','fneg':'anger and disappointment','fanx':'worry and relief','aask':'asking for advice','agive':'giving advice','awarn':'warning someone','kmiss':'when you did not hear or understand','kconfirm':'checking that you understood','kmore':'asking for more detail','cint':'interrupting politely','cchange':'changing the subject','cturn':'keeping the conversation on track','tthank':'saying thank you','tresp':'replying to thanks','tsorry':'apologising','taccept':'accepting an apology','qreq':'making a request','qperm':'asking for permission','qrep':'granting or refusing permission','wnoword':'when you cannot find the word','wrephrase':'rephrasing what you said','wexample':'giving an approximate idea','rint':'showing interest','rsurp':'showing surprise','rsym':'showing sympathy','llike':'saying what you like','ldis':'saying what you dislike','lpref':'saying what you prefer','pstart':'starting a presentation','pmove':'moving to the next point in a presentation','pend':'concluding a presentation','ccomp':'comparing and showing similarity','ccontr':'showing contrast','cresult':'showing results and conclusions','banimal':'animal idioms','bbody':'body idioms','bcolor':'colour idioms','vget':'phrasal verbs with get','vtake':'phrasal verbs with take','vgo':'phrasal verbs with go and come','vkeep':'phrasal verbs with keep','cbiz':'business and marketing collocations','cecon':'economy and finance collocations','cjust':'crime and law collocations','isim':'comparing things with similes','ibin':'fixed two-word expressions (binomials)','iprov':'proverbs and sayings','atrend':'describing data and trends in academic writing','acause':'cause and effect in academic writing','ahedge':'hedging and generalising in academic writing','asource':'referring to sources and comparing in academic writing','pfeel':'feelings, interests and abilities (adjective + preposition)','pdep':'depending on, believing in or belonging to something','pcomm':'apologising, complaining and asking','pnoun':'noun + preposition combinations','pfix':'fixed prepositional phrases','pvrel':'relationships and feelings (phrasal verbs)','pvplan':'plans, delays and running out of things (phrasal verbs)','pvlearn':'finding out and understanding (phrasal verbs)','pvdaily':'everyday actions (phrasal verbs)','gwish':'expressing a wish or a regret','gcond':'talking about conditions and suppositions','ghabit':'talking about habits and getting used to things','gobl':'talking about obligation, permission and advice','give':'giving an opinion','ask':'asking for an opinion','agree':'complete agreement','partly':'partial agreement','polite':'polite disagreement','strong':'strong disagreement','unsure':'being undecided',
         'make':'making a suggestion','accept':'accepting a suggestion','decline':'turning down a suggestion',
         'sim':'showing similarity','con':'showing contrast','deg':'comparing things','pre':'saying what you prefer',
         'cert':'being almost sure','prob':'saying something is probably true','poss':'saying something is only possible (not likely)','unlik':'saying something is unlikely','guess':'guessing from what you can see',
@@ -51,7 +63,7 @@ def opts(rng,right,pool,k=2):
         if x not in out:out.append(x)
         if len(out)==k:break
     o=[right]+out;rng.shuffle(o);return o
-ORDER=['opinion','suggest','speculate','contrast','directions','offers','restaurant','plans','acad_opinion','acad_hedge','gframes','gprep','gpv','gacad','gidiom','gcoll','gpv2','gbody']
+ORDER=['opinion','suggest','speculate','contrast','directions','offers','restaurant','plans','acad_opinion','acad_hedge','acad_compare','gframes','gprep','gpv','gacad','gidiom','gcoll','gpv2','gbody','gpres','glike','greact','gpara','greq','gthank','gconv','gclar','gadv','gfeel','gcong','gtel']
 for f in sorted(glob.glob(os.path.join(HERE,'src','*.py')),key=lambda x:ORDER.index(os.path.basename(x)[:-3]) if os.path.basename(x)[:-3] in ORDER else 99):
     if f.endswith('_dlg.py'):continue
     G=load(f,'GROUP');dlg=load(f[:-3]+'_dlg.py','D') if os.path.exists(f[:-3]+'_dlg.py') else {}
@@ -131,6 +143,6 @@ for f in sorted(glob.glob(os.path.join(HERE,'src','*.py')),key=lambda x:ORDER.in
         q.append({'q':sit,'o':o,'a':o.index(ok),'e':why,'lv':lv})
     G['quiz']=q;groups.append(G)
 if errs:print('\n'.join('HATA: '+e for e in errs));raise SystemExit(1)
-PLAN=['Akademik: karşılaştırma ve sonuç','Sunum yapma','Beğeni ve tercih','İlgi gösterme ve tepki','Başka sözcüklerle anlatma','Rica ve izin','Teşekkür ve özür','Konuşmayı yönetme','Açıklama isteme','Tavsiye ve uyarı','Duygu belirtme','Tebrik ve iyi dilekler','Telefon ve e-posta','Yazmada sonuç cümleleri']
+PLAN=[]
 open(os.path.join(ROOT,'phrases.js'),'w',encoding='utf8').write('/* Kalıplar (beta). tools/phrases/build.py ile üretilir; elle düzenleme. */\nwindow.PHRASES='+json.dumps(groups,ensure_ascii=False,separators=(',',':'))+';\nwindow.PHRASES_PLAN='+json.dumps(PLAN,ensure_ascii=False)+';\n')
 print('tamam')

@@ -11,7 +11,7 @@
 var b=p.replace(/[^\/]*$/,'')+'beta/';fetch(b+'index.html',{method:'HEAD',cache:'no-store'}).then(function(r){if(r.ok)location.replace(b+location.search+location.hash)}).catch(function(){})}catch(e){}})();
 if(/\/beta\//.test(location.pathname))document.title='β '+document.title;</script>
 <meta name="theme-color" content="#2b4eff">
-<meta name="description" content="Kelime Defteri: sözlük, test, tekrar ve liderlik tablosu">
+<meta name="description" content="Kelime Defteri: İngilizce sözlük, test, okuma, gramer, kalıplar, sınav, düello ve sıralama">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -426,8 +426,9 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/w09-22dea443b4.js"></script>
 <script src="d/w10-4b999e51b7.js"></script>
 <script src="d/w11-86bc485aab.js"></script>
-<script src="d/w12-3e2a387df9.js"></script>
-<script src="d/grammar-aa1eb66b1f.js"></script>
+<script src="d/w12-05953c2332.js"></script>
+<script src="d/w13-2b792e001c.js"></script>
+<script src="d/grammar-571a3d5b31.js"></script>
 <script src="d/x00-f86d17b433.js"></script>
 <script src="d/x01-ef03f3761c.js"></script>
 <script src="d/x02-0d852bcdbe.js"></script>
@@ -486,7 +487,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-72cc5328cd.js", "sinav.js": "d/sinav-798f5be9ee.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-77b69407c6.js", "sinav.js": "d/sinav-798f5be9ee.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -579,7 +580,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION='4.163.8';
+const APP_VERSION='4.163.12';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -916,6 +917,11 @@ function fixFalsePen(){
 function applyDecay(){
   if(!S.pc||cloudWait())return 0;
   const t=today();let d=addDays(S.pc,1);
+  /* Değerlendirilecek gün varsa önce bulut BUGÜN çekilmiş olmalı: başka cihazda çözülen günler bu cihazda eksik görünüp haksız kesinti yazılmasın
+     (günlerdir açık kalan sekme uyanınca ya da oturum hazır olmadan yapılan kayıtta oluyordu). Çekme bitince syncPull yeniden çağırır. */
+  if(d<t&&(!CLOUD.uid||CLOUD.pullDay!==t)){
+    if(CLOUD.uid&&CLOUD.approved!==false&&navigator.onLine&&!CLOUD.pulling&&Date.now()-(CLOUD.pullTry||0)>30000){CLOUD.pullTry=Date.now();setTimeout(()=>{try{syncPull(true)}catch(e){}},0)}
+    return 0}
   const lim=addDays(t,-60);if(d<lim)d=lim;
   let total=0,n=0,rn=0;
   while(d<t){
@@ -1092,7 +1098,7 @@ async function pullState(){
   CLOUD.pullAt=Date.now();
   const rst=!!(cl&&cl.rs&&cl.rs>(S.upd||0)&&cl.rs>(S.rs||0));   // bulutta, bu cihazdaki son değişiklikten yeni bir açık sıfırlama var
   if(!rst&&(!cl||stEmpty(cl))){
-    CLOUD.known=0;CLOUD.pulled=true;
+    CLOUD.known=0;CLOUD.pulled=true;CLOUD.pullDay=today();
     if(!stEmpty(S)||!d)save();
     return false;
   }
@@ -1100,7 +1106,7 @@ async function pullState(){
   const m=rst||stEmpty(S)?normState(cl):mergeStates(S,normState(cl));
   const changed=stSig(m)!==before;
   if(changed){S=m;S.upd=Date.now();persistLocal()}
-  CLOUD.pulled=true;try{if(fixFalsePen()>0){S.upd=Date.now();persistLocal();schedulePush()}}catch(e){}
+  CLOUD.pulled=true;CLOUD.pullDay=today();try{if(fixFalsePen()>0){S.upd=Date.now();persistLocal();schedulePush()}}catch(e){}
   CLOUD.known=stAns(S);CLOUD.pulled=true;
   seenMigrate();capFix();
   if(stSig(S)!==stSig(normState(cl))||(S.rs||0)>(cl.rs||0))schedulePush();   // bulutta olmayan yerel ilerleme varsa yukarı gönder
@@ -1857,26 +1863,32 @@ function vHelp(){
   return`<div class="card stack"><div class="muted small">Uygulamanın tüm bölümleri ve kuralları burada. Başlıklara dokunarak aç.</div></div>
   ${sec('🧭 Menüler',li([
     '<b>Bugün</b>: günün hedefi, "Bugünün testini başlat", günün 3 kelimesi, bu haftaki sıran, dünün ve geçen haftanın lideri. Puan kesintisi riskin varsa "Bugün bitmeden" uyarısı ve son 14 gündeki cezaların listesi de burada.',
-    '<b>Çalışma</b>: üstteki düğmelerle Sözlük, Test, Okuma, Tekrar, Kaydedilenler ve Gramer arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
+    '<b>Çalışma</b>: üstteki düğmelerle Sözlük, Test, Okuma, Tekrar, Kaydedilenler, Gramer, Kalıplar ve Sınav arasında geçersin. Çalışma\'ya basınca en son baktığın bölüm açılır.',
     '<b>⚔ Düello</b>: alttaki menünün ortasındaki düğme. Klasik ve Dereceli düello burada.',
-    '<b>Sıralamalar</b>: günlük, haftalık, tüm zamanlar ve dereceli düello sıralaması.',
+    '<b>Sıralamalar</b>: günlük, haftalık, tüm zamanlar, dereceli düello ve sınav sıralamaları.',
     '<b>Sohbet</b>: Bugün, Çalışma, Sıralamalar ve Ben → Profil ekranlarında sağ altta duran mesaj balonuyla açılır. Genel sohbet, özel mesajlar ve Kullanıcılar listesi (en son aktif olan üstte) vardır; okunmamış mesaj sayısı balonun üstünde görünür. Sağ üstteki "Sohbetten çık" ile kapanır.',
     '<b>Ben</b>: Profil, İstatistik (öğrenilen kelimeler en altta), Ayarlar (geri bildirim en altta) ve bu sayfa. Yöneticilere ek olarak 🛡 Yönetici bölümü görünür.']),true)}
   ${sec('🚀 Hızlı başlangıç',li([
     'Bugün sekmesinde günün hedefini ve "Bugünün testini başlat" düğmesini görürsün. Her gün birkaç test çözmen yeter.',
     'Çalışma → <b>Test</b>: soru sayısını (10–40), seviyeyi (A1–C2, birden fazla seçilebilir) ve kelime türünü (birden fazla seçilebilir) seçip istediğin zaman test çözersin.',
-    'Çalışma → <b>Sözlük</b>: 10.000\'den fazla kelimenin Türkçesi, tanımı ve örnek cümlesi (Türkçe çevirisiyle) vardır; kelimeye dokunarak açarsın.',
+    'Çalışma → <b>Sözlük</b>: '+nf(Math.floor(W.length/1000)*1000)+'\'den fazla kelime, deyim ve phrasal verb\'in Türkçesi, tanımı ve örnek cümlesi (Türkçe çevirisiyle) vardır; kelimeye dokunarak açarsın.',
     'İlk girişte yönetici onayı gerekebilir. Onaylanınca sıralamaya girer, sohbete ve düelloya katılırsın.',
     'İlerlemen hesabına kaydedilir. Başka cihazda aynı kullanıcı adı ve şifreyle girince kaldığın yerden devam edersin.']),true)}
   ${sec('📘 Gramer',li([
-    '<b>Konular</b>: A1, A2, B1 ve B2 seviyesinde 36 konu var (to be\'den Third Conditional ve Passive\'in tüm zamanlarına kadar). C1 ve C2 hazırlanıyor, listede "yakında" yazar.',
+    '<b>Konular</b>: A1\'den C2\'ye '+((window.GRAMMAR||[]).length)+' konu var (to be\'den Inversion, Subjunctive, Word formation, Error correction ve üslup inceliklerine kadar). Yeni konular eklendikçe listeye düşer.',
     '<b>Her konuda</b>: kısa anlatım, kalıp tablosu, kullanımlar ve örnek cümleler (Türkçesiyle), istisnalar, zaman ifadeleri, hazır kalıplar, diyaloglar, sık yapılan hatalar ve konuyla ilgili kelimeler. Zaman konularında zaman çizgisi de vardır.',
     '<b>Dinle</b>: örnek cümleye dokununca sesli okunur. Kelimeleri ☆ ile Kaydedilenler\'e ekleyebilirsin.',
     '<b>Mini test</b>: her konunun sonunda kolaydan zora 20 soru (6 kolay, 6 orta, 5 zor, 3 çok zor). Her cevaptan sonra açıklama çıkar, sonunda puanın ve yanlışların görünür. Bu test <b>puan vermez</b>, sıralamayı etkilemez; istediğin kadar tekrar çözebilirsin.']))}
+  ${sec('🗣 Kalıplar ve Sınav',li([
+    '<b>Kalıplar</b>: günlük ve akademik ifade kalıpları, '+(window.PHRASES?window.PHRASES.length+' grup halinde':'gruplar halinde')+' (selamlaşma, fikir belirtme, öneri, rica, telefon ve e-posta, phrasal verb, deyim, kolokasyon vb.). Kalıba dokununca Türkçesi ve örnek cümlesi açılır; ▶ ile sesli duyabilir, ☆ ile kaydedebilirsin. Her grubun sonundaki sorular kalıbı diyalogda ve boşlukta kullanmanı ister. Kaydettiğin kalıplar Kaydedilenler\'de görünür; kalıp soruları Bugünün testinde de çıkar.',
+    '<b>Sınav</b>: Cambridge sınavlarının formatında A2, B1, B2 ve C1 sınavları; her sınavda <b>okuma, dinleme, yazma ve konuşma</b> bölümleri vardır. Bölümler sürelidir; istediğin sırada ve farklı zamanlarda çözebilirsin, teslim ettiğin bölüm değiştirilemez. Dinlemede her kayıt en fazla 2 kez çalınır. Konuşma bölümü mikrofon ve konuşma tanıyan bir tarayıcı ister.',
+    '<b>Sınav kuralları</b>: her sınav <b>bir kez</b> çözülür. Sınav 1\'ler sırayla açılır (A2 → B1 → B2 → C1): bir seviyeyi bitirince sonraki seviye takip eden pazartesi açılır. Dört bölüm de bitince bölüm puanların, Cambridge ölçeğine yakın genel puanın, seviyen, cevap açıklamaları ve çalışman gereken konular görünür. Yazma ve konuşma yapay zekâ ile değerlendirilir (haftada 1 hak). Resmî Cambridge sınavı değildir.',
+    '<b>Sınav → Çalışma</b>: sınavdaki bölüm türlerinden süresiz alıştırmalar (okuma, dinleme, yazma, konuşma). İstediğin kadar tekrar çözebilirsin; sınav sonucunu etkilemez.',
+    '<b>Sınav sıralamaları</b>: Sınav ekranındaki düğmeden ya da Sıralamalar → Sınavlar sekmesinden görürsün.']))}
   ${sec('📝 Testler ve soru türleri',li([
     '<b>Bugünün testi</b>: her zaman 30 soru; en çok 7 tekrar zamanı gelen kelime, 5 Yanlış defteri sorusu, 3 günün kelimesi, 2 kalıp, 5 gramer sorusu ve kalanı (en az 8) yeni kelimelerden karışık hazırlanır. Seviye ayarından bağımsızdır: kalıp ve gramer her seviyeden (ağırlık B1–B2), yeni kelimeler %5 A2, %35 B1, %40 B2, %15 C1, %5 C2 gelir. Tekrar ya da defter azsa yerini yeni kelime alır. Çalışma ekranındaki soru sayısı bunu etkilemez.',
     '<b>Yeni test</b>: seçtiğin seviye ve türden henüz öğrenmediğin kelimeler gelir.',
-    '<b>Soru türleri</b>: Türkçe karşılık (bazen Türkçeden İngilizceye), İngilizce tanım, kelime türü, boşluk doldurma, yakın anlam, karşıt anlam, V2/V3 (düzensiz fiiller), atasözü, edat kalıbı, ek ve ifade. Ek sorularında (ör. -less, -ness) kelimeden ek çıkarılır, hangi ekle türetildiğini seçersin.',
+    '<b>Soru türleri</b>: Türkçe karşılık (bazen Türkçeden İngilizceye), İngilizce tanım, kelime türü, boşluk doldurma, yakın anlam, karşıt anlam, V2/V3 (düzensiz fiiller), atasözü tamamlama, eksik kelime (deyim ve kalıplarda), edat kalıbı, ek, anlamdan ifadeye ve çok anlamlı kelimelerde cümledeki anlam. Ek sorularında (ör. -less, -ness) kelimeden ek çıkarılır, hangi ekle türetildiğini seçersin.',
     '<b>Cevaptan sonra</b>: doğru cevap, okunuş, Türkçesi, tanımı ve örnek cümle görünür. Çalışma testinde kısa bir "Neden?" açıklaması da çıkar. Yakın/karşıt anlam sorularında tüm şıkların, Türkçe ve tanım sorularında her şıkkın hangi kelimeye ait olduğu gösterilir; yanlışta işaretlediğin kelimenin anlamını böylece öğrenirsin.',
     '<b>☆ Kaydet</b>: sorunun kelimesini Çalışma → <b>Kaydedilenler</b> listesine ekler. Yakın/karşıt anlam gibi sorularda şıklardaki kelimelerin yanında da kaydet düğmesi vardır; Sözlük\'ten de kaydedebilirsin. Kaydedilenlerde kelime sözlükteki gibi açılır, Dinle ve kayıttan çıkarma düğmeleri vardır. Hesabına eşitlenir.',
     '<b>⚑ Bildir</b>: birden fazla şık uygunsa ya da doğru cevap hatalıysa soru kartının sağ üstündeki Bildir\'e bas, nedeni seç. Rapor yöneticiye gider, soru düzeltilir. Günde en fazla 40 rapor gönderebilirsin.',
@@ -1910,7 +1922,7 @@ function vHelp(){
     '<b>Ligler</b> toplam puana göre belirlenir: '+LEAGUES.map(l=>'<b>'+l.n+'</b> ('+l.rng+')').join(', ')+'. Büyükustalık ve Şampiyonluk için sıralamadaki yer de aranır.',
     '<b>Dereceli galibiyet şartı</b>: Platin için 20, Zümrüt için 50, Elmas için 100, Ustalık ve üstü için 200 dereceli galibiyet gerekir (rakibin ligi seninkinden en çok 2 lig farklıysa sayılır). Puanın yetse bile şartı sağlamadan lige geçemezsin.',
     'Günlük hedef, zorunlu dereceli maç, yanlış cevap cezası ve izin günleri puana değil ligine göre belirlenir.',
-    '<b>Sıralamalar</b>: Günlük, Haftalık, Tüm zamanlar ve Dereceli düello. Günlük puan her gece yarısı sıfırlanır. Tüm zamanlarda önce gerçek lige (şart dahil), aynı ligdekiler kendi arasında puana göre sıralanır: şartı sağlamadığı için daha düşük ligde kalan 3000 puanlı biri, Platin olan 2500 puanlının altında görünür. Günlük ve haftalık tablolar o dönemin puanına göre sıralanır.',
+    '<b>Sıralamalar</b>: Günlük, Haftalık, Tüm zamanlar, Dereceli düello ve Sınavlar. Günlük puan her gece yarısı sıfırlanır. Tüm zamanlarda önce gerçek lige (şart dahil), aynı ligdekiler kendi arasında puana göre sıralanır: şartı sağlamadığı için daha düşük ligde kalan 3000 puanlı biri, Platin olan 2500 puanlının altında görünür. Günlük ve haftalık tablolar o dönemin puanına göre sıralanır.',
     '<b>Profil</b>: Ben → Profil\'den adını, avatarını ve çerçeveni seçersin. Çerçeve ulaştığın ligi geçemez. Başka bir kullanıcıya dokununca profil kartı (puan, seri, rozetler, düello istatistiği) açılır; ona buradan mesaj gönderebilirsin.',
     '<b>Avatarlar</b> lige göre açılır, ligin düşerse üsttekiler yeniden kilitlenir: <b>miğfer</b> (Platin ve üstü, ulaştığın ligin renginde), <b>araba</b> (Platin ve üstü: spor araba, sedan, traktör; seçersen trafik ışığında lastik yakar), <b>kılıç</b> (her ligin kendi renginde 10 kılıç, ulaştığın ligin ve altındakiler).',
     '<b>Gün Lideri / Hafta Lideri</b>: günü ya da haftayı sıralamada birinci bitiren kazanır. Profil kartında "3 x Gün Lideri" gibi sayaçlar görünür; Bugün ekranında dünün ve geçen haftanın lideri puanıyla gösterilir.',
@@ -1921,7 +1933,7 @@ function vHelp(){
     'Rozetlerle avatar açılır: 2. rozette Karanlık Şövalye, 3. rozette Plazma Kılıcı, 4. rozette Zırhlı At, 5. rozette Yangın Tüpü, 6. rozette F-16 Savaş Uçağı.']))}
   ${sec('⚔ Düello',li([
     '<b>Giriş</b>: Alttaki menünün ortasındaki ⚔ Düello düğmesi. Klasik düello için en az <b>'+DSTAKE+' puan</b>, dereceli için <b>'+DRK_MIN+' puan</b> (Bronz lig) gerekir.',
-    '<b>Maç</b>: İki oyuncu aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Maç puanı yüksek olan kazanır, eşitse beraberlik olur.',
+    '<b>Maç</b>: İki oyuncu aynı <b>'+DQ_N+' soruyu</b> çözer, soru başına <b>'+DQ_T+' saniye</b> vardır. Maç puanı yüksek olan kazanır. Puanlar eşitse klasik düelloda toplam cevap süresi kısa olan kazanır (o da eşitse beraberlik); dereceli düelloda beraberlik olur.',
     '<b>Doğru cevap</b> = 100 × seviye çarpanı (A1 ×1,00 … C2 ×1,85) × hız çarpanı. Hız çarpanı ilk 1,5 saniyede ×1,50, sonra her saniye 0,20 düşer (4. saniyede ×1,00), en az ×0,50.',
     '<b>Yanlış cevap puan düşürür</b>: klasikte 75 × seviye çarpanı; dereceli düelloda doğru bilseydin alacağın puanın %66\'sı (hızlı yanlış daha çok kaybettirir). Süre dolunca klasikte bunun yarısı, dereceli düelloda yine %66\'sı düşer. Bilmediğin soruda tahmin etmek zarar getirir.',
     '<b>Rakip koparsa</b>: taraflardan biri 20 soruyu bitirdikten sonra diğerinden <b>30 saniye</b> boyunca hiç cevap gelmezse maç kapanır; kalan soruları cevapsız sayılır (klasikte soru başına −100, derecelide −200) ve puan her zamanki kurala göre aktarılır. Maç geçmişe hemen düşer.',
@@ -1933,9 +1945,9 @@ function vHelp(){
     '<b>Dereceli eşleşme</b>: Arama en fazla <b>30 saniye</b> sürer, rakip çıkmazsa lobiye dönersin. Lig farkı en çok 1 olan oyuncularla eşleşirsin. Aynı anda arayanlar birlikte değerlendirilir; mümkünse daha önce oynamadığın biri öncelikli olur. Ekranda eşleşmeye uygun kaç kişinin aradığı yazar.',
     '<b>Aynı rakiple sınır</b>: Aynı kişiyle 24 saatte oynayabileceğin dereceli maç sayısı, iki oyuncudan gerçek ligi yüksek olana göre belirlenir: Altın ve altı 3, Platin ve Zümrüt 2, Elmas ve üstü 1.',
     '<b>Gizlilik</b>: Dereceli maçtan önce kimsenin adı görünmez, listelerde yalnızca "Gizli kullanıcı" ve ligi yazar. Rakibini maç başlayınca öğrenirsin.',
-    '<b>Dereceli puan</b>: Bahis yoktur. Kaybeden, puanının %10\'u (Bronz) ile %4\'ü (Ustalık ve üstü) arasında değişen bir riski taşır (oran lig içinde doğrusal azalır; örnek: 200 puanın riski 20, 1.000 puanın riski 80). Kaybedenin kaybı = risk × (kazananın skoru ÷ iki skorun toplamı). Örnek: risk 20, skorlar 3000–2000 ise 20 × 0,6 = <b>12 puan</b>. Kazanan bu 12 puanı alır, üstüne kaybedenin lig oranı kadar sistem bonusu eklenir (Bronz\'da +1,2); kazancı kendi riskinin 3 katını geçemez. Negatif skor 0 sayılır; skorlar eşitse ya da ikisi de 0 ve altındaysa beraberliktir, kimse puan kaybetmez. Dereceli puanlar genel, günlük ve haftalık puanına da işlenir.',
+    '<b>Dereceli puan</b>: Bahis yoktur. Kaybeden, puanının %10\'u (Bronz) ile %4\'ü (Ustalık ve üstü) arasında değişen bir riski taşır (oran lig içinde doğrusal azalır; örnek: 200 puanın riski 20, 1.000 puanın riski 80). Kaybedenin kaybı = risk × (kazananın skoru ÷ iki skorun toplamı). Örnek: risk 20, skorlar 3000–2000 ise 20 × 0,6 = <b>12 puan</b>. Kazanan bu 12 puanı alır; üstüne sistem, aktarılan puanın kaybedenin lig oranı kadarını bonus olarak ekler (Bronz\'da %10: 12 puan için +1,2). Rakipten aktarılan puan, kazananın kendi riskinin 3 katını geçemez. Negatif skor 0 sayılır; skorlar eşitse ya da ikisi de 0 ve altındaysa beraberliktir, kimse puan kaybetmez. Dereceli puanlar genel, günlük ve haftalık puanına da işlenir.',
     '<b>Zorunlu maç</b>: Zümrüt ligindeyken günde 1, Elmas ve üstünde günde 3 dereceli maç oynamalısın. Oynamadığın her maç için riskinin yarısı kadar puan kesilir (gece 00:00\'da). Haftalık izin günü hakkın (günlük hedefle ortak) varsa ceza olmaz. Bugün ekranında ne kadar kesileceğini önceden görürsün.',
-    '<b>Hile yasağı</b>: Dereceli maçta uygulamadan ya da maç ekranından ayrılmak, soru kopyalamak, yapay zeka, ekran görüntüsü ya da başka kişiden yardım almak yasaktır. İhlalde maç iptal edilir, puan kaybedilir ve bir süre dereceli düello oynayamazsın. Klasik düelloda bu kurallar yoktur.',
+    '<b>Hile yasağı</b>: Dereceli maçta uygulamadan ya da maç ekranından ayrılmak, soru kopyalamak, yapay zeka, ekran görüntüsü ya da başka kişiden yardım almak yasaktır. Uygulamadan ayrılırsan ilk seferde uyarı alırsın ve o an açık olan soru 0 puan sayılır, ikincisinde maç iptal edilir; ekran odağı kaybında ilk iki sefer uyarı, üçüncüsünde iptal gelir. İptalde puan kaybedilir ve bir süre dereceli düello oynayamazsın. Klasik düelloda bu kurallar yoktur.',
     '<b>Ceza merdiveni</b>: Ceza, bugüne kadarki toplam iptal sayına göre artar (sayaç sıfırlanmaz, süre geçince düşmez): 1. iptal <b>×1 puan cezası + 100 dk yasak</b>, 2. iptal ×2 + 200 dk, 3. iptal ×3 + 300 dk, 4. ×4 + 400 dk, 5. ×5 + 500 dk, 6. ×6 + 600 dk, 7. ve sonrası ×7 + 700 dk. Cezanın %20\'si rakibine verilir. Cezalar otomatik uygulanır, iptal edilen maçlar maç geçmişinde herkese görünür.',
     '<b>Ödüller</b>: İlk dereceli galibiyette <b>Düello Ejderi</b> avatarı açılır. Sıralamalar → Dereceli düello → Tüm zamanlar tablosunda ilk üçe giren (puanı artıda olan) <b>kızıl kadife</b> satır ve tacın üstünde sıra numaralı <b>Fatih flaması</b> alır; birinci ayrıca avatarı yerine geçen <b>havlayan köpeği</b> kazanır. Sıralama değişince ödüller de yeni sahiplerine geçer.',
     '<b>İstatistik</b>: Galibiyet, mağlubiyet ve beraberlik sayın profil kartında; dereceli sıralama tablosunda ise dereceli puan toplamı, doğru oranı ve ortalama cevap süresi görünür. Klasik ve dereceli istatistikler ayrıdır.']))}
@@ -1972,7 +1984,7 @@ function vHelp(){
     '<b>Bakım ekranı çıktı.</b> Sayfayı açık bırak; bakım bitince uygulama kendiliğinden yenilenir, ilerlemen kaybolmaz.',
     '<b>Kelime listesi neden güncellendi?</b> Yeni kelimeler eklenir, hatalar düzeltilir; ilerlemen korunur.',
     '<b>Sorudaki iki şık doğru görünüyor.</b> Soru kartındaki ⚑ Bildir düğmesiyle bildir, düzeltelim.',
-    '<b>Sıralamada görünmüyorum.</b> Hesabın onaylı olmalı ve bugün en az bir doğru cevap vermiş olmalısın.',
+    '<b>Sıralamada görünmüyorum.</b> Hesabın onaylı olmalı ve o dönemde (bugün ya da bu hafta) en az bir soru çözmüş olmalısın.',
     '<b>Uygulama eski görünüyor.</b> Sayfayı kapatıp aç ya da yenile; yeni sürüm yüklenir. Güncel sürümü Ayarlar\'ın altında görürsün.']))}
   `;
 }
@@ -2029,7 +2041,7 @@ function vAdmin(){
 }
 function vLogin(){
   const A=UI.auth,su=A.mode==='signup';
-  return`<div class="top" style="margin-top:8vh"><div><h1>Kelime Defteri</h1><div class="muted small">${nf(W.length)} kelime, test, tekrar ve liderlik tablosu</div></div></div>
+  return`<div class="top" style="margin-top:8vh"><div><h1>Kelime Defteri</h1><div class="muted small">${nf(W.length)} kelime; test, okuma, gramer, kalıplar, sınav ve düello</div></div></div>
   <div class="card stack"><div class="seg"><button class="chip" aria-pressed="${!su}" data-act="auth-mode" data-v="login">Giriş yap</button><button class="chip" aria-pressed="${su}" data-act="auth-mode" data-v="signup">Kayıt ol</button></div>
   <label class="f">Kullanıcı adı<input id="au-user" class="nameinp" value="${esc(A.user)}" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20"></label>
   ${su?`<label class="f">Görünen ad (liderlik tablosunda)<input id="au-name" class="nameinp" value="${esc(A.name)}" maxlength="24" autocomplete="nickname" placeholder="Örn. Ayşe"></label>`:''}
@@ -2874,7 +2886,7 @@ function pickLv(c,lvOf,keyOf,n){   // c: aday listesi; seviyeye göre ağırlık
     let r=Math.random()*tot,li=0;for(;li<av.length-1;li++){r-=av[li];if(r<0)break}
     const L=bk[LEVELS[li]];const j=L.findIndex(x=>!used.has(keyOf(x)));if(j===-1){bk[LEVELS[li]]=[];continue}
     const x=L.splice(j,1)[0];used.add(keyOf(x));out.push(x)}
-  return out}   // bugünün testi yeni kelime seviye ağırlıkları (A1,A2,B1,B2,C1,C2): seviye ayarından bağımsız; hedef B1→B2   // bugünün testi: en çok 7 tekrar, 5 Yanlış defteri, 2 kalıp, 3 gramer; günün kelimeleri her 10 soruda 1 (3); kalanı yeni kelime
+  return out}   // bugünün testi yeni kelime seviye ağırlıkları (A1,A2,B1,B2,C1,C2): seviye ayarından bağımsız; hedef B1→B2   // bugünün testi: en çok 7 tekrar, 5 Yanlış defteri, 2 kalıp, 5 gramer; günün kelimeleri her 10 soruda 1 (3); kalanı yeni kelime
 function startQuiz(mode,all){
   const n=mode==='today'?TODAY_N:S.set.count;
   let items=[];
@@ -3012,18 +3024,18 @@ const ICON={
   chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
 };
-const GRAM_ON=true;   // Gramer: herkese açık (A1–B2)
+const GRAM_ON=true;   // Gramer: herkese açık (A1–C2)
 const GRAM_BETA=true;   // C1 gramer, Kalıplar ve Sınav artık herkese açık
 const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
 const NEWF={phr:1,pet:1};   // yeni menüler: ilk açılışta 'Yeni' işareti kalkar
 const nwSeen=()=>{try{return JSON.parse(localStorage.getItem('kd-new1')||'{}')}catch(e){return{}}};
-const NEWT=['p:directions','p:offers','g:so-such-too-enough','p:restaurant','g:adjectives-ed-ing','p:plans','g:question-tags','g:indirect-questions','p:acad_opinion','g:pronouns','g:both-either-neither-all-each','p:acad_hedge'];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
+const NEWT=['p:directions','p:offers','g:so-such-too-enough','p:restaurant','g:adjectives-ed-ing','p:plans','g:question-tags','g:indirect-questions','p:acad_opinion','g:pronouns','g:both-either-neither-all-each','p:acad_hedge','g:adjectives-adverbs','g:verb-object-to-infinitive','p:acad_compare'];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
 const NT={gram:'g:',phr:'p:'};
 const nwIs=k=>NT[k]?(NEWT.some(x=>x.startsWith(NT[k])&&!nwSeen()[x])||(!!NEWF[k]&&!nwSeen()[k])):((NEWT.includes(k)||!!NEWF[k])&&!nwSeen()[k]);
 const nwBd=k=>nwIs(k)?' <span class="nw">Yeni</span>':'';
 const nwMark=k=>{if(!nwIs(k))return;try{const o=nwSeen();o[k]=1;localStorage.setItem('kd-new1',JSON.stringify(o))}catch(e){}};
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['phr','Kalıplar'],['pet','Sınav']]:[]);   // seviye sınavları ve çalışma: yalnızca beta
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['phr','Kalıplar'],['pet','Sınav']]:[]);   // Kalıplar ve Sınav: herkese açık
 const isStudy=t=>(t==='gram'&&GRAM_ON)||((t==='pet'||t==='phr')&&GRAM_BETA)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
@@ -3350,7 +3362,7 @@ function vDict(){
   <div class="stack" id="dlist">${dictList()}</div></div>`;
 }
 // ---- Okuma parçaları ----
-const RD_PT=2;   // doğru cevap başına puan, seviye katsayısıyla çarpılır; yalnızca önceki en iyi sonucu geçtikçe verilir
+const RD_PT=2;   // doğru cevap başına puan, seviye katsayısıyla çarpılır; puan yalnızca parçanın ilk çözümünde verilir
 function vRead(){
   const R=UI.rd||(UI.rd={id:null,pick:{},done:false,lv:'Hepsi'}),all=window.READINGS||[],rd=S.rd||{};
   const P=R.id&&all.find(x=>x.id===R.id);
@@ -3766,7 +3778,7 @@ function vPhr(){
   const G=UI.phg&&window.PHRASES.find(g=>g.id===UI.phg);
   if(!G)return`<div class="top"><h1>Kalıplar</h1></div><div class="stack"><div class="card small">Günlük konuşmada ve sınavlarda en çok kullanılan ifade kalıpları. Her kalıbın Türkçesi ve örnek cümlesi var; dinleyebilir ve kaydedebilirsin. Kaydettiğin kalıplar Kaydedilenler'de görünür, soruları testlerde karşına çıkar.</div>
     ${window.PHRASES.map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><div class="row" style="justify-content:space-between"><span><b lang="en">${esc(g.en)}</b>${nwBd('p:'+g.id)}</span><span class="small muted">${g.sub.reduce((a,x)=>a+x.items.length,0)}</span></div><div class="small muted">${esc(g.t)}</div></button>`).join('')}
-    <div class="card small">${(window.PHRASES_PLAN||[]).map(t=>`<div style="padding:3px 0">• ${esc(t)} <span class="badge">yakında</span></div>`).join('')}</div></div>`;
+    ${(window.PHRASES_PLAN||[]).length?`<div class="card small">${window.PHRASES_PLAN.map(t=>`<div style="padding:3px 0">• ${esc(t)} <span class="badge">yakında</span></div>`).join('')}</div>`:''}</div>`;
   const sv=phSaved(),show=()=>true;
   return`<div class="row" style="margin-bottom:8px"><button class="btn" data-act="phr-home">Çık</button></div><div class="top"><h1 lang="en">${esc(G.en)}</h1><span class="muted small">${esc(G.t)}</span></div><div class="stack">
   ${G.sub.map(sb=>{const L=sb.items.filter(show);if(!L.length)return'';return`<div><div class="row" style="justify-content:space-between;align-items:baseline;margin:6px 2px"><b lang="en" style="font-size:1rem">${esc(sb.en)}</b><span class="small muted">${esc(sb.t)} · ${L.length}</span></div><div class="card" style="padding:0;overflow:hidden">
@@ -4324,7 +4336,7 @@ function vStats(){
   const P=myPoints();
   return`<div class="kpis"><div class="kpi"><b>${nf(r1(P.D.pts))}</b><span>bugün puan</span></div><div class="kpi"><b>${nf(r1(P.W.pts))}</b><span>bu hafta puan</span></div><div class="kpi"><b>${nf(r1(P.T.pts))}</b><span>toplam puan</span></div></div><div class="card"><h2 style="margin-bottom:8px">Seviyelere göre ilerleme</h2>${LEVELS.map(l=>{
     const t=tot[l]||0,n=lrn[l]||0,p=t?n/t*100:0,q=S.lv[l]||[0,0],qa=q[0]+q[1];
-    return`<div class="lvrow"><span class="lv lv-${l}">${l}</span><div><div class="bar"><i style="width:${p.toFixed(1)}%;background:var(--l-${l})"></i></div>${qa?`<div class="small muted" style="margin-top:3px">Test başarısı %${Math.round(q[0]/qa*100)} (${q[0]} doğru, ${q[1]} yanlış)</div>`:''}</div><span class="num">${n}/${nf(t)}</span></div>`}).join('')}</div>
+    return`<div class="lvrow"><span class="lv lv-${l}">${l}</span><div><div class="bar"><i style="width:${p.toFixed(1)}%;background:var(--l-${l})"></i></div>${qa?`<div class="small muted" style="margin-top:3px">Test başarısı %${Math.round(q[0]/qa*100)} (${q[0]} doğru, ${q[1]} yanlış)</div>`:''}</div><span class="num">${nf(n)}/${nf(t)}</span></div>`}).join('')}</div>
   <div class="card"><h2>Son 14 gün</h2><div class="muted small">Mavi: doğru, kırmızı: yanlış cevap sayısı</div>
   <div class="days" role="img" aria-label="Son 14 günün cevap grafiği">${days.map(([d,x])=>`<div title="${fmt(d)}: ${x.c} doğru, ${x.a-x.c} yanlış"><i class="w" style="height:${((x.a-x.c)/mx*80).toFixed(1)}%"></i><i style="height:${(x.c/mx*80).toFixed(1)}%"></i><small>${new Date(d+'T12:00:00').getDate()}</small></div>`).join('')}</div></div>`;
 }
@@ -4560,8 +4572,8 @@ function profFeatures(){
   return`${m4}${m5}<div class="muted small">Kilitli olanlar soluk durur; dokununca nasıl kazanılacağı yazar. Gün / Hafta Lideri: günü ya da haftayı birinci bitirdikçe profil kartında "3 x Gün Lideri" gibi sayaçlar birikir.</div>`;
 }
 function vProfile(){
-  if(!CLOUD.ready)return`<div class="card muted">Profil ve liderlik tablosu için uygulamayı Claude'da yayınlanan bağlantıyla açıp oturum açman gerekir. İndirilmiş dosyada çalışmaz.</div>`;
-  return`${leagueCard()}<div class="card">${profileForm(true)}</div>${badgeGrid()}${CLOUD.write?'':'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. İlerlemen ve skorun kaydedilmez. Katılmak için sahibinden "Katkıda bulunan" izni iste.</div>'}`;
+  if(!CLOUD.ready)return`<div class="card muted">Profil ve sıralama için internet bağlantısı gerekir. Bağlantını kontrol edip sayfayı yenile.</div>`;
+  return`${leagueCard()}<div class="card">${profileForm(true)}</div>${badgeGrid()}`;
 }
 function profilePrompt(){
   if(!CLOUD.ready||S.prof.name||!CLOUD.write)return'';
@@ -4598,7 +4610,7 @@ function vRank(){
   const R=UI.rank;
   let body='';
   if(!CLOUD.ready){
-    body=`<div class="card muted">Liderlik tablosu için uygulamayı Claude'da yayınlanan bağlantıyla açıp oturum açman gerekir. İndirilmiş dosyada çalışmaz.</div>`;
+    body=`<div class="card muted">Sıralama için internet bağlantısı gerekir. Bağlantını kontrol edip sayfayı yenile.</div>`;
   }else if(!S.prof.name&&CLOUD.write){
     body=`<div class="card stack"><h2>Önce profilini oluştur</h2>${profileForm()}</div>`;
   }else{
@@ -4625,15 +4637,14 @@ function vRank(){
       <div class="stack" style="margin-top:10px">
       <div><b>Doğru cevap</b> = seviye katsayısı × soru türü katsayısı.</div>
       <div class="row">${LEVELS.map(l=>`<span class="lv lv-${l}">${l} × ${COEF[l]}</span>`).join('')}</div>
-      <div class="muted">Soru türü: Türkçe 1, Tür 1, Tanım 1,1, V2/V3 1,1, Örnek 1,15, Yakın ve karşıt anlam 1,2.</div>
+      <div class="muted">Soru türü: Türkçe ve Tür 1; Tanım, V2/V3 ve Edat 1,1; Örnek, Atasözü, Eksik kelime, Ek, İfade ve 2./3. anlam 1,15; Yakın ve karşıt anlam 1,2.</div>
       <div><b>Bonuslar:</b> yeni kelimeyi öğrenmek +2 × seviye katsayısı, tekrar listesinden bir kelimeyi çıkarmak +1 × seviye katsayısı, günlük hedefi tamamlamak +10, üstüne seri gün sayısı kadar ek bonus (en fazla +10; yani 10\u201320 puan).</div>
       <div><b>Altın (1000 puan), Platin ve Zümrüt liglerinde</b> yanlış cevap, doğru cevap puanının dörtte biri kadar puan düşürür. <b>Elmas ve üstü liglerde</b> yanlış cevap, doğru bilseydin alacağın puanın tamamını (seviye × soru türü katsayısı) düşürür. Günlük puan sıfırın altına inmez.</div>
       <div><b>Günlük sınır:</b> Sorulardan ve bonuslardan bir günde en fazla ${QCAP} puan kazanılır. Düello puanları sınırsız eklenir.</div>
       <div><b>Günlük asgari hedef:</b> Zümrüt'ün altındaki liglerde 20 doğru, Zümrüt ligindeyken 35, Elmas ve üstünde 50 doğru (gerçek ligine göre; dereceli galibiyet şartı dahil). Tutturmayan her gün için toplam puanından, hangi ligde olursan ol, %5 kesilir.</div></div></details>
-    ${!CLOUD.write?'<div class="card small muted">Bu bağlantıyla yalnızca görüntüleyebilirsin. Sıraya girmek için sahibinden "Katkıda bulunan" izni iste.</div>':''}
     ${CLOUD.lbErr?'<div class="card small muted">Tablo şu an okunamıyor. Biraz sonra yeniden dene.</div>':''}`;
   }}
-  return`<div class="top"><h1>Sıralama</h1></div><div class="stack">${body}</div>`;
+  return`<div class="top"><h1>Sıralamalar</h1></div><div class="stack">${body}</div>`;
 }
 const rkSeg=per=>`<div class="seg"><button class="chip" aria-pressed="${per==='day'}" data-rp="day">Günlük</button><button class="chip" aria-pressed="${per==='week'}" data-rp="week">Haftalık</button><button class="chip" aria-pressed="${per==='all'}" data-rp="all">Tüm zamanlar</button>${drkLocked()?'':`<button class="chip vlc" aria-pressed="${per==='ranked'}" data-rp="ranked">🏅 Dereceli düello</button>`}${GRAM_BETA?`<button class="chip" aria-pressed="${per==='exam'}" data-rp="exam">📝 Sınavlar</button>`:''}</div>`;
 const RKB={per:{},busy:false};
@@ -5715,7 +5726,7 @@ function vDuel(){
     body=`<div class="card stack" style="text-align:center"><h1 style="margin:0">${draw?'🤝 Berabere':win?'🏆 Kazandın!':'😤 Kaybettin'}</h1>
       <div id="dhud">${dHudHtml()}</div>
       <div class="kp"><div><b>${m.c}/${n}</b><span>doğru</span></div><div><b>${avg||'–'}</b><span>ort. süre (sn)</span></div><div><b>${o.c}/${n}</b><span>rakip doğru</span></div></div>
-      ${DUEL.bot?'<div class="muted small">Alıştırma maçı kayda geçmez, puan bahsi yoktur.</div>':d.mode==='ranked'?(()=>{const dl=d.p1===CLOUD.uid?d.dl1:d.dl2;if(dl==null)return'<div class="muted small">Puan değişimi hesaplanıyor…</div>';const v=+dl,od=d.p1===CLOUD.uid?d.dl2:d.dl1,tr=Math.max(Math.abs(v),Math.abs(+od||0)),tx=v>0?Math.round((tr-v)*10)/10:0;return`<div class="kp" style="grid-template-columns:repeat(2,1fr)"><div><b style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(r1(Math.abs(v)))}</b><span>dereceli puan</span></div><div><b>${nf(r1(S.tp||0))}</b><span>yeni toplam</span></div></div><div class="muted small">${draw?'Berabere kaldınız, kimse puan kaybetmedi.':`Geçen puan: ${nf(r1(tr))}${tx>0?` · kesinti: ${nf(r1(tx))}`:''}`}</div>`})():(()=>{const pay=d.pay1==null?null:(d.p1===CLOUD.uid?d.pay1:d.pay2);return pay==null?'<div class="muted small">Puan dağıtımı hesaplanıyor…</div>':`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>−${DSTAKE}</b><span>bahis</span></div><div><b>+${nf(r1(+pay))}</b><span>kazanç</span></div><div><b>${(+pay-DSTAKE)>=0?'+':'−'}${nf(r1(Math.abs(+pay-DSTAKE)))}</b><span>net puan</span></div></div>`})()}
+      ${DUEL.bot?'<div class="muted small">Alıştırma maçı kayda geçmez, puan bahsi yoktur.</div>':d.mode==='ranked'?(()=>{const dl=d.p1===CLOUD.uid?d.dl1:d.dl2;if(dl==null)return'<div class="muted small">Puan değişimi hesaplanıyor…</div>';const v=+dl,od=d.p1===CLOUD.uid?d.dl2:d.dl1,tr=Math.min(Math.abs(v),Math.abs(+od||0)),tx=Math.round((Math.max(Math.abs(v),Math.abs(+od||0))-tr)*10)/10;return`<div class="kp" style="grid-template-columns:repeat(2,1fr)"><div><b style="color:${v>0?'var(--ok)':v<0?'var(--bad)':'inherit'}">${v>0?'+':v<0?'−':'±'}${nf(r1(Math.abs(v)))}</b><span>dereceli puan</span></div><div><b>${nf(r1(S.tp||0))}</b><span>yeni toplam</span></div></div><div class="muted small">${draw?'Berabere kaldınız, kimse puan kaybetmedi.':`Geçen puan: ${nf(r1(tr))}${tx>0?` · kazanana sistem bonusu: +${nf(r1(tx))}`:''}`}</div>`})():(()=>{const pay=d.pay1==null?null:(d.p1===CLOUD.uid?d.pay1:d.pay2);return pay==null?'<div class="muted small">Puan dağıtımı hesaplanıyor…</div>':`<div class="kp" style="grid-template-columns:repeat(3,1fr)"><div><b>−${DSTAKE}</b><span>bahis</span></div><div><b>+${nf(r1(+pay))}</b><span>kazanç</span></div><div><b>${(+pay-DSTAKE)>=0?'+':'−'}${nf(r1(Math.abs(+pay-DSTAKE)))}</b><span>net puan</span></div></div>`})()}
       <button class="btn primary block" data-act="duel-find">Yeni rakip bul</button>
       <button class="btn block" data-act="duel-exit">Çık</button></div>`;
   }

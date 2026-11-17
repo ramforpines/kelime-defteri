@@ -1,0 +1,23 @@
+import sys,os;sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))));from gl import Q
+DQ=[
+ Q(1,'wish + Past','I wish I ___ a bigger flat.','had',['have','will have'],'Şimdiki gerçek dışı istek: wish + Past Simple.'),
+ Q(1,'wish + Past','I wish it ___ warmer today.','were',['is','will be'],'wish sonrası be için were kullanılır.'),
+ Q(1,'wish + Past','I wish I ___ speak French.','could',['can','will'],'Yetenek isteği: wish + could.'),
+ Q(1,'wish + Past','I wish my brother ___ here.','were',['is','be'],'Şimdi orada olmayan biri için: wish + were.'),
+ Q(1,'wish + Past','She wishes she ___ a car.','had',['has','have'],'wish sonrası özneden bağımsız Past Simple: had.'),
+ Q(1,'wish + would','I wish you ___ so loudly.','would not talk',['not talk','do not talk'],'Can sıkan davranış: wish + would(n\'t).'),
+ Q(2,'Pişmanlık','I wish I ___ to the party last night.','had gone',['went','have gone'],'Geçmiş pişmanlık: wish + had + V3.'),
+ Q(2,'Pişmanlık','I wish I ___ so much last night.','had not eaten',['did not eat','have not eaten'],'Geçmiş pişmanlık olumsuz: hadn\'t + V3.'),
+ Q(2,'If only','If only I ___ more money!','had',['have','would have'],'Şimdiki gerçek dışı: If only + Past Simple.'),
+ Q(2,'If only','If only I ___ you earlier!','had met',['met','would meet'],'Geçmiş pişmanlık: If only + had + V3.'),
+ Q(2,'hope','I ___ you feel better soon.','hope',['wish','would'],'Gerçekleşebilir dilek: hope + Present Simple.'),
+ Q(2,'wish + would','I wish it ___ raining.','would stop',['stops','stopped to'],'Şikâyet / sabırsızlık: wish + would + V1.'),
+ Q(3,'It\'s time','It\'s time we ___ the house.','cleaned',['clean','will clean'],'It\'s time + özne + Past Simple.'),
+ Q(3,'would rather','I\'d rather you ___ in here.','did not smoke',['do not smoke','would not smoke'],'I\'d rather + kişi + Past Simple.'),
+ Q(3,'Karışık','Hangi cümle doğru?','I wish I had studied harder.',['I wish I studied harder yesterday.','I wish I would study harder yesterday.'],'Geçmiş için: wish + had + V3.'),
+ Q(3,'Karışık','Hangi cümle doğru?','I wish he would listen to me.',['I wish he will listen to me.','I wish he listens to me.'],'Başkasının davranışından şikâyet: wish + would.'),
+ Q(3,'Karışık','Hangi cümle doğru?','If only she were here now.',['If only she is here now.','If only she would be here yesterday.'],'Şimdiki gerçek dışı: If only + were.'),
+ Q(4,'Karışık','Hangi cümle YANLIŞ?','I wish I can fly.',['I wish I could fly.','If only I could fly.'],'wish sonrası can kalmaz, could olur.'),
+ Q(4,'Eş anlam','Aynı anlamdaki cümle hangisi? → I\'m sorry I didn\'t call her.','I wish I had called her.',['I wish I called her.','I wish I would call her.'],'Geçmiş pişmanlık: wish + had + V3.'),
+ Q(4,'Eş anlam','Aynı anlamdaki cümle hangisi? → I regret not saving money.','I wish I had saved money.',['I wish I saved money.','I wish I would have saved money.'],'Geçmiş pişmanlık: wish + had + V3; wish\'ten sonra would have kullanılmaz.'),
+]

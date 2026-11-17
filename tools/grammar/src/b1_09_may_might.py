@@ -63,7 +63,7 @@ TOPICS=[{
  Q(3,'Karışık','Hangi cümle doğru?','He may be at home.',['He may is at home.','He may to be at home.'],'may be.'),
  Q(3,'Geçmiş','Hangi cümle "unutmuş olabilir" anlamındadır?','She may have forgotten.',['She may forget.','She may be forgetting.'],'Geçmiş olasılık: may have + V3.'),
  Q(3,'Olasılık','Hangi cümle olasılık anlamındadır?','It might snow tonight.',['It will snow tonight.','It snows tonight.'],'might: olasılık.'),
- Q(4,'Karışık','Hangi cümle YANLIŞ?','It can rain tomorrow. (olasılık)',['It may rain tomorrow.','It might rain tomorrow.'],'Olasılıkta can kullanılmaz.'),
+ Q(4,'Karışık','Hangi cümle YANLIŞ?','It can rain tomorrow.',['It may rain tomorrow.','It might rain tomorrow.'],'Olasılıkta can kullanılmaz.'),
  Q(4,'Karışık','Hangi cümle doğru?','He can\'t have missed it.',['He can\'t missed it.','He can\'t has missed it.'],'can\'t have + V3.'),
  Q(4,'Karışık','Hangi cümle doğru?','He must have missed the bus.',['He must missed the bus.','He must has missed the bus.'],'must have + V3: kesin çıkarım.'),
 ]}]
