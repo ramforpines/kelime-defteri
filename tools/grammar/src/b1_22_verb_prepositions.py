@@ -54,7 +54,7 @@ TOPICS=[{
  Q(1,'for','He is looking ___ his keys.','for',['at','to'],'look for = aramak.'),
  Q(2,'with','I agree ___ you.','with',['to','on'],'agree with.'),
  Q(2,'from','She suffers ___ headaches.','from',['of','with'],'suffer from.'),
- Q(2,'Edatsız','We discussed ___ the problem.','(boş)',['about','on'],'discuss edat almaz.'),
+ Q(2,'Edatsız','We discussed ___ the problem.','—',['about','on'],'discuss edat almaz.'),
  Q(2,'Edatsız','He ___ me yesterday.','called',['called to','called at'],'call edat almaz.'),
  Q(2,'-ing','I look forward to ___ you.','meeting',['meet','to meet'],'look forward to + -ing.'),
  Q(2,'-ing','She is good at ___.','singing',['sing','to sing'],'Edat + -ing.'),
