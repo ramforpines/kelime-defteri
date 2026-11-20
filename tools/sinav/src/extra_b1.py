@@ -61,3 +61,6 @@ S={
 
 import more_b1_3 as _x3
 W.update(_x3.XW);S.update(_x3.XS)
+
+import more_b1_6 as _x6
+W.update(_x6.XW);S.update(_x6.XS)

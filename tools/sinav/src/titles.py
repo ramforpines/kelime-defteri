@@ -13,6 +13,7 @@ T={'a2r1':'Shop and School Notices','a2r2':'New Schools','a2r3':'A Young Swimmer
 'b2r5a':'Learning a Language Later in Life','b2r5b':'The Future of the High Street','b2r6a':'A Revolution in the School Canteen','b2r1c':'Silent Discos','b2r3a':'The Power of Taking Breaks',
 'b2w6':'Cars in City Centres','b2w7':'A Film Worth Watching','b2w8':'A Complaint About a Hotel','b2s6':'Technology and Habits','b2s7':'A Community Project','b2l6':'Short Extracts (3)','b2l7':'Coastal Wildlife Project',
 'b1r1d':'Signs and Messages','b1r2d':'Summer Activities for Teenagers','b1r3e':'Working with Dogs','b1r4d':'A Café with a Difference','b1r5f':'A Music Festival','b1r5g':'A New Hobby','b1r6f':'A Letter to a Friend','b1l2d':'Plans and Opinions','b1l3d':'A Swimming Course',
+'b1w11':'The School Trip Email','b1w12':'Moving to a New Town','b1s18':'Family and Home','b1s19':'A Rainy Day',
 'b2r1':'Why Volunteer?','b2r2':'Teenagers and Sleep','b2r3':'Working from Home','b2r4':'Key Word Transformations','b1r5c':'A Morning at the Market','b1r6c':'A New Flat','c1r1d':'Green Spaces in Cities','c1r1c':'Describing a Chart','c1r4d':'Key Word Transformations 4','b2r4d':'Key Word Transformations 4','b2r4e':'Key Word Transformations 5','a2r4b':'My Weekend','a2r5b':'A Message About School','c1r4b':'Key Word Transformations 2','c1r4c':'Key Word Transformations 3','c1r1b':'Urban Beekeeping','c1r3b':'The Slow Food Movement','b2r4b':'Key Word Transformations 2','b2r4c':'Key Word Transformations 3','b2r1b':'The Umbrella','b2r2b':'Libraries of Things','b2r6':'A Year in Antarctica',
 'b2l1':'Short Extracts (1)','b2l2':'Beekeeping','b2l3':'Moving to a New City','b2l4':'A Wildlife Photographer','b2l5':'Short Extracts (2)',
 'b2w1':'Social Media and Young People','b2w2':'Tourism','b2w3':'My Perfect Weekend','b2w4':'A TV Series','b2w5':'Advice on a Summer Job',
@@ -23,7 +24,8 @@ T={'a2r1':'Shop and School Notices','a2r2':'New Schools','a2r3':'A Young Swimmer
 'c1s1':'Opinions and Experiences','c1s2':'Learning from Others','c1s3':'Choosing a Job','c1s4':'Technology and Society','c1s5':'The Environment'}
 
 # Konuşma fotoğraflarının altında görünen basit İngilizce açıklamalar
-IMG={'b1-market':'A man is selling fruit at a market stall while a woman puts oranges into a bag. There are other stalls and people behind them.',
+IMG={'b1-rain':'Two girls are walking in the rain with colourful umbrellas. A bus is passing behind them and the trees have yellow leaves.',
+'b1-market':'A man is selling fruit at a market stall while a woman puts oranges into a bag. There are other stalls and people behind them.',
 'b1-cooking':'Three young people are cooking together in a kitchen: one is making a pizza, one is preparing a salad and one is checking the oven.',
 'b2-office':'A young woman is working on a laptop in a busy open-plan office. Two colleagues are working behind her, and there is a coffee machine.',
 'b2-farm':'A farmer in a cap is standing in a green field next to a red tractor on a sunny day.',
