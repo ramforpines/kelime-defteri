@@ -491,7 +491,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-4505a33364.js", "sinav.js": "d/sinav-210b9a91f9.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-e6d9ddfc2f.js", "sinav.js": "d/sinav-210b9a91f9.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -584,7 +584,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.163.33';
+const APP_VERSION = '4.163.34';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3034,7 +3034,7 @@ const GRAM_HIDE=['C1','C2'];
 const gramList=()=>(window.GRAMMAR||[]).filter(t=>GRAM_BETA||!GRAM_HIDE.includes(t.lv));
 const NEWF={phr:1,pet:1};   // yeni menüler: ilk açılışta 'Yeni' işareti kalkar
 const nwSeen=()=>{try{return JSON.parse(localStorage.getItem('kd-new1')||'{}')}catch(e){return{}}};
-const NEWT=['p:directions','p:offers','g:so-such-too-enough','p:restaurant','g:adjectives-ed-ing','p:plans','g:question-tags','g:indirect-questions','p:acad_opinion','g:pronouns','g:both-either-neither-all-each','p:acad_hedge','g:adjectives-adverbs','g:verb-object-to-infinitive','p:acad_compare','p:bhotel','p:bhealth','p:bshop','p:bspeak','p:bwrite','p:bjob','p:bdebate','p:bstudy','p:btrans','p:binvite','p:bsmall','p:bnarr','p:binstr','p:bfeel','p:bempath','p:bapol','p:bclar'];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
+const NEWT=['p:bcomp','p:bhosp','p:bserv','p:bproc','p:bmedia','p:directions','p:offers','g:so-such-too-enough','p:restaurant','g:adjectives-ed-ing','p:plans','g:question-tags','g:indirect-questions','p:acad_opinion','g:pronouns','g:both-either-neither-all-each','p:acad_hedge','g:adjectives-adverbs','g:verb-object-to-infinitive','p:acad_compare','p:bhotel','p:bhealth','p:bshop','p:bspeak','p:bwrite','p:bjob','p:bdebate','p:bstudy','p:btrans','p:binvite','p:bsmall','p:bnarr','p:binstr','p:bfeel','p:bempath','p:bapol','p:bclar'];   // yeni eklenen konu/gruplar ('g:<gramer id>' / 'p:<kalıp grubu id>'): kullanıcı açana kadar 'Yeni' işareti durur (gece bakımında eklenir)
 const NT={gram:'g:',phr:'p:'};
 const nwIs=k=>NT[k]?(NEWT.some(x=>x.startsWith(NT[k])&&!nwSeen()[x])||(!!NEWF[k]&&!nwSeen()[k])):((NEWT.includes(k)||!!NEWF[k])&&!nwSeen()[k]);
 const nwBd=k=>nwIs(k)?' <span class="nw">Yeni</span>':'';
@@ -3754,8 +3754,8 @@ const PH_FN=['Kalıp: diyalog','Kalıp: boşluk','Kalıp: kullanım','Kalıp: i�
 PH_FN.forEach((t,i)=>{FEAT[100+i]=t});
 /* Kalıplar: benzer gruplar tek başlıkta toplanır (çalışma anında), ana liste kategorilere ayrılır, gramer konularıyla çapraz bağlantı */
 const PH_MERGE=[['opinion','bdebate','Giving opinions and debating','Fikir belirtme ve tartışma'],['suggest','gadv','Suggestions, advice and warnings','Öneri, tavsiye ve uyarı'],['offers','greq','Requests, permission and offers','Rica, izin ve teklif'],['plans','binvite','Plans and invitations','Plan, davet ve buluşma'],['gfeel','bfeel','Feelings and reactions','Duygu belirtme ve tepki'],['gthank','bapol','Thanking and apologising','Teşekkür ve özür'],['gclar','bclar','Clarifying and interrupting','Açıklama isteme ve sözü kesme']];
-const PH_CAT=[['Günlük konuşma',['opinion','suggest','speculate','contrast','offers','plans','glike','greact','gconv','gclar','gfeel','gcong','gthank','bsmall','bempath','bnarr','binstr','gpara']],['Yer ve durumlar',['directions','restaurant','bhotel','bhealth','bshop','btrans','gtel']],['İş ve okul',['gpres','bjob','bstudy']],['Sınav hazırlığı',['bspeak','bwrite']],['Akademik',['acad_opinion','acad_hedge','acad_compare','gacad']],['Gramer kalıpları',['gframes','gprep','gpv','gpv2']],['Deyim ve kolokasyon',['gidiom','gbody','gcoll']]];
-const PH_GR={suggest:['must-have-to-should','had-better-would-rather'],speculate:['may-might','modals-deduction'],offers:['requests-offers-permission','can-cant'],plans:['present-for-future','will-going-to'],contrast:['comparison-advanced','linkers-contrast-purpose'],opinion:['emphasis'],gframes:['wish-if-only','first-conditional','used-to'],gprep:['adjective-prepositions','verb-prepositions','noun-prepositions'],gpv:['phrasal-types','phrasal-separable'],gpv2:['phrasal-types'],gacad:['passive-reporting','hedging-nominalisation'],acad_hedge:['hedging-nominalisation'],acad_opinion:['advanced-linkers'],acad_compare:['comparison-advanced','advanced-linkers'],gclar:['indirect-questions','question-tags'],gfeel:['adjectives-ed-ing'],bnarr:['past-simple','past-continuous','past-perfect'],binstr:['imperatives'],gpara:['reporting-verbs'],glike:['like-love-ing'],directions:['prepositions-place','prepositions-time-movement'],restaurant:['requests-offers-permission']};
+const PH_CAT=[['Günlük konuşma',['opinion','suggest','speculate','contrast','offers','plans','glike','greact','gconv','gclar','gfeel','gcong','gthank','bsmall','bempath','bnarr','binstr','gpara','bcomp','bhosp','bmedia']],['Yer ve durumlar',['directions','restaurant','bhotel','bhealth','bshop','btrans','gtel','bserv']],['İş ve okul',['gpres','bjob','bstudy','bproc']],['Sınav hazırlığı',['bspeak','bwrite']],['Akademik',['acad_opinion','acad_hedge','acad_compare','gacad']],['Gramer kalıpları',['gframes','gprep','gpv','gpv2']],['Deyim ve kolokasyon',['gidiom','gbody','gcoll']]];
+const PH_GR={suggest:['must-have-to-should','had-better-would-rather'],speculate:['may-might','modals-deduction'],offers:['requests-offers-permission','can-cant'],plans:['present-for-future','will-going-to'],contrast:['comparison-advanced','linkers-contrast-purpose'],opinion:['emphasis'],gframes:['wish-if-only','first-conditional','used-to'],gprep:['adjective-prepositions','verb-prepositions','noun-prepositions'],gpv:['phrasal-types','phrasal-separable'],gpv2:['phrasal-types'],gacad:['passive-reporting','hedging-nominalisation'],acad_hedge:['hedging-nominalisation'],acad_opinion:['advanced-linkers'],acad_compare:['comparison-advanced','advanced-linkers'],gclar:['indirect-questions','question-tags'],gfeel:['adjectives-ed-ing'],bnarr:['past-simple','past-continuous','past-perfect'],binstr:['imperatives'],gpara:['reporting-verbs'],glike:['like-love-ing'],directions:['prepositions-place','prepositions-time-movement'],restaurant:['requests-offers-permission'],bcomp:['requests-offers-permission','present-perfect-continuous'],bhosp:['requests-offers-permission'],bserv:['causative','passive-voice'],bproc:['passive-voice','present-perfect'],bmedia:['reported-speech','relative-clauses']};
 function phMerge(){const P=window.PHRASES;if(!P||P._m)return;P._m=1;
   PH_MERGE.forEach(([a,b,en,t])=>{const A=P.find(g=>g.id===a),i=P.findIndex(g=>g.id===b);if(!A||i<0)return;const B=P[i];A.sub=A.sub.concat(B.sub);A.quiz=(A.quiz||[]).concat(B.quiz||[]);A.en=en;A.t=t;P.splice(i,1)})}
 const phGrOf=id=>{const m=PH_MERGE.find(x=>x[1]===id);return PH_GR[m?m[0]:id]||[]};
