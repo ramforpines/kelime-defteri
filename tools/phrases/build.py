@@ -63,7 +63,10 @@ def opts(rng,right,pool,k=2):
         if x not in out:out.append(x)
         if len(out)==k:break
     o=[right]+out;rng.shuffle(o);return o
-ORDER=['opinion','suggest','speculate','contrast','directions','offers','restaurant','plans','acad_opinion','acad_hedge','acad_compare','gframes','gprep','gpv','gacad','gidiom','gcoll','gpv2','gbody','gpres','glike','greact','gpara','greq','gthank','gconv','gclar','gadv','gfeel','gcong','gtel']
+import sys;sys.path.insert(0,HERE)
+from ext_meta import NEAR_X,FUNC_X
+NEAR.update(NEAR_X);FUNC_EN.update(FUNC_X)
+ORDER=['opinion','suggest','speculate','contrast','directions','offers','restaurant','plans','acad_opinion','acad_hedge','acad_compare','gframes','gprep','gpv','gacad','gidiom','gcoll','gpv2','gbody','gpres','glike','greact','gpara','greq','gthank','gconv','gclar','gadv','gfeel','gcong','gtel','bhotel','bhealth','bshop','bspeak','bwrite']
 for f in sorted(glob.glob(os.path.join(HERE,'src','*.py')),key=lambda x:ORDER.index(os.path.basename(x)[:-3]) if os.path.basename(x)[:-3] in ORDER else 99):
     if f.endswith('_dlg.py'):continue
     G=load(f,'GROUP');dlg=load(f[:-3]+'_dlg.py','D') if os.path.exists(f[:-3]+'_dlg.py') else {}
