@@ -42,3 +42,6 @@ def fix(G):
         if len(pool)<6:pool+=[q['en'] for k2,q in allp if k2!=k and '...' in q['en']]
         d=p['d'];p['d']=(d[0],d[1],random.Random(p['en']).sample(pool,2))
     return G
+
+NEAR_X.update({'cmp1':['cmp2', 'cmp3'],'cmp2':['cmp1', 'cmp3'],'cmp3':['cmp1', 'cmp2'],'hs1':['hs2', 'hs3'],'hs2':['hs1', 'hs3'],'hs3':['hs1', 'hs2'],'sv1':['sv2', 'sv3'],'sv2':['sv1', 'sv3'],'sv3':['sv1', 'sv2'],'pr1':['pr2', 'pr3'],'pr2':['pr1', 'pr3'],'pr3':['pr1', 'pr2'],'md1':['md2', 'md3'],'md2':['md1', 'md3'],'md3':['md1', 'md2'],})
+FUNC_X.update({'cmp1':'starting a complaint','cmp2':'describing what went wrong','cmp3':'asking for a refund or a solution','hs1':'welcoming a visitor to your home','hs2':'offering food and drink to a guest','hs3':'writing a thank-you note after a visit','sv1':'describing a technical problem','sv2':'calling a repair service','sv3':'asking about a parcel or the post office','pr1':'explaining the steps of a process','pr2':'describing changes over time','pr3':'making an announcement','md1':'summarising the plot of a book or film','md2':'reacting to news and rumours','md3':'leaving a comment online',})
