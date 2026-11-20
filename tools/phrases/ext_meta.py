@@ -1,5 +1,8 @@
 # Yeni kalıp grupları için yakın alt grup ve işlev açıklamaları (build.py okur)
-NEAR_X={'ttick':['tinfo','ttaxi'],'tinfo':['ttick','ttaxi'],'ttaxi':['ttick','tinfo'],
+NEAR_X={'nopen':['nmid','nend'],'nmid':['nopen','nend'],'nend':['nopen','nmid'],
+ 'istep':['iwarn','ichk'],'iwarn':['istep','ichk'],'ichk':['istep','iwarn'],
+ 'xpos':['xneg','xreact'],'xneg':['xpos','xreact'],'xreact':['xpos','xneg'],
+ 'ttick':['tinfo','ttaxi'],'tinfo':['ttick','ttaxi'],'ttaxi':['ttick','tinfo'],
  'iinv':['iacc','iarr'],'iacc':['iinv','iarr'],'iarr':['iinv','iacc'],
  'mweath':['mweek','mfam'],'mweek':['mweath','mfam'],'mfam':['mweath','mweek'],
  'jcv':['jint','jask'],'jint':['jcv','jask'],'jask':['jcv','jint'],
@@ -10,7 +13,10 @@ NEAR_X={'ttick':['tinfo','ttaxi'],'tinfo':['ttick','ttaxi'],'ttaxi':['ttick','ti
  'sfit':['sret','sprice'],'sret':['sfit','sprice'],'sprice':['sfit','sret'],
  'ppic':['pgap','pdisc'],'pgap':['ppic','pdisc'],'pdisc':['ppic','pgap'],
  'wmail':['wstory','wart'],'wstory':['wmail','wart'],'wart':['wmail','wstory']}
-FUNC_X={'ttick':'buying tickets','tinfo':'asking about times and platforms','ttaxi':'taking a taxi or asking for directions on the way',
+FUNC_X={'nopen':'starting to tell a story or news','nmid':'keeping a story going','nend':'finishing a story',
+ 'istep':'giving instructions step by step','iwarn':'warning someone and giving reminders','ichk':'checking understanding of instructions',
+ 'xpos':'expressing positive feelings','xneg':'expressing annoyance and disappointment','xreact':'reacting to what someone tells you',
+ 'ttick':'buying tickets','tinfo':'asking about times and platforms','ttaxi':'taking a taxi or asking for directions on the way',
  'iinv':'inviting someone','iacc':'accepting or declining an invitation','iarr':'arranging a time and place to meet',
  'mweath':'talking about the weather','mweek':'asking about someone\'s weekend or plans','mfam':'talking about family and friends',
  'jcv':'writing a job application','jint':'answering questions in a job interview','jask':'asking questions at the end of an interview',
