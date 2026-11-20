@@ -584,7 +584,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.163.31';
+const APP_VERSION = '4.163.32';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3100,6 +3100,7 @@ function vGram(){
   <div class="card stack"><div class="row" style="gap:8px"><h2 style="margin:0">${esc(T.title)}</h2><span class="badge">${T.lv}</span></div>
     ${(T.intro||[T.sub]).filter(Boolean).map(t=>`<div>${t}</div>`).join('')}
     <div class="gf"><b>Kalıp:</b> ${gHl(T.form_name)}</div></div>
+  ${(()=>{const ph=phOfGr(T.id);if(ph.length)phLoad();return ph.length?`<div class="card stack"><b>İlgili kalıplar</b>${ph.map(id=>`<button class="btn block" data-act="phr-open" data-v="${id}" style="text-align:left">${esc((window.PHRASES&&(window.PHRASES.find(g=>g.id===id)||{}).t)||id)}</button>`).join('')}</div>`:''})()}
   ${T.timeline?gTLHtml(T.timeline):''}
   <div class="card stack"><h3 style="margin:0">Cümle yapısı</h3><table class="gt"><tr><th>Tür</th><th>Kalıp</th><th>Örnek</th></tr>${T.form.map(f=>`<tr><td><b>${esc(f.k)}</b></td><td>${gHl(f.p)}</td><td>${gHl(f.e[0])}<div class="muted small">${gHl(f.e[1])}</div></td></tr>`).join('')}</table>${T.formnote?gBox(T.formnote):''}</div>
   <div class="card stack"><h3 style="margin:0">Ne zaman kullanılır?</h3><div class="muted small">İngilizce cümleye dokununca sesli okur.</div>${T.uses.map(u=>`<div><b>${esc(u.h)}</b><div class="small" style="margin:2px 0 4px">${u.why}</div>${set(u.ex)}${u.note?`<div class="gn" style="margin-top:6px">${gRaw(u.note)}</div>`:''}${(u.inl||[]).map(gBox).join('')}</div>`).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">')}</div>
@@ -3751,8 +3752,16 @@ function phLoad(){if(window.PHRASES||PH_LOADING)return;PH_LOADING=true;const s=d
 const PH_LV=['A1','A2','B1','B2','C1','C2'];
 const PH_FN=['Kalıp: diyalog','Kalıp: boşluk','Kalıp: kullanım','Kalıp: işlev','Kalıp: yakın anlam','Kalıp: üslup'];
 PH_FN.forEach((t,i)=>{FEAT[100+i]=t});
+/* Kalıplar: benzer gruplar tek başlıkta toplanır (çalışma anında), ana liste kategorilere ayrılır, gramer konularıyla çapraz bağlantı */
+const PH_MERGE=[['opinion','bdebate','Giving opinions and debating','Fikir belirtme ve tartışma'],['suggest','gadv','Suggestions, advice and warnings','Öneri, tavsiye ve uyarı'],['offers','greq','Requests, permission and offers','Rica, izin ve teklif'],['plans','binvite','Plans and invitations','Plan, davet ve buluşma'],['gfeel','bfeel','Feelings and reactions','Duygu belirtme ve tepki'],['gthank','bapol','Thanking and apologising','Teşekkür ve özür'],['gclar','bclar','Clarifying and interrupting','Açıklama isteme ve sözü kesme']];
+const PH_CAT=[['Günlük konuşma',['opinion','suggest','speculate','contrast','offers','plans','glike','greact','gconv','gclar','gfeel','gcong','gthank','bsmall','bempath','bnarr','binstr','gpara']],['Yer ve durumlar',['directions','restaurant','bhotel','bhealth','bshop','btrans','gtel']],['İş ve okul',['gpres','bjob','bstudy']],['Sınav hazırlığı',['bspeak','bwrite']],['Akademik',['acad_opinion','acad_hedge','acad_compare','gacad']],['Gramer kalıpları',['gframes','gprep','gpv','gpv2']],['Deyim ve kolokasyon',['gidiom','gbody','gcoll']]];
+const PH_GR={suggest:['must-have-to-should','had-better-would-rather'],speculate:['may-might','modals-deduction'],offers:['requests-offers-permission','can-cant'],plans:['present-for-future','will-going-to'],contrast:['comparison-advanced','linkers-contrast-purpose'],opinion:['emphasis'],gframes:['wish-if-only','first-conditional','used-to'],gprep:['adjective-prepositions','verb-prepositions','noun-prepositions'],gpv:['phrasal-types','phrasal-separable'],gpv2:['phrasal-types'],gacad:['passive-reporting','hedging-nominalisation'],acad_hedge:['hedging-nominalisation'],acad_opinion:['advanced-linkers'],acad_compare:['comparison-advanced','advanced-linkers'],gclar:['indirect-questions','question-tags'],gfeel:['adjectives-ed-ing'],bnarr:['past-simple','past-continuous','past-perfect'],binstr:['imperatives'],gpara:['reporting-verbs'],glike:['like-love-ing'],directions:['prepositions-place','prepositions-time-movement'],restaurant:['requests-offers-permission']};
+function phMerge(){const P=window.PHRASES;if(!P||P._m)return;P._m=1;
+  PH_MERGE.forEach(([a,b,en,t])=>{const A=P.find(g=>g.id===a),i=P.findIndex(g=>g.id===b);if(!A||i<0)return;const B=P[i];A.sub=A.sub.concat(B.sub);A.quiz=(A.quiz||[]).concat(B.quiz||[]);A.en=en;A.t=t;P.splice(i,1)})}
+const phGrOf=id=>{const m=PH_MERGE.find(x=>x[1]===id);return PH_GR[m?m[0]:id]||[]};
+const phOfGr=gid=>Object.keys(PH_GR).filter(k=>PH_GR[k].includes(gid));
 // kalıplar sözde kelime olarak BYWORD'e eklenir: Kaydedilenler, Yanlış defteri ve testler kelimelerle aynı altyapıyı kullanır
-function phReg(){if(!window.PHRASES||phReg.done)return;phReg.done=true;
+function phReg(){if(!window.PHRASES||phReg.done)return;phReg.done=true;phMerge();
   window.PHRASES.forEach(G=>G.sub.forEach(sb=>sb.items.forEach(p=>{if(BYWORD.has(p.en))return;
     const w={word:p.en,tr:p.tr,def:'',level:p.lv,pos:'kalıp',pron:'',ex:p.ex[0],phr:p,_app:p.qs.map(q=>100+q.f)};BYWORD.set(p.en,w)})));
   if(S.phs){S.sav=S.sav||{};Object.keys(S.phs).forEach(k=>{if(!(S.sav[k]>0))S.sav[k]=Date.now()});delete S.phs;save()}}
@@ -3779,15 +3788,17 @@ function phOptMeans(it){const rows=it.options.map((o,i)=>{const w=BYWORD.get(o)|
 const phSaved=()=>{const o={};Object.keys(S.sav||{}).forEach(k=>{if(S.sav[k]>0)o[k]=1});return o};
 function vPhr(){
   if(!window.PHRASES){phLoad();return'<div class="card"><div class="muted">Kalıplar yükleniyor…</div></div>'}
-  const G=UI.phg&&window.PHRASES.find(g=>g.id===UI.phg);
+  phMerge();const G=UI.phg&&window.PHRASES.find(g=>g.id===UI.phg);
   if(!G)return`<div class="top"><h1>Kalıplar</h1></div><div class="stack"><div class="card small">Günlük konuşmada ve sınavlarda en çok kullanılan ifade kalıpları. Her kalıbın Türkçesi ve örnek cümlesi var; dinleyebilir ve kaydedebilirsin. Kaydettiğin kalıplar Kaydedilenler'de görünür, soruları testlerde karşına çıkar.</div>
-    ${window.PHRASES.map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><div class="row" style="justify-content:space-between"><span><b lang="en">${esc(g.en)}</b>${nwBd('p:'+g.id)}</span><span class="small muted">${g.sub.reduce((a,x)=>a+x.items.length,0)}</span></div><div class="small muted">${esc(g.t)}</div></button>`).join('')}
+    ${PH_CAT.map(([ct,ids])=>{const gs=ids.map(i=>window.PHRASES.find(g=>g.id===i)).filter(Boolean);if(!gs.length)return'';return`<div class="gh small" style="margin:10px 2px 2px;color:var(--accent);font-weight:700">${esc(ct)} <span class="muted">· ${gs.length}</span></div>`+gs.map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><div class="row" style="justify-content:space-between"><span><b lang="en">${esc(g.en)}</b>${nwBd('p:'+g.id)}</span><span class="small muted">${g.sub.reduce((a,x)=>a+x.items.length,0)}</span></div><div class="small muted">${esc(g.t)}</div></button>`).join('')}).join('')}
+    ${window.PHRASES.filter(g=>!PH_CAT.some(c=>c[1].includes(g.id))).map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><b lang="en">${esc(g.en)}</b><div class="small muted">${esc(g.t)}</div></button>`).join('')}
     ${(window.PHRASES_PLAN||[]).length?`<div class="card small">${window.PHRASES_PLAN.map(t=>`<div style="padding:3px 0">• ${esc(t)} <span class="badge">yakında</span></div>`).join('')}</div>`:''}</div>`;
   const sv=phSaved(),show=()=>true;
   return`<div class="row" style="margin-bottom:8px"><button class="btn" data-act="phr-home">Çık</button></div><div class="top"><h1 lang="en">${esc(G.en)}</h1><span class="muted small">${esc(G.t)}</span></div><div class="stack">
   ${G.sub.map(sb=>{const L=sb.items.filter(show);if(!L.length)return'';return`<div><div class="row" style="justify-content:space-between;align-items:baseline;margin:6px 2px"><b lang="en" style="font-size:1rem">${esc(sb.en)}</b><span class="small muted">${esc(sb.t)} · ${L.length}</span></div><div class="card" style="padding:0;overflow:hidden">
     ${L.map((p,i)=>`<details data-phd="${esc(p.en)}" ${(UI.phOpen||{})[p.en]?'open':''} style="${i?'border-top:1px solid var(--line)':''}"><summary style="list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px"><b lang="en" style="font-size:.98rem;min-width:0">${esc(p.en)}</b><span class="row" style="gap:4px;flex-shrink:0"><button class="btn" aria-label="Dinle" style="padding:0;width:34px;min-height:34px;font-size:.8rem" data-act="phr-say" data-v="${esc(p.en)}">▶</button><button class="btn ${sv[p.en]?'primary':''}" aria-label="${sv[p.en]?'Kaydedildi':'Kaydet'}" style="padding:0;width:34px;min-height:34px;font-size:1rem" data-act="phr-fav" data-v="${esc(p.en)}">${sv[p.en]?'★':'☆'}</button></span></summary>
       <div class="small" style="padding:2px 10px 10px;background:var(--bg);max-width:30rem"><div style="padding-top:8px">${esc(p.tr)}${p.reg?` <span class="muted">· ${esc(p.reg)}</span>`:''}</div><div class="muted" style="margin-top:4px"><span lang="en">${esc(p.ex[0])}</span><br>${esc(p.ex[1])}</div></div></details>`).join('')}</div></div>`}).join('')}
+  ${(()=>{const ids=phGrOf(G.id).map(id=>(window.GRAMMAR||[]).find(t=>t.id===id)).filter(Boolean);return ids.length?`<div class="card stack"><b>İlgili gramer konuları</b>${ids.map(t=>`<button class="btn block" data-act="pet-gram" data-v="${t.id}" style="text-align:left">${esc(t.title)}</button>`).join('')}</div>`:''})()}
   </div>`;
 }
 function vPhrQuiz(G){const Q=UI.phq,n=G.quiz.length;
