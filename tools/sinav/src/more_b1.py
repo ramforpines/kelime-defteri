@@ -15,8 +15,9 @@ mk('R6','b1r6c','Açık boşluk: Yeni daire','open','Okuma 6 · Açık boşluk',
 
 import more_b1_2 as _m2
 import more_b1_4 as _m4
-MORE['R']+=_m2.R
-MORE['L']=_m4.L
+import more_b1_5 as _m5
+MORE['R']+=_m2.R+_m5.R
+MORE['L']=_m4.L+_m5.L
 import more_b1_3 as _m3
 MORE['W']=_m3.W
 MORE['S']=_m3.S
