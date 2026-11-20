@@ -1,10 +1,16 @@
 # Yeni kalıp grupları için yakın alt grup ve işlev açıklamaları (build.py okur)
-NEAR_X={'hcheck':['hprob','air'],'hprob':['hcheck','air'],'air':['hcheck','hprob'],
+NEAR_X={'jcv':['jint','jask'],'jint':['jcv','jask'],'jask':['jcv','jint'],
+ 'dconc':['dstress','dchall'],'dstress':['dconc','dchall'],'dchall':['dconc','dstress'],
+ 'scls':['sdead','shelp'],'sdead':['scls','shelp'],'shelp':['scls','sdead'],
+ 'hcheck':['hprob','air'],'hprob':['hcheck','air'],'air':['hcheck','hprob'],
  'dsym':['hdoc','dpharm'],'hdoc':['dsym','dpharm'],'dpharm':['dsym','hdoc'],
  'sfit':['sret','sprice'],'sret':['sfit','sprice'],'sprice':['sfit','sret'],
  'ppic':['pgap','pdisc'],'pgap':['ppic','pdisc'],'pdisc':['ppic','pgap'],
  'wmail':['wstory','wart'],'wstory':['wmail','wart'],'wart':['wmail','wstory']}
-FUNC_X={'hcheck':'checking in at a hotel and asking about services','hprob':'reporting a problem in a hotel room','air':'travelling by plane and talking at the airport',
+FUNC_X={'jcv':'writing a job application','jint':'answering questions in a job interview','jask':'asking questions at the end of an interview',
+ 'dconc':'conceding a point in a debate','dstress':'emphasising your point','dchall':'challenging someone\'s argument politely',
+ 'scls':'asking your teacher or lecturer for clarification','sdead':'talking about deadlines and assignments','shelp':'asking classmates for help and offering it',
+ 'hcheck':'checking in at a hotel and asking about services','hprob':'reporting a problem in a hotel room','air':'travelling by plane and talking at the airport',
  'dsym':'describing symptoms to a doctor','hdoc':'the questions and advice a doctor gives','dpharm':'asking for medicine in a pharmacy',
  'sfit':'trying on clothes and asking about sizes','sret':'returning or changing something you bought','sprice':'asking about prices and discounts',
  'ppic':'describing a photograph in a speaking test','pgap':'managing when you cannot find a word or need time to think','pdisc':'discussing options with a partner in a speaking test',
