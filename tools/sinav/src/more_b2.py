@@ -46,3 +46,10 @@ mk('R4','b2r4e','Cümle dönüştürme 5: It yapıları (6 soru)','kwt','Okuma 4
  kw('Is it easy for you to get up early?','FIND','Do ______ to get up early?',['you find it easy'],['it-structures'],'find it + adj + to-inf.'),
  kw('He seems to be tired.','SEEMS','It ______ he is tired.',['seems that'],['it-structures'],'It seems that + cümle.')]),
 ]}
+
+import more_b2_2 as _b22
+MORE['R']+=_b22.R
+import more_b2_3 as _b23
+MORE['W']=_b23.W
+MORE['S']=_b23.S
+MORE['L']=_b23.L
