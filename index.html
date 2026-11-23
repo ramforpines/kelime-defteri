@@ -584,7 +584,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.163.37';
+const APP_VERSION = '4.163.38';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3042,7 +3042,7 @@ const NT={gram:'g:',phr:'p:'};
 const nwIs=k=>NT[k]?(NEWT.some(x=>x.startsWith(NT[k])&&!nwSeen()[x])||(!!NEWF[k]&&!nwSeen()[k])):((NEWT.includes(k)||!!NEWF[k])&&!nwSeen()[k]);
 const nwBd=k=>nwIs(k)?' <span class="nw">Yeni</span>':'';
 const nwMark=k=>{if(!nwIs(k))return;try{const o=nwSeen();o[k]=1;localStorage.setItem('kd-new1',JSON.stringify(o))}catch(e){}};
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['phr','Kalıplar'],['pet','Sınav']]:[]);   // Kalıplar ve Sınav: herkese açık
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['pet','Sınav']]:[]);   // Kalıplar ve Sınav: herkese açık
 const isStudy=t=>(t==='gram'&&GRAM_ON)||((t==='pet'||t==='phr')&&GRAM_BETA)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
@@ -3088,12 +3088,13 @@ function vGramQuiz(T){
   <div style="margin-top:4px"><b>${esc(q.q)}</b></div>${q.o.map((o,j)=>`<button class="btn small${c!=null&&j===q.a?' primary':''}" data-act="gm-ans" data-o="${j}" ${c!=null?'disabled':''} style="${c===j&&j!==q.a?'border-color:#e5484d;color:#e5484d':''}">${esc(o)}</button>`).join('')}
   ${c!=null?`<div class="small ${c===q.a?'ggood':'gbad'}" style="text-decoration:none">${c===q.a?'Doğru. ':'Yanlış. '}<span class="muted">${esc(q.w)}</span></div><button class="btn primary block" data-act="gm-next">${st.cur+1>=n?'Sonucu gör':'Sonraki soru'}</button>`:''}
   <div class="muted small">Bu test puan vermez. Sorular kolaydan zora doğru ilerler.</div></div>`}
+function gpSwitch(a){return`<div class="seg" style="margin-bottom:10px"><button class="chip" aria-pressed="${a==='gram'}" data-tab="gram">Konu anlatımı</button><button class="chip" aria-pressed="${a==='phr'}" data-tab="phr">Kalıplar${nwIs('phr')?'<span class="nw">Yeni</span>':''}</button></div>`}
 function vGram(){
   const G=gramList(),T=UI.gm&&G.find(t=>t.id===UI.gm);
   const css=`<style>.gh{color:var(--accent);font-weight:700}.gx{display:flex;gap:10px;justify-content:space-between;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);font-size:.92rem;cursor:pointer}.gxl>.gx:first-child{border-top:0}.gxe{flex:1.15}.gxt{flex:1;text-align:right;color:var(--muted);font-size:.8rem}.gv{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}.gf{padding:7px 10px;border-radius:8px;background:rgba(120,120,120,.08)}.gbad{color:#e5484d;text-decoration:line-through}.ggood{color:#2e9e5b;font-weight:600}.gq button{display:block;width:100%;text-align:left;margin-top:6px}.gn{padding:8px 10px;border-radius:8px;border-left:3px solid #e0a020;background:rgba(224,160,32,.1);font-size:.88rem}.gt{width:100%;border-collapse:collapse;font-size:.85rem}.gt th{text-align:left;background:rgba(120,120,120,.1);padding:5px 6px;font-size:.75rem}.gt td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:top}</style>`;
   if(!T){
     const lv=['A1','A2','B1','B2','C1','C2'];
-    return css+`<div class="card stack"><h2 style="margin:0">Gramer</h2><div class="muted small">Konu anlatımı; kurallar, örnek cümleler, sık yapılan hatalar ve o konuyla öğrenmen gereken kelimeler. </div></div>`+
+    return css+gpSwitch('gram')+`<div class="card stack"><h2 style="margin:0">Gramer</h2><div class="muted small">Konu anlatımı; kurallar, örnek cümleler, sık yapılan hatalar ve o konuyla öğrenmen gereken kelimeler. </div></div>`+
     lv.map(L=>{const ready=G.filter(t=>t.lv===L),plan=((window.GRAMMAR||[]).filter(t=>t.lv===L&&!G.includes(t)).map(t=>t.title)).concat((window.GRAMMAR_PLAN||{})[L]||[]);if(!ready.length&&!plan.length)return'';
       return`<div class="card stack"><h3 style="margin:0">${L}</h3>${ready.map((t,i)=>(t.cat&&(i===0||ready[i-1].cat!==t.cat)?`<div class="gh small" style="margin-top:8px">${esc(t.cat)} <span class="muted">· ${ready.filter(x=>x.cat===t.cat).length}</span></div>`:'')+`<button class="btn block" data-act="gm-open" data-v="${t.id}" style="text-align:left"><b>${esc(t.title)}</b>${nwBd('g:'+t.id)}<div class="muted small">${esc(t.form_name)}</div></button>`).join('')}${plan.filter(n=>!ready.some(t=>t.title===n)).map(n=>`<div class="small muted" style="padding:4px 2px">• ${esc(n)} <span class="badge">yakında</span></div>`).join('')}</div>`}).join('');
   }
@@ -3124,7 +3125,7 @@ function studySeg(){
   if(UI.tab==='pet'&&((UI.sq&&!UI.sq.done)||UI.sxw||(UI.ps&&(UI.ps.st==='rec'||UI.ps.exam))))return'';
   if(UI.tab==='quiz'&&UI.qmode==='duel')return'';   // düello ortadaki ana menüden açılır, çalışma sekmeleri görünmez
   if(UI.tab==='quiz'&&UI.qmode==='duel'&&['count','play','wait'].includes(DUEL.phase))return'';
-  return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='duel').map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}${nwIs(k)?'<span class="nw">Yeni</span>':''}</button>`).join('')}</div>`;
+  return`<div class="seg" style="margin-bottom:12px">${STUDY.filter(x=>x[0]!=='duel').map(([k,l])=>k==='quiz'||k==='duel'?`<button class="chip" aria-pressed="${UI.tab==='quiz'&&(k==='duel')===(UI.qmode==='duel')}" data-act="qmode" data-v="${k==='duel'?'duel':'solo'}">${l}</button>`:`<button class="chip" aria-pressed="${UI.tab===k||(k==='gram'&&UI.tab==='phr')}" data-tab="${k}"${k==='exam'?` style="background:#6b1f3a;border-color:#6b1f3a;color:#fff;${UI.tab===k?'box-shadow:0 0 0 2px #c05a7d;font-weight:700':'opacity:.9'}"`:''}>${l}${nwIs(k)||(k==='gram'&&nwIs('phr'))?'<span class="nw">Yeni</span>':''}</button>`).join('')}</div>`;
 }
 function renderNav(){
   const adm=true,inDuel=UI.tab==='quiz'&&UI.qmode==='duel';   // ortadaki düello butonu herkeste
@@ -3791,7 +3792,7 @@ const phSaved=()=>{const o={};Object.keys(S.sav||{}).forEach(k=>{if(S.sav[k]>0)o
 function vPhr(){
   if(!window.PHRASES){phLoad();return'<div class="card"><div class="muted">Kalıplar yükleniyor…</div></div>'}
   phMerge();const G=UI.phg&&window.PHRASES.find(g=>g.id===UI.phg);
-  if(!G)return`<div class="top"><h1>Kalıplar</h1></div><div class="stack"><div class="card small">Günlük konuşmada ve sınavlarda en çok kullanılan ifade kalıpları. Her kalıbın Türkçesi ve örnek cümlesi var; dinleyebilir ve kaydedebilirsin. Kaydettiğin kalıplar Kaydedilenler'de görünür, soruları testlerde karşına çıkar.</div>
+  if(!G)return gpSwitch('phr')+`<div class="top"><h1>Kalıplar</h1></div><div class="stack"><div class="card small">Günlük konuşmada ve sınavlarda en çok kullanılan ifade kalıpları. Her kalıbın Türkçesi ve örnek cümlesi var; dinleyebilir ve kaydedebilirsin. Kaydettiğin kalıplar Kaydedilenler'de görünür, soruları testlerde karşına çıkar.</div>
     ${PH_CAT.map(([ct,ids])=>{const gs=ids.map(i=>window.PHRASES.find(g=>g.id===i)).filter(Boolean);if(!gs.length)return'';return`<div class="gh small" style="margin:10px 2px 2px;color:var(--accent);font-weight:700">${esc(ct)} <span class="muted">· ${gs.length}</span></div>`+gs.map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><div class="row" style="justify-content:space-between"><span><b lang="en">${esc(g.en)}</b>${nwBd('p:'+g.id)}</span><span class="small muted">${g.sub.reduce((a,x)=>a+x.items.length,0)}</span></div><div class="small muted">${esc(g.t)}</div></button>`).join('')}).join('')}
     ${window.PHRASES.filter(g=>!PH_CAT.some(c=>c[1].includes(g.id))).map(g=>`<button class="btn block" style="text-align:left" data-act="phr-g" data-v="${g.id}"><b lang="en">${esc(g.en)}</b><div class="small muted">${esc(g.t)}</div></button>`).join('')}
     ${(window.PHRASES_PLAN||[]).length?`<div class="card small">${window.PHRASES_PLAN.map(t=>`<div style="padding:3px 0">• ${esc(t)} <span class="badge">yakında</span></div>`).join('')}</div>`:''}</div>`;
