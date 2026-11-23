@@ -480,13 +480,6 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/s13-3cd706a7be.js"></script>
 <script src="d/s14-9e51e48750.js"></script>
 <script src="d/s15-7d54860c38.js"></script>
-<script src="d/reading-2325feb62e.js"></script>
-<script src="d/reading-tr-f7fbbc1063.js"></script>
-<script src="d/reading2-30c32b47e3.js"></script>
-<script src="d/reading3-84eb18e0db.js"></script>
-<script src="d/reading4-b1533cebc4.js"></script>
-<script src="d/reading5-8096a72bcf.js"></script>
-<script src="d/reading-fix-6a77343e4d.js"></script>
 <script src="d/gloss-6e4fa53eb6.js"></script>
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
@@ -584,7 +577,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.163.40';
+const APP_VERSION = '4.163.41';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1157,7 +1150,7 @@ let POOLN=null;
 /* soru sayısı: tüm sözlüğün soru türlerini cihazda saymak 10+ sn sürüyor; sürüm hazırlanırken sayılıp buraya yazılır (POOL_Q) */
 const POOL_Q=70764;
 function poolCount(){
-  if(!POOLN){let r=0;(window.READINGS||[]).forEach(x=>{r+=(x.q||[]).length});POOLN={w:W.length,q:POOL_Q,r}}
+  if(!POOLN){POOLN={w:W.length,q:POOL_Q}}
   return POOLN;
 }
 function statsCard(){
@@ -1173,7 +1166,7 @@ function statsCard(){
   <div class="kpis">${k(s.solved_today,'bugün çözülen soru')}${k(s.solved_total,'şimdiye kadar çözülen soru')}${k(acc,'% doğru cevap oranı')}</div>
   <div class="kpis">${k(s.learned_today,'bugün öğrenilen kelime')}${k(s.learned_total,'toplam öğrenilen kelime')}${k(s.best_streak,'en uzun seri (gün)')}</div>
   <div class="kpis">${k(s.duels_today,'bugün oynanan düello')}${k(s.duels_total,'şimdiye kadar düello')}${k(s.msgs_today,'bugün sohbet mesajı')}</div>
-  <div class="kpis">${k(poolCount().q,'uygulamadaki soru (kelime testleri)')}${k(poolCount().w,'uygulamadaki kelime')}${k(poolCount().r,'okuma parçası sorusu')}</div>
+  <div class="kpis">${k(poolCount().q,'uygulamadaki soru (kelime testleri)')}${k(poolCount().w,'uygulamadaki kelime')}</div>
   ${s.leader?`<div class="small">🏆 Günün lideri: <b>${esc(s.leader.name)}</b> · ${nf(Math.round(s.leader.pts))} puan</div>`:''}
   ${s.duel_king?`<div class="small">⚔️ En çok düello kazanan: <b>${esc(s.duel_king.name)}</b> · ${s.duel_king.wins} galibiyet</div>`:''}
   <div class="stack" style="gap:4px"><span class="small muted">Lig dağılımı</span>${bars}</div></div>`;
@@ -3369,66 +3362,7 @@ function vDict(){
   <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Tür <span style="font-weight:400">(birden fazla seçebilirsin)</span></div><div class="seg" role="group" aria-label="Tür">${['Hepsi'].concat(POSG).map(p=>`<button class="chip" aria-pressed="${lvOn(D.pos,p)}" data-f="pos" data-v="${esc(p)}">${esc(p==='Hepsi'?p:trType(p))}</button>`).join('')}</div></div>
   <div class="stack" id="dlist">${dictList()}</div></div>`;
 }
-// ---- Okuma parçaları ----
-const RD_PT=2;   // doğru cevap başına puan, seviye katsayısıyla çarpılır; puan yalnızca parçanın ilk çözümünde verilir
-function vRead(){
-  const R=UI.rd||(UI.rd={id:null,pick:{},done:false,lv:'Hepsi'}),all=window.READINGS||[],rd=S.rd||{};
-  const P=R.id&&all.find(x=>x.id===R.id);
-  if(P)return vReadOne(P,R);
-  const list0=all.filter(x=>R.lv==='Hepsi'||x.lv===R.lv),list=list0.filter(x=>!rd[x.id]).concat(list0.filter(x=>rd[x.id]));   // çözülenler listenin sonuna iner
-  const doneN=all.filter(x=>rd[x.id]).length;
-  return`<div class="top"><h1>Okuma</h1></div><div class="stack">
-  <div class="card stack"><div class="muted small">Kısa İngilizce metinleri oku, ardından metinle ilgili soruları cevapla. Doğru cevap başına ${RD_PT} × seviye katsayısı puan kazanırsın; puan, ceza ve hedef bonusu bir parçanın yalnızca ilk çözümünde işler. Cevapların günlük hedefine, doğruluk oranına, seviye istatistiklerine ve serilerine sayılır; yalnızca kelime ilerlemeni (öğrenildi/tekrar listesi) etkilemez.</div>
-  <div class="seg">${['Hepsi'].concat(LEVELS.filter(l=>all.some(x=>x.lv===l))).map(l=>`<button class="chip" aria-pressed="${R.lv===l}" data-act="rd-lv" data-v="${l}">${l}</button>`).join('')}</div>
-  <div class="small muted">${all.length} parça · ${doneN} tanesini çözdün</div></div>
-  ${list.map(x=>{const r=rd[x.id];return`<button class="card" style="text-align:left;display:block;width:100%" data-act="rd-open" data-v="${esc(x.id)}"><div class="row" style="justify-content:space-between;gap:8px"><b>${esc(x.t)}</b>${lvTag(x.lv)}</div><div class="small muted" style="margin-top:4px">${x.q.length} soru${r?` · en iyi: ${r.b}/${r.n}`:' · henüz çözülmedi'}</div></button>`}).join('')||'<div class="card muted">Bu seviyede parça yok.</div>'}
-  </div>`;
-}
-function rdItem(P,R,qi){
-  const q=P.q[qi],ord=(R.ord&&R.ord[qi])||q.o.map((o,i)=>i),R2=R.rits||(R.rits={});
-  const it=R2[qi]||(R2[qi]={rd:true,rp:0});
-  it.w={word:'Okuma: '+P.t};it.f='Okuma';it.question=q.q;it.options=ord.map(i=>q.o[i]);it.correct=q.o[q.a];
-  const pk=R.pick[qi];it.chosen=pk==null?null:ord.indexOf(pk);
-  return it;
-}
-function vReadOne(P,R){
-  const TR=(window.READINGS_TR||{})[P.id],done=R.done,rd=(S.rd||{})[P.id];
-  const right=done?P.q.filter((q,i)=>R.pick[i]===q.a).length:0;
-  const answered=Object.keys(R.pick).length;
-  return`<div class="top"><h1>${esc(P.t)}</h1></div><div class="stack">
-  <div class="row"><button class="btn" data-act="rd-close">← Listeye dön</button>${lvTag(P.lv)}</div>
-  <div class="card stack" lang="en">${P.p.map(t=>`<p style="margin:0;line-height:1.65">${esc(t)}</p>`).join('')}</div>
-  ${P.g&&P.g.length?`<details class="card small"><summary style="cursor:pointer;font-weight:600">Yardımcı kelimeler</summary><div class="stack" style="margin-top:8px;gap:4px">${P.g.map(g=>`<div><b>${esc(g[0])}</b> <span class="muted">${esc(g[1])}</span></div>`).join('')}</div></details>`:''}
-  ${P.q.map((q,qi)=>{const ri=rdItem(P,R,qi);return`<div class="card qcard"><div class="row" style="margin-bottom:6px"><span class="small muted">Soru ${qi+1}/${P.q.length}</span>${ri.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rd-rep" data-v="${qi}" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}</div><h2 lang="en">${esc(q.q)}</h2>
-    <div class="opts">${(R.ord&&R.ord[qi]||q.o.map((o,i)=>i)).map((oi,di)=>{const o=q.o[oi];let k='';if(done){if(oi===q.a)k='ok';else if(oi===R.pick[qi])k='bad'}else if(R.pick[qi]===oi)k='sel';
-      return`<button class="opt ${k}" ${done?'disabled':`data-act="rd-pick" data-v="${qi}:${oi}" aria-pressed="${R.pick[qi]===oi}"`} lang="en"><kbd>${'ABCD'[di]}</kbd><span>${esc(o)}</span></button>`}).join('')}</div>
-    ${done&&q.e?`<div class="fb ${R.pick[qi]===q.a?'ok':'bad'}"><b class="t">${R.pick[qi]===q.a?'Doğru':'Yanlış'}</b><div class="small">${esc(q.e)}</div></div>`:''}${repForm(ri)}</div>`}).join('')}
-  ${done?`<div class="card stack"><h2>Sonuç: ${right}/${P.q.length}</h2><div class="muted small">${R.first?(R.gain>=0?`+${nf(Math.round(R.gain*100)/100)} puan kazandın.`:`−${nf(Math.round(-R.gain*100)/100)} puan (yanlış cevap cezası).`):'Bu parçayı daha önce çözdüğün için puan eklenmedi; cevapların istatistiklerine işlendi.'}${rd?` En iyi sonucun: ${rd.b}/${rd.n}.`:''}</div>
-    <div class="row"><button class="btn primary" data-act="rd-retry">Yeniden dene</button><button class="btn" data-act="rd-close">Listeye dön</button></div></div>`
-  :`<button class="btn primary block" data-act="rd-check" ${answered<P.q.length?'disabled':''}>Cevapları kontrol et (${answered}/${P.q.length})</button>`}
-  </div>`;
-}
-function rdCheck(){
-  const R=UI.rd,P=R&&(window.READINGS||[]).find(x=>x.id===R.id);
-  if(!P||R.done||Object.keys(R.pick).length<P.q.length)return;
-  S.rd=S.rd||{};const old=S.rd[P.id],first=!old;
-  const cf=COEF[P.lv]||1,d=dayStat(),G=goalEff();
-  let right=0,gain=0;
-  P.q.forEach((q,qi)=>{
-    const ok=R.pick[qi]===q.a;if(ok)right++;
-    if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
-    d.a++;if(ok)d.c++;
-    const lv=S.lv[P.lv]||(S.lv[P.lv]=[0,0]);lv[ok?0:1]++;
-    const dl=d.l||(d.l={});const dv=dl[P.lv]||(dl[P.lv]=[0,0]);dv[0]++;if(ok)dv[1]++;
-    CUR_EV=evAdd(d,evKey(d,'r|'+P.id+'|'+qi),{t:'q',ok:ok?1:0,lv:P.lv,pts:0});
-    if(!first)return;   // puan, ceza ve hedef bonusu yalnızca parçanın ilk çözümünde
-    if(ok){gain+=addPts(cf*RD_PT,'c');if(d.c===G)gain+=addPts(10+Math.min(streak(),10),'b')}
-    else if(myLeague()>=3)gain+=addPts(-(myLeague()>=6?1:0.25)*cf*RD_PT,'w');
-  });
-  CUR_EV=null;
-  if(!old||right>=old.b)S.rd[P.id]={b:right,n:P.q.length,d:today()};
-  R.done=true;R.gain=gain;R.first=first;save();render();
-}
+const RD_PT=2;   // doğru cevap başına puan, seviye katsayısıyla çarpılı
 /* ---------- sınav (ders kelimeleri) ---------- */
 const EXAM_PART=[['g','Boşluk doldurma'],['w','Kelime testi'],['e','Örnek cümle'],['d','Tanım → kelime'],['r','Okuma'],['l','Dinleme'],['k','Kalıp ifadeler']];
 const exU=id=>(window.EXAM||[]).find(x=>x.id===id);
@@ -5851,13 +5785,6 @@ document.addEventListener('click',async e=>{
     case'quit':UI.quiz=null;UI.qmode='solo';render();break;
     case'exam-start':examStart(g('data-v'));break;
     case'exam-words':{UI.exw=UI.exw===g('data-v')?null:g('data-v');render();break}
-    case'rd-rep':{const R0=UI.rd,P0=R0&&(window.READINGS||[]).find(x=>x.id===R0.id);if(P0){UI.rep={it:rdItem(P0,R0,+g('data-v')),reason:'multi',note:'',busy:false};const y=window.scrollY;render();window.scrollTo(0,y)}break}
-    case'rd-lv':(UI.rd||(UI.rd={id:null,pick:{},done:false,lv:'Hepsi'})).lv=g('data-v');render();break;
-    case'rd-open':{const P0=(window.READINGS||[]).find(x=>x.id===g('data-v'));UI.rd=Object.assign(UI.rd||{lv:'Hepsi'},{id:g('data-v'),pick:{},done:false,gain:0,rits:{},ord:P0?P0.q.map(q=>shuffle(q.o.map((o,i)=>i))):null});}render();window.scrollTo(0,0);break;
-    case'rd-close':UI.rep=null;if(UI.rd){UI.rd.id=null;UI.rd.pick={};UI.rd.done=false}render();window.scrollTo(0,0);break;
-    case'rd-pick':{const v=g('data-v').split(':');if(UI.rd&&!UI.rd.done){UI.rd.pick[+v[0]]=+v[1];const y=window.scrollY;render();window.scrollTo(0,y)}break}
-    case'rd-check':rdCheck();window.scrollTo(0,0);break;
-    case'rd-retry':if(UI.rd){UI.rd.pick={};UI.rd.done=false;UI.rd.gain=0;UI.rd.rits={};const P1=(window.READINGS||[]).find(x=>x.id===UI.rd.id);if(P1)UI.rd.ord=P1.q.map(q=>shuffle(q.o.map((o,i)=>i)))}render();window.scrollTo(0,0);break;
     case'again':UI.quiz=null;UI.qmode='solo';render();break;
     case'home':UI.quiz=null;setTab('today');break;
     case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=UI.tab==='saved'?savedList():dictList();break}
