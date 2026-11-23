@@ -53,3 +53,7 @@ import more_b2_3 as _b23
 MORE['W']=_b23.W
 MORE['S']=_b23.S
 MORE['L']=_b23.L
+
+import more_b2_5 as _b25
+MORE['R']+=_b25.R
+MORE['L']+=_b25.L
