@@ -584,7 +584,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.163.36';
+const APP_VERSION = '4.163.37';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3398,11 +3398,10 @@ function vReadOne(P,R){
   return`<div class="top"><h1>${esc(P.t)}</h1></div><div class="stack">
   <div class="row"><button class="btn" data-act="rd-close">← Listeye dön</button>${lvTag(P.lv)}</div>
   <div class="card stack" lang="en">${P.p.map(t=>`<p style="margin:0;line-height:1.65">${esc(t)}</p>`).join('')}</div>
-  ${done&&TR&&TR.p?`<details class="card" open><summary style="cursor:pointer;font-weight:600">Türkçe çevirisi</summary><div class="stack" style="margin-top:8px">${TR.p.map(t=>`<p style="margin:0;line-height:1.6">${esc(t)}</p>`).join('')}</div></details>`:''}
   ${P.g&&P.g.length?`<details class="card small"><summary style="cursor:pointer;font-weight:600">Yardımcı kelimeler</summary><div class="stack" style="margin-top:8px;gap:4px">${P.g.map(g=>`<div><b>${esc(g[0])}</b> <span class="muted">${esc(g[1])}</span></div>`).join('')}</div></details>`:''}
-  ${P.q.map((q,qi)=>{const ri=rdItem(P,R,qi);return`<div class="card qcard"><div class="row" style="margin-bottom:6px"><span class="small muted">Soru ${qi+1}/${P.q.length}</span>${ri.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rd-rep" data-v="${qi}" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}</div><h2 lang="en">${esc(q.q)}</h2>${done&&TR&&TR.q&&TR.q[qi]?`<div class="small muted" style="margin:-4px 0 10px">${esc(TR.q[qi].q)}</div>`:''}
+  ${P.q.map((q,qi)=>{const ri=rdItem(P,R,qi);return`<div class="card qcard"><div class="row" style="margin-bottom:6px"><span class="small muted">Soru ${qi+1}/${P.q.length}</span>${ri.rp?'<span class="small muted" style="margin-left:auto">✓ Bildirildi</span>':`<button class="btn" style="margin-left:auto;padding:4px 10px;font-size:.8rem" data-act="rd-rep" data-v="${qi}" aria-label="Bu soruyu hatalı olarak bildir">⚑ Bildir</button>`}</div><h2 lang="en">${esc(q.q)}</h2>
     <div class="opts">${(R.ord&&R.ord[qi]||q.o.map((o,i)=>i)).map((oi,di)=>{const o=q.o[oi];let k='';if(done){if(oi===q.a)k='ok';else if(oi===R.pick[qi])k='bad'}else if(R.pick[qi]===oi)k='sel';
-      return`<button class="opt ${k}" ${done?'disabled':`data-act="rd-pick" data-v="${qi}:${oi}" aria-pressed="${R.pick[qi]===oi}"`} lang="en"><kbd>${'ABCD'[di]}</kbd><span>${esc(o)}${done&&TR&&TR.q&&TR.q[qi]&&TR.q[qi].o[oi]?`<br><span class="small muted">${esc(TR.q[qi].o[oi])}</span>`:''}</span></button>`}).join('')}</div>
+      return`<button class="opt ${k}" ${done?'disabled':`data-act="rd-pick" data-v="${qi}:${oi}" aria-pressed="${R.pick[qi]===oi}"`} lang="en"><kbd>${'ABCD'[di]}</kbd><span>${esc(o)}</span></button>`}).join('')}</div>
     ${done&&q.e?`<div class="fb ${R.pick[qi]===q.a?'ok':'bad'}"><b class="t">${R.pick[qi]===q.a?'Doğru':'Yanlış'}</b><div class="small">${esc(q.e)}</div></div>`:''}${repForm(ri)}</div>`}).join('')}
   ${done?`<div class="card stack"><h2>Sonuç: ${right}/${P.q.length}</h2><div class="muted small">${R.first?(R.gain>=0?`+${nf(Math.round(R.gain*100)/100)} puan kazandın.`:`−${nf(Math.round(-R.gain*100)/100)} puan (yanlış cevap cezası).`):'Bu parçayı daha önce çözdüğün için puan eklenmedi; cevapların istatistiklerine işlendi.'}${rd?` En iyi sonucun: ${rd.b}/${rd.n}.`:''}</div>
     <div class="row"><button class="btn primary" data-act="rd-retry">Yeniden dene</button><button class="btn" data-act="rd-close">Listeye dön</button></div></div>`
