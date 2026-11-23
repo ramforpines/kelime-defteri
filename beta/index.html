@@ -491,7 +491,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-e6d9ddfc2f.js", "sinav.js": "d/sinav-fb249c3e83.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-e6d9ddfc2f.js", "sinav.js": "d/sinav-7820b1f81c.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -584,7 +584,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.163.39';
+const APP_VERSION = '4.163.40';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3042,8 +3042,8 @@ const NT={gram:'g:',phr:'p:'};
 const nwIs=k=>NT[k]?(NEWT.some(x=>x.startsWith(NT[k])&&!nwSeen()[x])||(!!NEWF[k]&&!nwSeen()[k])):((NEWT.includes(k)||!!NEWF[k])&&!nwSeen()[k]);
 const nwBd=k=>nwIs(k)?' <span class="nw">Yeni</span>':'';
 const nwMark=k=>{if(!nwIs(k))return;try{const o=nwSeen();o[k]=1;localStorage.setItem('kd-new1',JSON.stringify(o))}catch(e){}};
-const STUDY=[['dict','Sözlük'],['quiz','Test'],['read','Okuma'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['pet','Sınav']]:[]);   // Kalıplar ve Sınav: herkese açık
-const isStudy=t=>(t==='gram'&&GRAM_ON)||((t==='pet'||t==='phr')&&GRAM_BETA)||t==='dict'||t==='quiz'||t==='review'||t==='read'||t==='exam'||t==='saved';
+const STUDY=[['dict','Sözlük'],['quiz','Test'],['review','Tekrar'],['saved','Kaydedilenler']].concat(GRAM_ON?[['gram','Gramer']]:[]).concat(GRAM_BETA?[['pet','Sınav']]:[]);   // Kalıplar ve Sınav: herkese açık
+const isStudy=t=>(t==='gram'&&GRAM_ON)||((t==='pet'||t==='phr')&&GRAM_BETA)||t==='dict'||t==='quiz'||t==='review'||t==='exam'||t==='saved';
 const isSaved=w=>!!(S.sav&&S.sav[w]>0);
 function toggleSaved(w){S.sav=S.sav||{};S.sav[w]=isSaved(w)?-Date.now():Date.now();save()}
 const savedWords=()=>Object.keys(S.sav||{}).filter(k=>S.sav[k]>0&&BYWORD.has(k)).sort((a,b)=>S.sav[b]-S.sav[a]).map(k=>BYWORD.get(k));
@@ -3221,7 +3221,6 @@ function render(){
   if(UI.tab==='today')h=vToday();
   else if(UI.tab==='dict')h=vDict();
   else if(UI.tab==='quiz')h=UI.quiz?vQuiz():(UI.qmode==='duel'?vDuel():vQuizSetup());
-  else if(UI.tab==='read')h=vRead();
   else if(UI.tab==='exam')h=UI.quiz?vQuiz():vExam();
   else if(UI.tab==='review')h=vReview();
   else if(UI.tab==='saved')h=vSaved();
