@@ -57,3 +57,6 @@ MORE['L']=_b23.L
 import more_b2_5 as _b25
 MORE['R']+=_b25.R
 MORE['L']+=_b25.L
+
+import okuma_import as _oi
+MORE['R']+=_oi.BY.get('B2',[])

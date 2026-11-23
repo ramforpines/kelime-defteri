@@ -22,3 +22,6 @@ import more_b1_3 as _m3
 import more_b1_6 as _m6
 MORE['W']=_m3.W+_m6.W
 MORE['S']=_m3.S+_m6.S
+
+import okuma_import as _oi
+MORE['R']+=_oi.BY.get('B1',[])

@@ -12,3 +12,6 @@ mk('R5','a2r5b','Açık boşluk: Yeni okul','open','Okuma 5 · Açık boşluk','
  tg=[['gerund-infinitive'],['there-is-are'],['to-be'],['prepositions-in-on-at'],['to-be'],['gerund-infinitive']],
  e=['amaç: write to tell.','there are + çoğul.','my favourite lesson is: tekil özne.','by bus: otobüsle.','What are you doing: Present Continuous sorusu.','want to + yalın fiil.']),
 ]}
+
+import okuma_import as _oi
+MORE['R']+=_oi.BY.get('A2',[])

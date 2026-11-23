@@ -39,3 +39,8 @@ IMG={'b1-rain':'Two girls are walking in the rain with colourful umbrellas. A bu
 'c1-phone':'A teenage boy is showing his grandmother how to use a smartphone on the sofa.',
 'c1-mechanic':'An experienced mechanic is showing a young apprentice how to repair a car in a garage.',
 'c1-globe':'A teacher is showing a globe to a group of young children in a classroom.'}
+
+import sys,os
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import okuma_import as _oi
+T.update(_oi.TITLES)
