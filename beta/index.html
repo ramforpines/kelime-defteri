@@ -419,18 +419,18 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/w02-a9cc5e9251.js"></script>
 <script src="d/w03-a56bd95d8e.js"></script>
 <script src="d/w04-03c3f52c65.js"></script>
-<script src="d/w05-9f865a2fcb.js"></script>
-<script src="d/w06-dfd2dbc043.js"></script>
-<script src="d/w07-9d375ac546.js"></script>
-<script src="d/w08-112f52ff84.js"></script>
-<script src="d/w09-22dea443b4.js"></script>
-<script src="d/w10-4b999e51b7.js"></script>
-<script src="d/w11-16ef669d7a.js"></script>
-<script src="d/w12-513f9ba91d.js"></script>
-<script src="d/w13-3efaab79ff.js"></script>
-<script src="d/w14-70b67c8d9d.js"></script>
-<script src="d/w15-55640e3f0b.js"></script>
-<script src="d/w16-9bcd3e5a0d.js"></script>
+<script src="d/w05-5eb37b0900.js"></script>
+<script src="d/w06-b97dada2c6.js"></script>
+<script src="d/w07-6951a2f552.js"></script>
+<script src="d/w08-8726f8e0f9.js"></script>
+<script src="d/w09-01776f5baa.js"></script>
+<script src="d/w10-51951f6a27.js"></script>
+<script src="d/w11-5f45f1eff6.js"></script>
+<script src="d/w12-4cbf9b579b.js"></script>
+<script src="d/w13-9a3ef38e89.js"></script>
+<script src="d/w14-e46dd034e9.js"></script>
+<script src="d/w15-feb063e2c3.js"></script>
+<script src="d/w16-40180067a8.js"></script>
 <script src="d/grammar-24c5272e6a.js"></script>
 <script src="d/x00-f86d17b433.js"></script>
 <script src="d/x01-ef03f3761c.js"></script>
@@ -491,7 +491,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-e6d9ddfc2f.js", "sinav.js": "d/sinav-210b9a91f9.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-e6d9ddfc2f.js", "sinav.js": "d/sinav-9bb47052ba.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -584,20 +584,23 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.163.35';
+const APP_VERSION = '4.163.36';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
 function exTr(w){const t=w&&w.ex;if(!t)return '';const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
 let mem=null;
 const COLORS=['#2b4eff','#0f766e','#be123c','#7e22ce','#b45309','#0369a1','#4d7c0f','#475569'];
+/* birleştirilen yinelenen sözcükler: eski kayıt anahtarı -> kalan kayıt (ilerleme taşınır) */
+const WALIAS={"don't mention it": "don't mention it.", "compensate": "compensate (for)", "compensate for": "compensate (for)", "attribute": "attribute (to)", "comply": "comply (with)", "comply with": "comply (with)", "susceptible": "susceptible (to)", "do away with": "do away with someone", "back on your feet": "back on one's feet", "motor racing": "motor-racing", "loss-leader": "loss leader", "hard-up": "hard up", "well-known": "well known", "out-of-date": "out of date", "up-to-date": "up to date", "burn your bridges": "burn bridges", "give someone a hand": "give a hand", "face to face": "face-to-face", "worn-out": "worn out", "look forward": "look forward to", "devote something to something": "devote to", "gear something to something": "gear to", "hang on to something": "hang on to", "look forward to something": "look forward to", "object to something": "object to", "pride yourself on something": "pride yourself on", "resort to something": "resort to", "skirt around something": "skirt around", "get down to something": "get down to", "get your head round something": "get your head round"};
+function wAlias(s){if(!s)return s;['prog','learned','wrong','sav'].forEach(f=>{const o=s[f];if(!o||typeof o!=='object')return;Object.keys(WALIAS).forEach(a=>{if(!(a in o))return;const b=WALIAS[a],v=o[a];if(!(b in o))o[b]=v;else if(Array.isArray(o[b])&&Array.isArray(v))v.forEach(x=>{if(!o[b].includes(x))o[b].push(x)});delete o[a]})});return s}
 function fresh(){return{v:1,prog:{},learned:{},wrong:{},lv:{},days:{},set:{count:20,level:'Hepsi',type:'Hepsi',goal:20,notif:false,hour:19},prof:{name:'',color:0,show:true,av:0,frame:'auto'},lastNotif:'',upd:0,bd:{},bs:0,br:0,run:0,sv:2,tp:0,pc:addDays(today(),-1),wd:{d:'',m:{}},pen:[],wlog:[],rd:{},seen:{},exa:{},ex:{},exq:{},exc:{},sav:{},wq:{d:'',done:[]},rwd:{}}}
 function load(uid){
   let raw=null;
   try{raw=localStorage.getItem(KEY+'-'+uid)}catch(e){}
   let s=fresh();
   if(raw){try{const p=JSON.parse(raw);s=Object.assign(s,p);s.set=Object.assign(fresh().set,p.set||{});s.prof=Object.assign(fresh().prof,p.prof||{})}catch(e){}}
-  return s;
+  return wAlias(s);
 }
 let S=fresh();
 /* okundu işaretleri (duyuru, duyuru penceresi, yönetici yanıtı, sohbet): hesaba bağlı, tüm cihazlarda ortak. Birleştirmede büyük olan kazanır */
@@ -1042,7 +1045,7 @@ async function pushNow(){
 const stAns=s=>{let n=0;Object.values((s&&s.lv)||{}).forEach(x=>{n+=(x[0]|0)+(x[1]|0)});return n};
 const stEmpty=s=>!s||(stAns(s)===0&&!Object.keys(s.learned||{}).length&&!Object.keys(s.wrong||{}).length&&!Object.keys(s.days||{}).length&&!((s.tp||0)>0));
 const stSig=s=>{const c=Object.assign({},s);delete c.upd;delete c.rs;return JSON.stringify(c)};
-function normState(x){const s=Object.assign(fresh(),x);s.set=Object.assign(fresh().set,x.set||{});s.prof=Object.assign(fresh().prof,x.prof||{});return s}
+function normState(x){const s=Object.assign(fresh(),x);s.set=Object.assign(fresh().set,x.set||{});s.prof=Object.assign(fresh().prof,x.prof||{});return wAlias(s)}
 /* aynı gün iki cihazda çözülenleri olay anahtarlarıyla birleştirir: ortak olanlar bir kez, ayrı kalanlar toplanarak işlenir */
 function evAgg(ev){const g={n:0,c:0,qs:0,dp:0,adj:0,l:{}};Object.keys(ev||{}).forEach(k=>{const e=ev[k];if(e.t==='q'){g.n++;g.c+=e.ok?1:0;g.qs+=e.pts||0;const l=g.l[e.lv]||(g.l[e.lv]=[0,0]);l[0]++;l[1]+=e.ok?1:0}else if(e.t==='p')g.dp+=e.pts||0;else if(e.t==='a')g.adj+=e.pts||0});return g}
 function mergeDay(x,y){
@@ -1107,7 +1110,7 @@ async function pullState(){
     return false;
   }
   const before=stSig(S);
-  const m=rst||stEmpty(S)?normState(cl):mergeStates(S,normState(cl));
+  const m=wAlias(rst||stEmpty(S)?normState(cl):mergeStates(S,normState(cl)));
   const changed=stSig(m)!==before;
   if(changed){S=m;S.upd=Date.now();persistLocal()}
   CLOUD.pulled=true;CLOUD.pullDay=today();try{if(fixFalsePen()>0){S.upd=Date.now();persistLocal();schedulePush()}}catch(e){}
