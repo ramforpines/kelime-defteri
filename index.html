@@ -587,7 +587,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.171.0';
+const APP_VERSION = '4.171.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -789,7 +789,7 @@ async function wlvSet(word,level){
   if(!CLOUD.admin||!sb)return;
   const r=await sb.rpc('admin_set_word_level',{p_word:word,p_level:level||''});
   if(r.error){toast('Kaydedilemedi: '+(r.error.message||'hata')+(/function|relation/.test(r.error.message||'')?' (supabase-levels.sql çalıştırıldı mı?)':''),5000);return}
-  const o=Object.assign({},WLV.ov);if(level)o[word]=level;else delete o[word];try{localStorage.setItem('kd-wlv',JSON.stringify(o))}catch(e){}wlvApply(o);toast(level?word+' → '+level:word+': varsayılan seviyeye döndü');render();
+  const o=Object.assign({},WLV.ov);if(level)o[word]=level;else delete o[word];try{localStorage.setItem('kd-wlv',JSON.stringify(o))}catch(e){}wlvApply(o);toast(level?word+' → '+level:word+': varsayılan seviyeye döndü');const dl=$('#dlist');if(dl&&UI.tab==='dict')dl.innerHTML=dictList();else render();   // listede kal, kaydırma bozulmasın
 }
 const LVTOTAL={};W.forEach(w=>{LVTOTAL[w.level]=(LVTOTAL[w.level]||0)+1});
 setTimeout(()=>{try{const o=JSON.parse(localStorage.getItem('kd-wlv')||'{}');if(Object.keys(o).length)wlvApply(o)}catch(e){}},0);
@@ -3588,12 +3588,17 @@ function afxHtml(w){   // ön/son ek kartı: bu eki alan sık kelimeler (afx.js)
   const mark=x=>{const lx=x.toLowerCase();if(pre&&lx.startsWith(k))return'<b>'+esc(x.slice(0,k.length))+'</b>'+esc(x.slice(k.length));const i=lx.lastIndexOf(k);return !pre&&i>0?esc(x.slice(0,i))+'<b>'+esc(x.slice(i))+'</b>':esc(x)};
   return`<dt style="grid-column:1/-1;margin-top:4px">Bu eki alan sık kelimeler</dt><dd style="grid-column:1/-1"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px">${L.map(([x,t])=>`<div style="background:var(--surface2);border-radius:10px;padding:6px 10px;line-height:1.25"><div lang="en">${mark(x)}</div><div class="muted small">${esc(t)}</div></div>`).join('')}</div></dd>`;
 }
+function admQuick(w){   // yönetici: kartı açmadan seviye ve Odak (herkes) düğmeleri
+  const b='style="padding:2px 9px;min-height:28px;font-size:.8rem"';
+  return`<div class="row" style="gap:4px;flex-wrap:wrap;align-items:center;padding:0 12px 10px"><span class="small muted" style="margin-right:2px">🛡 ${esc(trFirst(w.tr))}</span>${LEVELS.map(l=>`<button class="chip" ${b} aria-pressed="${w.level===l}" data-act="adm-lv" data-w="${esc(w.word)}" data-v="${l}">${l}</button>`).join('')}${WLV.ov[w.word]?`<button class="chip" ${b} data-act="adm-lv" data-w="${esc(w.word)}" data-v="" title="varsayılan seviyeye dön">↺</button>`:''}${(window.CORE||[]).length?`<button class="chip" ${b} aria-pressed="${inFocus(w.word)}" data-act="fo-w" data-w="${esc(w.word)}">🎯${inFocus(w.word)?' Odakta':' Ekle'}</button>`:''}</div>`;
+}
 function entryHtml(w,fixed){   // fixed: vize kelime listesi, sözlükteki açık kayıtla aynı içerik
   const open=fixed||UI.dict.open===w.word;
   const st=S.learned[w.word]?'<span class="badge ok">Öğrenildi</span>':S.wrong[w.word]?'<span class="badge bad">Tekrarda</span>':'';
   return`<div class="entry"><button class="head" ${fixed?'':`data-act="toggle" data-w="${esc(w.word)}" `}aria-expanded="${open}">
     <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def||(w.phr?w.tr:''))}</span></span>
     <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
+    ${CLOUD.admin&&!fixed&&!w.phr&&!w.gram?admQuick(w):''}
     ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${w.phr?'<br><span class="extr">('+esc(w.phr.ex[1])+')</span>':exTr(w)}</dd>${exMore(w)}${labHtml(w)}${confHtml(w)}${patHtml(w)}${afxHtml(w)}${famHtml(w)}${mwHtml(w)}
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
       ${senseHtml(w)}
