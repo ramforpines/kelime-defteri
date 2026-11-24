@@ -76,6 +76,7 @@ summary::-webkit-details-marker{display:none}
 .btn.primary:hover{filter:brightness(1.08)}
 .btn.danger{color:var(--bad);border-color:var(--bad)}
 .btn.block{width:100%}
+.fbox{border:1px solid var(--line);border-radius:14px;padding:10px 12px 12px;background:var(--surface)}.fbox>.fbt{font-size:.82rem;font-weight:700;color:var(--muted);margin:0 0 8px;letter-spacing:.01em}.fbox>.fbt span{font-weight:400}.fbox h3{margin:0}.fbox .seg{margin-top:0}
 .btn.go{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .btn.go:hover{background:var(--accent);filter:brightness(1.08)}
 .btn.go .gt{flex:0 0 auto;font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.22)}
@@ -587,7 +588,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.172.2';
+const APP_VERSION = '4.172.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3655,14 +3656,14 @@ const DKG=()=>({w:DKN().gw,i:DKN().gi});
 function vDict(){
   const D=UI.dict;
   return`<div class="top"><h1>Sözlük</h1><span class="muted small">${nf(W.length)} kayıt</span></div>
-  <div class="stack"><div class="seg" role="tablist" aria-label="Sözlük bölümü"><button class="chip" role="tab" aria-pressed="${(D.kind||'w')==='w'}" data-act="dk" data-v="w">📖 Kelimeler (${nf(DKN().w)})</button><button class="chip" role="tab" aria-pressed="${D.kind==='i'}" data-act="dk" data-v="i">💬 İfadeler (${nf(DKN().i)})</button></div>
-  <div class="small muted" style="margin:-4px 2px 0">${D.kind==='i'?'Phrasal verb, deyim, kolokasyon, kalıp ve atasözleri.':'Tek kelimeler.'}</div>
+  <div class="stack"><div class="fbox"><div class="fbt">Bölüm</div><div class="seg" role="tablist" aria-label="Sözlük bölümü"><button class="chip" role="tab" aria-pressed="${(D.kind||'w')==='w'}" data-act="dk" data-v="w">📖 Kelimeler (${nf(DKN().w)})</button><button class="chip" role="tab" aria-pressed="${D.kind==='i'}" data-act="dk" data-v="i">💬 İfadeler (${nf(DKN().i)})</button></div>
+  <div class="small muted" style="margin:6px 2px 0">${D.kind==='i'?'Phrasal verb, deyim, kolokasyon, kalıp ve atasözleri.':'Tek kelimeler.'}</div></div>
   ${CLOUD.admin?`<div class="card small row" style="justify-content:space-between;align-items:center;gap:8px;padding:8px 12px"><span>🛡 Seviye ayarı: <b>${nf(Object.keys(WLV.ov).length)}</b> · Odak düzenlemesi: <b>${nf(Object.keys(GCORE).length)}</b></span><button class="btn" data-act="wlv-copy" style="min-height:32px;padding:3px 12px;font-size:.82rem">📋 Kopyala</button></div>${UI.wlvTxt?`<textarea readonly style="width:100%;min-height:80px;font-size:.75rem" onclick="this.select()">${esc(UI.wlvTxt)}</textarea>`:''}`:''}
   <input id="q" class="search" type="search" placeholder="${D.kind==='i'?'İfade, Türkçe karşılık veya tanım ara':'Kelime, Türkçe karşılık veya tanım ara'}" value="${esc(D.q)}" autocomplete="off">
-  ${(window.CORE||[]).length?`<div class="seg" role="group" aria-label="Kelime havuzu"><button class="chip" aria-pressed="${!focusOn()&&D.fx!=='out'}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${focusOn()&&D.fx!=='out'}" data-act="focus-set" data-v="1">🎯 Odak (${nf(coreSize())})</button><button class="chip" aria-pressed="${D.fx==='out'}" data-act="dfx-out">➕ Odak dışı</button></div>${D.fx==='out'?'<div class="small muted" style="margin:-4px 2px 0">Odak listende olmayan kelimeler, en sık kullanılan üstte. 🎯 ile ekle; eklediğin kelime buradan düşer.</div>':''}`:''}
-  <div class="seg" role="group" aria-label="Seviye (birden fazla seçilebilir)">${['Hepsi'].concat(LEVELS).map(v=>`<button class="chip" aria-pressed="${lvOn(D.level,v)}" data-f="level" data-v="${v}">${v}</button>`).join('')}</div>
-  ${chips('status',['Hepsi','Öğrenilmeyen','Öğrenilen','Tekrarda'],D.status)}
-  <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Tür <span style="font-weight:400">(birden fazla seçebilirsin)</span></div><div class="seg" role="group" aria-label="Tür">${['Hepsi'].concat(POSG.filter(p=>DKG()[D.kind||'w'].has(p))).map(p=>`<button class="chip" aria-pressed="${lvOn(D.pos,p)}" data-f="pos" data-v="${esc(p)}">${esc(p==='Hepsi'?p:trType(p))}</button>`).join('')}</div></div>
+  ${(window.CORE||[]).length?`<div class="fbox"><div class="fbt">Kelime havuzu</div><div class="seg" role="group" aria-label="Kelime havuzu"><button class="chip" aria-pressed="${!focusOn()&&D.fx!=='out'}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${focusOn()&&D.fx!=='out'}" data-act="focus-set" data-v="1">🎯 Odak (${nf(coreSize())})</button><button class="chip" aria-pressed="${D.fx==='out'}" data-act="dfx-out">➕ Odak dışı</button></div><div class="small muted" style="margin:6px 2px 0">${D.fx==='out'?'Odak listende olmayan kelimeler, en sık kullanılan üstte. 🎯 ile ekle; eklediğin kelime buradan düşer.':focusOn()?'Yalnız Odak listendeki kelimeler.':'Sözlüğün tamamı. 🎯 işaretliler Odak listende.'}</div></div>`:''}
+  <div class="fbox"><div class="fbt">Seviye <span>(birden fazla seçebilirsin)</span></div><div class="seg" role="group" aria-label="Seviye (birden fazla seçilebilir)">${['Hepsi'].concat(LEVELS).map(v=>`<button class="chip" aria-pressed="${lvOn(D.level,v)}" data-f="level" data-v="${v}">${v}</button>`).join('')}</div></div>
+  <div class="fbox"><div class="fbt">Durum</div>${chips('status',['Hepsi','Öğrenilmeyen','Öğrenilen','Tekrarda'],D.status)}</div>
+  <div class="fbox"><div class="fbt">Tür <span>(birden fazla seçebilirsin)</span></div><div class="seg" role="group" aria-label="Tür">${['Hepsi'].concat(POSG.filter(p=>DKG()[D.kind||'w'].has(p))).map(p=>`<button class="chip" aria-pressed="${lvOn(D.pos,p)}" data-f="pos" data-v="${esc(p)}">${esc(p==='Hepsi'?p:trType(p))}</button>`).join('')}</div></div>
   <div class="stack" id="dlist">${dictList()}</div></div>`;
 }
 const RD_PT=2;   // doğru cevap başına puan, seviye katsayısıyla çarpılı
@@ -3945,11 +3946,11 @@ function vQuizSetup(){
   const remaining=W.filter(w=>!S.learned[w.word]&&lvOk(s.level,w.level)&&typeOK(w)&&(!fo||CORESET.has(w.word))).length;
   const tc=W.reduce((m,w)=>{if(!S.learned[w.word]&&lvOk(s.level,w.level)&&kindOK(s.kind,w)&&(!fo||CORESET.has(w.word))){const g=posGroup(w);m[g]=(m[g]||0)+1}return m},{});
   return`<div class="top"><h1>Test</h1></div><div class="card stack">
-    ${(window.CORE||[]).length?`<div><h3>Kelime havuzu</h3><div class="seg" style="margin-top:8px"><button class="chip" aria-pressed="${!fo}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${fo}" data-act="focus-set" data-v="1">🎯 Odak (${nf(CORESET.size)})</button></div></div>`:''}
-    <div><h3>Soru sayısı</h3><div class="seg" style="margin-top:8px">${[10,20,30,40].map(n=>`<button class="chip" aria-pressed="${s.count===n}" data-set="count" data-v="${n}">${n}</button>`).join('')}</div></div>
-    <div><h3>Seviye <span class="muted small" style="font-weight:400">(birden fazla seçebilirsin)</span></h3><div class="seg" style="margin-top:8px">${['Hepsi'].concat(LEVELS).map(n=>`<button class="chip" aria-pressed="${lvOn(s.level,n)}" data-set="level" data-v="${n}">${n}</button>`).join('')}</div></div>
-    <div><h3>Kelime mi ifade mi?</h3><div class="seg" style="margin-top:8px">${[['h','Hepsi'],['w','📖 Kelimeler'],['i','💬 İfadeler']].map(([k,l])=>`<button class="chip" aria-pressed="${(s.kind||'h')===k}" data-act="qk" data-v="${k}">${l}</button>`).join('')}</div></div>
-    <div><h3>Tür <span class="muted small" style="font-weight:400">(birden fazla seçebilirsin)</span></h3><div class="seg" style="margin-top:8px"><button class="chip" aria-pressed="${lvOn(s.type,'Hepsi')}" data-set="type" data-v="Hepsi">Hepsi</button>${POSG.filter(g=>tc[g]).map(g=>`<button class="chip" aria-pressed="${lvOn(s.type,g)}" data-set="type" data-v="${esc(g)}">${esc(trType(g))} (${nf(tc[g])})</button>`).join('')}</div></div>
+    ${(window.CORE||[]).length?`<div class="fbox"><h3 class="fbt" style="margin-bottom:8px">Kelime havuzu</h3><div class="seg"><button class="chip" aria-pressed="${!fo}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${fo}" data-act="focus-set" data-v="1">🎯 Odak (${nf(CORESET.size)})</button></div></div>`:''}
+    <div class="fbox"><h3 class="fbt" style="margin-bottom:8px">Soru sayısı</h3><div class="seg">${[10,20,30,40].map(n=>`<button class="chip" aria-pressed="${s.count===n}" data-set="count" data-v="${n}">${n}</button>`).join('')}</div></div>
+    <div class="fbox"><h3 class="fbt" style="margin-bottom:8px">Seviye <span class="muted small" style="font-weight:400">(birden fazla seçebilirsin)</span></h3><div class="seg">${['Hepsi'].concat(LEVELS).map(n=>`<button class="chip" aria-pressed="${lvOn(s.level,n)}" data-set="level" data-v="${n}">${n}</button>`).join('')}</div></div>
+    <div class="fbox"><h3 class="fbt" style="margin-bottom:8px">Kelime mi ifade mi?</h3><div class="seg">${[['h','Hepsi'],['w','📖 Kelimeler'],['i','💬 İfadeler']].map(([k,l])=>`<button class="chip" aria-pressed="${(s.kind||'h')===k}" data-act="qk" data-v="${k}">${l}</button>`).join('')}</div></div>
+    <div class="fbox"><h3 class="fbt" style="margin-bottom:8px">Tür <span class="muted small" style="font-weight:400">(birden fazla seçebilirsin)</span></h3><div class="seg"><button class="chip" aria-pressed="${lvOn(s.type,'Hepsi')}" data-set="type" data-v="Hepsi">Hepsi</button>${POSG.filter(g=>tc[g]).map(g=>`<button class="chip" aria-pressed="${lvOn(s.type,g)}" data-set="type" data-v="${esc(g)}">${esc(trType(g))} (${nf(tc[g])})</button>`).join('')}</div></div>
     <div class="muted small">Her kelimeden bir özellik sorulur: Türkçe karşılık, İngilizce tanım, boşluk doldurma, anlamca yakın kelime, anlamca karşıt kelime ve düzensiz fiillerde V2 - V3. Deyim, atasözü, edat kalıbı ve ek gibi türlerde ayrıca özel sorular (atasözü tamamlama, eksik kelime, doğru edat, ek bulma, anlamdan ifadeye) çıkar. Bir kelimenin sorulabilen tüm özellikleri bir kez doğru bilinince kelime Öğrenilenler'e geçer. Bu seçimde ${nf(remaining)} kelime sırada.</div>
     <button class="btn primary block" data-act="start-new">Testi başlat</button></div>`;
 }
