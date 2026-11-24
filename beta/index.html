@@ -586,7 +586,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.167.2';
+const APP_VERSION = '4.167.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4518,7 +4518,7 @@ function vStatsMore(){
   // plan
   const wk=stWeak(),due=dueWrong(false).length,wl=(S.wlog||[]).length,g=goalEff();
   const tips=[];
-  wk.forEach(([k,r])=>tips.push(`<div class="row" style="justify-content:space-between;gap:10px;align-items:center;padding:6px 0;border-top:1px solid var(--line)"><div class="small"><b>${esc(stLab(k))}</b> sorularında başarın %${Math.round(r*100)}. Bu türden 10 soruluk pratik yap.</div><button class="btn primary" data-act="st-prac" data-v="${k}" style="min-height:34px;padding:4px 12px;font-size:.82rem;flex:0 0 auto">Başla</button></div>`));
+  wk.forEach(([k,r])=>tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)"><b>${esc(stLab(k))}</b> sorularında başarın %${Math.round(r*100)}; bu türe dikkat et.</div>`));
   if(due)tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)">Tekrar zamanı gelmiş <b>${nf(due)}</b> kelime var; Bugünün testi bunları öne alır.</div>`);
   if(wl>=20)tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)">Yanlış defterinde <b>${nf(wl)}</b> soru birikti; Tekrar → Yanlış defteri'nden temizle.</div>`);
   if(!focusOn()&&(window.CORE||[]).length)tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)">B1–B2'ye odaklanmak için Bugün sayfasından <b>🎯 Odak modu</b>'nu açabilirsin.</div>`);
@@ -4526,14 +4526,6 @@ function vStatsMore(){
   return`<div class="card stack"><h2>📋 Çalışma planı önerisi</h2><div class="small muted">İstatistiklerine göre öncelik sırası.</div>${tips.join('')}</div>${core}
   <div class="card"><h2 style="margin-bottom:4px">Soru türlerine göre başarı</h2><div class="small muted" style="margin-bottom:4px">Gruba dokununca alt türler açılır. Renk: yeşil %80+, sarı %60–79, kırmızı %60 altı.</div>${groups||'<div class="small muted">Henüz yeterli cevap yok.</div>'}</div>
   ${pos?`<div class="card"><h2 style="margin-bottom:4px">Kelime türlerine göre başarı</h2><div class="small muted" style="margin-bottom:4px">En zayıftan güçlüye.</div>${pos}</div>`:''}`;
-}
-function stPrac(k){   // seçili soru türünden 10 soru (odak açıksa çekirdekten)
-  const f=+k,fo=focusOn();coreInit();const out=[],used=new Set();
-  const pool=shuffle(W.filter(w=>(!fo||CORESET.has(w.word))&&applicable(w).includes(f)));
-  const pref=pool.filter(w=>S.wrong[w.word]||S.learned[w.word]).concat(pool);   // önce daha önce görülen kelimeler
-  for(const w of pref){if(out.length>=10)break;if(used.has(w.word))continue;const it=makeItem(w,f,S.learned[w.word]?'lrev':'new');if(it){out.push(it);used.add(w.word)}}
-  if(!out.length){toast('Bu türden soru üretilecek kelime bulunamadı.');return}
-  UI.qmode='solo';UI.qhold=null;UI.quiz={mode:'new',items:out,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};UI.tab='quiz';render();window.scrollTo(0,0);
 }
 function vStats(){
   const tot={},lrn={};
@@ -6027,7 +6019,6 @@ document.addEventListener('click',async e=>{
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
     case'mw-more':{const x=g('data-w');UI.mwOpen=UI.mwOpen||{};UI.mwOpen[x]=!UI.mwOpen[x];const y=window.scrollY;render();window.scrollTo(0,y);break}
-    case'st-prac':stPrac(g('data-v'));break;
     case'fam-go':{const x=g('data-w');UI.tab='dict';UI.dict.q=x;UI.dict.open=x;UI.dict.level='Hepsi';UI.dict.pos='Hepsi';UI.dict.status='Hepsi';UI.dict.limit=40;UI.card=null;render();window.scrollTo(0,0);break}
     case'fo-w':{const w=g('data-w');toggleFocus(w);toast(inFocus(w)?'Odak listene eklendi.':'Odak listenden çıkarıldı.');const dl=$('#dlist');if(dl&&(UI.tab==='dict'||UI.tab==='saved')){if(focusOn()&&!inFocus(w)&&UI.tab==='dict')UI.dict.open=null;dl.innerHTML=UI.tab==='saved'?savedList():dictList()}else render();break}
     case'focus-tg':S.set.focus=!focusOn();save();render();toast(S.set.focus?'Odak modu açık: yeni kelimeler çekirdek listeden gelecek.':'Odak modu kapalı: tüm sözlük.');break;
