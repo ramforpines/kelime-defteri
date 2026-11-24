@@ -581,7 +581,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.165.2';
+const APP_VERSION = '4.165.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1294,6 +1294,22 @@ async function loadLive(){
 }
 setInterval(()=>{if(!document.hidden&&sb&&CLOUD.uid&&navigator.onLine)loadLive()},JIT(60000));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&sb&&CLOUD.uid)loadLive()});
+/* ---------- sürüm duyurusu (afiş): güncellemeden sonra ilk açılışta bir kez ---------- */
+const WN={id:'odak-4165',img:'img/ann/odak-4165.jpg',alt:'Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.583 kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var.'};
+const wnSeen=()=>{try{return localStorage.getItem('kd-wn')}catch(e){return WN.id}};
+function wnPop(){
+  if(WN.t||wnSeen()===WN.id||document.getElementById('annov')||document.getElementById('wnov')||duelLock())return;
+  WN.t=setTimeout(()=>{WN.t=0;if(wnSeen()===WN.id||document.getElementById('annov')||document.getElementById('wnov')||duelLock()||!CLOUD.uid)return;
+    if(!document.getElementById('wncss')){const st=document.createElement('style');st.id='wncss';
+      st.textContent='#wnov{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(10,14,30,.7);backdrop-filter:blur(3px)}#wnov .wnb{width:min(94vw,440px);max-height:92vh;display:flex;flex-direction:column;gap:10px;background:var(--surface,#fff);border-radius:20px;padding:10px;box-shadow:0 20px 60px rgba(0,0,0,.5)}#wnov img{display:block;width:100%;height:auto;max-height:calc(92vh - 130px);object-fit:contain;border-radius:14px;background:#0d1530}#wnov .row{gap:8px}#wnov .btn{flex:1}';
+      document.head.appendChild(st)}
+    const o=document.createElement('div');o.id='wnov';o.setAttribute('role','dialog');o.setAttribute('aria-label','Yenilikler');
+    o.innerHTML='<div class="wnb"><img src="'+WN.img+'" alt="'+esc(WN.alt)+'"><div class="row"><button class="btn" type="button" data-wn="x">Kapat</button><button class="btn primary" type="button" data-wn="go">🎯 Hemen aç</button></div></div>';
+    const done=go=>{try{localStorage.setItem('kd-wn',WN.id)}catch(e){}o.remove();if(go){S.set.focus=true;save();UI.tab='today';UI.quiz=null;render();window.scrollTo(0,0);toast('Odak modu açık.')}};
+    o.addEventListener('click',e=>{const b=e.target.closest('[data-wn]');if(b)done(b.getAttribute('data-wn')==='go');else if(e.target===o)done(false)});
+    document.body.appendChild(o);
+  },1200);
+}
 /* ---------- duyuru penceresi: her ekranda, herkese, görülene kadar ---------- */
 const ANNP={t:0};
 function annPopSeen(){return seenGet('pop')}
@@ -3239,6 +3255,7 @@ function render(){
   if(maintBlocked()){fabUpdate();$('nav').hidden=true;app.innerHTML=vMaint();exAudioMount();return}
   if(!CLOUD.uid){fabUpdate();$('nav').hidden=true;app.innerHTML=vLogin();return}
   if(CLOUD.approved===false){fabUpdate();$('nav').hidden=true;app.innerHTML=vPending();return}
+  wnPop();
   nwMark(UI.tab);
   const dlk=duelLock();
   if(dlk){UI.tab='quiz';UI.qmode='duel';qHold(true);UI.card=null}
