@@ -586,7 +586,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.167.1';
+const APP_VERSION = '4.167.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4510,10 +4510,10 @@ function vStatsMore(){
   const pk=Object.keys(P).filter(k=>P[k][0]+P[k][1]>=5).sort((a,b)=>(P[a][0]/(P[a][0]+P[a][1]))-(P[b][0]/(P[b][0]+P[b][1])));
   const pos=pk.map(k=>stBar(P[k][0],P[k][1],esc(TYPE_TR[k]||k))).join('');
   // Odak ilerlemesi ve tempo
-  coreInit();const LVO=['B1','B2','C1'],cl={},ct={};CORESET.forEach(x=>{const w=BYWORD.get(x);if(!w)return;const l=LVO.includes(w.level)?w.level:'Diğer';ct[l]=(ct[l]||0)+1;if(S.learned[x])cl[l]=(cl[l]||0)+1});
+  coreInit();const cl={},ct={};CORESET.forEach(x=>{const w=BYWORD.get(x);if(!w)return;const l=w.level;ct[l]=(ct[l]||0)+1;if(S.learned[x])cl[l]=(cl[l]||0)+1});   // kullanıcının eklediği kelimeler kendi seviyesinde sayılır
   let n14=0;for(let i=0;i<14;i++){const d=S.days[addDays(today(),-i)];if(d)n14+=d.n|0}
   const cs=coreStat(),left=cs.t-cs.n,pace=n14/14,eta=pace>0?Math.ceil(left/pace):0;
-  const core=`<div class="card stack"><h2>🎯 Odak listesi</h2>${LVO.concat(ct['Diğer']?['Diğer']:[]).filter(l=>ct[l]).map(l=>{const t=ct[l],n=cl[l]||0,p=n/t*100;return`<div class="lvrow"><span class="lv lv-${l}">${l}</span><div><div class="bar"><i style="width:${p.toFixed(1)}%;background:var(--l-${l},var(--accent))"></i></div></div><span class="num">${nf(n)}/${nf(t)}</span></div>`}).join('')}
+  const core=`<div class="card stack"><h2>🎯 Odak listesi</h2>${LEVELS.filter(l=>ct[l]).map(l=>{const t=ct[l],n=cl[l]||0,p=n/t*100;return`<div class="lvrow"><span class="lv lv-${l}">${l}</span><div><div class="bar"><i style="width:${p.toFixed(1)}%;background:var(--l-${l})"></i></div></div><span class="num">${nf(n)}/${nf(t)}</span></div>`}).join('')}
     <div class="small muted">Son 14 günde ${nf(n14)} kelime öğrendin (günde ~${nf(Math.round(pace*10)/10)}). ${pace>0?`Bu hızla Odak listesinin kalan ${nf(left)} kaydı yaklaşık <b>${nf(eta)} gün</b> sürer.`:'Tempo hesaplamak için birkaç gün çalışman gerekiyor.'}</div></div>`;
   // plan
   const wk=stWeak(),due=dueWrong(false).length,wl=(S.wlog||[]).length,g=goalEff();
