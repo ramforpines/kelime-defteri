@@ -587,7 +587,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.172.1';
+const APP_VERSION = '4.172.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3589,7 +3589,8 @@ function dictFiltered(){
   const D=UI.dict,q=D.q.trim().toLowerCase(),fo=focusOn();coreInit();
   const r=W.filter(w=>{
     if(!kindOK(D.kind||'w',w))return false;   // Kelimeler / İfadeler sekmesi
-    if(fo&&!CORESET.has(w.word)&&w.word!==D.open)return false;   // aileden/bağlantıdan açılan kelime odakta olmasa da görünür
+    if(D.fx==='out'){if(CORESET.has(w.word)&&w.word!==D.open)return false}   // Odak dışı: listede olmayanlar (eklemek için)
+    else if(fo&&!CORESET.has(w.word)&&w.word!==D.open)return false;   // aileden/bağlantıdan açılan kelime odakta olmasa da görünür
     if(!lvOk(D.level,w.level))return false;
     if(!lvOk(D.pos,posGroup(w)))return false;
     if(D.status==='Öğrenilen'&&!S.learned[w.word])return false;
@@ -3622,7 +3623,7 @@ function entryHtml(w,fixed){   // fixed: vize kelime listesi, sözlükteki açı
   const st=S.learned[w.word]?'<span class="badge ok">Öğrenildi</span>':S.wrong[w.word]?'<span class="badge bad">Tekrarda</span>':'';
   return`<div class="entry"><button class="head" ${fixed?'':`data-act="toggle" data-w="${esc(w.word)}" `}aria-expanded="${open}">
     <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def||(w.phr?w.tr:''))}</span></span>
-    <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
+    <span class="row" style="justify-content:flex-end;gap:6px">${st}${(window.CORE||[]).length&&!w.phr&&!w.gram&&inFocus(w.word)?'<span title="Odak listende" aria-label="Odak listende">🎯</span>':''}${lvTag(w.level)}</span></button>
     ${CLOUD.admin&&!fixed&&!w.phr&&!w.gram?admQuick(w):''}
     ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${w.phr?'<br><span class="extr">('+esc(w.phr.ex[1])+')</span>':exTr(w)}</dd>${exMore(w)}${labHtml(w)}${confHtml(w)}${patHtml(w)}${afxHtml(w)}${famHtml(w)}${mwHtml(w)}
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
@@ -3658,7 +3659,7 @@ function vDict(){
   <div class="small muted" style="margin:-4px 2px 0">${D.kind==='i'?'Phrasal verb, deyim, kolokasyon, kalıp ve atasözleri.':'Tek kelimeler.'}</div>
   ${CLOUD.admin?`<div class="card small row" style="justify-content:space-between;align-items:center;gap:8px;padding:8px 12px"><span>🛡 Seviye ayarı: <b>${nf(Object.keys(WLV.ov).length)}</b> · Odak düzenlemesi: <b>${nf(Object.keys(GCORE).length)}</b></span><button class="btn" data-act="wlv-copy" style="min-height:32px;padding:3px 12px;font-size:.82rem">📋 Kopyala</button></div>${UI.wlvTxt?`<textarea readonly style="width:100%;min-height:80px;font-size:.75rem" onclick="this.select()">${esc(UI.wlvTxt)}</textarea>`:''}`:''}
   <input id="q" class="search" type="search" placeholder="${D.kind==='i'?'İfade, Türkçe karşılık veya tanım ara':'Kelime, Türkçe karşılık veya tanım ara'}" value="${esc(D.q)}" autocomplete="off">
-  ${(window.CORE||[]).length?`<div class="seg" role="group" aria-label="Kelime havuzu"><button class="chip" aria-pressed="${!focusOn()}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${focusOn()}" data-act="focus-set" data-v="1">🎯 Odak (${nf(coreSize())})</button></div>`:''}
+  ${(window.CORE||[]).length?`<div class="seg" role="group" aria-label="Kelime havuzu"><button class="chip" aria-pressed="${!focusOn()&&D.fx!=='out'}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${focusOn()&&D.fx!=='out'}" data-act="focus-set" data-v="1">🎯 Odak (${nf(coreSize())})</button><button class="chip" aria-pressed="${D.fx==='out'}" data-act="dfx-out">➕ Odak dışı</button></div>${D.fx==='out'?'<div class="small muted" style="margin:-4px 2px 0">Odak listende olmayan kelimeler, en sık kullanılan üstte. 🎯 ile ekle; eklediğin kelime buradan düşer.</div>':''}`:''}
   <div class="seg" role="group" aria-label="Seviye (birden fazla seçilebilir)">${['Hepsi'].concat(LEVELS).map(v=>`<button class="chip" aria-pressed="${lvOn(D.level,v)}" data-f="level" data-v="${v}">${v}</button>`).join('')}</div>
   ${chips('status',['Hepsi','Öğrenilmeyen','Öğrenilen','Tekrarda'],D.status)}
   <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Tür <span style="font-weight:400">(birden fazla seçebilirsin)</span></div><div class="seg" role="group" aria-label="Tür">${['Hepsi'].concat(POSG.filter(p=>DKG()[D.kind||'w'].has(p))).map(p=>`<button class="chip" aria-pressed="${lvOn(D.pos,p)}" data-f="pos" data-v="${esc(p)}">${esc(p==='Hepsi'?p:trType(p))}</button>`).join('')}</div></div>
@@ -6121,9 +6122,10 @@ document.addEventListener('click',async e=>{
     case'wlv-copy':wlvCopy();break;
     case'adm-lv':{const x=g('data-w'),v=g('data-v');if(v&&BYWORD.get(x)&&BYWORD.get(x).level===v)break;wlvSet(x,v);break}
     case'fam-go':{const x=g('data-w');UI.dict.kind=isPhr(x)?'i':'w';UI.tab='dict';UI.dict.q=x;UI.dict.open=x;UI.dict.level='Hepsi';UI.dict.pos='Hepsi';UI.dict.status='Hepsi';UI.dict.limit=40;UI.card=null;render();window.scrollTo(0,0);break}
-    case'fo-w':{const w=g('data-w');if(CLOUD.admin&&sb){adminFocus(w);break}toggleFocus(w);toast(inFocus(w)?'Odak listene eklendi.':'Odak listenden çıkarıldı.');const dl=$('#dlist');if(dl&&(UI.tab==='dict'||UI.tab==='saved')){if(focusOn()&&!inFocus(w)&&UI.tab==='dict')UI.dict.open=null;dl.innerHTML=UI.tab==='saved'?savedList():dictList()}else render();break}
+    case'fo-w':{const w=g('data-w');if(CLOUD.admin&&sb){adminFocus(w);break}toggleFocus(w);toast(inFocus(w)?'Odak listene eklendi.':'Odak listenden çıkarıldı.');const dl=$('#dlist');if(dl&&(UI.tab==='dict'||UI.tab==='saved')){if(UI.tab==='dict'&&(UI.dict.fx==='out'?inFocus(w):focusOn()&&!inFocus(w)))UI.dict.open=null;dl.innerHTML=UI.tab==='saved'?savedList():dictList()}else render();break}
     case'focus-tg':S.set.focus=!focusOn();save();render();toast(S.set.focus?'Odak modu açık: yeni kelimeler çekirdek listeden gelecek.':'Odak modu kapalı: tüm sözlük.');break;
-    case'focus-set':S.set.focus=g('data-v')==='1';UI.dict.limit=40;save();render();break;
+    case'focus-set':S.set.focus=g('data-v')==='1';UI.dict.fx=null;UI.dict.limit=40;save();render();break;
+    case'dfx-out':UI.dict.fx='out';UI.dict.limit=40;UI.dict.open=null;render();break;
     case'start-review':startQuiz('review',false);break;
     case'rv-tab':UI.rv=g('data-v');UI.wlConfirm=false;render();break;
     case'start-saved':startQuiz('saved',false);break;
