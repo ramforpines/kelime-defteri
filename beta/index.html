@@ -586,7 +586,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.167.4';
+const APP_VERSION = '4.167.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1103,6 +1103,7 @@ function mergeStates(a,b){
   {const c=JSON.parse(JSON.stringify(ot.exc||{}));Object.keys(m.exc||{}).forEach(k=>{c[k]=Object.assign(c[k]||{},m.exc[k])});m.exc=c}
   {const q=Object.assign({},ot.exq||{});Object.keys(m.exq||{}).forEach(k=>{q[k]=(q[k]|0)|(m.exq[k]|0)});m.exq=q}
   {const fv={};[ot.fov||{},m.fov||{}].forEach(o=>Object.keys(o).forEach(k=>{if(fv[k]==null||Math.abs(o[k])>Math.abs(fv[k]))fv[k]=o[k]}));m.fov=fv}   // odak listesi ekle/çıkar: yeni olan kazanır
+  {const x={};[ot.sxp||{},m.sxp||{}].forEach(o=>Object.keys(o).forEach(k=>{if(!x[k]||(o[k].u||0)>(x[k].u||0))x[k]=o[k]}));if(ot.sxp||m.sxp)m.sxp=x}   // çalışma sonuçları/sıfırlama: yeni olan kazanır
   {const sv={};[ot.sav||{},m.sav||{}].forEach(o=>Object.keys(o).forEach(k=>{if(sv[k]==null||Math.abs(o[k])>Math.abs(sv[k]))sv[k]=o[k]}));m.sav=sv}   // kaydedilenler: sayı >0 kayıtlı, <0 kaldırıldı (|değer| = zaman); yeni olan kazanır
   {const x=m.wq||{},y=ot.wq||{};if(y.d&&(!x.d||y.d>x.d))m.wq={d:y.d,done:(y.done||[]).slice()};else if(y.d&&y.d===x.d){const u=(x.done||[]).slice();(y.done||[]).forEach(k=>{if(u.indexOf(k)===-1)u.push(k)});m.wq={d:x.d,done:u}}}
   {const rv={};[ot.rwd||{},m.rwd||{}].forEach(o=>Object.keys(o).forEach(k=>{if(rv[k]==null||Math.abs(o[k])>Math.abs(rv[k]))rv[k]=o[k]}));m.rwd=rv}   // ödül bildirimleri: görülenler birleşir
@@ -4103,8 +4104,8 @@ function sxAnswer(v){const Q=UI.sq;if(!Q||Q.done)return;const A=sxAns(),it=Q.ite
 function sxGo(i){const Q=UI.sq;Q.i=Math.max(0,Math.min(Q.items.length,i));if(Q.mode==='x'){sxRec(Q.id).state.sec[Q.sk].i=Q.i;sxSave(Q.id)}render();window.scrollTo(0,0)}
 function sxSubmit(auto){const Q=UI.sq;if(!Q)return;sxAudioStop();
   if(Q.mode==='x'){const r=sxRec(Q.id),s=r.state.sec[Q.sk];s.done=true;s.i=Q.items.length;sxSave(Q.id,true);clearInterval(SXT);SXT=null;const id=Q.id;UI.sq=null;UI.sxe=id;sxCheckFinish(id);render();window.scrollTo(0,0);return}
-  Q.done=true;const c=Q.items.filter((it,i)=>sxOk(it,Q.ans[i])).length;let B={};try{B=JSON.parse(localStorage.getItem('kd-sxp')||'{}')}catch(e){}
-  const o=B[Q.id];if(!o||c>o[0])B[Q.id]=[c,Q.items.length,today()];try{localStorage.setItem('kd-sxp',JSON.stringify(B))}catch(e){}
+  Q.done=true;const c=Q.items.filter((it,i)=>sxOk(it,Q.ans[i])).length;sxpMig();
+  const o=sxBest(Q.id);if(!o)S.sxp[Q.id]={c,n:Q.items.length,d:today(),u:Date.now()};save();
   render();window.scrollTo(0,0)}
 function sxGrid(Q,A){return`<div class="row" style="flex-wrap:wrap;gap:4px">${Q.items.map((it,i)=>{const has=A[i]!=null&&A[i]!=='';return`<button class="chip" style="min-width:34px;padding:4px 6px;${i===Q.i?'outline:2px solid var(--accent);':''}${has?'background:rgba(46,158,91,.15)':''}" data-act="sx-go" data-v="${i}">${i+1}</button>`}).join('')}</div>`}
 function vSxRun(){
@@ -4150,7 +4151,7 @@ function sxAnalysis(items,ans){
 }
 function vSxPracRep(Q){const c=Q.items.filter((it,i)=>sxOk(it,Q.ans[i])).length,n=Q.items.length;
   return`<div class="top"><h1>Sonuç</h1></div><div class="stack"><div class="card stack"><div class="score" style="font-size:2.2rem">${c}/${n}</div><div class="small muted">${esc(Q.items[0].nm)} · çalışma. Puan vermez, sıralamayı etkilemez.</div></div>
-  ${sxAnalysis(Q.items,Q.ans)}<div class="row"><button class="btn primary" data-act="sx-home">Çalışmaya dön</button><button class="btn" data-act="sx-prac" data-v="${esc(Q.lv)}|${esc(Q.id)}">Tekrar çöz</button></div></div>`}
+  ${sxAnalysis(Q.items,Q.ans)}<div class="row"><button class="btn primary" data-act="sx-home">Çalışmaya dön</button></div></div>`}
 
 /* --- sınav: yazma bölümü --- */
 const sxWc=t=>(String(t||'').match(/\S+/g)||[]).length;
@@ -4281,7 +4282,12 @@ async function sxAi(id0){
   render();
 }
 /* --- ana görünüm: Sınavlar / Çalışma --- */
-function sxBest(id){try{return(JSON.parse(localStorage.getItem('kd-sxp')||'{}'))[id]}catch(e){return null}}
+/* çalışma bölümü sonuçları: hesaba eşitlenir (S.sxp); çözülen bölüm 15 gün sonra sıfırlanabilir */
+const SXP_RESET=15;
+function sxpMig(){if(S.sxp)return;S.sxp={};try{const B=JSON.parse(localStorage.getItem('kd-sxp')||'{}');Object.keys(B).forEach(k=>{const b=B[k];if(Array.isArray(b))S.sxp[k]={c:b[0],n:b[1],d:b[2]||today(),u:1}})}catch(e){}}
+function sxBest(id){sxpMig();const r=S.sxp[id];return r&&r.n?[r.c,r.n,r.d]:null}
+const sxResetIn=id=>{const b=sxBest(id);if(!b)return null;const d=Math.round((new Date(today()+'T12:00:00')-new Date(b[2]+'T12:00:00'))/864e5);return Math.max(0,SXP_RESET-d)};
+function sxReset(id){sxpMig();if(sxResetIn(id)>0)return;S.sxp[id]={x:Date.now(),u:Date.now()};save();render()}
 function vSx(){
   if(!window.SINAV){sxLoad();return`<div class="card"><div class="muted">Sınavlar yükleniyor…</div></div>`}
   if(UI.sq)return vSxRun();
@@ -4304,8 +4310,11 @@ function vSx(){
   return`<div class="top"><h1>Çalışma</h1></div><div class="stack">${seg}
   <div class="seg">${SX_LV.filter(x=>SN.prac[x]).map(x=>`<button class="chip" aria-pressed="${x===lv}" data-act="sx-l" data-v="${x}">${x}</button>`).join('')}</div>
   <div class="seg">${['R','L','W','S'].map(x=>`<button class="chip" aria-pressed="${x===k}" data-act="sx-k" data-v="${x}">${SX_IC[x]} ${esc(sxSkName(lv,x))}</button>`).join('')}</div>
-  <div class="card small muted">${k==='R'||k==='L'?'Sınavdaki bölüm türlerinden örnekler. Süre yok, istediğin kadar tekrar çözebilirsin; sonunda açıklamalar ve çalışman gereken konular çıkar.':k==='W'?'Yazarken kelime sayısı, maddeler, bağlaçlar ve yapılar canlı kontrol edilir. Bitirince öz değerlendirme ve örnek cevap açılır.':'Soru sesli okunur, sen İngilizce konuşursun; konuşman yazıya dökülür, süre, kelime sayısı ve kalıplar gösterilir, sonra örnek cevapla karşılaştırırsın.'}</div>
-  ${L.length?(k==='R'||k==='L'||k==='W'?L.filter(x=>!sxDone(k,x)).concat(L.filter(x=>sxDone(k,x))):L).map(x=>{if(k==='R'||k==='L'){const b=sxBest(x.id);return`<button class="btn block" style="text-align:left" data-act="sx-prac" data-v="${lv}|${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${b?`<span class="small muted">${b[0]}/${b[1]}</span>`:''}</div></button>`}
+  <div class="card small muted">${k==='R'||k==='L'?'Sınavdaki bölüm türlerinden örnekler. Süre yok; sonunda açıklamalar ve çalışman gereken konular çıkar. Çözdüğün bölüm sonucuyla listenin sonuna iner, 15 gün sonra sıfırlayıp yeniden çözebilirsin.':k==='W'?'Yazarken kelime sayısı, maddeler, bağlaçlar ve yapılar canlı kontrol edilir. Bitirince öz değerlendirme ve örnek cevap açılır.':'Soru sesli okunur, sen İngilizce konuşursun; konuşman yazıya dökülür, süre, kelime sayısı ve kalıplar gösterilir, sonra örnek cevapla karşılaştırırsın.'}</div>
+  ${L.length?(k==='R'||k==='L'||k==='W'?L.filter(x=>!sxDone(k,x)).concat(L.filter(x=>sxDone(k,x))):L).map(x=>{if(k==='R'||k==='L'){const b=sxBest(x.id);
+      if(!b)return`<button class="btn block" style="text-align:left" data-act="sx-prac" data-v="${lv}|${esc(x.id)}" lang="en"><b>${esc(x.t)}</b></button>`;
+      const ri=sxResetIn(x.id),full=b[0]===b[1];
+      return`<div class="btn block" style="text-align:left;cursor:default;opacity:.85" lang="en"><div class="row" style="justify-content:space-between;align-items:center;gap:8px"><b>${esc(x.t)}</b><span class="badge ${full?'ok':b[0]/b[1]>=.6?'warn':'bad'}" style="flex:0 0 auto">✓ ${b[0]}/${b[1]}</span></div><div class="row" style="justify-content:space-between;align-items:center;gap:8px;margin-top:4px"><span class="small muted" lang="tr">Çözüldü · ${esc(fmt(b[2]))}${ri>0?' · '+ri+' gün sonra sıfırlanabilir':''}</span>${ri>0?'':`<button class="btn" data-act="sx-reset" data-v="${esc(x.id)}" style="min-height:32px;padding:3px 12px;font-size:.82rem;flex:0 0 auto" lang="tr">↺ Sıfırla</button>`}</div></div>`}
     if(k==='W'){const d=(S.pw||{})[x.id];return`<button class="btn block" style="text-align:left" data-act="pw-open" data-v="${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${d&&d.f?'<span class="small muted">✓</span>':''}</div></button>`}
     return`<button class="btn block" style="text-align:left" data-act="ps-open" data-v="${esc(x.id)}" lang="en"><b>${esc(x.t)}</b></button>`}).join(''):'<div class="empty card">Bu seviye için çalışma yakında.</div>'}</div>`;
 }
@@ -6068,7 +6077,8 @@ document.addEventListener('click',async e=>{
     case'sx-board':UI.tab='rank';UI.rank.per='exam';render();window.scrollTo(0,0);break;
     case'sx-unlock':UI.sxBy=UI.sxBy||{};UI.sxBy[UI.sxe]=1;render();break;
     case'sx-say':{const[pi,qi,j]=g('data-v').split('|').map(Number),X=sxExam(UI.sxe),q=X&&X.sec.S.parts[pi].q[qi];if(q)say((Array.isArray(q[3])?q[3]:[q[3]])[j]);break}
-    case'sx-prac':{const[lv,id]=g('data-v').split('|');sxPracStart(lv,id);break}
+    case'sx-prac':{const[lv,id]=g('data-v').split('|');if(sxBest(id)){toast('Bu bölümü çözdün; '+(sxResetIn(id)>0?sxResetIn(id)+' gün sonra sıfırlayıp tekrar çözebilirsin.':'listeden sıfırlayabilirsin.'));break}sxPracStart(lv,id);break}
+    case'sx-reset':sxReset(g('data-v'));toast('Bölüm sıfırlandı, tekrar çözebilirsin.');break;
     case'sx-ans':sxAnswer(+g('data-v'));break;
     case'sx-text':{const el=document.getElementById('sxans');sxAnswer(el?el.value.trim():'');break}
     case'sx-go':sxGo(+g('data-v'));break;
