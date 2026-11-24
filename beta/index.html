@@ -486,6 +486,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/gloss-6e4fa53eb6.js"></script>
 <script src="d/core-0e796929af.js"></script>
 <script src="d/afx-efd193255c.js"></script>
+<script src="d/fam-0ef1775da1.js"></script>
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
@@ -496,7 +497,7 @@ const DATA=window.WORDS||[];
 (function(){
 'use strict';
 const LEVELS=['A1','A2','B1','B2','C1','C2'];
-const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu','2. anlam','3. anlam','Cümlede anlam','Türkçe cümle → İngilizce','Cümlede yakın anlam','Cümlede karşıt anlam'];
+const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu','2. anlam','3. anlam','Cümlede anlam','Türkçe cümle → İngilizce','Cümlede yakın anlam','Cümlede karşıt anlam','Kelime türetme'];
 const REVERSE_RATE=0.4, STREAK_GOAL=3, INTERVALS=[1,3];
 const RMX=new Set(["academic", "academy", "actor", "alarm", "algorithm", "amateur", "ambulance", "ancestors", "animation", "anthropology", "antibiotic", "arena", "assistant", "astronomer", "astronomy", "automobile", "bacteria", "bipolar", "bravo", "cameraman", "capitalism", "captain", "carbon", "cartel", "category", "cement", "ceramic", "chances", "cholesterol", "cinema", "courts", "crater", "crystal", "cultural", "culture", "decorative", "delta", "democratic", "descendants", "diagram", "digital", "diploma", "diplomacy", "diplomat", "dollar", "drama", "dramatic", "dynamic", "economic", "economist", "economy", "ecosystem", "editor", "electron", "electronic", "emissions", "employees", "expenses", "federal", "federation", "fees", "festival", "figures", "formula", "fossil", "funds", "gallery", "gallon", "garments", "genetic", "genome", "geometry", "germs", "graffiti", "hormone", "ideal", "industrial", "industry", "inhabitants", "insults", "jewels", "leftovers", "legends", "lemon", "liberalism", "litre", "machine", "manifesto", "mathematics", "maximum", "media", "median", "melody", "metabolism", "metal", "metre", "microscope", "milligram", "millimetre", "mineral", "minibus", "minimum", "mittens", "module", "molecule", "motivation", "motor", "musical", "mutation", "normally", "nuclear", "obesity", "opera", "orchestra", "organic", "organism", "organizer", "origins", "panel", "panic", "parliament", "patent", "pedal", "piano", "pilot", "placebo", "plastic", "platform", "pollen", "polyester", "principles", "professional", "professor", "profile", "program", "programme", "programmer", "propaganda", "quarantine", "records", "referendum", "reform", "repairs", "reservation", "robot", "robotics", "romantic", "roots", "rotor", "routine", "scenario", "sector", "seminar", "senate", "senator", "sensor", "slogan", "spectrum", "spiral", "standards", "statistics", "strategic", "strategy", "studio", "symbol", "symbolic", "symbolism", "syndrome", "talks", "telescope", "therapist", "therapy", "tourist", "tractor", "traffic", "trauma", "trillion", "tsunami", "tunes", "tunnel", "turbine", "uniform", "virus", "voltage", "weapons", "writings"]);
 const RMW=new Set(["Internet", "TRUE", "a few", "a little", "a lot", "a lot of", "aeroplane", "airplane", "app", "banana", "basketball", "be", "black", "blog", "blue", "brown", "burger", "cafe", "camera", "can't", "centimetre", "championship", "computer", "cop", "curry", "dad", "diesel", "do", "doctor", "donut", "download", "earlier", "eighth", "eightieth", "eighty", "email", "farm animals", "farmers", "ferry", "fifteenth", "fifth", "fiftieth", "fifty", "filled", "film", "fireman", "football", "for", "fortieth", "forty", "fourteenth", "fourth", "from", "giraffe", "go", "golf", "goodbye", "granddad", "grandma", "grandpa", "granny", "gray", "greatest", "green", "grey", "guitar", "hacker", "hamburger", "hashtag", "have", "helicopter", "hello", "hi", "highest", "hotel", "how are you", "how's it going", "in", "ketchup", "kick a ball", "kilogram", "kilometre", "laptop", "lemonade", "like this", "lips", "mango", "marathon", "menu", "metro", "million", "mister", "mom", "motorbike", "movie theater", "muffin", "mum", "must", "nearer", "nearest", "newest", "next day", "ninetieth", "ninety", "ninth", "no thanks", "noodles", "novels", "of", "okay", "on", "one more", "one time", "online", "ow", "paid", "parents", "password", "pasta", "pc", "penguin", "pink", "pizza", "plants", "please", "podcast", "policeman", "pony", "protein", "purple", "puzzle", "radio", "red", "relatives", "ride a bus", "rules", "sandwich", "seen", "selfie", "seventh", "seventieth", "seventy", "shampoo", "should", "singers", "sir", "sixth", "sixtieth", "sixty", "ski", "sleeping", "small child", "small group", "small lake", "smartphone", "so", "soda", "soldiers", "spaghetti", "spam", "stadium", "started", "steps", "stories", "subway", "sushi", "sweets", "taco", "taken", "taxi", "telephone", "television", "tell me", "tennis", "tenth", "thank you", "thanks", "things", "third", "thirteenth", "thirtieth", "thirty", "time of year", "to", "tomato sauce", "tournament", "tram", "tuna", "tv", "twelfth", "twelve months", "twentieth", "two times", "understood", "up", "upload", "username", "vegan", "very healthy", "very much", "very thankful", "video", "visa", "vitamin", "waffle", "watching", "what number", "what price", "what's the price", "what's your job", "white", "why", "with", "woods", "written", "yeah", "years", "yellow", "yes", "yoga", "yogurt", "you", "yummy", "zebra", "zero"]);
@@ -582,7 +583,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.165.6';
+const APP_VERSION = '4.166.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2413,6 +2414,7 @@ function applicable(w){
   if(g==='proverb'&&wtoks(w).length>=5)f.push(7);
   if(MULTI.indexOf(g)!==-1&&blankIdx(w).length)f.push(8);
   if(g==='preposition phrase'&&prepBlank(w))f.push(9);
+  if(famOk(w))f.push(28);   // kelime türetme (sınav tarzı): öğrenilme şartı değil (>=24)
   if(g==='prefix/suffix'&&(affixTok(w)||(window.AFX||{})[String(w.word).trim()]))f.push(10);
   if((MULTI.indexOf(g)!==-1||g==='phrasal verb')&&w.def&&wtoks(w).length>=2)f.push(11);
   if(senseOk(w,0))f.push(22);
@@ -2453,6 +2455,33 @@ function prepQ(t){
 }
 let AFFSET=null;
 function affSet(){if(AFFSET)return AFFSET;AFFSET=new Set();for(const r of W){AFFSET.add(String(r.word).toLowerCase().replace(/[^a-z]/g,''));if(r.ex)(r.ex.toLowerCase().match(/[a-z]+(?:-[a-z]+)*/g)||[]).forEach(x=>AFFSET.add(x.replace(/-/g,'')))}return AFFSET}
+/* ---------- kelime ailesi (fam.js, tools/fam/build.py) ---------- */
+const famOf=w=>((window.FAM||{})[String(w.word||w)]||[]).filter(x=>BYWORD.has(x));
+const famRe=x=>new RegExp('(^|[^A-Za-z-])('+x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')(?![A-Za-z-])','i');
+function famDist(w){   // farklı sözcük türünden aile üyeleri (aynı türden üye cümleye uyabilir: separate/separated); -ing biçimleri isim fiil olarak uyabileceği için alınmaz
+  const F=famOf(w),pt=posSet(w.pos);
+  return F.filter(x=>x!==w.word&&!/ing$/.test(x)&&!(/ise$/.test(x)&&F.includes(x.replace(/ise$/,'ize')))&&!posSet(BYWORD.get(x).pos).some(k=>pt.includes(k)));
+}
+const posSet=p=>{p=String(p||'').toLowerCase();const r=[];if(/adverb/.test(p))r.push('adv');if(/adjective/.test(p))r.push('adj');if(/(^|[^d])verb/.test(p.replace(/adverb/g,'')))r.push('v');if(/noun/.test(p))r.push('n');return r};
+const famBase=w=>famOf(w).slice().sort((a,b)=>(/ly$/.test(a)-/ly$/.test(b))||a.length-b.length)[0];
+function famOk(w){
+  if(!w.ex||w.ex.split(/\s+/).length<5)return false;
+  const F=famOf(w);if(F.length<4||famBase(w)===w.word)return false;
+  if(!famRe(w.word).test(w.ex)||F.some(x=>x!==w.word&&famRe(x).test(w.ex)))return false;
+  return famDist(w).length>=3;
+}
+function famQ(t){   // "Her _____ surprised everyone. (KIND)" → kindness; şıklar aynı aileden
+  if(!famOk(t))return null;
+  const base=famBase(t),d=shuffle(famDist(t)).slice(0,3);
+  if(d.length<3)return null;
+  const sent=t.ex.replace(famRe(t.word),(m,p)=>p+'_____');
+  return{question:'Boşluğa kelimenin doğru biçimi hangisidir?\n"'+sent+'"\n('+base.toUpperCase()+')',correct:t.word,distractors:d.slice(0,3)};
+}
+function famHtml(w){
+  const F=famOf(w).filter(x=>x!==w.word);if(!F.length)return'';
+  return`<dt style="grid-column:1/-1;margin-top:4px">Kelime ailesi</dt><dd style="grid-column:1/-1"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px">${F.map(x=>{const r=BYWORD.get(x);return`<button type="button" data-act="fam-go" data-w="${esc(x)}" style="text-align:left;line-height:1.25;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px;color:inherit;font:inherit;cursor:pointer"><div lang="en"><b>${esc(x)}</b> <span class="muted small">${esc(posShort(r.pos))}</span></div><div class="muted small">${esc(trFirst(r.tr))}</div></button>`}).join('')}</div><div class="muted small" style="margin-top:4px">Dokununca o kelimenin kartı açılır.</div></dd>`;
+}
+const posShort=p=>{p=String(p||'').toLowerCase();return /adverb/.test(p)?'zarf':/adjective/.test(p)?'sıfat':/verb/.test(p)?'fiil':/noun/.test(p)?'isim':p};
 function affixQ2(t){   // afx.js: eki alan sık kelimeden: "_____night (gece yarısı)" → mid-
   const L=(window.AFX||{})[String(t.word).trim()];if(!L||!L.length)return null;
   const tw=String(t.word).trim(),suf=tw[0]==='-',a=tw.replace(/^-|-$/g,'').toLowerCase(),AS=affSet();
@@ -2680,6 +2709,7 @@ function buildQuestionRaw(t,k,opts){
   else if(k===8)return missingQ(t);
   else if(k===9)return prepQ(t);
   else if(k===10)return affixQ(t);
+  else if(k===28)return famQ(t);
   else if(k===11)return phraseDefQ(t);
   else if(k===22)return senseQ(t,0);
   else if(k===23)return senseQ(t,1);
@@ -3376,7 +3406,7 @@ const trType=g=>TYPE_TR[g]||g;
 function dictFiltered(){
   const D=UI.dict,q=D.q.trim().toLowerCase(),fo=focusOn();coreInit();
   const r=W.filter(w=>{
-    if(fo&&!CORESET.has(w.word))return false;
+    if(fo&&!CORESET.has(w.word)&&w.word!==D.open)return false;   // aileden/bağlantıdan açılan kelime odakta olmasa da görünür
     if(!lvOk(D.level,w.level))return false;
     if(!lvOk(D.pos,posGroup(w)))return false;
     if(D.status==='Öğrenilen'&&!S.learned[w.word])return false;
@@ -3403,7 +3433,7 @@ function entryHtml(w,fixed){   // fixed: vize kelime listesi, sözlükteki açı
   return`<div class="entry"><button class="head" ${fixed?'':`data-act="toggle" data-w="${esc(w.word)}" `}aria-expanded="${open}">
     <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def||(w.phr?w.tr:''))}</span></span>
     <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
-    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${w.phr?'<br><span class="extr">('+esc(w.phr.ex[1])+')</span>':exTr(w)}</dd>${exMore(w)}${afxHtml(w)}
+    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${w.phr?'<br><span class="extr">('+esc(w.phr.ex[1])+')</span>':exTr(w)}</dd>${exMore(w)}${afxHtml(w)}${famHtml(w)}
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
       ${senseHtml(w)}
       ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
@@ -5846,6 +5876,7 @@ document.addEventListener('click',async e=>{
     case'duel-exit':if(DUEL.id&&DUEL.id!=='bot')(DUEL.done=DUEL.done||{})[DUEL.id]=1;dReset();render();lobbyLoad();break;
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
+    case'fam-go':{const x=g('data-w');UI.tab='dict';UI.dict.q=x;UI.dict.open=x;UI.dict.level='Hepsi';UI.dict.pos='Hepsi';UI.dict.status='Hepsi';UI.dict.limit=40;UI.card=null;render();window.scrollTo(0,0);break}
     case'fo-w':{const w=g('data-w');toggleFocus(w);toast(inFocus(w)?'Odak listene eklendi.':'Odak listenden çıkarıldı.');const dl=$('#dlist');if(dl&&(UI.tab==='dict'||UI.tab==='saved')){if(focusOn()&&!inFocus(w)&&UI.tab==='dict')UI.dict.open=null;dl.innerHTML=UI.tab==='saved'?savedList():dictList()}else render();break}
     case'focus-tg':S.set.focus=!focusOn();save();render();toast(S.set.focus?'Odak modu açık: yeni kelimeler çekirdek listeden gelecek.':'Odak modu kapalı: tüm sözlük.');break;
     case'focus-set':S.set.focus=g('data-v')==='1';UI.dict.limit=40;save();render();break;
