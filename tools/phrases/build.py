@@ -6,6 +6,7 @@ Her kalıba 5–6 İngilizce soru: 0 diyalog, 1 işlev etiketiyle boşluk, 2 iş
 Yanlış şıklar, anlamca yakın gruplardan (ör. tamamen ↔ kısmen katılma) ve seviyesi yakın kalıplardan seçilir."""
 import os,re,json,glob,importlib.util,random
 HERE=os.path.dirname(os.path.abspath(__file__));ROOT=os.path.abspath(os.path.join(HERE,'..','..'))
+NOSYN={'gframes','gprep','gpv','gpv2','gidiom','gcoll','gbody'}
 LV=['A1','A2','B1','B2','C1','C2'];REG={'','resmî','samimi'};errs=[];groups=[];gseen=set()
 def load(f,name):
     sp=importlib.util.spec_from_file_location(os.path.basename(f)[:-3],f);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return getattr(m,name)
@@ -128,6 +129,9 @@ for f in sorted(glob.glob(os.path.join(HERE,'src','*.py')),key=lambda x:ORDER.in
         add(3,'What does “%s” express?'%p['en'],o,FUNC_EN[p['cat']],'“%s” is used for %s.'%(p['en'],FUNC_EN[p['cat']]))
         # 4 yakın anlam: aynı gruptan başka bir kalıp
         sib=[q for q in by[p['cat']] if q['en']!=p['en']];sib.sort(key=lambda q:(isopen(q)!=isopen(p),abs(LV.index(q['lv'])-li),rng.random()))
+        if G['id'] in NOSYN:   # sözlük tarzı gruplarda aynı kategori ≠ yakın anlam (rapor: give up ≈ pick up): yalnız Türkçe karşılığı ortak olan kalıp yakın sayılır
+            def stems(q):return {w[:5] for w in re.findall(r'[a-zçğıöşü]{5,}',q['tr'].lower())}
+            sib=[q for q in sib if stems(q)&stems(p)]
         if sib:
             right=sib[0]['en'];o=opts(rng,right,[q['en'] for q in cand if q['cat']!=p['cat']])
             add(4,'Which phrase is closest in meaning to “%s”?'%p['en'],o,right,'Both “%s” and “%s” are used for %s.'%(p['en'],right,FUNC_EN[p['cat']]))
