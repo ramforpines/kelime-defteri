@@ -490,6 +490,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/pat-036daf5dcf.js"></script>
 <script src="d/conf-a4ca76df8c.js"></script>
 <script src="d/lab-292cc38b4b.js"></script>
+<script src="d/freq-bf82fdbd76.js"></script>
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
@@ -586,7 +587,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.167.8';
+const APP_VERSION = '4.168.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3526,7 +3527,10 @@ function dictFiltered(){
     if(q&&w.word.toLowerCase().indexOf(q)===-1&&w.tr.toLowerCase().indexOf(q)===-1&&w.def.toLowerCase().indexOf(q)===-1&&!w.sn.some(z=>z.t.toLowerCase().indexOf(q)!==-1||z.d.toLowerCase().indexOf(q)!==-1))return false;
     return true;
   });
-  return fo&&!q?r.sort((a,b)=>COREIX.get(a.word)-COREIX.get(b.word)):r;   // odakta öğrenme sırası (en sık önce)
+  const F=window.FREQ||{},fq=w=>F[w.word]??-999;   // sıklık sırası (wordfreq: günlük + akademik dil); en sık en üstte
+  if(!q)return r.sort((a,b)=>fq(b)-fq(a));
+  const rk=w=>{const x=w.word.toLowerCase();return x===q?0:x.startsWith(q)?1:x.indexOf(q)!==-1?2:3};   // aramada önce kelimenin kendisi, sonra başlayanlar, sonra içerenler, sonra anlamda geçenler
+  return r.sort((a,b)=>(rk(a)-rk(b))||(fq(b)-fq(a)));
 }
 function exTrT(t){const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
 function senseHtml(w){   // 2. ve 3. anlamlar: Türkçe, tanım, örnek (+çevirisi), eş anlam
