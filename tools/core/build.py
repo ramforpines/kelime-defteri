@@ -58,7 +58,7 @@ def skip(w):
     return None
 single=[w for w in W if ' ' not in w[0].strip() and w[7] in('B1','B2','C1')]
 picked=[];why={}
-for lv,n,cut in(('B1',1290,None),('B2',1270,None),('C1',350,None)):
+for lv,n,cut in(('B1',1290,None),('B2',1267,None),('C1',350,None)):
     L=[w for w in single if w[7]==lv and not skip(w)]
     L.sort(key=lambda w:-(z(w[0])+(0.6 if insinav(w[0].lower()) else 0)))
     top=L[:n]

@@ -417,23 +417,23 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <div id="toast" class="toast" hidden></div>
 
 <!--ASSETS: tools/release/assets.py üretir, elle düzenleme-->
-<script src="d/w00-9973019838.js"></script>
+<script src="d/w00-964dd07462.js"></script>
 <script src="d/w01-099d908bc7.js"></script>
 <script src="d/w02-0d012d04ed.js"></script>
 <script src="d/w03-32b0ade177.js"></script>
-<script src="d/w04-6c362e8844.js"></script>
-<script src="d/w05-bb046e7c84.js"></script>
-<script src="d/w06-0e60f35c95.js"></script>
-<script src="d/w07-0bd0edfb42.js"></script>
-<script src="d/w08-8af00d8705.js"></script>
-<script src="d/w09-f4a1b711a6.js"></script>
-<script src="d/w10-a8b0cbebcd.js"></script>
-<script src="d/w11-f78cbddd13.js"></script>
+<script src="d/w04-31c8472b85.js"></script>
+<script src="d/w05-14e86bb0f8.js"></script>
+<script src="d/w06-45e32a5ae3.js"></script>
+<script src="d/w07-e34e0d919e.js"></script>
+<script src="d/w08-6f1385d373.js"></script>
+<script src="d/w09-61aa285f15.js"></script>
+<script src="d/w10-fc065844ef.js"></script>
+<script src="d/w11-50192af60b.js"></script>
 <script src="d/w12-87514a86dd.js"></script>
 <script src="d/w13-3fcab16893.js"></script>
 <script src="d/w14-b6b4de384e.js"></script>
 <script src="d/w15-80911b8eef.js"></script>
-<script src="d/w16-56266c8ead.js"></script>
+<script src="d/w16-8206a0f2f3.js"></script>
 <script src="d/grammar-24c5272e6a.js"></script>
 <script src="d/x00-f86d17b433.js"></script>
 <script src="d/x01-ef03f3761c.js"></script>
@@ -484,7 +484,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/s14-9e51e48750.js"></script>
 <script src="d/s15-7d54860c38.js"></script>
 <script src="d/gloss-6e4fa53eb6.js"></script>
-<script src="d/core-940c182f09.js"></script>
+<script src="d/core-ce8f285b99.js"></script>
 <script src="d/afx-efd193255c.js"></script>
 <script src="d/fam-0ef1775da1.js"></script>
 <script src="d/pat-036daf5dcf.js"></script>
@@ -587,7 +587,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.170.1';
+const APP_VERSION = '4.170.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -781,6 +781,10 @@ function wlvApply(ov){
   WLV.ov=ov||{};Object.keys(LVTOTAL).forEach(k=>delete LVTOTAL[k]);W.forEach(w=>{LVTOTAL[w.level]=(LVTOTAL[w.level]||0)+1});
 }
 async function wlvLoad(){try{if(!sb)return;const r=await sb.from('word_levels').select('word,level');if(r.error)return;const o={};(r.data||[]).forEach(x=>{o[x.word]=x.level});try{localStorage.setItem('kd-wlv',JSON.stringify(o))}catch(e){}wlvApply(o);render()}catch(e){}}
+async function wlvCopy(){   // yönetici: elle verilen seviyeleri panoya kopyala (Claude'a yapıştırmak için)
+  await wlvLoad();const o=WLV.ov,t=JSON.stringify(o);
+  try{await navigator.clipboard.writeText(t);toast(nf(Object.keys(o).length)+' seviye ayarı kopyalandı. Sohbete yapıştırabilirsin.',4000)}catch(e){UI.wlvTxt=t;render();toast('Panoya kopyalanamadı; metni aşağıdan seçip kopyala.',4000)}
+}
 async function wlvSet(word,level){
   if(!CLOUD.admin||!sb)return;
   const r=await sb.rpc('admin_set_word_level',{p_word:word,p_level:level||''});
@@ -3599,6 +3603,7 @@ function vDict(){
   return`<div class="top"><h1>Sözlük</h1><span class="muted small">${nf(W.length)} kayıt</span></div>
   <div class="stack"><div class="seg" role="tablist" aria-label="Sözlük bölümü"><button class="chip" role="tab" aria-pressed="${(D.kind||'w')==='w'}" data-act="dk" data-v="w">📖 Kelimeler (${nf(DKN().w)})</button><button class="chip" role="tab" aria-pressed="${D.kind==='i'}" data-act="dk" data-v="i">💬 İfadeler (${nf(DKN().i)})</button></div>
   <div class="small muted" style="margin:-4px 2px 0">${D.kind==='i'?'Phrasal verb, deyim, kolokasyon, kalıp ve atasözleri.':'Tek kelimeler.'}</div>
+  ${CLOUD.admin?`<div class="card small row" style="justify-content:space-between;align-items:center;gap:8px;padding:8px 12px"><span>🛡 Elle ayarlanan seviye: <b>${nf(Object.keys(WLV.ov).length)}</b></span><button class="btn" data-act="wlv-copy" style="min-height:32px;padding:3px 12px;font-size:.82rem">📋 Kopyala</button></div>${UI.wlvTxt?`<textarea readonly style="width:100%;min-height:80px;font-size:.75rem" onclick="this.select()">${esc(UI.wlvTxt)}</textarea>`:''}`:''}
   <input id="q" class="search" type="search" placeholder="${D.kind==='i'?'İfade, Türkçe karşılık veya tanım ara':'Kelime, Türkçe karşılık veya tanım ara'}" value="${esc(D.q)}" autocomplete="off">
   ${(window.CORE||[]).length?`<div class="seg" role="group" aria-label="Kelime havuzu"><button class="chip" aria-pressed="${!focusOn()}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${focusOn()}" data-act="focus-set" data-v="1">🎯 Odak (${nf(coreSize())})</button></div>`:''}
   <div class="seg" role="group" aria-label="Seviye (birden fazla seçilebilir)">${['Hepsi'].concat(LEVELS).map(v=>`<button class="chip" aria-pressed="${lvOn(D.level,v)}" data-f="level" data-v="${v}">${v}</button>`).join('')}</div>
@@ -6060,6 +6065,7 @@ document.addEventListener('click',async e=>{
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
     case'mw-more':{const x=g('data-w');UI.mwOpen=UI.mwOpen||{};UI.mwOpen[x]=!UI.mwOpen[x];const y=window.scrollY;render();window.scrollTo(0,y);break}
+    case'wlv-copy':wlvCopy();break;
     case'adm-lv':{const x=g('data-w'),v=g('data-v');if(v&&BYWORD.get(x)&&BYWORD.get(x).level===v)break;wlvSet(x,v);break}
     case'fam-go':{const x=g('data-w');UI.dict.kind=isPhr(x)?'i':'w';UI.tab='dict';UI.dict.q=x;UI.dict.open=x;UI.dict.level='Hepsi';UI.dict.pos='Hepsi';UI.dict.status='Hepsi';UI.dict.limit=40;UI.card=null;render();window.scrollTo(0,0);break}
     case'fo-w':{const w=g('data-w');toggleFocus(w);toast(inFocus(w)?'Odak listene eklendi.':'Odak listenden çıkarıldı.');const dl=$('#dlist');if(dl&&(UI.tab==='dict'||UI.tab==='saved')){if(focusOn()&&!inFocus(w)&&UI.tab==='dict')UI.dict.open=null;dl.innerHTML=UI.tab==='saved'?savedList():dictList()}else render();break}
