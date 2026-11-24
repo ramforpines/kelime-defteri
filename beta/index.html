@@ -587,7 +587,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.171.3';
+const APP_VERSION = '4.171.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1928,7 +1928,7 @@ function vHelp(){
     'İlk girişte yönetici onayı gerekebilir. Onaylanınca sıralamaya girer, sohbete ve düelloya katılırsın.',
     'İlerlemen hesabına kaydedilir. Başka cihazda aynı kullanıcı adı ve şifreyle girince kaldığın yerden devam edersin.']),true)}
   ${sec('🎯 Odak modu',li([
-    '<b>Ne işe yarar</b>: sözlükteki her şeyi değil, B1–B2 seviyesinde gerçekten gerekli olanı öğrenmen için seçilmiş '+nf(coreSize())+' kelime ve kalıp. İngilizcede en sık kullanılan kelimelerden (günlük ve akademik dil birlikte) seçildi; sınav metinlerinde geçenler önceliklidir. C1\'den yalnız en sık 350 kelime vardır. Türevler (carefully gibi) ve Amerikan karşılıklar (truck gibi) ayrıca yer almaz.',
+    '<b>Ne işe yarar</b>: sözlükteki her şeyi değil, B1–B2 seviyesinde en çok işine yarayacak '+nf(coreSize())+' kelime ve kalıbı öğrenmen için seçilmiş bir liste. En sık kullanılan kelimelerden oluşur.',
     '<b>Açmak / kapatmak</b>: Bugün sayfasındaki 🎯 Odak modu kartından, ya da Sözlük ve Test ekranındaki "Tüm sözlük / 🎯 Odak" seçiminden. Ayar her yerde ortaktır ve hesabına kaydedilir. Varsayılan kapalıdır.',
     '<b>Açıkken</b>: Bugünün testindeki ve Test sekmesindeki yeni kelimeler yalnız bu listeden, sırayla gelir: önce B1\'in en sık kelimeleri, sonra B2, en son C1. Tekrar, Yanlış defteri ve düello değişmez; sözlükte her şey aranabilir.',
     '<b>Kendi listen</b>: sözlükte kelimeyi açınca "🎯 Odağa ekle" ya da "🎯 Odakta · çıkar" düğmesi vardır. Eklediğin kelimeler listenin başına gelir. Bu değişiklik yalnız seni etkiler ve hesabına kaydedilir.',
@@ -1936,7 +1936,7 @@ function vHelp(){
   ${sec('📗 Sözlük ve kelime kartları',li([
     '<b>Kelimeler / İfadeler</b>: Sözlük\'ün üstündeki iki sekme. İfadeler\'de phrasal verb, deyim, kolokasyon, kalıp ve atasözleri bulunur. Aradığın şey öbür sekmede de varsa listenin altında "… sonuç daha" düğmesi çıkar.',
     '<b>Sıralama</b>: liste her zaman en sık kullanılandan en az kullanılana doğrudur. Aramada önce kelimenin kendisi, sonra o harflerle başlayanlar, sonra içinde geçenler, en son Türkçesinde ya da tanımında geçenler gelir.',
-    '<b>Seviyeler</b>: tek kelimelerin seviyesi Oxford 3000/5000 ve CEFR-J listelerine göre belirlenir; bu listelerde olmayanlar elle gözden geçirilir. Yanlış gördüğün bir seviyeyi Ayarlar → Yöneticiye mesaj ile bildirebilirsin.',
+    '<b>Seviyeler</b>: A1\'den C2\'ye; Oxford ve CEFR listelerine dayanır. Yanlış gördüğün bir seviyeyi Ayarlar → Yöneticiye mesaj ile bildirebilirsin.',
     '<b>Kartta neler var</b>: Türkçe karşılık, tür, örnek cümle (Türkçesiyle), eş ve zıt anlam, çok anlamlı kelimelerde diğer anlamlar ve şunlar (olan kelimelerde):',
     '· <b>Kullanım</b>: sayılamaz isim uyarısı (some advice), resmî / gündelik etiketi, Amerikan–İngiliz farkı (🇺🇸 truck = 🇬🇧 lorry).',
     '· <b>⚠️ Dikkat</b>: sık karıştırılan kelimeler (borrow / lend, make / do, since / for) kısa kural ve örnekle; yalancı eşdeğerler (actually ≠ şu anda, sympathetic ≠ sempatik).',
@@ -1954,8 +1954,8 @@ function vHelp(){
     '<b>Kalıplar</b> (Gramer menüsünde): günlük ve akademik ifade kalıpları, '+(window.PHRASES?window.PHRASES.length+' grup halinde':'gruplar halinde')+' (selamlaşma, fikir belirtme, öneri, rica, telefon ve e-posta, phrasal verb, deyim, kolokasyon vb.). Kalıba dokununca Türkçesi ve örnek cümlesi açılır; ▶ ile sesli duyabilir, ☆ ile kaydedebilirsin. Her grubun sonundaki sorular kalıbı diyalogda ve boşlukta kullanmanı ister. Kaydettiğin kalıplar Kaydedilenler\'de görünür; kalıp soruları Bugünün testinde de çıkar.',
     '<b>Sınav</b>: Cambridge sınavlarının formatında A2, B1, B2 ve C1 sınavları; her sınavda <b>okuma, dinleme, yazma ve konuşma</b> bölümleri vardır. Bölümler sürelidir; istediğin sırada ve farklı zamanlarda çözebilirsin, teslim ettiğin bölüm değiştirilemez. Dinlemede her kayıt en fazla 2 kez çalınır. Konuşma bölümü mikrofon ve konuşma tanıyan bir tarayıcı ister.',
     '<b>Sınav kuralları</b>: her sınav <b>bir kez</b> çözülür. Sınav 1\'ler sırayla açılır (A2 → B1 → B2 → C1): bir seviyeyi bitirince sonraki seviye takip eden pazartesi açılır. Dört bölüm de bitince bölüm puanların, Cambridge ölçeğine yakın genel puanın, seviyen, cevap açıklamaları ve çalışman gereken konular görünür. Yazma ve konuşma yapay zekâ ile değerlendirilir (haftada 1 hak). Resmî Cambridge sınavı değildir.',
-    '<b>Sınav → Çalışma</b>: sınavdaki bölüm türlerinden süresiz alıştırmalar (okuma, dinleme, yazma, konuşma); sınav sonucunu etkilemez. Okumada eski Okuma bölümündeki 64 uzun metin de burada.',
-    '<b>Çalışmada tamamlanan bölüm</b>: listenin sonuna iner ve sonucu yanında yazar (okuma ve dinlemede "✓ 5/5", yazma ve konuşmada "✓ Tamamlandı"). Aynı şeyi tekrar tekrar çözmemen için kilitlenir; <b>15 gün sonra</b> "↺ Sıfırla" ile yeniden çözebilirsin. Yazma "Bitirdim" deyince, konuşma son soru kaydedilince tamamlanmış sayılır. Sonuçlar hesabına kaydedilir.',
+    '<b>Sınav → Çalışma</b>: sınavdaki bölüm türlerinden süresiz alıştırmalar (okuma, dinleme, yazma, konuşma); sınav sonucunu etkilemez.',
+    '<b>Çalışmada tamamlanan bölüm</b>: listenin sonuna iner, sonucu yanında yazar ("✓ 5/5" ya da "✓ Tamamlandı"). <b>15 gün sonra</b> "↺ Sıfırla" ile yeniden çözebilirsin.',
     '<b>Sınav sıralamaları</b>: Sınav ekranındaki düğmeden ya da Sıralamalar → Sınavlar sekmesinden görürsün.']))}
   ${sec('📝 Testler ve soru türleri',li([
     '<b>Bugünün testi</b>: her zaman 30 soru; en çok 7 tekrar zamanı gelen kelime, 5 Yanlış defteri sorusu, 3 günün kelimesi, 2 kalıp, 5 gramer sorusu ve kalanı (en az 8) yeni kelimelerden karışık hazırlanır. Seviye ayarından bağımsızdır: kalıp ve gramer her seviyeden (ağırlık B1–B2), yeni kelimeler %5 A2, %35 B1, %40 B2, %15 C1, %5 C2 gelir; 🎯 Odak modu açıksa yeni kelimeler Odak listesinden sırayla gelir. Tekrar ya da defter azsa yerini yeni kelime alır. Çalışma ekranındaki soru sayısı bunu etkilemez.',
@@ -2041,7 +2041,7 @@ function vHelp(){
   ${sec('📱 Yükleme, çevrimdışı kullanım ve bakım',li([
     'Uygulama tarayıcıda çalışır; telefon, tablet ve bilgisayarda aynı adresten açılır. Ayarlar\'daki "Uygulamayı cihaza yükle" ile ana ekrana eklenir (iPhone/iPad\'te Paylaş → "Ana Ekrana Ekle").',
     '<b>Çevrimdışı</b>: kelime listesi cihazında saklanır, internet olmadan da test çözebilirsin; internet gelince ilerlemen eşitlenir. Sıralama, sohbet ve düello için internet gerekir.',
-    '<b>Cihaz değiştirince</b> ilerlemen silinmez, en güncel hâli korunarak birleştirilir; birden fazla cihazda çözdüğün sorular istatistiklerde toplanır, kaybolmaz. Ayarlar → Yedek bölümünden ilerlemenin kopyasını metin olarak alıp geri yükleyebilirsin.',
+    '<b>Cihaz değiştirince</b> ilerlemen silinmez; birden fazla cihazda çözdüklerin birleştirilir. Ayarlar → Yedek bölümünden ilerlemenin kopyasını metin olarak alıp geri yükleyebilirsin.',
     '<b>Bakım</b>: sunucu bakıma alınınca uygulama bakım ekranına geçer, ilerlemen önce kaydedilir. Sayfayı açık bırak; bakım bitince uygulama kendiliğinden yenilenir. Günlük kısa bakım saatinde de aynı ekran çıkar.']))}
   ${sec('🔔 Hatırlatma ve ayarlar',li([
     'Ayarlar\'dan günlük hedefini ve hatırlatma saatini seçersin. Hatırlatma tarayıcı izniyle çalışır ve uygulama açıkken gösterilir.',
@@ -2058,7 +2058,6 @@ function vHelp(){
     '<b>Dereceli düello neden kapalı?</b> Yalnızca belirli saatlerde açıktır (Düello bölümüne bak); Düello ekranında sonraki pencereye geri sayım görünür. Klasik düello her zaman açıktır.',
     '<b>Bakım ekranı çıktı.</b> Sayfayı açık bırak; bakım bitince uygulama kendiliğinden yenilenir, ilerlemen kaybolmaz.',
     '<b>Kelime listesi neden güncellendi?</b> Yeni kelimeler eklenir, hatalar ve seviyeler düzeltilir; ilerlemen korunur.',
-    '<b>Bir kelimenin seviyesi neden değişti?</b> Seviyeler Oxford 3000/5000 ve CEFR-J listelerine göre düzeltildi, gerekenler elle gözden geçirildi. Öğrendiğin kelimeler öğrenilmiş kalır.',
     '<b>Odak modunda neden hep aynı seviyeden kelime geliyor?</b> Liste sırayla ilerler: önce B1, sonra B2, en son C1. Kendi eklediğin kelimeler başa gelir.',
     '<b>Sorudaki iki şık doğru görünüyor.</b> Soru kartındaki ⚑ Bildir düğmesiyle bildir, düzeltelim.',
     '<b>Sıralamada görünmüyorum.</b> Hesabın onaylı olmalı ve o dönemde (bugün ya da bu hafta) en az bir soru çözmüş olmalısın.',
