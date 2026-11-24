@@ -587,7 +587,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.171.4';
+const APP_VERSION = '4.171.5';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -864,13 +864,13 @@ function wodQueue(){
 const wodLeft=()=>{const dn=wqGet().done;return wodQueue().filter(q=>dn.indexOf(q.k)===-1)};
 function wodPick(items,anyWord){
   // her 10 soruda 1 günün-kelimesi sorusu (en az 1): sıradaki çözülmemiş sorular seçilir; kelime filtreye uymuyorsa atlanır
-  const need=Math.max(1,Math.floor(items.length/10)),taken=new Set();let out=items;
+  const need=Math.max(1,Math.floor(items.length/10)),taken=new Set(),tw=new Set();let out=items;
   for(let n=0;n<need;n++){
-    const q=wodLeft().find(q=>!taken.has(q.k)&&(anyWord||(lvOk(S.set.level,q.w.level)&&typeOK(q.w))));
+    const q=wodLeft().find(q=>!taken.has(q.k)&&!tw.has(q.w.word)&&(anyWord||(lvOk(S.set.level,q.w.level)&&typeOK(q.w))));
     if(!q)break;
     const it=makeItem(q.w,q.f,'wod');
     if(!it){wqGet().done.push(q.k);n--;continue}
-    taken.add(q.k);
+    taken.add(q.k);tw.add(q.w.word);   // aynı testte aynı kelimeden tek soru
     const rest=out.filter(x=>x.w!==q.w||x.kind==='wod');
     if(rest.length===out.length){for(let z=rest.length-1;z>=0;z--)if(rest[z].kind!=='wod'){rest.splice(z,1);break}}   // toplam soru sayısı seçilen sayıyı aşmasın (daha önce eklenen günün-kelimesi sorusu atılmaz)
     out=rest.concat([it]);
@@ -1493,7 +1493,7 @@ function rkAdHtml(){
   <div class="rka-s">KILICINI SAVAŞ SAATİNDE ÇEK!</div></div>`}
 const OD_AD={from:'2026-11-24',to:'2026-11-29'};   // Odak modu afişi: 24-29 Kasım arası her girişte (pazartesi kalkar); yönetici hemen görür
 const odAdDue=()=>{const t=today();return t<=OD_AD.to&&(t>=OD_AD.from||!!CLOUD.admin)};
-const odAdHtml=()=>`<img src="img/ann/odak-4171.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.500+ kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
+const odAdHtml=()=>`<img src="img/ann/odak-4171b.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.500+ kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
 const SX_AD={from:'2026-11-10',to:'2026-11-13'};   // Sınav duyurusu: 10-13 Kasım arası her girişte; yönetici hemen görür
 const sxAdDue=()=>{const t=today();return t<=SX_AD.to&&(t>=SX_AD.from||!!CLOUD.admin)};
 function sxAdHtml(){
@@ -1930,8 +1930,8 @@ function vHelp(){
   ${sec('🎯 Odak modu',li([
     '<b>Ne işe yarar</b>: sözlükteki her şeyi değil, B1–B2 seviyesinde en çok işine yarayacak '+nf(coreSize())+' kelime ve kalıbı öğrenmen için seçilmiş bir liste. En sık kullanılan kelimelerden oluşur.',
     '<b>Açmak / kapatmak</b>: Bugün sayfasındaki 🎯 Odak modu kartından, ya da Sözlük ve Test ekranındaki "Tüm sözlük / 🎯 Odak" seçiminden. Ayar her yerde ortaktır ve hesabına kaydedilir. Varsayılan kapalıdır.',
-    '<b>Açıkken</b>: Bugünün testindeki ve Test sekmesindeki yeni kelimeler yalnız bu listeden, sırayla gelir: önce B1\'in en sık kelimeleri, sonra B2, en son C1. Tekrar, Yanlış defteri ve düello değişmez; sözlükte her şey aranabilir.',
-    '<b>Kendi listen</b>: sözlükte kelimeyi açınca "🎯 Odağa ekle" ya da "🎯 Odakta · çıkar" düğmesi vardır. Eklediğin kelimeler listenin başına gelir. Bu değişiklik yalnız seni etkiler ve hesabına kaydedilir.',
+    '<b>Açıkken</b>: Bugünün testindeki ve Test sekmesindeki yeni kelimeler yalnız bu listeden, karışık gelir. Tekrar, Yanlış defteri ve düello değişmez; sözlükte her şey aranabilir.',
+    '<b>Kendi listen</b>: sözlükte kelimeyi açınca "🎯 Odağa ekle" ya da "🎯 Odakta · çıkar" düğmesi vardır. Bu değişiklik yalnız seni etkiler ve hesabına kaydedilir.',
     '<b>İlerleme</b>: Bugün sayfasındaki Odak kartında ve Ben → İstatistik\'te seviye seviye ne kadarını öğrendiğini ve bu hızla kalanın kaç gün süreceğini görürsün.']))}
   ${sec('📗 Sözlük ve kelime kartları',li([
     '<b>Kelimeler / İfadeler</b>: Sözlük\'ün üstündeki iki sekme. İfadeler\'de phrasal verb, deyim, kolokasyon, kalıp ve atasözleri bulunur. Aradığın şey öbür sekmede de varsa listenin altında "… sonuç daha" düğmesi çıkar.',
@@ -1958,7 +1958,7 @@ function vHelp(){
     '<b>Çalışmada tamamlanan bölüm</b>: listenin sonuna iner, sonucu yanında yazar ("✓ 5/5" ya da "✓ Tamamlandı"). <b>15 gün sonra</b> "↺ Sıfırla" ile yeniden çözebilirsin.',
     '<b>Sınav sıralamaları</b>: Sınav ekranındaki düğmeden ya da Sıralamalar → Sınavlar sekmesinden görürsün.']))}
   ${sec('📝 Testler ve soru türleri',li([
-    '<b>Bugünün testi</b>: her zaman 30 soru; en çok 7 tekrar zamanı gelen kelime, 5 Yanlış defteri sorusu, 3 günün kelimesi, 2 kalıp, 5 gramer sorusu ve kalanı (en az 8) yeni kelimelerden karışık hazırlanır. Seviye ayarından bağımsızdır: kalıp ve gramer her seviyeden (ağırlık B1–B2), yeni kelimeler %5 A2, %35 B1, %40 B2, %15 C1, %5 C2 gelir; 🎯 Odak modu açıksa yeni kelimeler Odak listesinden sırayla gelir. Tekrar ya da defter azsa yerini yeni kelime alır. Çalışma ekranındaki soru sayısı bunu etkilemez.',
+    '<b>Bugünün testi</b>: her zaman 30 soru; en çok 7 tekrar zamanı gelen kelime, 5 Yanlış defteri sorusu, 3 günün kelimesi, 2 kalıp, 5 gramer sorusu ve kalanı (en az 8) yeni kelimelerden karışık hazırlanır. Seviye ayarından bağımsızdır: kalıp ve gramer her seviyeden (ağırlık B1–B2), yeni kelimeler %5 A2, %35 B1, %40 B2, %15 C1, %5 C2 gelir; 🎯 Odak modu açıksa yeni kelimeler Odak listesinden gelir. Tekrar ya da defter azsa yerini yeni kelime alır. Çalışma ekranındaki soru sayısı bunu etkilemez.',
     '<b>Yeni test</b>: seçtiğin seviye ve türden henüz öğrenmediğin kelimeler gelir. Test ekranında kelime havuzunu (Tüm sözlük / 🎯 Odak) ve "Kelime mi ifade mi?" seçimini (Hepsi / Kelimeler / İfadeler) de yaparsın.',
     '<b>Soru türleri</b>: Türkçe karşılık (bazen Türkçeden İngilizceye), İngilizce tanım, kelime türü, boşluk doldurma, yakın anlam, karşıt anlam, V2/V3 (düzensiz fiiller), atasözü tamamlama, eksik kelime (deyim ve kalıplarda), edat kalıbı, ek, anlamdan ifadeye ve çok anlamlı kelimelerde cümledeki anlam. Ek sorularında (ör. -less, -ness) kelimeden ek çıkarılır, hangi ekle türetildiğini ya da boşluğa hangi önekin geldiğini ("_____week" → mid-) seçersin.',
     '<b>Kart bilgisinden gelen sorular</b>: kelime türetme ("The country gained _____ (DEPENDENT)" → independence), kullanım kalıbı ("I enjoy _____ in the sea" → swimming), karıştırılan kelime ("Can I _____ your pen?" → borrow), yalancı eşdeğer ("actually" ne demek?) ve sayılamaz isim ("some advice" mı "an advice" mı?). Cevaptan sonra kalıp ya da kural notu gösterilir. Bu sorular araya karışır, kelimenin "öğrenildi" sayılması için şart değildir.',
@@ -1973,7 +1973,7 @@ function vHelp(){
     '<b>Öğrenilen kelime tekrarı</b>: öğrendiğin kelime 15 gün sonra, sonra her 30 günde bir yeniden sorulur. Yanlış yaparsan 7 gün sonra tekrar sorulur. Bugünün testi ve Tekrar sekmesindeki düğme bunları öne alır.']))}
   ${sec('🔁 Tekrar ve yanlış defteri',li([
     '<b>Tekrar listesi</b>: Türkçe karşılığını ya da tanımını yanlış bildiğin kelime listeye girer.',
-    '<b>Listeden çıkmak</b>: Türkçe ve Tanım sorularını art arda <b>3 kez</b> doğru bilmen gerekir. Türkçe ve Tanım soruları birlikte gelir: yanlıştan 3 gün sonra, ikisini de bir kez doğru bilince 7 gün, iki kez doğru bilince 14 gün sonra yeniden sorulur; yanlış yaparsan sayaç düşer. Kelime listeden çıkınca +1 × seviye katsayısı puan alırsın.',
+    '<b>Listeden çıkmak</b>: Türkçe ve Tanım sorularını art arda <b>3 kez</b> doğru bilmen gerekir. Yanlıştan 3 gün sonra sorulur; doğru bildikçe 7, sonra 14 gün arayla yeniden sorulur, yanlış yaparsan sayaç sıfırlanır. Kelime listeden çıkınca +1 × seviye katsayısı puan alırsın.',
     '<b>Yanlış defteri</b>: testte yanlış yaptığın her soru saklanır. Orada tekrar çözüp doğru yaparsan soru defterden çıkar; "Defterden çıkar" ile elle de silebilirsin.']))}
   ${sec('⭐ Puan sistemi',li([
     '<b>Doğru cevap</b> = seviye katsayısı × soru türü katsayısı. Seviye katsayıları: '+LEVELS.map(l=>l+' × '+COEF[l]).join(', ')+'. Örnek cümle, yakın/karşıt anlam gibi türlerin katsayısı biraz daha yüksektir.',
@@ -2058,7 +2058,6 @@ function vHelp(){
     '<b>Dereceli düello neden kapalı?</b> Yalnızca belirli saatlerde açıktır (Düello bölümüne bak); Düello ekranında sonraki pencereye geri sayım görünür. Klasik düello her zaman açıktır.',
     '<b>Bakım ekranı çıktı.</b> Sayfayı açık bırak; bakım bitince uygulama kendiliğinden yenilenir, ilerlemen kaybolmaz.',
     '<b>Kelime listesi neden güncellendi?</b> Yeni kelimeler eklenir, hatalar ve seviyeler düzeltilir; ilerlemen korunur.',
-    '<b>Odak modunda neden hep aynı seviyeden kelime geliyor?</b> Liste sırayla ilerler: önce B1, sonra B2, en son C1. Kendi eklediğin kelimeler başa gelir.',
     '<b>Sorudaki iki şık doğru görünüyor.</b> Soru kartındaki ⚑ Bildir düğmesiyle bildir, düzeltelim.',
     '<b>Sıralamada görünmüyorum.</b> Hesabın onaylı olmalı ve o dönemde (bugün ya da bu hafta) en az bir soru çözmüş olmalısın.',
     '<b>Uygulama eski görünüyor.</b> Sayfayı kapatıp aç ya da yenile; yeni sürüm yüklenir. Güncel sürümü Ayarlar\'ın altında görürsün.']))}
@@ -3048,11 +3047,11 @@ async function adminFocus(w){   // yönetici: herkesin listesine ekle/çıkar; k
 }
 const focusOn=()=>!!(S.set.focus&&(window.CORE||[]).length);
 function coreStat(){coreInit();let n=0;CORESET.forEach(x=>{if(S.learned[x])n++});return{n,t:CORESET.size}}
-function focusItems(n,level,skip,wt0){   // çekirdek listeden sırayla: önce B1'in en sık kelimeleri; küçük bir pencere karıştırılır
+function focusItems(n,level,skip,wt0){   // Odak listesinden rastgele (sıklık sırası yalnız sözlükte gösterim içindir)
   coreInit();
-  const c=W.filter(w=>CORESET.has(w.word)&&!S.learned[w.word]&&(wt0||lvOk(level,w.level))&&typeOK(w)&&!skip.has(w.word)).sort((a,b)=>COREIX.get(a.word)-COREIX.get(b.word));
+  const c=W.filter(w=>CORESET.has(w.word)&&!S.learned[w.word]&&(wt0||lvOk(level,w.level))&&typeOK(w)&&!skip.has(w.word));
   const out=[];
-  for(const w of shuffle(c.slice(0,Math.max(n*4,40)))){
+  for(const w of shuffle(c)){
     if(out.length>=n)break;
     const done=S.prog[w.word]||[];
     let feats=applicable(w).filter(f=>done.indexOf(f)===-1);
@@ -3086,7 +3085,7 @@ function reviewItems(n,all){
     if(out.length>=n)break;
     const w=BYWORD.get(k),e=S.wrong[k];
     const order=[0,1].sort((a,b)=>e.t[a]-e.t[b]).filter(f=>e.t[f]<STREAK_GOAL);
-    for(const f of order){if(out.length>=n)break;const it=makeItem(w,f,'review');if(it)out.push(it)}   // Türkçe ve Tanım aynı tekrarda birlikte sorulur (aralıklar iki tür birlikte ilerler)
+    for(const f of order){const it=makeItem(w,f,'review');if(it){out.push(it);break}}   // kelime başına tek soru (en geride olan tür)
   }
   if(out.length<n){
     const have=new Set(out.map(i=>i.w.word));
@@ -3160,6 +3159,8 @@ function startQuiz(mode,all){
     const put=pi=>{const z=items.map(x=>x.kind).lastIndexOf('new');if(z!==-1)items.splice(z,1,pi);else items.push(pi)};   // kalıp/gramer soruları yeni kelime sorularının yerine geçer; toplam 30 kalır
     if(GRAM_BETA)phDailyItems(TD.phr).forEach(put);
     gmDailyItems(TD.gram).forEach(put);
+    {const seen=new Set(),u=[];items.forEach(x=>{const k=x.w&&!x.w.phr&&!x.w.gram?x.w.word:null;if(k&&seen.has(k))return;if(k)seen.add(k);u.push(x)});   // aynı kelimeden ikinci soru atılır, yerine yeni kelime
+     if(u.length<items.length)u.push(...newItems(items.length-u.length,'Hepsi',seen,TODAY_W));items=u}
   }else items=wodPick(newItems(n,S.set.level,new Set()),false);
   items=shuffle(items);
   if(!items.length){toast(mode==='saved'?'Kaydedilen kelimen yok.':mode==='wlog'?'Yanlış defterin boş.':mode==='review'?'Tekrar edilecek kelime yok.':'Bu seviyede soru üretilecek kelime kalmadı.');return}
@@ -3223,7 +3224,7 @@ function applyAnswerCore(it,ok,ua,qz,gate){
     if(bw&&(it.f===0||it.f===1)){
       bw.t[it.f]=Math.min(STREAK_GOAL,bw.t[it.f]+1);
       if(bw.t[0]>=STREAK_GOAL&&bw.t[1]>=STREAK_GOAL){delete S.wrong[w.word];it.cleared=true;pt+=ap(cf,'b')}
-      else bw.due=addDays(today(),INTERVALS[Math.min(Math.min(bw.t[0],bw.t[1]),INTERVALS.length-1)]);   // iki tür birlikte sorulur: ikisi de 1 doğru → 7 gün, 2 doğru → 14 gün (biri eksikse 3 gün)
+      else bw.due=addDays(today(),INTERVALS[Math.min(bw.t[it.f],INTERVALS.length-1)]);   // 1 doğru → 7 gün, 2 doğru → 14 gün
     }
   }else{
     qz.wrong.push(it);
@@ -3532,7 +3533,7 @@ function focusCard(){
   if(!(window.CORE||[]).length)return'';
   const on=focusOn(),c=coreStat(),p=c.t?c.n/c.t:0;
   return`<div class="card stack" style="${on?'border-color:var(--accent)':''}"><div class="row" style="justify-content:space-between;align-items:center;gap:10px">
-    <div><b>🎯 Odak modu</b> ${on?'<span class="badge ok">Açık</span>':'<span class="badge">Kapalı</span>'}<div class="muted small">B1–B2 ağırlıklı ${nf(c.t)} kelime ve kalıptan oluşan çekirdek liste. Açıkken yeni kelimeler yalnız buradan, en sık kullanılanlardan başlayarak gelir. Sözlükte her kelimenin altındaki "🎯" düğmesiyle listene kelime ekleyip çıkarabilirsin; yalnız seni etkiler.</div></div>
+    <div><b>🎯 Odak modu</b> ${on?'<span class="badge ok">Açık</span>':'<span class="badge">Kapalı</span>'}<div class="muted small">B1–B2 ağırlıklı ${nf(c.t)} kelime ve kalıptan oluşan çekirdek liste. Açıkken yeni kelimeler yalnız bu listeden gelir. Sözlükte her kelimenin altındaki "🎯" düğmesiyle listene kelime ekleyip çıkarabilirsin; yalnız seni etkiler.</div></div>
     <button class="btn ${on?'':'primary'}" data-act="focus-tg" style="flex:0 0 auto">${on?'Kapat':'Aç'}</button></div>
     <div><div class="row small" style="justify-content:space-between"><span>Çekirdekten öğrendiğin</span><b>${nf(c.n)} / ${nf(c.t)}</b></div>
     <div style="height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-top:4px"><div style="height:100%;width:${Math.round(p*1000)/10}%;background:var(--accent)"></div></div></div></div>`;
@@ -3553,7 +3554,7 @@ function vToday(){
     <div class="muted small">${due?`${due} kelime tekrar zamanı gelmiş. Bugünün testi bunları öne alır.`:'Tekrar bekleyen kelime yok.'}</div>
     <button class="btn primary" data-act="start-today">Bugünün testini başlat (${TODAY_N} soru)</button></div></div>
   <div class="card small" style="padding:10px 12px"><div style="font-weight:700;margin-bottom:6px">Bugünün testi nereden geliyor?</div>
-    <table class="tdq" style="width:100%;border-collapse:collapse">${[['Tekrar zamanı gelen kelimeler','en çok '+TD.rev],['Yanlış defteri',TD.wlog],['Günün kelimeleri','3'],['Gramer (ağırlık B1–B2)',TD.gram],['Kalıp (ağırlık B1–B2)',TD.phr],[focusOn()?'Yeni kelimeler (🎯 Odak listesinden, sırayla)':'Yeni kelimeler (%5 A2 · %35 B1 · %40 B2 · %15 C1 · %5 C2)','kalanı']].map(r=>`<tr><td style="padding:3px 0;border-top:1px solid var(--line)">${r[0]}</td><td style="padding:3px 0 3px 8px;border-top:1px solid var(--line);text-align:right;white-space:nowrap;font-weight:600">${r[1]}</td></tr>`).join('')}</table>
+    <table class="tdq" style="width:100%;border-collapse:collapse">${[['Tekrar zamanı gelen kelimeler','en çok '+TD.rev],['Yanlış defteri',TD.wlog],['Günün kelimeleri','3'],['Gramer (ağırlık B1–B2)',TD.gram],['Kalıp (ağırlık B1–B2)',TD.phr],[focusOn()?'Yeni kelimeler (🎯 Odak listesinden)':'Yeni kelimeler (%5 A2 · %35 B1 · %40 B2 · %15 C1 · %5 C2)','kalanı']].map(r=>`<tr><td style="padding:3px 0;border-top:1px solid var(--line)">${r[0]}</td><td style="padding:3px 0 3px 8px;border-top:1px solid var(--line);text-align:right;white-space:nowrap;font-weight:600">${r[1]}</td></tr>`).join('')}</table>
     <div class="muted" style="margin-top:6px">Tekrar ya da Yanlış defteri azsa yerini yeni kelime alır. Seviye ayarından bağımsızdır.</div></div>
   ${focusCard()}
   <div class="kpis"><div class="kpi"><b>${nf(learnedCount())}</b><span>öğrendiğin kelime</span></div><div class="kpi"><b>${nf(W.length-learnedCount())}</b><span>öğrenmediğin kelime</span></div><div class="kpi"><b>${nf(Object.keys(S.wrong).length)}</b><span>tekrar listendeki kelime</span></div></div>
@@ -4572,7 +4573,7 @@ function vReview(){
     </div>`;
   }
   return`<div class="top"><h1>Tekrar</h1><span class="muted small">${keys.length} kelime</span></div><div class="stack">${tabs}
-  <div class="card stack"><div class="muted small">Öğrendiğin kelimeler 15 gün sonra ilk kez, sonra ayda bir kez tekrar sorulur${dl?' (şu an '+dl+' kelime sırada)':''}. Türkçe karşılığını veya tanımını yanlış bildiğin kelimeler burada toplanır. İkisini de art arda ${STREAK_GOAL} kez doğru bilince listeden çıkar. Türkçe ve Tanım soruları birlikte gelir: yanlıştan 3 gün sonra, ikisini de bir kez doğru bilince 7 gün, iki kez doğru bilince 14 gün sonra.</div>
+  <div class="card stack"><div class="muted small">Öğrendiğin kelimeler 15 gün sonra ilk kez, sonra ayda bir kez tekrar sorulur${dl?' (şu an '+dl+' kelime sırada)':''}. Türkçe karşılığını veya tanımını yanlış bildiğin kelimeler burada toplanır. İkisini de art arda ${STREAK_GOAL} kez doğru bilince listeden çıkar. Yanlıştan 3 gün sonra, sonra 7 ve 14 gün arayla sorulur.</div>
   <div class="row"><button class="btn primary" data-act="start-review" ${due?'':'disabled'}>Günü gelenleri çalış (${due})</button>
   ${keys.length&&!due?'<button class="btn" data-act="start-review-all">Yine de hepsini çalış</button>':''}</div></div>
   ${keys.length?keys.map(k=>{const w=BYWORD.get(k),e=S.wrong[k],d=e.due<=today();
