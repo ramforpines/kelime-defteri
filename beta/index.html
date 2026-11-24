@@ -580,7 +580,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.164.3';
+const APP_VERSION = '4.164.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3101,7 +3101,7 @@ function vGram(){
   <div class="card stack"><div class="row" style="gap:8px"><h2 style="margin:0">${esc(T.title)}</h2><span class="badge">${T.lv}</span></div>
     ${(T.intro||[T.sub]).filter(Boolean).map(t=>`<div>${t}</div>`).join('')}
     <div class="gf"><b>Kalıp:</b> ${gHl(T.form_name)}</div></div>
-  ${(()=>{const ph=phOfGr(T.id);if(ph.length)phLoad();return ph.length?`<div class="card stack"><b>İlgili kalıplar</b>${ph.map(id=>`<button class="btn go block" data-act="phr-open" data-v="${id}"><span>${esc((window.PHRASES&&(window.PHRASES.find(g=>g.id===id)||{}).t)||id)}</span><span class="gt">Git →</span></button>`).join('')}</div>`:''})()}
+  ${(()=>{const ph=phOfGr(T.id);if(ph.length)phLoad();return ph.length?`<div class="card stack"><b>İlgili kalıplar</b>${ph.map(id=>`<div class="row" style="justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--line)"><span>${esc((window.PHRASES&&(window.PHRASES.find(g=>g.id===id)||{}).t)||id)}</span><button class="btn primary" data-act="phr-open" data-v="${id}" style="min-height:34px;padding:4px 12px;font-size:.82rem;flex:0 0 auto">Git →</button></div>`).join('')}</div>`:''})()}
   ${T.timeline?gTLHtml(T.timeline):''}
   <div class="card stack"><h3 style="margin:0">Cümle yapısı</h3><table class="gt"><tr><th>Tür</th><th>Kalıp</th><th>Örnek</th></tr>${T.form.map(f=>`<tr><td><b>${esc(f.k)}</b></td><td>${gHl(f.p)}</td><td>${gHl(f.e[0])}<div class="muted small">${gHl(f.e[1])}</div></td></tr>`).join('')}</table>${T.formnote?gBox(T.formnote):''}</div>
   <div class="card stack"><h3 style="margin:0">Ne zaman kullanılır?</h3><div class="muted small">İngilizce cümleye dokununca sesli okur.</div>${T.uses.map(u=>`<div><b>${esc(u.h)}</b><div class="small" style="margin:2px 0 4px">${u.why}</div>${set(u.ex)}${u.note?`<div class="gn" style="margin-top:6px">${gRaw(u.note)}</div>`:''}${(u.inl||[]).map(gBox).join('')}</div>`).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">')}</div>
