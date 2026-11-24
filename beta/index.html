@@ -581,7 +581,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.165.3';
+const APP_VERSION = '4.165.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1294,22 +1294,6 @@ async function loadLive(){
 }
 setInterval(()=>{if(!document.hidden&&sb&&CLOUD.uid&&navigator.onLine)loadLive()},JIT(60000));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&sb&&CLOUD.uid)loadLive()});
-/* ---------- sürüm duyurusu (afiş): güncellemeden sonra ilk açılışta bir kez ---------- */
-const WN={id:'odak-4165',img:'img/ann/odak-4165.jpg',alt:'Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.583 kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var.'};
-const wnSeen=()=>{try{return localStorage.getItem('kd-wn')}catch(e){return WN.id}};
-function wnPop(){
-  if(WN.t||wnSeen()===WN.id||document.getElementById('annov')||document.getElementById('wnov')||duelLock())return;
-  WN.t=setTimeout(()=>{WN.t=0;if(wnSeen()===WN.id||document.getElementById('annov')||document.getElementById('wnov')||duelLock()||!CLOUD.uid)return;
-    if(!document.getElementById('wncss')){const st=document.createElement('style');st.id='wncss';
-      st.textContent='#wnov{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(10,14,30,.7);backdrop-filter:blur(3px)}#wnov .wnb{width:min(94vw,440px);max-height:92vh;display:flex;flex-direction:column;gap:10px;background:var(--surface,#fff);border-radius:20px;padding:10px;box-shadow:0 20px 60px rgba(0,0,0,.5)}#wnov img{display:block;width:100%;height:auto;max-height:calc(92vh - 130px);object-fit:contain;border-radius:14px;background:#0d1530}#wnov .row{gap:8px}#wnov .btn{flex:1}';
-      document.head.appendChild(st)}
-    const o=document.createElement('div');o.id='wnov';o.setAttribute('role','dialog');o.setAttribute('aria-label','Yenilikler');
-    o.innerHTML='<div class="wnb"><img src="'+WN.img+'" alt="'+esc(WN.alt)+'"><div class="row"><button class="btn" type="button" data-wn="x">Kapat</button><button class="btn primary" type="button" data-wn="go">🎯 Hemen aç</button></div></div>';
-    const done=go=>{try{localStorage.setItem('kd-wn',WN.id)}catch(e){}o.remove();if(go){S.set.focus=true;save();UI.tab='today';UI.quiz=null;render();window.scrollTo(0,0);toast('Odak modu açık.')}};
-    o.addEventListener('click',e=>{const b=e.target.closest('[data-wn]');if(b)done(b.getAttribute('data-wn')==='go');else if(e.target===o)done(false)});
-    document.body.appendChild(o);
-  },1200);
-}
 /* ---------- duyuru penceresi: her ekranda, herkese, görülene kadar ---------- */
 const ANNP={t:0};
 function annPopSeen(){return seenGet('pop')}
@@ -1382,6 +1366,7 @@ const ADS=[{id:'erol-kafe',name:'Mehmet Erol Kafe',svg:()=>{
 ${sp(30,150,9,0)}${sp(330,95,8,.6)}${sp(188,150,7,1.1)}${sp(52,330,8,.3)}${sp(320,340,9,.9)}${sp(210,250,6,1.4)}${sp(150,400,7,.5)}${sp(228,395,6,1.7)}${sp(340,230,7,1.2)}${sp(15,260,6,.8)}
 </svg>`}}];
 ADS.push({id:'rk-saat',name:'Dereceli düello saatleri',once:true,due:()=>rkAdDue(),html:()=>rkAdHtml()});
+ADS.unshift({id:'odak-duyuru',name:'Odak modu',once:true,cls:'oda',due:()=>odAdDue(),html:()=>odAdHtml()});
 ADS.push({id:'sx-duyuru',name:'Cambridge standardında sınavlar',once:true,cls:'sxa',due:()=>sxAdDue(),html:()=>sxAdHtml()});
 function adCss(){return`
 #adov{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(20,12,6,.62);backdrop-filter:blur(3px);animation:adfade .25s ease both}
@@ -1425,6 +1410,7 @@ function adCss(){return`
 .rkad .rka-t b{display:block;margin-top:4px;font:900 .56rem/1.15 system-ui,sans-serif;color:#fff;letter-spacing:.2px}
 .rkad .rka-t i{display:block;margin-top:2px;font:800 .54rem/1.15 system-ui,sans-serif;font-style:normal;color:#f2c14e}
 .rkad .rka-s{margin:12px 0 2px;font:900 italic .92rem 'Arial Black',system-ui,sans-serif;letter-spacing:.5px;background:linear-gradient(#fff0b0,#f2c14e 55%,#b98417);-webkit-background-clip:text;background-clip:text;color:transparent}
+#adov .adb.oda{overflow:auto;border-color:#7f95ff;background:#0d1530;padding-top:44px}#adov .adb.oda .adc{background:#1b2550}#adov .adgo{display:block;width:100%;padding:13px;border:0;background:#2b4eff;color:#fff;font:700 15px system-ui,sans-serif;cursor:pointer}
 #adov .adb.sxa{overflow:auto;border-color:#7dd3fc;background:#07162e}
 .sxad{position:relative;padding:16px 14px 10px;text-align:center;color:#fff;font-family:system-ui,'Segoe UI',Arial,sans-serif;background:radial-gradient(120% 55% at 50% 0%,rgba(56,189,248,.38),rgba(0,0,0,0) 70%),radial-gradient(90% 40% at 100% 100%,rgba(244,114,182,.22),rgba(0,0,0,0) 70%),linear-gradient(180deg,#0b2447,#07162e 60%,#050d1f)}
 .sxad .sx-k{display:inline-block;padding:4px 14px;border-radius:99px;background:#38bdf8;color:#04223a;font:900 .68rem 'Arial Black',system-ui,sans-serif;letter-spacing:2.5px}
@@ -1464,6 +1450,9 @@ function rkAdHtml(){
   <div class="rka-h">DERECELİ DÜELLO ÖDÜLLERİ</div>
   <div class="rka-g">${t(avl(DRAGON_AV),'1 GALİBİYET','DÜELLO EJDERİ')}${t('<div class="pfvl"><span class="av sm" style="background:#475569"></span><b style="margin:0;font-size:.62rem;color:#ffe08a">AD</b><u style="margin-left:auto;text-decoration:none;font-weight:800">1.</u></div>','İLK 3','KIZIL KADİFE')}${t(kingFlag('x',true,1),'İLK 3','FATİH FLAMASI')}${t(dogAvatar(true,false),'1. SIRA','HAVLAYAN KÖPEK')}</div>
   <div class="rka-s">KILICINI SAVAŞ SAATİNDE ÇEK!</div></div>`}
+const OD_AD={from:'2026-11-24',to:'2026-11-29'};   // Odak modu afişi: 24-29 Kasım arası her girişte (pazartesi kalkar); yönetici hemen görür
+const odAdDue=()=>{const t=today();return t<=OD_AD.to&&(t>=OD_AD.from||!!CLOUD.admin)};
+const odAdHtml=()=>`<img src="img/ann/odak-4165.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.583 kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
 const SX_AD={from:'2026-11-10',to:'2026-11-13'};   // Sınav duyurusu: 10-13 Kasım arası her girişte; yönetici hemen görür
 const sxAdDue=()=>{const t=today();return t<=SX_AD.to&&(t>=SX_AD.from||!!CLOUD.admin)};
 function sxAdHtml(){
@@ -1484,7 +1473,7 @@ function adShow(){
   if(!document.getElementById('adcss')){const s=document.createElement('style');s.id='adcss';s.textContent=adCss();document.head.appendChild(s)}
   const o=document.createElement('div');o.id='adov';o.setAttribute('role','dialog');o.setAttribute('aria-label','Reklam: '+a.name);
   o.innerHTML=`<div class="adb${a.once?' rka':''}${a.cls?' '+a.cls:''}"><span class="adt">${a.once?'Duyuru':'Reklam'}</span><button class="adx" aria-label="Kapat" type="button">×</button>${a.svg?a.svg():a.html()}<button class="adc" type="button">Kapat ve devam et</button></div>`;
-  o.addEventListener('click',e=>{if(e.target===o||e.target.closest('.adx,.adc'))adClose()});
+  o.addEventListener('click',e=>{if(e.target.closest('[data-adgo]')){adClose();S.set.focus=true;save();UI.tab='today';UI.quiz=null;render();window.scrollTo(0,0);toast('Odak modu açık.');return}if(e.target===o||e.target.closest('.adx,.adc'))adClose()});
   document.addEventListener('keydown',adKey);
   document.body.appendChild(o);
 }
@@ -3255,7 +3244,6 @@ function render(){
   if(maintBlocked()){fabUpdate();$('nav').hidden=true;app.innerHTML=vMaint();exAudioMount();return}
   if(!CLOUD.uid){fabUpdate();$('nav').hidden=true;app.innerHTML=vLogin();return}
   if(CLOUD.approved===false){fabUpdate();$('nav').hidden=true;app.innerHTML=vPending();return}
-  wnPop();
   nwMark(UI.tab);
   const dlk=duelLock();
   if(dlk){UI.tab='quiz';UI.qmode='duel';qHold(true);UI.card=null}
