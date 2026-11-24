@@ -585,7 +585,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.166.3';
+const APP_VERSION = '4.166.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2513,6 +2513,22 @@ function confHtml(w){
   const go=x=>BYWORD.has(x)?`<button type="button" class="chip" data-act="fam-go" data-w="${esc(x)}" style="padding:2px 10px">${esc(x)}</button>`:`<b>${esc(x)}</b>`;
   return`<dt style="grid-column:1/-1;margin-top:4px">⚠️ Dikkat</dt><dd style="grid-column:1/-1"><div class="stack" style="gap:6px">${f?`<div style="background:var(--surface2);border-left:4px solid var(--warn,#e0a100);border-radius:10px;padding:8px 10px"><div><b>Yalancı eşdeğer:</b> <span lang="en">${esc(w.word)}</span> = ${esc(f.t)}, <u>${esc(f.x[0])}</u> değil.</div><div class="muted small">${esc(f.n)}</div></div>`:''}${G.map(g=>{const ex=patSplit(g.s[0]);return`<div style="background:var(--surface2);border-left:4px solid var(--accent);border-radius:10px;padding:8px 10px"><div class="row" style="gap:6px;flex-wrap:wrap;align-items:center"><span class="small muted">Karıştırma:</span>${g.w.map(go).join('')}</div><div class="small" style="margin-top:4px">${esc(g.e)}</div><div class="small" lang="en" style="margin-top:2px"><i>${esc(ex.pre)}<b>${esc(ex.o[0])}</b>${esc(ex.post)}</i></div></div>`}).join('')}</div></dd>`;
 }
+/* ---------- kelimeyle kurulan ifadeler: sözlükteki phrasal verb / kolokasyon / deyim kayıtlarından ---------- */
+let MWIX=null;
+function mwInit(){if(MWIX)return;MWIX=new Map();for(const r of W){const k=String(r.word).trim();if(!/\s/.test(k))continue;new Set(k.toLowerCase().replace(/[^a-z' -]/g,' ').split(/\s+/)).forEach(t=>{if(t.length<2)return;if(!MWIX.has(t))MWIX.set(t,[]);MWIX.get(t).push(r)})}}
+const MWG=[['Phrasal verb',r=>/phrasal verb/.test(r.pos)],['Kolokasyon',r=>/collocation/.test(r.pos)],['Deyim ve kalıp',r=>/idiom|phrase|proverb/.test(r.pos)]];
+function mwHtml(w){
+  const k=String(w.word).trim().toLowerCase();if(/\s/.test(k)||k.length<3)return'';
+  mwInit();const L=MWIX.get(k);if(!L||!L.length)return'';
+  const LVI={A1:0,A2:1,B1:2,B2:3,C1:4,C2:5};coreInit();
+  const srt=a=>a.slice().sort((x,y)=>(CORESET.has(y.word)-CORESET.has(x.word))||((LVI[x.level]??9)-(LVI[y.level]??9))||x.word.length-y.word.length);
+  const open=(UI.mwOpen||{})[w.word];
+  const parts=MWG.map(([lab,fn])=>{const a=srt(L.filter(fn));if(!a.length)return'';const sh=open?a:a.slice(0,8);
+    return`<div><div class="small muted" style="font-weight:600;margin:2px 0 4px">${lab} (${a.length})</div><div class="row" style="gap:6px;flex-wrap:wrap">${sh.map(r=>`<button type="button" class="chip" data-act="fam-go" data-w="${esc(r.word)}" title="${esc(r.tr)}" style="padding:4px 10px;text-align:left;line-height:1.2"><span lang="en">${esc(r.word)}</span> <span class="muted small">${esc(trFirst(r.tr))}</span></button>`).join('')}</div></div>`}).filter(Boolean);
+  if(!parts.length)return'';
+  const more=MWG.some(([l,fn])=>L.filter(fn).length>8);
+  return`<dt style="grid-column:1/-1;margin-top:4px">Bu kelimeyle kurulan ifadeler</dt><dd style="grid-column:1/-1"><div class="stack" style="gap:8px">${parts.join('')}${more?`<button type="button" class="btn" data-act="mw-more" data-w="${esc(w.word)}" style="min-height:34px;padding:4px 12px;font-size:.85rem;align-self:flex-start">${open?'Daha az göster':'Tümünü göster'}</button>`:''}</div></dd>`;
+}
 function famHtml(w){
   const F=famOf(w).filter(x=>x!==w.word);if(!F.length)return'';
   return`<dt style="grid-column:1/-1;margin-top:4px">Kelime ailesi</dt><dd style="grid-column:1/-1"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px">${F.map(x=>{const r=BYWORD.get(x);return`<button type="button" data-act="fam-go" data-w="${esc(x)}" style="text-align:left;line-height:1.25;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px;color:inherit;font:inherit;cursor:pointer"><div lang="en"><b>${esc(x)}</b> <span class="muted small">${esc(posShort(r.pos))}</span></div><div class="muted small">${esc(trFirst(r.tr))}</div></button>`}).join('')}</div><div class="muted small" style="margin-top:4px">Dokununca o kelimenin kartı açılır.</div></dd>`;
@@ -3472,7 +3488,7 @@ function entryHtml(w,fixed){   // fixed: vize kelime listesi, sözlükteki açı
   return`<div class="entry"><button class="head" ${fixed?'':`data-act="toggle" data-w="${esc(w.word)}" `}aria-expanded="${open}">
     <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def||(w.phr?w.tr:''))}</span></span>
     <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
-    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${w.phr?'<br><span class="extr">('+esc(w.phr.ex[1])+')</span>':exTr(w)}</dd>${exMore(w)}${confHtml(w)}${patHtml(w)}${afxHtml(w)}${famHtml(w)}
+    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${w.phr?'<br><span class="extr">('+esc(w.phr.ex[1])+')</span>':exTr(w)}</dd>${exMore(w)}${confHtml(w)}${patHtml(w)}${afxHtml(w)}${famHtml(w)}${mwHtml(w)}
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
       ${senseHtml(w)}
       ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
@@ -5916,6 +5932,7 @@ document.addEventListener('click',async e=>{
     case'duel-exit':if(DUEL.id&&DUEL.id!=='bot')(DUEL.done=DUEL.done||{})[DUEL.id]=1;dReset();render();lobbyLoad();break;
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
+    case'mw-more':{const x=g('data-w');UI.mwOpen=UI.mwOpen||{};UI.mwOpen[x]=!UI.mwOpen[x];const y=window.scrollY;render();window.scrollTo(0,y);break}
     case'fam-go':{const x=g('data-w');UI.tab='dict';UI.dict.q=x;UI.dict.open=x;UI.dict.level='Hepsi';UI.dict.pos='Hepsi';UI.dict.status='Hepsi';UI.dict.limit=40;UI.card=null;render();window.scrollTo(0,0);break}
     case'fo-w':{const w=g('data-w');toggleFocus(w);toast(inFocus(w)?'Odak listene eklendi.':'Odak listenden çıkarıldı.');const dl=$('#dlist');if(dl&&(UI.tab==='dict'||UI.tab==='saved')){if(focusOn()&&!inFocus(w)&&UI.tab==='dict')UI.dict.open=null;dl.innerHTML=UI.tab==='saved'?savedList():dictList()}else render();break}
     case'focus-tg':S.set.focus=!focusOn();save();render();toast(S.set.focus?'Odak modu açık: yeni kelimeler çekirdek listeden gelecek.':'Odak modu kapalı: tüm sözlük.');break;
