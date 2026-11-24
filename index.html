@@ -417,23 +417,23 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <div id="toast" class="toast" hidden></div>
 
 <!--ASSETS: tools/release/assets.py üretir, elle düzenleme-->
-<script src="d/w00-93c0d0b498.js"></script>
-<script src="d/w01-9a9ff520f8.js"></script>
-<script src="d/w02-17b5de7f95.js"></script>
-<script src="d/w03-fee24dee49.js"></script>
-<script src="d/w04-386edea400.js"></script>
-<script src="d/w05-e433ead4d5.js"></script>
-<script src="d/w06-75d89ef75d.js"></script>
-<script src="d/w07-d2d4648cbd.js"></script>
-<script src="d/w08-8726f8e0f9.js"></script>
-<script src="d/w09-d4a28ee651.js"></script>
-<script src="d/w10-a58393ce61.js"></script>
-<script src="d/w11-17a78507ed.js"></script>
-<script src="d/w12-4cbf9b579b.js"></script>
-<script src="d/w13-9a3ef38e89.js"></script>
-<script src="d/w14-e46dd034e9.js"></script>
-<script src="d/w15-feb063e2c3.js"></script>
-<script src="d/w16-fe7ffa2331.js"></script>
+<script src="d/w00-9973019838.js"></script>
+<script src="d/w01-099d908bc7.js"></script>
+<script src="d/w02-0d012d04ed.js"></script>
+<script src="d/w03-32b0ade177.js"></script>
+<script src="d/w04-6c362e8844.js"></script>
+<script src="d/w05-bb046e7c84.js"></script>
+<script src="d/w06-0e60f35c95.js"></script>
+<script src="d/w07-0bd0edfb42.js"></script>
+<script src="d/w08-8af00d8705.js"></script>
+<script src="d/w09-f4a1b711a6.js"></script>
+<script src="d/w10-a8b0cbebcd.js"></script>
+<script src="d/w11-f78cbddd13.js"></script>
+<script src="d/w12-87514a86dd.js"></script>
+<script src="d/w13-3fcab16893.js"></script>
+<script src="d/w14-b6b4de384e.js"></script>
+<script src="d/w15-80911b8eef.js"></script>
+<script src="d/w16-56266c8ead.js"></script>
 <script src="d/grammar-24c5272e6a.js"></script>
 <script src="d/x00-f86d17b433.js"></script>
 <script src="d/x01-ef03f3761c.js"></script>
@@ -484,7 +484,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/s14-9e51e48750.js"></script>
 <script src="d/s15-7d54860c38.js"></script>
 <script src="d/gloss-6e4fa53eb6.js"></script>
-<script src="d/core-0e796929af.js"></script>
+<script src="d/core-940c182f09.js"></script>
 <script src="d/afx-efd193255c.js"></script>
 <script src="d/fam-0ef1775da1.js"></script>
 <script src="d/pat-036daf5dcf.js"></script>
@@ -587,7 +587,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.168.0';
+const APP_VERSION = '4.170.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -773,7 +773,22 @@ function bMsg(b,own,date){
   return m;
 }
 const BYBADGE=new Map(BADGES.map(b=>[b.id,b]));
+/* ---------- yöneticinin elle verdiği seviyeler (Supabase word_levels; açılışta önbellekten, girişte sunucudan) ---------- */
+const WLV={ov:{},orig:new Map()};
+function wlvApply(ov){
+  WLV.orig.forEach((l,w)=>{const r=BYWORD.get(w);if(r)r.level=l});WLV.orig.clear();   // önceki ayarları geri al
+  Object.keys(ov||{}).forEach(k=>{const r=BYWORD.get(k);if(r&&/^[ABC][12]$/.test(ov[k])){WLV.orig.set(k,r.level);r.level=ov[k]}});
+  WLV.ov=ov||{};Object.keys(LVTOTAL).forEach(k=>delete LVTOTAL[k]);W.forEach(w=>{LVTOTAL[w.level]=(LVTOTAL[w.level]||0)+1});
+}
+async function wlvLoad(){try{if(!sb)return;const r=await sb.from('word_levels').select('word,level');if(r.error)return;const o={};(r.data||[]).forEach(x=>{o[x.word]=x.level});try{localStorage.setItem('kd-wlv',JSON.stringify(o))}catch(e){}wlvApply(o);render()}catch(e){}}
+async function wlvSet(word,level){
+  if(!CLOUD.admin||!sb)return;
+  const r=await sb.rpc('admin_set_word_level',{p_word:word,p_level:level||''});
+  if(r.error){toast('Kaydedilemedi: '+(r.error.message||'hata')+(/function|relation/.test(r.error.message||'')?' (supabase-levels.sql çalıştırıldı mı?)':''),5000);return}
+  const o=Object.assign({},WLV.ov);if(level)o[word]=level;else delete o[word];try{localStorage.setItem('kd-wlv',JSON.stringify(o))}catch(e){}wlvApply(o);toast(level?word+' → '+level:word+': varsayılan seviyeye döndü');render();
+}
 const LVTOTAL={};W.forEach(w=>{LVTOTAL[w.level]=(LVTOTAL[w.level]||0)+1});
+setTimeout(()=>{try{const o=JSON.parse(localStorage.getItem('kd-wlv')||'{}');if(Object.keys(o).length)wlvApply(o)}catch(e){}},0);
 function awardStats(){
   S.bs=Math.max(S.bs||0,streak());
   const cnt={};let lrn=0;
@@ -1504,6 +1519,7 @@ async function onLogin(user){
   S=load(user.id);
   await checkAccess();
   if(CLOUD.approved===false){render();return}
+  wlvLoad();
   applyReset();
   if(!S.prof.name)S.prof.name=CLOUD.username;
   CLOUD.pulled=false;CLOUD.known=0;
@@ -2964,7 +2980,9 @@ function mtToggle(sel,v,order){
   return(!a.length||a.length===order.length)?'Hepsi':a.join(',');
 }
 const lvToggle=(sel,v)=>mtToggle(sel,v,LEVELS);
-const typeOK=w=>lvOk(S.set.type,posGroup(w));
+const isPhr=w=>/\s/.test(String(w.word||w).trim());   // birden fazla kelimeli kayıt: phrasal verb, deyim, kolokasyon, kalıp
+const kindOK=(k,w)=>!k||k==='h'||(k==='i')===isPhr(w);
+const typeOK=w=>kindOK(S.set.kind,w)&&lvOk(S.set.type,posGroup(w));
 /* ---------- Odak modu: çekirdek liste (core.js, tools/core/build.py) ---------- */
 let CORESET=null,COREIX=null,CORESIG='';
 function coreInit(){   // kullanıcıya özel çekirdek: S.fov[kelime] >0 eklendi, <0 çıkarıldı (zaman damgası; cihazlar arası yeni olan kazanır)
@@ -3518,6 +3536,7 @@ const trType=g=>TYPE_TR[g]||g;
 function dictFiltered(){
   const D=UI.dict,q=D.q.trim().toLowerCase(),fo=focusOn();coreInit();
   const r=W.filter(w=>{
+    if(!kindOK(D.kind||'w',w))return false;   // Kelimeler / İfadeler sekmesi
     if(fo&&!CORESET.has(w.word)&&w.word!==D.open)return false;   // aileden/bağlantıdan açılan kelime odakta olmasa da görünür
     if(!lvOk(D.level,w.level))return false;
     if(!lvOk(D.pos,posGroup(w)))return false;
@@ -3552,13 +3571,14 @@ function entryHtml(w,fixed){   // fixed: vize kelime listesi, sözlükteki açı
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
       ${senseHtml(w)}
       ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
-      <dt></dt><dd class="row" style="gap:8px"><button class="say" data-say="${esc(w.word)}" data-pron="${esc(w.pron)}">Dinle</button><button class="say" data-act="sv-w" data-w="${esc(w.word)}" aria-pressed="${isSaved(w.word)}">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>${(window.CORE||[]).length?`<button class="say" data-act="fo-w" data-w="${esc(w.word)}" aria-pressed="${inFocus(w.word)}">${inFocus(w.word)?'🎯 Odakta · çıkar':'🎯 Odağa ekle'}</button>`:''}</dd></dl>`:''}</div>`;
+      <dt></dt><dd class="row" style="gap:8px"><button class="say" data-say="${esc(w.word)}" data-pron="${esc(w.pron)}">Dinle</button><button class="say" data-act="sv-w" data-w="${esc(w.word)}" aria-pressed="${isSaved(w.word)}">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>${(window.CORE||[]).length?`<button class="say" data-act="fo-w" data-w="${esc(w.word)}" aria-pressed="${inFocus(w.word)}">${inFocus(w.word)?'🎯 Odakta · çıkar':'🎯 Odağa ekle'}</button>`:''}</dd>${CLOUD.admin&&!w.phr&&!w.gram?`<dt>🛡 Seviye</dt><dd><div class="row" style="gap:4px;flex-wrap:wrap">${LEVELS.map(l=>`<button class="chip" style="padding:3px 10px;min-height:30px" aria-pressed="${w.level===l}" data-act="adm-lv" data-w="${esc(w.word)}" data-v="${l}">${l}</button>`).join('')}${WLV.ov[w.word]?`<button class="chip" style="padding:3px 10px;min-height:30px" data-act="adm-lv" data-w="${esc(w.word)}" data-v="">↺ ${esc(WLV.orig.get(w.word)||'')}</button>`:''}</div><div class="small muted" style="margin-top:2px">${WLV.ov[w.word]?'Elle ayarlandı · varsayılan '+esc(WLV.orig.get(w.word)||''):'Yönetici: dokunarak seviyeyi herkes için değiştir'}</div></dd>`:''}</dl>`:''}</div>`;
 }
 function dictList(){
   const f=dictFiltered(),D=UI.dict;
   const shown=f.slice(0,D.limit);
-  return`<div class="muted small" style="margin:2px 2px 0">${nf(f.length)} kelime</div>`+
-    (shown.length?shown.map(w=>entryHtml(w)).join(''):'<div class="empty">Bu filtrelerle kelime bulunamadı.</div>')+
+  let oth='';if(D.q.trim()){const k0=D.kind||'w',k1=k0==='i'?'w':'i';D.kind=k1;const n=dictFiltered().length;D.kind=k0;if(n)oth=`<button class="btn block" data-act="dk" data-v="${k1}" style="min-height:36px">${k1==='i'?'💬 İfadeler':'📖 Kelimeler'}'de ${nf(n)} sonuç daha →</button>`}   // aranan şey öbür sekmede de varsa
+  return`<div class="muted small" style="margin:2px 2px 0">${nf(f.length)} ${(D.kind||'w')==='i'?'ifade':'kelime'}</div>`+
+    (shown.length?shown.map(w=>entryHtml(w)).join(''):'<div class="empty">Bu filtrelerle sonuç bulunamadı.</div>')+oth+
     (f.length>shown.length?`<button class="btn block" data-act="more">Daha fazla göster (${nf(f.length-shown.length)})</button>`:'');
 }
 function chips(name,vals,cur){
@@ -3572,14 +3592,18 @@ function vSaved(){
   return`<div class="top"><h1>Kaydedilenler</h1><span class="muted small">${nf(savedWords().length)} kelime</span></div>
   <div class="stack"><div class="card small muted">Testte ya da Sözlük'te "Kaydet" dediğin kelimeler burada, sözlükteki gibi tüm bilgileriyle durur. Kelimeye dokunup açabilirsin. Kaydettiklerin hesabına eşitlenir.</div>${savedWords().length?`<div class="row"><button class="btn primary" data-act="start-saved">Rastgele ${S.set.count} soru çöz</button><button class="btn" data-act="start-saved-all">Hepsini çöz</button></div><div class="small muted">Kelimenin tüm soruları sorulur. Daha önce doğru çözdüğün sorular puan vermez, henüz doğru çözmediklerin normal puan verir.</div>`:''}<div class="stack" id="dlist">${savedList()}</div></div>`;
 }
+let DKC=null;function DKN(){if(!DKC){DKC={w:0,i:0,gw:new Set(),gi:new Set()};W.forEach(w=>{if(isPhr(w)){DKC.i++;DKC.gi.add(posGroup(w))}else{DKC.w++;DKC.gw.add(posGroup(w))}})}return DKC}
+const DKG=()=>({w:DKN().gw,i:DKN().gi});
 function vDict(){
   const D=UI.dict;
-  return`<div class="top"><h1>Sözlük</h1><span class="muted small">${nf(W.length)} kelime</span></div>
-  <div class="stack"><input id="q" class="search" type="search" placeholder="Kelime, Türkçe karşılık veya tanım ara" value="${esc(D.q)}" autocomplete="off">
+  return`<div class="top"><h1>Sözlük</h1><span class="muted small">${nf(W.length)} kayıt</span></div>
+  <div class="stack"><div class="seg" role="tablist" aria-label="Sözlük bölümü"><button class="chip" role="tab" aria-pressed="${(D.kind||'w')==='w'}" data-act="dk" data-v="w">📖 Kelimeler (${nf(DKN().w)})</button><button class="chip" role="tab" aria-pressed="${D.kind==='i'}" data-act="dk" data-v="i">💬 İfadeler (${nf(DKN().i)})</button></div>
+  <div class="small muted" style="margin:-4px 2px 0">${D.kind==='i'?'Phrasal verb, deyim, kolokasyon, kalıp ve atasözleri.':'Tek kelimeler.'}</div>
+  <input id="q" class="search" type="search" placeholder="${D.kind==='i'?'İfade, Türkçe karşılık veya tanım ara':'Kelime, Türkçe karşılık veya tanım ara'}" value="${esc(D.q)}" autocomplete="off">
   ${(window.CORE||[]).length?`<div class="seg" role="group" aria-label="Kelime havuzu"><button class="chip" aria-pressed="${!focusOn()}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${focusOn()}" data-act="focus-set" data-v="1">🎯 Odak (${nf(coreSize())})</button></div>`:''}
   <div class="seg" role="group" aria-label="Seviye (birden fazla seçilebilir)">${['Hepsi'].concat(LEVELS).map(v=>`<button class="chip" aria-pressed="${lvOn(D.level,v)}" data-f="level" data-v="${v}">${v}</button>`).join('')}</div>
   ${chips('status',['Hepsi','Öğrenilmeyen','Öğrenilen','Tekrarda'],D.status)}
-  <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Tür <span style="font-weight:400">(birden fazla seçebilirsin)</span></div><div class="seg" role="group" aria-label="Tür">${['Hepsi'].concat(POSG).map(p=>`<button class="chip" aria-pressed="${lvOn(D.pos,p)}" data-f="pos" data-v="${esc(p)}">${esc(p==='Hepsi'?p:trType(p))}</button>`).join('')}</div></div>
+  <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Tür <span style="font-weight:400">(birden fazla seçebilirsin)</span></div><div class="seg" role="group" aria-label="Tür">${['Hepsi'].concat(POSG.filter(p=>DKG()[D.kind||'w'].has(p))).map(p=>`<button class="chip" aria-pressed="${lvOn(D.pos,p)}" data-f="pos" data-v="${esc(p)}">${esc(p==='Hepsi'?p:trType(p))}</button>`).join('')}</div></div>
   <div class="stack" id="dlist">${dictList()}</div></div>`;
 }
 const RD_PT=2;   // doğru cevap başına puan, seviye katsayısıyla çarpılı
@@ -3860,11 +3884,12 @@ function vQuizSetup(){
   const s=S.set;
   coreInit();const fo=focusOn();
   const remaining=W.filter(w=>!S.learned[w.word]&&lvOk(s.level,w.level)&&typeOK(w)&&(!fo||CORESET.has(w.word))).length;
-  const tc=W.reduce((m,w)=>{if(!S.learned[w.word]&&lvOk(s.level,w.level)&&(!fo||CORESET.has(w.word))){const g=posGroup(w);m[g]=(m[g]||0)+1}return m},{});
+  const tc=W.reduce((m,w)=>{if(!S.learned[w.word]&&lvOk(s.level,w.level)&&kindOK(s.kind,w)&&(!fo||CORESET.has(w.word))){const g=posGroup(w);m[g]=(m[g]||0)+1}return m},{});
   return`<div class="top"><h1>Test</h1></div><div class="card stack">
     ${(window.CORE||[]).length?`<div><h3>Kelime havuzu</h3><div class="seg" style="margin-top:8px"><button class="chip" aria-pressed="${!fo}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${fo}" data-act="focus-set" data-v="1">🎯 Odak (${nf(CORESET.size)})</button></div></div>`:''}
     <div><h3>Soru sayısı</h3><div class="seg" style="margin-top:8px">${[10,20,30,40].map(n=>`<button class="chip" aria-pressed="${s.count===n}" data-set="count" data-v="${n}">${n}</button>`).join('')}</div></div>
     <div><h3>Seviye <span class="muted small" style="font-weight:400">(birden fazla seçebilirsin)</span></h3><div class="seg" style="margin-top:8px">${['Hepsi'].concat(LEVELS).map(n=>`<button class="chip" aria-pressed="${lvOn(s.level,n)}" data-set="level" data-v="${n}">${n}</button>`).join('')}</div></div>
+    <div><h3>Kelime mi ifade mi?</h3><div class="seg" style="margin-top:8px">${[['h','Hepsi'],['w','📖 Kelimeler'],['i','💬 İfadeler']].map(([k,l])=>`<button class="chip" aria-pressed="${(s.kind||'h')===k}" data-act="qk" data-v="${k}">${l}</button>`).join('')}</div></div>
     <div><h3>Tür <span class="muted small" style="font-weight:400">(birden fazla seçebilirsin)</span></h3><div class="seg" style="margin-top:8px"><button class="chip" aria-pressed="${lvOn(s.type,'Hepsi')}" data-set="type" data-v="Hepsi">Hepsi</button>${POSG.filter(g=>tc[g]).map(g=>`<button class="chip" aria-pressed="${lvOn(s.type,g)}" data-set="type" data-v="${esc(g)}">${esc(trType(g))} (${nf(tc[g])})</button>`).join('')}</div></div>
     <div class="muted small">Her kelimeden bir özellik sorulur: Türkçe karşılık, İngilizce tanım, boşluk doldurma, anlamca yakın kelime, anlamca karşıt kelime ve düzensiz fiillerde V2 - V3. Deyim, atasözü, edat kalıbı ve ek gibi türlerde ayrıca özel sorular (atasözü tamamlama, eksik kelime, doğru edat, ek bulma, anlamdan ifadeye) çıkar. Bir kelimenin sorulabilen tüm özellikleri bir kez doğru bilinince kelime Öğrenilenler'e geçer. Bu seçimde ${nf(remaining)} kelime sırada.</div>
     <button class="btn primary block" data-act="start-new">Testi başlat</button></div>`;
@@ -4544,13 +4569,13 @@ function vStatsMore(){
   ${pos?`<div class="card"><h2 style="margin-bottom:4px">Kelime türlerine göre başarı</h2><div class="small muted" style="margin-bottom:4px">En zayıftan güçlüye.</div>${pos}</div>`:''}`;
 }
 function vStats(){
-  const tot={},lrn={};
-  W.forEach(w=>{tot[w.level]=(tot[w.level]||0)+1});
-  Object.keys(S.learned).forEach(k=>{const w=BYWORD.get(k);if(w)lrn[w.level]=(lrn[w.level]||0)+1});
+  const tot={},lrn={},sk=UI.stk||'w';
+  W.forEach(w=>{if(kindOK(sk,w))tot[w.level]=(tot[w.level]||0)+1});
+  Object.keys(S.learned).forEach(k=>{const w=BYWORD.get(k);if(w&&kindOK(sk,w))lrn[w.level]=(lrn[w.level]||0)+1});
   const days=[];for(let i=13;i>=0;i--){const d=addDays(today(),-i);days.push([d,S.days[d]||{a:0,c:0}])}
   const mx=Math.max(5,...days.map(x=>x[1].a));
   const P=myPoints();
-  return`<div class="kpis"><div class="kpi"><b>${nf(r1(P.D.pts))}</b><span>bugün puan</span></div><div class="kpi"><b>${nf(r1(P.W.pts))}</b><span>bu hafta puan</span></div><div class="kpi"><b>${nf(r1(P.T.pts))}</b><span>toplam puan</span></div></div><div class="card"><h2 style="margin-bottom:8px">Seviyelere göre ilerleme</h2>${LEVELS.map(l=>{
+  return`<div class="kpis"><div class="kpi"><b>${nf(r1(P.D.pts))}</b><span>bugün puan</span></div><div class="kpi"><b>${nf(r1(P.W.pts))}</b><span>bu hafta puan</span></div><div class="kpi"><b>${nf(r1(P.T.pts))}</b><span>toplam puan</span></div></div><div class="card"><h2 style="margin-bottom:8px">Seviyelere göre ilerleme</h2><div class="seg" style="margin-bottom:10px">${[['w','📖 Kelimeler'],['i','💬 İfadeler'],['h','Hepsi']].map(([k,l])=>`<button class="chip" aria-pressed="${sk===k}" data-act="stk" data-v="${k}">${l}</button>`).join('')}</div>${LEVELS.map(l=>{
     const t=tot[l]||0,n=lrn[l]||0,p=t?n/t*100:0,q=S.lv[l]||[0,0],qa=q[0]+q[1];
     return`<div class="lvrow"><span class="lv lv-${l}">${l}</span><div><div class="bar"><i style="width:${p.toFixed(1)}%;background:var(--l-${l})"></i></div>${qa?`<div class="small muted" style="margin-top:3px">Test başarısı %${Math.round(q[0]/qa*100)} (${q[0]} doğru, ${q[1]} yanlış)</div>`:''}</div><span class="num">${nf(n)}/${nf(t)}</span></div>`}).join('')}</div>
   <div class="card"><h2>Son 14 gün</h2><div class="muted small">Mavi: doğru, kırmızı: yanlış cevap sayısı</div>
@@ -6035,7 +6060,8 @@ document.addEventListener('click',async e=>{
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
     case'mw-more':{const x=g('data-w');UI.mwOpen=UI.mwOpen||{};UI.mwOpen[x]=!UI.mwOpen[x];const y=window.scrollY;render();window.scrollTo(0,y);break}
-    case'fam-go':{const x=g('data-w');UI.tab='dict';UI.dict.q=x;UI.dict.open=x;UI.dict.level='Hepsi';UI.dict.pos='Hepsi';UI.dict.status='Hepsi';UI.dict.limit=40;UI.card=null;render();window.scrollTo(0,0);break}
+    case'adm-lv':{const x=g('data-w'),v=g('data-v');if(v&&BYWORD.get(x)&&BYWORD.get(x).level===v)break;wlvSet(x,v);break}
+    case'fam-go':{const x=g('data-w');UI.dict.kind=isPhr(x)?'i':'w';UI.tab='dict';UI.dict.q=x;UI.dict.open=x;UI.dict.level='Hepsi';UI.dict.pos='Hepsi';UI.dict.status='Hepsi';UI.dict.limit=40;UI.card=null;render();window.scrollTo(0,0);break}
     case'fo-w':{const w=g('data-w');toggleFocus(w);toast(inFocus(w)?'Odak listene eklendi.':'Odak listenden çıkarıldı.');const dl=$('#dlist');if(dl&&(UI.tab==='dict'||UI.tab==='saved')){if(focusOn()&&!inFocus(w)&&UI.tab==='dict')UI.dict.open=null;dl.innerHTML=UI.tab==='saved'?savedList():dictList()}else render();break}
     case'focus-tg':S.set.focus=!focusOn();save();render();toast(S.set.focus?'Odak modu açık: yeni kelimeler çekirdek listeden gelecek.':'Odak modu kapalı: tüm sözlük.');break;
     case'focus-set':S.set.focus=g('data-v')==='1';UI.dict.limit=40;save();render();break;
@@ -6059,6 +6085,9 @@ document.addEventListener('click',async e=>{
     case'home':UI.quiz=null;setTab('today');break;
     case'toggle':{const w=g('data-w');UI.dict.open=UI.dict.open===w?null:w;$('#dlist').innerHTML=UI.tab==='saved'?savedList():dictList();break}
     case'sv-w':{const w=g('data-w');toggleSaved(w);toast(isSaved(w)?'Kaydedildi.':'Kayıttan çıkarıldı.');if(UI.tab==='saved'&&!isSaved(w))UI.dict.open=null;const dl=$('#dlist');if(dl)dl.innerHTML=UI.tab==='saved'?savedList():dictList();if(UI.tab==='saved'){const t=document.querySelector('.top .muted');if(t)t.textContent=nf(savedWords().length)+' kelime'}break}
+    case'qk':S.set.kind=g('data-v');S.set.type='Hepsi';save();render();break;
+    case'stk':UI.stk=g('data-v');{const y=window.scrollY;render();window.scrollTo(0,y)}break;
+    case'dk':UI.dict.kind=g('data-v');UI.dict.pos='Hepsi';UI.dict.open=null;UI.dict.limit=40;render();window.scrollTo(0,0);break;
     case'gm-open':UI.gm=g('data-v');nwMark('g:'+UI.gm);render();window.scrollTo(0,0);break;
     case'phr-g':UI.phg=g('data-v');nwMark('p:'+UI.phg);UI.phq=null;render();window.scrollTo(0,0);break;
     case'phr-home':UI.phg=null;UI.phq=null;render();window.scrollTo(0,0);break;
