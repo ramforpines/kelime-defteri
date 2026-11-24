@@ -484,7 +484,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/s14-9e51e48750.js"></script>
 <script src="d/s15-7d54860c38.js"></script>
 <script src="d/gloss-6e4fa53eb6.js"></script>
-<script src="d/core-4e7204b485.js"></script>
+<script src="d/core-0e796929af.js"></script>
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
@@ -581,7 +581,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.165.0';
+const APP_VERSION = '4.165.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -3342,8 +3342,9 @@ const POSG=['noun','verb','adjective','adverb','phrasal verb','phrase','collocat
 const TYPE_TR={'noun':'İsim','verb':'Fiil','adjective':'Sıfat','adverb':'Zarf','phrasal verb':'Phrasal verb','phrase':'Kalıp / ifade','collocation':'Kolokasyon','idiom':'Deyim','proverb':'Atasözü','conjunction':'Bağlaç','preposition':'Edat','preposition phrase':'Edat kalıbı','prefix/suffix':'Ön / son ek','exclamation':'Ünlem','diğer':'Diğer'};
 const trType=g=>TYPE_TR[g]||g;
 function dictFiltered(){
-  const D=UI.dict,q=D.q.trim().toLowerCase();
-  return W.filter(w=>{
+  const D=UI.dict,q=D.q.trim().toLowerCase(),fo=focusOn();coreInit();
+  const r=W.filter(w=>{
+    if(fo&&!CORESET.has(w.word))return false;
     if(!lvOk(D.level,w.level))return false;
     if(!lvOk(D.pos,posGroup(w)))return false;
     if(D.status==='Öğrenilen'&&!S.learned[w.word])return false;
@@ -3352,6 +3353,7 @@ function dictFiltered(){
     if(q&&w.word.toLowerCase().indexOf(q)===-1&&w.tr.toLowerCase().indexOf(q)===-1&&w.def.toLowerCase().indexOf(q)===-1&&!w.sn.some(z=>z.t.toLowerCase().indexOf(q)!==-1||z.d.toLowerCase().indexOf(q)!==-1))return false;
     return true;
   });
+  return fo&&!q?r.sort((a,b)=>COREIX.get(a.word)-COREIX.get(b.word)):r;   // odakta öğrenme sırası (en sık önce)
 }
 function exTrT(t){const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v)+')</span>':''}
 function senseHtml(w){   // 2. ve 3. anlamlar: Türkçe, tanım, örnek (+çevirisi), eş anlam
@@ -3391,6 +3393,7 @@ function vDict(){
   const D=UI.dict;
   return`<div class="top"><h1>Sözlük</h1><span class="muted small">${nf(W.length)} kelime</span></div>
   <div class="stack"><input id="q" class="search" type="search" placeholder="Kelime, Türkçe karşılık veya tanım ara" value="${esc(D.q)}" autocomplete="off">
+  ${(window.CORE||[]).length?`<div class="seg" role="group" aria-label="Kelime havuzu"><button class="chip" aria-pressed="${!focusOn()}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${focusOn()}" data-act="focus-set" data-v="1">🎯 Odak (${nf((window.CORE||[]).length)})</button></div>`:''}
   <div class="seg" role="group" aria-label="Seviye (birden fazla seçilebilir)">${['Hepsi'].concat(LEVELS).map(v=>`<button class="chip" aria-pressed="${lvOn(D.level,v)}" data-f="level" data-v="${v}">${v}</button>`).join('')}</div>
   ${chips('status',['Hepsi','Öğrenilmeyen','Öğrenilen','Tekrarda'],D.status)}
   <div><div class="small muted" style="font-weight:600;margin-bottom:6px">Tür <span style="font-weight:400">(birden fazla seçebilirsin)</span></div><div class="seg" role="group" aria-label="Tür">${['Hepsi'].concat(POSG).map(p=>`<button class="chip" aria-pressed="${lvOn(D.pos,p)}" data-f="pos" data-v="${esc(p)}">${esc(p==='Hepsi'?p:trType(p))}</button>`).join('')}</div></div>
@@ -5806,7 +5809,7 @@ document.addEventListener('click',async e=>{
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
     case'focus-tg':S.set.focus=!focusOn();save();render();toast(S.set.focus?'Odak modu açık: yeni kelimeler çekirdek listeden gelecek.':'Odak modu kapalı: tüm sözlük.');break;
-    case'focus-set':S.set.focus=g('data-v')==='1';save();render();break;
+    case'focus-set':S.set.focus=g('data-v')==='1';UI.dict.limit=40;save();render();break;
     case'start-review':startQuiz('review',false);break;
     case'rv-tab':UI.rv=g('data-v');UI.wlConfirm=false;render();break;
     case'start-saved':startQuiz('saved',false);break;

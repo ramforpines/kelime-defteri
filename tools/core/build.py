@@ -14,6 +14,9 @@ STOPP=set('a an the to of in on at by for with up down out off over about into o
 def zm(s):   # kalıp sıklığı: içerik kelimelerinin en seyreği (kalıbı 'on to' gibi yalnız edatlar sık göstermesin)
     t=[x for x in re.findall(r"[a-z']+",re.sub(r'\(.*?\)','',s.lower())) if x not in STOPP]
     return min(Z(x,'en') for x in t) if t else 2.0
+_ix=open(os.path.join(ROOT,'index.html'),encoding='utf8').read()   # uygulamanın sözlükten çıkardığı kelimeler (RMX: uluslararası/tanıdık, RMW: çok basit) çekirdeğe girmez
+RMX=set(json.loads(re.search(r'const RMX=new Set\((\[.*?\])\)',_ix).group(1)));RMW=set(json.loads(re.search(r'const RMW=new Set\((\[.*?\])\)',_ix).group(1)))
+W=[w for w in W if not ((w[7] in('A1','A2') and w[0] in RMW) or (w[0] in RMX and w[7] in('B1','B2','C1')))]
 low={w[0].lower():w for w in W}
 # sınav metinleri
 st=open(os.path.join(ROOT,'sinav.js'),encoding='utf8').read()
