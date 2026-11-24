@@ -427,7 +427,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/w07-0bd0edfb42.js"></script>
 <script src="d/w08-8af00d8705.js"></script>
 <script src="d/w09-f4a1b711a6.js"></script>
-<script src="d/w10-674f384b2c.js"></script>
+<script src="d/w10-a8b0cbebcd.js"></script>
 <script src="d/w11-f78cbddd13.js"></script>
 <script src="d/w12-87514a86dd.js"></script>
 <script src="d/w13-3fcab16893.js"></script>
@@ -484,7 +484,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/s14-9e51e48750.js"></script>
 <script src="d/s15-7d54860c38.js"></script>
 <script src="d/gloss-6e4fa53eb6.js"></script>
-<script src="d/core-c7e7727529.js"></script>
+<script src="d/core-940c182f09.js"></script>
 <script src="d/afx-efd193255c.js"></script>
 <script src="d/fam-0ef1775da1.js"></script>
 <script src="d/pat-036daf5dcf.js"></script>
@@ -587,7 +587,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.170.0';
+const APP_VERSION = '4.170.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -773,7 +773,22 @@ function bMsg(b,own,date){
   return m;
 }
 const BYBADGE=new Map(BADGES.map(b=>[b.id,b]));
+/* ---------- yöneticinin elle verdiği seviyeler (Supabase word_levels; açılışta önbellekten, girişte sunucudan) ---------- */
+const WLV={ov:{},orig:new Map()};
+function wlvApply(ov){
+  WLV.orig.forEach((l,w)=>{const r=BYWORD.get(w);if(r)r.level=l});WLV.orig.clear();   // önceki ayarları geri al
+  Object.keys(ov||{}).forEach(k=>{const r=BYWORD.get(k);if(r&&/^[ABC][12]$/.test(ov[k])){WLV.orig.set(k,r.level);r.level=ov[k]}});
+  WLV.ov=ov||{};Object.keys(LVTOTAL).forEach(k=>delete LVTOTAL[k]);W.forEach(w=>{LVTOTAL[w.level]=(LVTOTAL[w.level]||0)+1});
+}
+async function wlvLoad(){try{if(!sb)return;const r=await sb.from('word_levels').select('word,level');if(r.error)return;const o={};(r.data||[]).forEach(x=>{o[x.word]=x.level});try{localStorage.setItem('kd-wlv',JSON.stringify(o))}catch(e){}wlvApply(o);render()}catch(e){}}
+async function wlvSet(word,level){
+  if(!CLOUD.admin||!sb)return;
+  const r=await sb.rpc('admin_set_word_level',{p_word:word,p_level:level||''});
+  if(r.error){toast('Kaydedilemedi: '+(r.error.message||'hata')+(/function|relation/.test(r.error.message||'')?' (supabase-levels.sql çalıştırıldı mı?)':''),5000);return}
+  const o=Object.assign({},WLV.ov);if(level)o[word]=level;else delete o[word];try{localStorage.setItem('kd-wlv',JSON.stringify(o))}catch(e){}wlvApply(o);toast(level?word+' → '+level:word+': varsayılan seviyeye döndü');render();
+}
 const LVTOTAL={};W.forEach(w=>{LVTOTAL[w.level]=(LVTOTAL[w.level]||0)+1});
+setTimeout(()=>{try{const o=JSON.parse(localStorage.getItem('kd-wlv')||'{}');if(Object.keys(o).length)wlvApply(o)}catch(e){}},0);
 function awardStats(){
   S.bs=Math.max(S.bs||0,streak());
   const cnt={};let lrn=0;
@@ -1504,6 +1519,7 @@ async function onLogin(user){
   S=load(user.id);
   await checkAccess();
   if(CLOUD.approved===false){render();return}
+  wlvLoad();
   applyReset();
   if(!S.prof.name)S.prof.name=CLOUD.username;
   CLOUD.pulled=false;CLOUD.known=0;
@@ -3555,7 +3571,7 @@ function entryHtml(w,fixed){   // fixed: vize kelime listesi, sözlükteki açı
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
       ${senseHtml(w)}
       ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
-      <dt></dt><dd class="row" style="gap:8px"><button class="say" data-say="${esc(w.word)}" data-pron="${esc(w.pron)}">Dinle</button><button class="say" data-act="sv-w" data-w="${esc(w.word)}" aria-pressed="${isSaved(w.word)}">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>${(window.CORE||[]).length?`<button class="say" data-act="fo-w" data-w="${esc(w.word)}" aria-pressed="${inFocus(w.word)}">${inFocus(w.word)?'🎯 Odakta · çıkar':'🎯 Odağa ekle'}</button>`:''}</dd></dl>`:''}</div>`;
+      <dt></dt><dd class="row" style="gap:8px"><button class="say" data-say="${esc(w.word)}" data-pron="${esc(w.pron)}">Dinle</button><button class="say" data-act="sv-w" data-w="${esc(w.word)}" aria-pressed="${isSaved(w.word)}">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>${(window.CORE||[]).length?`<button class="say" data-act="fo-w" data-w="${esc(w.word)}" aria-pressed="${inFocus(w.word)}">${inFocus(w.word)?'🎯 Odakta · çıkar':'🎯 Odağa ekle'}</button>`:''}</dd>${CLOUD.admin&&!w.phr&&!w.gram?`<dt>🛡 Seviye</dt><dd><div class="row" style="gap:4px;flex-wrap:wrap">${LEVELS.map(l=>`<button class="chip" style="padding:3px 10px;min-height:30px" aria-pressed="${w.level===l}" data-act="adm-lv" data-w="${esc(w.word)}" data-v="${l}">${l}</button>`).join('')}${WLV.ov[w.word]?`<button class="chip" style="padding:3px 10px;min-height:30px" data-act="adm-lv" data-w="${esc(w.word)}" data-v="">↺ ${esc(WLV.orig.get(w.word)||'')}</button>`:''}</div><div class="small muted" style="margin-top:2px">${WLV.ov[w.word]?'Elle ayarlandı · varsayılan '+esc(WLV.orig.get(w.word)||''):'Yönetici: dokunarak seviyeyi herkes için değiştir'}</div></dd>`:''}</dl>`:''}</div>`;
 }
 function dictList(){
   const f=dictFiltered(),D=UI.dict;
@@ -6044,6 +6060,7 @@ document.addEventListener('click',async e=>{
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
     case'mw-more':{const x=g('data-w');UI.mwOpen=UI.mwOpen||{};UI.mwOpen[x]=!UI.mwOpen[x];const y=window.scrollY;render();window.scrollTo(0,y);break}
+    case'adm-lv':{const x=g('data-w'),v=g('data-v');if(v&&BYWORD.get(x)&&BYWORD.get(x).level===v)break;wlvSet(x,v);break}
     case'fam-go':{const x=g('data-w');UI.dict.kind=isPhr(x)?'i':'w';UI.tab='dict';UI.dict.q=x;UI.dict.open=x;UI.dict.level='Hepsi';UI.dict.pos='Hepsi';UI.dict.status='Hepsi';UI.dict.limit=40;UI.card=null;render();window.scrollTo(0,0);break}
     case'fo-w':{const w=g('data-w');toggleFocus(w);toast(inFocus(w)?'Odak listene eklendi.':'Odak listenden çıkarıldı.');const dl=$('#dlist');if(dl&&(UI.tab==='dict'||UI.tab==='saved')){if(focusOn()&&!inFocus(w)&&UI.tab==='dict')UI.dict.open=null;dl.innerHTML=UI.tab==='saved'?savedList():dictList()}else render();break}
     case'focus-tg':S.set.focus=!focusOn();save();render();toast(S.set.focus?'Odak modu açık: yeni kelimeler çekirdek listeden gelecek.':'Odak modu kapalı: tüm sözlük.');break;

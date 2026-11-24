@@ -6,7 +6,7 @@ MAN={}
 MAN.update(G('A1','children'))
 MAN.update(G('A2','eighteenth eleventh nineteenth bravo hooray gasoline hen'))
 # --- B1: gündelik, somut ---
-MAN.update(G('B1','''chore bumpy joyful gesundheit stress-free finals get-together mic welcoming fizzy
+MAN.update(G('B1','''lying chore bumpy joyful gesundheit stress-free finals get-together mic welcoming fizzy
 skinny tweet bullying hoodie motel staircase lizard chalk ebook scanner flyer brunch router cart sip wallpaper hallway technician intern gosh ugh yuck phew
 kindergarten tractor toddler puddle bungalow beige binoculars porridge sporty cutlery mittens mitten heatwave introvert extrovert guesthouse painkiller decaf gigabyte washable multitask
 workmate oversleep seasick satnav jetlag wholemeal streetlight sunburnt jogger cordless contactless lentil wheelbarrow honeybee beekeeper sleeveless pensioner drizzle scorching gust touchscreen
