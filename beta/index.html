@@ -484,6 +484,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/s14-9e51e48750.js"></script>
 <script src="d/s15-7d54860c38.js"></script>
 <script src="d/gloss-6e4fa53eb6.js"></script>
+<script src="d/core-4e7204b485.js"></script>
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
@@ -580,7 +581,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.164.4';
+const APP_VERSION = '4.165.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2815,7 +2816,26 @@ function mtToggle(sel,v,order){
 }
 const lvToggle=(sel,v)=>mtToggle(sel,v,LEVELS);
 const typeOK=w=>lvOk(S.set.type,posGroup(w));
-function newItems(n,level,skip,wt0){   // wt0 verilirse seviye filtresi yok, seviye ağırlıkları wt0 (bugünün testi)
+/* ---------- Odak modu: çekirdek liste (core.js, tools/core/build.py) ---------- */
+let CORESET=null,COREIX=null;
+function coreInit(){if(CORESET)return;const C=window.CORE||[];CORESET=new Set(C);COREIX=new Map(C.map((x,i)=>[x,i]))}
+const focusOn=()=>!!(S.set.focus&&(window.CORE||[]).length);
+function coreStat(){coreInit();let n=0;CORESET.forEach(x=>{if(S.learned[x])n++});return{n,t:CORESET.size}}
+function focusItems(n,level,skip,wt0){   // çekirdek listeden sırayla: önce B1'in en sık kelimeleri; küçük bir pencere karıştırılır
+  coreInit();
+  const c=W.filter(w=>CORESET.has(w.word)&&!S.learned[w.word]&&(wt0||lvOk(level,w.level))&&typeOK(w)&&!skip.has(w.word)).sort((a,b)=>COREIX.get(a.word)-COREIX.get(b.word));
+  const out=[];
+  for(const w of shuffle(c.slice(0,Math.max(n*4,40)))){
+    if(out.length>=n)break;
+    const done=S.prog[w.word]||[];
+    let feats=applicable(w).filter(f=>done.indexOf(f)===-1);
+    if(!feats.length)feats=applicable(w);
+    for(const f of shuffle(feats)){const it=makeItem(w,f,'new');if(it){out.push(it);break}}
+  }
+  return out;
+}
+function newItems(n,level,skip,wt0){
+  if(focusOn())return focusItems(n,level,skip,wt0);   // wt0 verilirse seviye filtresi yok, seviye ağırlıkları wt0 (bugünün testi)
   const bk={};LEVELS.forEach(l=>{bk[l]=[]});
   W.forEach(w=>{if(!S.learned[w.word]&&(wt0||lvOk(level,w.level))&&typeOK(w)&&!skip.has(w.word))(bk[w.level]||(bk[w.level]=[])).push(w)});
   LEVELS.forEach(l=>{bk[l]=shuffle(bk[l])});
@@ -3265,6 +3285,15 @@ function penHist(){
   const sum=r1(L.reduce((t,x)=>t+x.amt,0));
   return(W?`<div class="card">${W}</div>`:'')+`<details class="card"><summary><b>Ceza geçmişim</b> <span class="small muted">son 14 gün: −${nf(sum)} puan</span></summary><div class="stack" style="margin-top:8px">${L.slice(0,12).map(x=>`<div class="row small" style="justify-content:space-between;gap:8px"><span>${fmt(x.d)} · ${x.why}</span><b style="color:var(--bad);white-space:nowrap">−${nf(x.amt)}</b></div>`).join('')}<div class="small muted">Cezalar yalnızca toplam puandan düşer; günlük ve haftalık puanını etkilemez. Kesinti, o günün sonunda ertesi gün uygulamaya girdiğinde işlenir.</div></div></details>`;
 }
+function focusCard(){
+  if(!(window.CORE||[]).length)return'';
+  const on=focusOn(),c=coreStat(),p=c.t?c.n/c.t:0;
+  return`<div class="card stack" style="${on?'border-color:var(--accent)':''}"><div class="row" style="justify-content:space-between;align-items:center;gap:10px">
+    <div><b>🎯 Odak modu</b> ${on?'<span class="badge ok">Açık</span>':'<span class="badge">Kapalı</span>'}<div class="muted small">B1–B2 ağırlıklı ${nf(c.t)} kelime ve kalıptan oluşan çekirdek liste. Açıkken yeni kelimeler yalnız buradan, en sık kullanılanlardan başlayarak gelir.</div></div>
+    <button class="btn ${on?'':'primary'}" data-act="focus-tg" style="flex:0 0 auto">${on?'Kapat':'Aç'}</button></div>
+    <div><div class="row small" style="justify-content:space-between"><span>Çekirdekten öğrendiğin</span><b>${nf(c.n)} / ${nf(c.t)}</b></div>
+    <div style="height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-top:4px"><div style="height:100%;width:${Math.round(p*1000)/10}%;background:var(--accent)"></div></div></div></div>`;
+}
 function vToday(){
   if(CLOUD.ann&&CLOUD.ann.updated_at!==annSeen()){const u=CLOUD.ann.updated_at;setTimeout(()=>seenSet('ann',u),4000)}
   const d=dayStat(),g=goalEff(),p=g?d.c/g:0;
@@ -3281,8 +3310,9 @@ function vToday(){
     <div class="muted small">${due?`${due} kelime tekrar zamanı gelmiş. Bugünün testi bunları öne alır.`:'Tekrar bekleyen kelime yok.'}</div>
     <button class="btn primary" data-act="start-today">Bugünün testini başlat (${TODAY_N} soru)</button></div></div>
   <div class="card small" style="padding:10px 12px"><div style="font-weight:700;margin-bottom:6px">Bugünün testi nereden geliyor?</div>
-    <table class="tdq" style="width:100%;border-collapse:collapse">${[['Tekrar zamanı gelen kelimeler','en çok '+TD.rev],['Yanlış defteri',TD.wlog],['Günün kelimeleri','3'],['Gramer (ağırlık B1–B2)',TD.gram],['Kalıp (ağırlık B1–B2)',TD.phr],['Yeni kelimeler (%5 A2 · %35 B1 · %40 B2 · %15 C1 · %5 C2)','kalanı']].map(r=>`<tr><td style="padding:3px 0;border-top:1px solid var(--line)">${r[0]}</td><td style="padding:3px 0 3px 8px;border-top:1px solid var(--line);text-align:right;white-space:nowrap;font-weight:600">${r[1]}</td></tr>`).join('')}</table>
+    <table class="tdq" style="width:100%;border-collapse:collapse">${[['Tekrar zamanı gelen kelimeler','en çok '+TD.rev],['Yanlış defteri',TD.wlog],['Günün kelimeleri','3'],['Gramer (ağırlık B1–B2)',TD.gram],['Kalıp (ağırlık B1–B2)',TD.phr],[focusOn()?'Yeni kelimeler (🎯 Odak listesinden, sırayla)':'Yeni kelimeler (%5 A2 · %35 B1 · %40 B2 · %15 C1 · %5 C2)','kalanı']].map(r=>`<tr><td style="padding:3px 0;border-top:1px solid var(--line)">${r[0]}</td><td style="padding:3px 0 3px 8px;border-top:1px solid var(--line);text-align:right;white-space:nowrap;font-weight:600">${r[1]}</td></tr>`).join('')}</table>
     <div class="muted" style="margin-top:6px">Tekrar ya da Yanlış defteri azsa yerini yeni kelime alır. Seviye ayarından bağımsızdır.</div></div>
+  ${focusCard()}
   <div class="kpis"><div class="kpi"><b>${nf(learnedCount())}</b><span>öğrendiğin kelime</span></div><div class="kpi"><b>${nf(W.length-learnedCount())}</b><span>öğrenmediğin kelime</span></div><div class="kpi"><b>${nf(Object.keys(S.wrong).length)}</b><span>tekrar listendeki kelime</span></div></div>
   ${wds.length?`<div class="card wotd stack"><div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">Günün kelimeleri</span><span class="badge ${wq.left?'':'ok'}">${wq.done}/${wq.total} soru</span></div>
     ${wds.map(wd=>`<div class="stack" style="gap:2px;padding-top:8px;border-top:1px solid var(--line)"><div class="row" style="justify-content:space-between"><span class="row"><span class="w">${esc(wd.word)}</span><span class="mono muted">${esc(wd.pron)}</span></span>${lvTag(wd.level)}</div><div class="row"><span>${esc(wd.tr)}</span><button class="say" data-say="${esc(wd.word)}" data-pron="${esc(wd.pron)}" aria-label="Seslendir">Dinle</button></div><div class="muted small">${esc(wd.def)}</div><div class="small"><i>${esc(wd.ex)}</i>${exTr(wd)}</div></div>`).join('')}
@@ -3642,9 +3672,11 @@ function vExam(){
 }
 function vQuizSetup(){
   const s=S.set;
-  const remaining=W.filter(w=>!S.learned[w.word]&&lvOk(s.level,w.level)&&typeOK(w)).length;
-  const tc=W.reduce((m,w)=>{if(!S.learned[w.word]&&lvOk(s.level,w.level)){const g=posGroup(w);m[g]=(m[g]||0)+1}return m},{});
+  coreInit();const fo=focusOn();
+  const remaining=W.filter(w=>!S.learned[w.word]&&lvOk(s.level,w.level)&&typeOK(w)&&(!fo||CORESET.has(w.word))).length;
+  const tc=W.reduce((m,w)=>{if(!S.learned[w.word]&&lvOk(s.level,w.level)&&(!fo||CORESET.has(w.word))){const g=posGroup(w);m[g]=(m[g]||0)+1}return m},{});
   return`<div class="top"><h1>Test</h1></div><div class="card stack">
+    ${(window.CORE||[]).length?`<div><h3>Kelime havuzu</h3><div class="seg" style="margin-top:8px"><button class="chip" aria-pressed="${!fo}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${fo}" data-act="focus-set" data-v="1">🎯 Odak (${nf(CORESET.size)})</button></div></div>`:''}
     <div><h3>Soru sayısı</h3><div class="seg" style="margin-top:8px">${[10,20,30,40].map(n=>`<button class="chip" aria-pressed="${s.count===n}" data-set="count" data-v="${n}">${n}</button>`).join('')}</div></div>
     <div><h3>Seviye <span class="muted small" style="font-weight:400">(birden fazla seçebilirsin)</span></h3><div class="seg" style="margin-top:8px">${['Hepsi'].concat(LEVELS).map(n=>`<button class="chip" aria-pressed="${lvOn(s.level,n)}" data-set="level" data-v="${n}">${n}</button>`).join('')}</div></div>
     <div><h3>Tür <span class="muted small" style="font-weight:400">(birden fazla seçebilirsin)</span></h3><div class="seg" style="margin-top:8px"><button class="chip" aria-pressed="${lvOn(s.type,'Hepsi')}" data-set="type" data-v="Hepsi">Hepsi</button>${POSG.filter(g=>tc[g]).map(g=>`<button class="chip" aria-pressed="${lvOn(s.type,g)}" data-set="type" data-v="${esc(g)}">${esc(trType(g))} (${nf(tc[g])})</button>`).join('')}</div></div>
@@ -5773,6 +5805,8 @@ document.addEventListener('click',async e=>{
     case'duel-exit':if(DUEL.id&&DUEL.id!=='bot')(DUEL.done=DUEL.done||{})[DUEL.id]=1;dReset();render();lobbyLoad();break;
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
+    case'focus-tg':S.set.focus=!focusOn();save();render();toast(S.set.focus?'Odak modu açık: yeni kelimeler çekirdek listeden gelecek.':'Odak modu kapalı: tüm sözlük.');break;
+    case'focus-set':S.set.focus=g('data-v')==='1';save();render();break;
     case'start-review':startQuiz('review',false);break;
     case'rv-tab':UI.rv=g('data-v');UI.wlConfirm=false;render();break;
     case'start-saved':startQuiz('saved',false);break;
