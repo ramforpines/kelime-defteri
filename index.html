@@ -586,7 +586,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.167.4';
+const APP_VERSION = '4.167.8';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1103,6 +1103,7 @@ function mergeStates(a,b){
   {const c=JSON.parse(JSON.stringify(ot.exc||{}));Object.keys(m.exc||{}).forEach(k=>{c[k]=Object.assign(c[k]||{},m.exc[k])});m.exc=c}
   {const q=Object.assign({},ot.exq||{});Object.keys(m.exq||{}).forEach(k=>{q[k]=(q[k]|0)|(m.exq[k]|0)});m.exq=q}
   {const fv={};[ot.fov||{},m.fov||{}].forEach(o=>Object.keys(o).forEach(k=>{if(fv[k]==null||Math.abs(o[k])>Math.abs(fv[k]))fv[k]=o[k]}));m.fov=fv}   // odak listesi ekle/çıkar: yeni olan kazanır
+  {const x={};[ot.sxp||{},m.sxp||{}].forEach(o=>Object.keys(o).forEach(k=>{if(!x[k]||(o[k].u||0)>(x[k].u||0))x[k]=o[k]}));if(ot.sxp||m.sxp)m.sxp=x}   // çalışma sonuçları/sıfırlama: yeni olan kazanır
   {const sv={};[ot.sav||{},m.sav||{}].forEach(o=>Object.keys(o).forEach(k=>{if(sv[k]==null||Math.abs(o[k])>Math.abs(sv[k]))sv[k]=o[k]}));m.sav=sv}   // kaydedilenler: sayı >0 kayıtlı, <0 kaldırıldı (|değer| = zaman); yeni olan kazanır
   {const x=m.wq||{},y=ot.wq||{};if(y.d&&(!x.d||y.d>x.d))m.wq={d:y.d,done:(y.done||[]).slice()};else if(y.d&&y.d===x.d){const u=(x.done||[]).slice();(y.done||[]).forEach(k=>{if(u.indexOf(k)===-1)u.push(k)});m.wq={d:x.d,done:u}}}
   {const rv={};[ot.rwd||{},m.rwd||{}].forEach(o=>Object.keys(o).forEach(k=>{if(rv[k]==null||Math.abs(o[k])>Math.abs(rv[k]))rv[k]=o[k]}));m.rwd=rv}   // ödül bildirimleri: görülenler birleşir
@@ -1430,7 +1431,7 @@ function adCss(){return`
 .rkad .rka-t b{display:block;margin-top:4px;font:900 .56rem/1.15 system-ui,sans-serif;color:#fff;letter-spacing:.2px}
 .rkad .rka-t i{display:block;margin-top:2px;font:800 .54rem/1.15 system-ui,sans-serif;font-style:normal;color:#f2c14e}
 .rkad .rka-s{margin:12px 0 2px;font:900 italic .92rem 'Arial Black',system-ui,sans-serif;letter-spacing:.5px;background:linear-gradient(#fff0b0,#f2c14e 55%,#b98417);-webkit-background-clip:text;background-clip:text;color:transparent}
-#adov .adb.oda{overflow:auto;border-color:#7f95ff;background:#0d1530;padding-top:44px}#adov .adb.oda .adc{background:#1b2550}#adov .adgo{display:block;width:100%;padding:13px;border:0;background:#2b4eff;color:#fff;font:700 15px system-ui,sans-serif;cursor:pointer}
+#adov .adb.oda{overflow:auto;border-color:#7f95ff;background:#0d1530;padding-top:0}#adov .adb.oda img{display:block;width:100%;height:auto}#adov .adb.oda .adt{display:none}#adov .adb.oda .adc{background:#1b2550}#adov .adgo{display:block;width:100%;padding:13px;border:0;background:#2b4eff;color:#fff;font:700 15px system-ui,sans-serif;cursor:pointer}
 #adov .adb.sxa{overflow:auto;border-color:#7dd3fc;background:#07162e}
 .sxad{position:relative;padding:16px 14px 10px;text-align:center;color:#fff;font-family:system-ui,'Segoe UI',Arial,sans-serif;background:radial-gradient(120% 55% at 50% 0%,rgba(56,189,248,.38),rgba(0,0,0,0) 70%),radial-gradient(90% 40% at 100% 100%,rgba(244,114,182,.22),rgba(0,0,0,0) 70%),linear-gradient(180deg,#0b2447,#07162e 60%,#050d1f)}
 .sxad .sx-k{display:inline-block;padding:4px 14px;border-radius:99px;background:#38bdf8;color:#04223a;font:900 .68rem 'Arial Black',system-ui,sans-serif;letter-spacing:2.5px}
@@ -1472,7 +1473,7 @@ function rkAdHtml(){
   <div class="rka-s">KILICINI SAVAŞ SAATİNDE ÇEK!</div></div>`}
 const OD_AD={from:'2026-11-24',to:'2026-11-29'};   // Odak modu afişi: 24-29 Kasım arası her girişte (pazartesi kalkar); yönetici hemen görür
 const odAdDue=()=>{const t=today();return t<=OD_AD.to&&(t>=OD_AD.from||!!CLOUD.admin)};
-const odAdHtml=()=>`<img src="img/ann/odak-4167.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.583 kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
+const odAdHtml=()=>`<img src="img/ann/odak-4167d.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.583 kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
 const SX_AD={from:'2026-11-10',to:'2026-11-13'};   // Sınav duyurusu: 10-13 Kasım arası her girişte; yönetici hemen görür
 const sxAdDue=()=>{const t=today();return t<=SX_AD.to&&(t>=SX_AD.from||!!CLOUD.admin)};
 function sxAdHtml(){
@@ -4012,7 +4013,7 @@ const sxExam=id=>((window.SINAV||{}).exams||[]).find(x=>x.id===id);
 const SXI={};
 const sxExamItems=(X,k)=>SXI[X.id+k]||(SXI[X.id+k]=X.sec[k].parts.flatMap(p=>sxItems(p,X.id)));
 const sxWTasks=X=>X.sec.W.tasks.map(t=>t.choice?{choice:t.choice}:t);
-const sxDone=(k,x)=>{try{if(k==='W'){const d=(S.pw||{})[x.id];return !!(d&&d.f)}return !!sxBest(x.id)}catch(e){return false}};   // tamamlanan çalışmalar listenin sonuna iner
+const sxDone=(k,x)=>{try{return !!sxDoneRec(x.id)}catch(e){return false}};   // tamamlanan çalışmalar listenin sonuna iner
 const sxPracAll=()=>{const P=(window.SINAV||{}).prac||{},o=[];Object.keys(P).forEach(lv=>['R','L','W','S'].forEach(k=>(P[lv][k]||[]).forEach(x=>o.push([lv,k,x]))));return o};
 const sxWTask=id=>{const r=sxPracAll().find(([lv,k,x])=>k==='W'&&x.id===id);return r?r[2]:null};
 const sxLvOfTask=id=>{const r=sxPracAll().find(x=>x[2].id===id);return r?r[0]:'B1'};
@@ -4103,8 +4104,8 @@ function sxAnswer(v){const Q=UI.sq;if(!Q||Q.done)return;const A=sxAns(),it=Q.ite
 function sxGo(i){const Q=UI.sq;Q.i=Math.max(0,Math.min(Q.items.length,i));if(Q.mode==='x'){sxRec(Q.id).state.sec[Q.sk].i=Q.i;sxSave(Q.id)}render();window.scrollTo(0,0)}
 function sxSubmit(auto){const Q=UI.sq;if(!Q)return;sxAudioStop();
   if(Q.mode==='x'){const r=sxRec(Q.id),s=r.state.sec[Q.sk];s.done=true;s.i=Q.items.length;sxSave(Q.id,true);clearInterval(SXT);SXT=null;const id=Q.id;UI.sq=null;UI.sxe=id;sxCheckFinish(id);render();window.scrollTo(0,0);return}
-  Q.done=true;const c=Q.items.filter((it,i)=>sxOk(it,Q.ans[i])).length;let B={};try{B=JSON.parse(localStorage.getItem('kd-sxp')||'{}')}catch(e){}
-  const o=B[Q.id];if(!o||c>o[0])B[Q.id]=[c,Q.items.length,today()];try{localStorage.setItem('kd-sxp',JSON.stringify(B))}catch(e){}
+  Q.done=true;const c=Q.items.filter((it,i)=>sxOk(it,Q.ans[i])).length;sxpMig();
+  const o=sxBest(Q.id);if(!o)S.sxp[Q.id]={c,n:Q.items.length,d:today(),u:Date.now()};save();
   render();window.scrollTo(0,0)}
 function sxGrid(Q,A){return`<div class="row" style="flex-wrap:wrap;gap:4px">${Q.items.map((it,i)=>{const has=A[i]!=null&&A[i]!=='';return`<button class="chip" style="min-width:34px;padding:4px 6px;${i===Q.i?'outline:2px solid var(--accent);':''}${has?'background:rgba(46,158,91,.15)':''}" data-act="sx-go" data-v="${i}">${i+1}</button>`}).join('')}</div>`}
 function vSxRun(){
@@ -4150,7 +4151,7 @@ function sxAnalysis(items,ans){
 }
 function vSxPracRep(Q){const c=Q.items.filter((it,i)=>sxOk(it,Q.ans[i])).length,n=Q.items.length;
   return`<div class="top"><h1>Sonuç</h1></div><div class="stack"><div class="card stack"><div class="score" style="font-size:2.2rem">${c}/${n}</div><div class="small muted">${esc(Q.items[0].nm)} · çalışma. Puan vermez, sıralamayı etkilemez.</div></div>
-  ${sxAnalysis(Q.items,Q.ans)}<div class="row"><button class="btn primary" data-act="sx-home">Çalışmaya dön</button><button class="btn" data-act="sx-prac" data-v="${esc(Q.lv)}|${esc(Q.id)}">Tekrar çöz</button></div></div>`}
+  ${sxAnalysis(Q.items,Q.ans)}<div class="row"><button class="btn primary" data-act="sx-home">Çalışmaya dön</button></div></div>`}
 
 /* --- sınav: yazma bölümü --- */
 const sxWc=t=>(String(t||'').match(/\S+/g)||[]).length;
@@ -4281,7 +4282,14 @@ async function sxAi(id0){
   render();
 }
 /* --- ana görünüm: Sınavlar / Çalışma --- */
-function sxBest(id){try{return(JSON.parse(localStorage.getItem('kd-sxp')||'{}'))[id]}catch(e){return null}}
+/* çalışma bölümü sonuçları: hesaba eşitlenir (S.sxp); çözülen bölüm 15 gün sonra sıfırlanabilir */
+const SXP_RESET=15;
+function sxpMig(){if(S.sxp){if(!S.sxp._pw){Object.keys(S.pw||{}).forEach(k=>{if(S.pw[k].f&&!S.sxp[k])S.sxp[k]={f:1,d:today(),u:1}});S.sxp._pw={u:1}}return}S.sxp={_pw:{u:1}};Object.keys(S.pw||{}).forEach(k=>{if(S.pw[k].f)S.sxp[k]={f:1,d:today(),u:1}});try{const B=JSON.parse(localStorage.getItem('kd-sxp')||'{}');Object.keys(B).forEach(k=>{const b=B[k];if(Array.isArray(b))S.sxp[k]={c:b[0],n:b[1],d:b[2]||today(),u:1}})}catch(e){}}
+function sxBest(id){sxpMig();const r=S.sxp[id];return r&&r.n?[r.c,r.n,r.d]:null}
+const sxResetIn=id=>{const r=sxDoneRec(id);if(!r)return null;const d=Math.round((new Date(today()+'T12:00:00')-new Date(r.d+'T12:00:00'))/864e5);return Math.max(0,SXP_RESET-d)};
+function sxMarkDone(id){sxpMig();const r=S.sxp[id];if(r&&(r.n||r.f))return;S.sxp[id]={f:1,d:today(),u:Date.now()};save()}   // yazma/konuşma: puansız tamamlama
+const sxDoneRec=id=>{sxpMig();const r=S.sxp[id];return r&&(r.n||r.f)?r:null};
+function sxReset(id){sxpMig();if(sxResetIn(id)>0)return;S.sxp[id]={x:Date.now(),u:Date.now()};if(S.pw&&S.pw[id])delete S.pw[id].f;save();render()}
 function vSx(){
   if(!window.SINAV){sxLoad();return`<div class="card"><div class="muted">Sınavlar yükleniyor…</div></div>`}
   if(UI.sq)return vSxRun();
@@ -4304,10 +4312,14 @@ function vSx(){
   return`<div class="top"><h1>Çalışma</h1></div><div class="stack">${seg}
   <div class="seg">${SX_LV.filter(x=>SN.prac[x]).map(x=>`<button class="chip" aria-pressed="${x===lv}" data-act="sx-l" data-v="${x}">${x}</button>`).join('')}</div>
   <div class="seg">${['R','L','W','S'].map(x=>`<button class="chip" aria-pressed="${x===k}" data-act="sx-k" data-v="${x}">${SX_IC[x]} ${esc(sxSkName(lv,x))}</button>`).join('')}</div>
-  <div class="card small muted">${k==='R'||k==='L'?'Sınavdaki bölüm türlerinden örnekler. Süre yok, istediğin kadar tekrar çözebilirsin; sonunda açıklamalar ve çalışman gereken konular çıkar.':k==='W'?'Yazarken kelime sayısı, maddeler, bağlaçlar ve yapılar canlı kontrol edilir. Bitirince öz değerlendirme ve örnek cevap açılır.':'Soru sesli okunur, sen İngilizce konuşursun; konuşman yazıya dökülür, süre, kelime sayısı ve kalıplar gösterilir, sonra örnek cevapla karşılaştırırsın.'}</div>
-  ${L.length?(k==='R'||k==='L'||k==='W'?L.filter(x=>!sxDone(k,x)).concat(L.filter(x=>sxDone(k,x))):L).map(x=>{if(k==='R'||k==='L'){const b=sxBest(x.id);return`<button class="btn block" style="text-align:left" data-act="sx-prac" data-v="${lv}|${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${b?`<span class="small muted">${b[0]}/${b[1]}</span>`:''}</div></button>`}
-    if(k==='W'){const d=(S.pw||{})[x.id];return`<button class="btn block" style="text-align:left" data-act="pw-open" data-v="${esc(x.id)}" lang="en"><div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b>${d&&d.f?'<span class="small muted">✓</span>':''}</div></button>`}
-    return`<button class="btn block" style="text-align:left" data-act="ps-open" data-v="${esc(x.id)}" lang="en"><b>${esc(x.t)}</b></button>`}).join(''):'<div class="empty card">Bu seviye için çalışma yakında.</div>'}</div>`;
+  <div class="card small muted">${k==='R'||k==='L'?'Sınavdaki bölüm türlerinden örnekler. Süre yok; sonunda açıklamalar ve çalışman gereken konular çıkar. Çözdüğün bölüm sonucuyla listenin sonuna iner, 15 gün sonra sıfırlayıp yeniden çözebilirsin.':k==='W'?'Yazarken kelime sayısı, maddeler, bağlaçlar ve yapılar canlı kontrol edilir. Bitirince öz değerlendirme ve örnek cevap açılır. Tamamladığın bölüm listenin sonuna iner, 15 gün sonra sıfırlayıp yeniden yazabilirsin.':'Soru sesli okunur, sen İngilizce konuşursun; konuşman yazıya dökülür, süre, kelime sayısı ve kalıplar gösterilir, sonra örnek cevapla karşılaştırırsın. Son soruyu bitirdiğin bölüm listenin sonuna iner, 15 gün sonra sıfırlanabilir.'}</div>
+  ${L.length?L.filter(x=>!sxDone(k,x)).concat(L.filter(x=>sxDone(k,x))).map(x=>{if(k==='R'||k==='L'){const b=sxBest(x.id);
+      if(!b)return`<button class="btn block" style="text-align:left" data-act="sx-prac" data-v="${lv}|${esc(x.id)}" lang="en"><b>${esc(x.t)}</b></button>`;
+      const ri=sxResetIn(x.id),full=b[0]===b[1];
+      return`<div class="btn block" style="text-align:left;cursor:default;opacity:.85" lang="en"><div class="row" style="justify-content:space-between;align-items:center;gap:8px"><b>${esc(x.t)}</b><span class="badge ${full?'ok':b[0]/b[1]>=.6?'warn':'bad'}" style="flex:0 0 auto">✓ ${b[0]}/${b[1]}</span></div><div class="row" style="justify-content:space-between;align-items:center;gap:8px;margin-top:4px"><span class="small muted" lang="tr">Çözüldü · ${esc(fmt(b[2]))}${ri>0?' · '+ri+' gün sonra sıfırlanabilir':''}</span>${ri>0?'':`<button class="btn" data-act="sx-reset" data-v="${esc(x.id)}" style="min-height:32px;padding:3px 12px;font-size:.82rem;flex:0 0 auto" lang="tr">↺ Sıfırla</button>`}</div></div>`}
+    const dr=sxDoneRec(x.id);
+    if(dr){const ri=sxResetIn(x.id);return`<div class="btn block" style="text-align:left;cursor:default;opacity:.85" lang="en"><div class="row" style="justify-content:space-between;align-items:center;gap:8px"><b>${esc(x.t)}</b><span class="badge ok" style="flex:0 0 auto" lang="tr">✓ Tamamlandı</span></div><div class="row" style="justify-content:space-between;align-items:center;gap:8px;margin-top:4px"><span class="small muted" lang="tr">${dr.u===1?'Tamamlandı':'Tamamlandı · '+esc(fmt(dr.d))}${ri>0?' · '+ri+' gün sonra sıfırlanabilir':''}</span>${ri>0?'':`<button class="btn" data-act="sx-reset" data-v="${esc(x.id)}" style="min-height:32px;padding:3px 12px;font-size:.82rem;flex:0 0 auto" lang="tr">↺ Sıfırla</button>`}</div></div>`}
+    return`<button class="btn block" style="text-align:left" data-act="${k==='W'?'pw-open':'ps-open'}" data-v="${esc(x.id)}" lang="en"><b>${esc(x.t)}</b></button>`}).join(''):'<div class="empty card">Bu seviye için çalışma yakında.</div>'}</div>`;
 }
 /* sınav sıralama tablosu */
 async function sxBoardLoad(id){UI.sxbId=id;UI.sxb=null;UI.sxbErr=false;UI.sxbLd=true;if(!sb||!CLOUD.uid){UI.sxbLd=false;UI.sxbErr=true;render();return}render();
@@ -4405,7 +4417,7 @@ document.addEventListener('change',e=>{const k=e.target&&e.target.getAttribute&&
 /* konuşma */
 const PS_REC=window.SpeechRecognition||window.webkitSpeechRecognition;
 let PSR=null;
-function psStop(){const P=UI.ps;if(PSR){try{PSR.onend=null;PSR.stop()}catch(e){}PSR=null}if(P&&P.st==='rec'){P.st='done';P.dur=Math.min(P.lim,(Date.now()-P.t0)/1000);if(P.lastAt)P.pz=Math.max(P.pz||0,(Math.min(Date.now(),P.t0+P.lim*1000)-P.lastAt)/1000);clearInterval(P.tm);if(P.exam)sxSpDraft();render()}}
+function psStop(){const P=UI.ps;if(PSR){try{PSR.onend=null;PSR.stop()}catch(e){}PSR=null}if(P&&P.st==='rec'){P.st='done';try{const T=psTask();if(!P.exam&&T&&P.qi+1>=T.q.length)sxMarkDone(T.id)}catch(e){}P.dur=Math.min(P.lim,(Date.now()-P.t0)/1000);if(P.lastAt)P.pz=Math.max(P.pz||0,(Math.min(Date.now(),P.t0+P.lim*1000)-P.lastAt)/1000);clearInterval(P.tm);if(P.exam)sxSpDraft();render()}}
 function psStart(){
   const P=UI.ps,T=psTask(),q=T.q[P.qi];if(!PS_REC){toast('Bu tarayıcıda konuşma tanıma yok. Chrome ya da Safari\'nin güncel sürümünü dene.',5000);return}
   try{speechSynthesis.cancel()}catch(e){}
@@ -6068,7 +6080,8 @@ document.addEventListener('click',async e=>{
     case'sx-board':UI.tab='rank';UI.rank.per='exam';render();window.scrollTo(0,0);break;
     case'sx-unlock':UI.sxBy=UI.sxBy||{};UI.sxBy[UI.sxe]=1;render();break;
     case'sx-say':{const[pi,qi,j]=g('data-v').split('|').map(Number),X=sxExam(UI.sxe),q=X&&X.sec.S.parts[pi].q[qi];if(q)say((Array.isArray(q[3])?q[3]:[q[3]])[j]);break}
-    case'sx-prac':{const[lv,id]=g('data-v').split('|');sxPracStart(lv,id);break}
+    case'sx-prac':{const[lv,id]=g('data-v').split('|');if(sxBest(id)){toast('Bu bölümü çözdün; '+(sxResetIn(id)>0?sxResetIn(id)+' gün sonra sıfırlayıp tekrar çözebilirsin.':'listeden sıfırlayabilirsin.'));break}sxPracStart(lv,id);break}
+    case'sx-reset':sxReset(g('data-v'));toast('Bölüm sıfırlandı, tekrar çözebilirsin.');break;
     case'sx-ans':sxAnswer(+g('data-v'));break;
     case'sx-text':{const el=document.getElementById('sxans');sxAnswer(el?el.value.trim():'');break}
     case'sx-go':sxGo(+g('data-v'));break;
@@ -6083,10 +6096,10 @@ document.addEventListener('click',async e=>{
     case'sxs-skip':{const P=UI.ps;P.fin='';P.dur=0;delete sxRec(P.exam).state.sec.S.dr;sxSpSave();sxSpNext();break}
     case'sxs-ok':{ttsStop();const P=UI.ps,S0=sxRec(P.exam).state.sec.S,d=S0.dr;if(d){P.fin=d.t;P.dur=d.dur;delete S0.dr;sxSpSave()}sxSpNext();break}
     case'sxs-retry':{const P=UI.ps;delete sxRec(P.exam).state.sec.S.dr;P.st='idle';P.fin='';P.cur='';sxSave(P.exam);psStart();break}
-    case'pw-open':UI.pw={id:g('data-v'),done:!!(((S.pw||{})[g('data-v')]||{}).f)};render();window.scrollTo(0,0);if(UI.pw.done)pwSelfUpd();break;
-    case'pw-done':{S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.f=1;save();UI.pw.done=true;render();pwSelfUpd();break}
+    case'pw-open':if(sxDoneRec(g('data-v'))){const ri=sxResetIn(g('data-v'));toast('Bu bölümü tamamladın; '+(ri>0?ri+' gün sonra sıfırlayıp tekrar çözebilirsin.':'listeden sıfırlayabilirsin.'));break}UI.pw={id:g('data-v'),done:!!(((S.pw||{})[g('data-v')]||{}).f)};render();window.scrollTo(0,0);if(UI.pw.done)pwSelfUpd();break;
+    case'pw-done':{S.pw=S.pw||{};const d=S.pw[UI.pw.id]||(S.pw[UI.pw.id]={});d.f=1;sxMarkDone(UI.pw.id);save();UI.pw.done=true;render();pwSelfUpd();break}
     case'pw-back':save();UI.pw=null;render();window.scrollTo(0,0);break;
-    case'ps-open':{const r=sxPracAll().find(x=>x[1]==='S'&&x[2].id===g('data-v'));if(!r)break;UI.ps={T:r[2],qi:0,st:'idle'};render();window.scrollTo(0,0);ttsStop();break}
+    case'ps-open':{if(sxDoneRec(g('data-v'))){const ri=sxResetIn(g('data-v'));toast('Bu bölümü tamamladın; '+(ri>0?ri+' gün sonra sıfırlayıp tekrar çözebilirsin.':'listeden sıfırlayabilirsin.'));break}const r=sxPracAll().find(x=>x[1]==='S'&&x[2].id===g('data-v'));if(!r)break;UI.ps={T:r[2],qi:0,st:'idle'};render();window.scrollTo(0,0);ttsStop();break}
     case'ps-say':{const T=psTask();if(!T)break;const v=g('data-v'),q=T.q[UI.ps.qi],m=Array.isArray(q[3])?q[3]:[q[3]];say(v[0]==='m'?m[+v.slice(1)||0]:q[0]);break}
     case'ps-start':psStart();break;
     case'ps-stop':{const P=UI.ps;P.fin=((P.fin?P.fin+' ':'')+(P.cur||'')).trim();P.cur='';psStop();break}
