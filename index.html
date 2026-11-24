@@ -586,7 +586,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.167.6';
+const APP_VERSION = '4.167.7';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1431,7 +1431,7 @@ function adCss(){return`
 .rkad .rka-t b{display:block;margin-top:4px;font:900 .56rem/1.15 system-ui,sans-serif;color:#fff;letter-spacing:.2px}
 .rkad .rka-t i{display:block;margin-top:2px;font:800 .54rem/1.15 system-ui,sans-serif;font-style:normal;color:#f2c14e}
 .rkad .rka-s{margin:12px 0 2px;font:900 italic .92rem 'Arial Black',system-ui,sans-serif;letter-spacing:.5px;background:linear-gradient(#fff0b0,#f2c14e 55%,#b98417);-webkit-background-clip:text;background-clip:text;color:transparent}
-#adov .adb.oda{overflow:auto;border-color:#7f95ff;background:#0d1530;padding-top:44px}#adov .adb.oda .adc{background:#1b2550}#adov .adgo{display:block;width:100%;padding:13px;border:0;background:#2b4eff;color:#fff;font:700 15px system-ui,sans-serif;cursor:pointer}
+#adov .adb.oda{overflow:hidden;border-color:#7f95ff;background:#0d1530;padding-top:0}#adov .adb.oda img{max-height:calc(92vh - 110px);object-fit:contain;margin:0 auto}#adov .adb.oda .adt{display:none}#adov .adb.oda .adc{background:#1b2550}#adov .adgo{display:block;width:100%;padding:13px;border:0;background:#2b4eff;color:#fff;font:700 15px system-ui,sans-serif;cursor:pointer}
 #adov .adb.sxa{overflow:auto;border-color:#7dd3fc;background:#07162e}
 .sxad{position:relative;padding:16px 14px 10px;text-align:center;color:#fff;font-family:system-ui,'Segoe UI',Arial,sans-serif;background:radial-gradient(120% 55% at 50% 0%,rgba(56,189,248,.38),rgba(0,0,0,0) 70%),radial-gradient(90% 40% at 100% 100%,rgba(244,114,182,.22),rgba(0,0,0,0) 70%),linear-gradient(180deg,#0b2447,#07162e 60%,#050d1f)}
 .sxad .sx-k{display:inline-block;padding:4px 14px;border-radius:99px;background:#38bdf8;color:#04223a;font:900 .68rem 'Arial Black',system-ui,sans-serif;letter-spacing:2.5px}
@@ -1473,7 +1473,7 @@ function rkAdHtml(){
   <div class="rka-s">KILICINI SAVAŞ SAATİNDE ÇEK!</div></div>`}
 const OD_AD={from:'2026-11-24',to:'2026-11-29'};   // Odak modu afişi: 24-29 Kasım arası her girişte (pazartesi kalkar); yönetici hemen görür
 const odAdDue=()=>{const t=today();return t<=OD_AD.to&&(t>=OD_AD.from||!!CLOUD.admin)};
-const odAdHtml=()=>`<img src="img/ann/odak-4167.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.583 kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
+const odAdHtml=()=>`<img src="img/ann/odak-4167b.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.583 kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
 const SX_AD={from:'2026-11-10',to:'2026-11-13'};   // Sınav duyurusu: 10-13 Kasım arası her girişte; yönetici hemen görür
 const sxAdDue=()=>{const t=today();return t<=SX_AD.to&&(t>=SX_AD.from||!!CLOUD.admin)};
 function sxAdHtml(){
