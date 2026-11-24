@@ -56,24 +56,25 @@ def skip(w):
     for b in (base_of(k) if Z(k,'en')<3.8 or k.endswith('ly') else []):   # sık kullanılan -ness/-ize sözcükleri (awareness, weakness) kendi başına öğrenilir
         if LV.index(low[b][7])<=LV.index(w[7]):return 'family:'+b
     return None
-single=[w for w in W if ' ' not in w[0].strip() and w[7] in('B1','B2','C1')]
+single=[w for w in W if ' ' not in w[0].strip() and w[7] in('B1','B2','C1','C2')]
 picked=[];why={}
-for lv,n,cut in(('B1',1290,None),('B2',1242,None),('C1',350,None)):
+QUOTA={'B1':1300,'B2':1300,'C1':900,'C2':99}   # yalnız tek kelimeler; ifadeler Sözlük → İfadeler'de
+for lv,n,cut in((l,QUOTA[l],None) for l in QUOTA):
     L=[w for w in single if w[7]==lv and not skip(w)]
     L.sort(key=lambda w:-(z(w[0])+(0.6 if insinav(w[0].lower()) else 0)))
     top=L[:n]
-    extra=[w for w in L[n:] if insinav(w[0].lower()) and lv!='C1'][:150]
+    extra=[]   # kota kesin: sınavda geçenler sıralamada öne alınır, kota dışına taşmaz
     for w in top+extra:picked.append(w)
 # kalıplar: B1–B2 phrasal verb / kolokasyon / kalıp; atasözü ve C1 deyim yok
 MT={'phrasal verb':0.5,'collocation':0.2,'phrase':0.2,'idiom':-0.3,'preposition phrase':0.1,'adverb phrase':0.1,'adjective phrase':0.1}
 multi=[w for w in W if ' ' in w[0].strip() and w[7] in('B1','B2') and w[3] in MT]
 multi=[w for w in multi if zm(w[0])>2.0]
 multi.sort(key=lambda w:-(zm(w[0])+MT[w[3]]+(0.5 if w[7]=='B1' else 0)))
-picked+=multi[:600]
+picked+=multi[:0]   # Odak listesi yalnız kelimeler
 # sıra: B1 → B2 → C1, her seviyede tek kelimeler önce sık olan, kalıplar araya serpiştirilir
-order={'B1':0,'B2':1,'C1':2}
+order={'B1':0,'B2':1,'C1':2,'C2':3}
 seen=set();out=[]
-for lv in('B1','B2','C1'):   # her seviyede kelimeler sıklığa göre, kalıplar orantılı aralıklarla serpiştirilir
+for lv in('B1','B2','C1','C2'):   # her seviyede kelimeler sıklığa göre, kalıplar orantılı aralıklarla serpiştirilir
     ws=sorted({w[0]:w for w in picked if w[7]==lv and ' ' not in w[0].strip()}.values(),key=lambda w:-z(w[0]))
     ps=sorted({w[0]:w for w in picked if w[7]==lv and ' ' in w[0].strip()}.values(),key=lambda w:-zm(w[0]))
     tot=len(ws)+len(ps);i=j=0
@@ -85,7 +86,7 @@ ADMF=os.path.join(os.path.dirname(os.path.abspath(__file__)),'admin.json')   # y
 if os.path.exists(ADMF):
     ADM=json.load(open(ADMF,encoding='utf8'))
     out=[x for x in out if ADM.get(x)!=-1]
-    LI=lambda w:['B1','B2','C1'].index(low[w.lower()][7]) if low.get(w.lower()) and low[w.lower()][7] in('B1','B2','C1') else 0
+    LI=lambda w:['B1','B2','C1','C2'].index(low[w.lower()][7]) if low.get(w.lower()) and low[w.lower()][7] in('B1','B2','C1','C2') else 0
     for k in sorted([k for k,v in ADM.items() if v==1 and k not in out and k.lower() in low],key=lambda k:-z(k)):
         l=LI(k);i=next((j for j,x in enumerate(out) if LI(x)>l or (LI(x)==l and ' ' not in x and z(x)<z(k))),len(out));out.insert(i,k)
 open(os.path.join(ROOT,'core.js'),'w',encoding='utf8').write('/* Çekirdek liste (Odak modu). tools/core/build.py ile üretilir; elle düzenleme. */\nwindow.CORE='+json.dumps(out,ensure_ascii=False,separators=(',',':'))+';\n')
