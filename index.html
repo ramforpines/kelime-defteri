@@ -587,7 +587,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.170.3';
+const APP_VERSION = '4.171.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -782,8 +782,8 @@ function wlvApply(ov){
 }
 async function wlvLoad(){try{if(!sb)return;const r=await sb.from('word_levels').select('word,level');if(r.error)return;const o={};(r.data||[]).forEach(x=>{o[x.word]=x.level});try{localStorage.setItem('kd-wlv',JSON.stringify(o))}catch(e){}wlvApply(o);render()}catch(e){}}
 async function wlvCopy(){   // yönetici: elle verilen seviyeleri panoya kopyala (Claude'a yapıştırmak için)
-  await wlvLoad();const o=WLV.ov,t=JSON.stringify(o);
-  try{await navigator.clipboard.writeText(t);toast(nf(Object.keys(o).length)+' seviye ayarı kopyalandı. Sohbete yapıştırabilirsin.',4000)}catch(e){UI.wlvTxt=t;render();toast('Panoya kopyalanamadı; metni aşağıdan seçip kopyala.',4000)}
+  await wlvLoad();await gcoreLoad();const o=WLV.ov,t=JSON.stringify({lv:o,core:GCORE});
+  try{await navigator.clipboard.writeText(t);toast(nf(Object.keys(o).length)+' seviye, '+nf(Object.keys(GCORE).length)+' Odak düzenlemesi kopyalandı. Sohbete yapıştırabilirsin.',4000)}catch(e){UI.wlvTxt=t;render();toast('Panoya kopyalanamadı; metni aşağıdan seçip kopyala.',4000)}
 }
 async function wlvSet(word,level){
   if(!CLOUD.admin||!sb)return;
@@ -1493,7 +1493,7 @@ function rkAdHtml(){
   <div class="rka-s">KILICINI SAVAŞ SAATİNDE ÇEK!</div></div>`}
 const OD_AD={from:'2026-11-24',to:'2026-11-29'};   // Odak modu afişi: 24-29 Kasım arası her girişte (pazartesi kalkar); yönetici hemen görür
 const odAdDue=()=>{const t=today();return t<=OD_AD.to&&(t>=OD_AD.from||!!CLOUD.admin)};
-const odAdHtml=()=>`<img src="img/ann/odak-4167d.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.583 kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
+const odAdHtml=()=>`<img src="img/ann/odak-4171.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.500+ kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
 const SX_AD={from:'2026-11-10',to:'2026-11-13'};   // Sınav duyurusu: 10-13 Kasım arası her girişte; yönetici hemen görür
 const sxAdDue=()=>{const t=today();return t<=SX_AD.to&&(t>=SX_AD.from||!!CLOUD.admin)};
 function sxAdHtml(){
@@ -1523,7 +1523,7 @@ async function onLogin(user){
   S=load(user.id);
   await checkAccess();
   if(CLOUD.approved===false){render();return}
-  wlvLoad();
+  wlvLoad();gcoreLoad();
   applyReset();
   if(!S.prof.name)S.prof.name=CLOUD.username;
   CLOUD.pulled=false;CLOUD.known=0;
@@ -2989,16 +2989,39 @@ const kindOK=(k,w)=>!k||k==='h'||(k==='i')===isPhr(w);
 const typeOK=w=>kindOK(S.set.kind,w)&&lvOk(S.set.type,posGroup(w));
 /* ---------- Odak modu: çekirdek liste (core.js, tools/core/build.py) ---------- */
 let CORESET=null,COREIX=null,CORESIG='';
-function coreInit(){   // kullanıcıya özel çekirdek: S.fov[kelime] >0 eklendi, <0 çıkarıldı (zaman damgası; cihazlar arası yeni olan kazanır)
-  const F=S.fov||{},ks=Object.keys(F),sig=ks.length+'|'+ks.reduce((a,k)=>a+F[k],0);
+/* yöneticinin herkes için yaptığı Odak ekle/çıkar (Supabase core_edits): GCORE {kelime: 1|-1} */
+let GCORE={},GCORESIG=0;
+try{GCORE=JSON.parse(localStorage.getItem('kd-gcore')||'{}')}catch(e){}
+function gcoreBase(){   // dağıtılan liste + yönetici düzenlemeleri; eklenen kelime kendi seviyesinde sıklığına göre yerine girer
+  const C=(window.CORE||[]).filter(k=>GCORE[k]!==-1),F=window.FREQ||{},LI=w=>Math.max(0,['B1','B2','C1'].indexOf((BYWORD.get(w)||{}).level));
+  const set=new Set(C);
+  Object.keys(GCORE).filter(k=>GCORE[k]===1&&BYWORD.has(k)&&!set.has(k)).sort((a,b)=>(F[b]||0)-(F[a]||0)).forEach(k=>{
+    const l=LI(k),f=F[k]||0;let i=C.findIndex(x=>{const lx=LI(x);return lx>l||(lx===l&&(F[x]||0)<f)});if(i<0)i=C.length;C.splice(i,0,k);set.add(k)});
+  return C;
+}
+async function gcoreLoad(){try{if(!sb)return;const r=await sb.from('core_edits').select('word,op');if(r.error)return;const o={};(r.data||[]).forEach(x=>{o[x.word]=x.op});try{localStorage.setItem('kd-gcore',JSON.stringify(o))}catch(e){}GCORE=o;GCORESIG++;CORESET=null;render()}catch(e){}}
+async function gcoreSet(w,op){
+  const r=await sb.rpc('admin_set_core',{p_word:w,p_op:op});
+  if(r.error){toast('Kaydedilemedi: '+(r.error.message||'hata')+(/function|relation/.test(r.error.message||'')?' (supabase-core.sql çalıştırıldı mı?)':''),5000);return false}
+  const base=(window.CORE||[]).indexOf(w)!==-1;if((op===1&&base)||(op===-1&&!base))delete GCORE[w];else GCORE[w]=op;   // varsayılanla aynıysa kaydı tutma
+  if(!GCORE[w]&&op!==0)sb.rpc('admin_set_core',{p_word:w,p_op:0});
+  try{localStorage.setItem('kd-gcore',JSON.stringify(GCORE))}catch(e){}GCORESIG++;CORESET=null;return true;
+}
+function coreInit(){   // çekirdek = dağıtılan liste + yönetici düzenlemeleri + kullanıcının kendi ekle/çıkarı (S.fov: >0 eklendi, <0 çıkarıldı)
+  const F=S.fov||{},ks=Object.keys(F),sig=GCORESIG+'#'+ks.length+'|'+ks.reduce((a,k)=>a+F[k],0);
   if(CORESET&&sig===CORESIG)return;CORESIG=sig;
-  const C=window.CORE||[],add=ks.filter(k=>F[k]>0&&BYWORD.has(k)&&C.indexOf(k)===-1).sort((a,b)=>F[a]-F[b]);
+  const C=gcoreBase(),add=ks.filter(k=>F[k]>0&&BYWORD.has(k)&&C.indexOf(k)===-1).sort((a,b)=>F[a]-F[b]);
   const L=add.concat(C.filter(k=>!(F[k]<0)));   // kendi eklediklerin listenin başına gelir
   CORESET=new Set(L);COREIX=new Map(L.map((x,i)=>[x,i]));
 }
 const inFocus=w=>{coreInit();return CORESET.has(w)};
 const coreSize=()=>{coreInit();return CORESET.size};
 function toggleFocus(w){S.fov=S.fov||{};S.fov[w]=inFocus(w)?-Date.now():Date.now();save()}
+async function adminFocus(w){   // yönetici: herkesin listesine ekle/çıkar; kendi kişisel kaydı temizlenir
+  const on=inFocus(w),ok=await gcoreSet(w,on?-1:1);if(!ok)return;
+  S.fov=S.fov||{};S.fov[w]=on?-Date.now():Date.now();save();CORESET=null;   // kişisel kayıt da aynı yönde (cihazlar arası birleştirmede ters düşmesin)
+  toast(on?'Herkesin Odak listesinden çıkarıldı.':'Herkesin Odak listesine eklendi.');const dl=$('#dlist');if(dl&&UI.tab==='dict')dl.innerHTML=dictList();else render();
+}
 const focusOn=()=>!!(S.set.focus&&(window.CORE||[]).length);
 function coreStat(){coreInit();let n=0;CORESET.forEach(x=>{if(S.learned[x])n++});return{n,t:CORESET.size}}
 function focusItems(n,level,skip,wt0){   // çekirdek listeden sırayla: önce B1'in en sık kelimeleri; küçük bir pencere karıştırılır
@@ -3575,7 +3598,7 @@ function entryHtml(w,fixed){   // fixed: vize kelime listesi, sözlükteki açı
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
       ${senseHtml(w)}
       ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
-      <dt></dt><dd class="row" style="gap:8px"><button class="say" data-say="${esc(w.word)}" data-pron="${esc(w.pron)}">Dinle</button><button class="say" data-act="sv-w" data-w="${esc(w.word)}" aria-pressed="${isSaved(w.word)}">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>${(window.CORE||[]).length?`<button class="say" data-act="fo-w" data-w="${esc(w.word)}" aria-pressed="${inFocus(w.word)}">${inFocus(w.word)?'🎯 Odakta · çıkar':'🎯 Odağa ekle'}</button>`:''}</dd>${CLOUD.admin&&!w.phr&&!w.gram?`<dt>🛡 Seviye</dt><dd><div class="row" style="gap:4px;flex-wrap:wrap">${LEVELS.map(l=>`<button class="chip" style="padding:3px 10px;min-height:30px" aria-pressed="${w.level===l}" data-act="adm-lv" data-w="${esc(w.word)}" data-v="${l}">${l}</button>`).join('')}${WLV.ov[w.word]?`<button class="chip" style="padding:3px 10px;min-height:30px" data-act="adm-lv" data-w="${esc(w.word)}" data-v="">↺ ${esc(WLV.orig.get(w.word)||'')}</button>`:''}</div><div class="small muted" style="margin-top:2px">${WLV.ov[w.word]?'Elle ayarlandı · varsayılan '+esc(WLV.orig.get(w.word)||''):'Yönetici: dokunarak seviyeyi herkes için değiştir'}</div></dd>`:''}</dl>`:''}</div>`;
+      <dt></dt><dd class="row" style="gap:8px"><button class="say" data-say="${esc(w.word)}" data-pron="${esc(w.pron)}">Dinle</button><button class="say" data-act="sv-w" data-w="${esc(w.word)}" aria-pressed="${isSaved(w.word)}">${isSaved(w.word)?'★ Kaydedildi':'☆ Kaydet'}</button>${(window.CORE||[]).length?`<button class="say" data-act="fo-w" data-w="${esc(w.word)}" aria-pressed="${inFocus(w.word)}">${inFocus(w.word)?'🎯 Odakta · çıkar':'🎯 Odağa ekle'}${CLOUD.admin?' (herkes)':''}</button>`:''}</dd>${CLOUD.admin&&!w.phr&&!w.gram?`<dt>🛡 Seviye</dt><dd><div class="row" style="gap:4px;flex-wrap:wrap">${LEVELS.map(l=>`<button class="chip" style="padding:3px 10px;min-height:30px" aria-pressed="${w.level===l}" data-act="adm-lv" data-w="${esc(w.word)}" data-v="${l}">${l}</button>`).join('')}${WLV.ov[w.word]?`<button class="chip" style="padding:3px 10px;min-height:30px" data-act="adm-lv" data-w="${esc(w.word)}" data-v="">↺ ${esc(WLV.orig.get(w.word)||'')}</button>`:''}</div><div class="small muted" style="margin-top:2px">${WLV.ov[w.word]?'Elle ayarlandı · varsayılan '+esc(WLV.orig.get(w.word)||''):'Yönetici: dokunarak seviyeyi herkes için değiştir'}</div></dd>`:''}</dl>`:''}</div>`;
 }
 function dictList(){
   const f=dictFiltered(),D=UI.dict;
@@ -3603,7 +3626,7 @@ function vDict(){
   return`<div class="top"><h1>Sözlük</h1><span class="muted small">${nf(W.length)} kayıt</span></div>
   <div class="stack"><div class="seg" role="tablist" aria-label="Sözlük bölümü"><button class="chip" role="tab" aria-pressed="${(D.kind||'w')==='w'}" data-act="dk" data-v="w">📖 Kelimeler (${nf(DKN().w)})</button><button class="chip" role="tab" aria-pressed="${D.kind==='i'}" data-act="dk" data-v="i">💬 İfadeler (${nf(DKN().i)})</button></div>
   <div class="small muted" style="margin:-4px 2px 0">${D.kind==='i'?'Phrasal verb, deyim, kolokasyon, kalıp ve atasözleri.':'Tek kelimeler.'}</div>
-  ${CLOUD.admin?`<div class="card small row" style="justify-content:space-between;align-items:center;gap:8px;padding:8px 12px"><span>🛡 Elle ayarlanan seviye: <b>${nf(Object.keys(WLV.ov).length)}</b></span><button class="btn" data-act="wlv-copy" style="min-height:32px;padding:3px 12px;font-size:.82rem">📋 Kopyala</button></div>${UI.wlvTxt?`<textarea readonly style="width:100%;min-height:80px;font-size:.75rem" onclick="this.select()">${esc(UI.wlvTxt)}</textarea>`:''}`:''}
+  ${CLOUD.admin?`<div class="card small row" style="justify-content:space-between;align-items:center;gap:8px;padding:8px 12px"><span>🛡 Seviye ayarı: <b>${nf(Object.keys(WLV.ov).length)}</b> · Odak düzenlemesi: <b>${nf(Object.keys(GCORE).length)}</b></span><button class="btn" data-act="wlv-copy" style="min-height:32px;padding:3px 12px;font-size:.82rem">📋 Kopyala</button></div>${UI.wlvTxt?`<textarea readonly style="width:100%;min-height:80px;font-size:.75rem" onclick="this.select()">${esc(UI.wlvTxt)}</textarea>`:''}`:''}
   <input id="q" class="search" type="search" placeholder="${D.kind==='i'?'İfade, Türkçe karşılık veya tanım ara':'Kelime, Türkçe karşılık veya tanım ara'}" value="${esc(D.q)}" autocomplete="off">
   ${(window.CORE||[]).length?`<div class="seg" role="group" aria-label="Kelime havuzu"><button class="chip" aria-pressed="${!focusOn()}" data-act="focus-set" data-v="0">Tüm sözlük</button><button class="chip" aria-pressed="${focusOn()}" data-act="focus-set" data-v="1">🎯 Odak (${nf(coreSize())})</button></div>`:''}
   <div class="seg" role="group" aria-label="Seviye (birden fazla seçilebilir)">${['Hepsi'].concat(LEVELS).map(v=>`<button class="chip" aria-pressed="${lvOn(D.level,v)}" data-f="level" data-v="${v}">${v}</button>`).join('')}</div>
@@ -6068,7 +6091,7 @@ document.addEventListener('click',async e=>{
     case'wlv-copy':wlvCopy();break;
     case'adm-lv':{const x=g('data-w'),v=g('data-v');if(v&&BYWORD.get(x)&&BYWORD.get(x).level===v)break;wlvSet(x,v);break}
     case'fam-go':{const x=g('data-w');UI.dict.kind=isPhr(x)?'i':'w';UI.tab='dict';UI.dict.q=x;UI.dict.open=x;UI.dict.level='Hepsi';UI.dict.pos='Hepsi';UI.dict.status='Hepsi';UI.dict.limit=40;UI.card=null;render();window.scrollTo(0,0);break}
-    case'fo-w':{const w=g('data-w');toggleFocus(w);toast(inFocus(w)?'Odak listene eklendi.':'Odak listenden çıkarıldı.');const dl=$('#dlist');if(dl&&(UI.tab==='dict'||UI.tab==='saved')){if(focusOn()&&!inFocus(w)&&UI.tab==='dict')UI.dict.open=null;dl.innerHTML=UI.tab==='saved'?savedList():dictList()}else render();break}
+    case'fo-w':{const w=g('data-w');if(CLOUD.admin&&sb){adminFocus(w);break}toggleFocus(w);toast(inFocus(w)?'Odak listene eklendi.':'Odak listenden çıkarıldı.');const dl=$('#dlist');if(dl&&(UI.tab==='dict'||UI.tab==='saved')){if(focusOn()&&!inFocus(w)&&UI.tab==='dict')UI.dict.open=null;dl.innerHTML=UI.tab==='saved'?savedList():dictList()}else render();break}
     case'focus-tg':S.set.focus=!focusOn();save();render();toast(S.set.focus?'Odak modu açık: yeni kelimeler çekirdek listeden gelecek.':'Odak modu kapalı: tüm sözlük.');break;
     case'focus-set':S.set.focus=g('data-v')==='1';UI.dict.limit=40;save();render();break;
     case'start-review':startQuiz('review',false);break;

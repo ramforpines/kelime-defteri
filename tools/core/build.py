@@ -81,6 +81,13 @@ for lv in('B1','B2','C1'):   # her seviyede kelimeler sıklığa göre, kalıpla
         if j<len(ps) and (i>=len(ws) or (j+1)/len(ps)<=(k+1)/tot):w=ps[j];j+=1
         else:w=ws[i];i+=1
         if w[0] not in seen:seen.add(w[0]);out.append(w[0])
+ADMF=os.path.join(os.path.dirname(os.path.abspath(__file__)),'admin.json')   # yöneticinin uygulamada yaptığı Odak ekle/çıkar ({kelime: 1|-1})
+if os.path.exists(ADMF):
+    ADM=json.load(open(ADMF,encoding='utf8'))
+    out=[x for x in out if ADM.get(x)!=-1]
+    LI=lambda w:['B1','B2','C1'].index(low[w.lower()][7]) if low.get(w.lower()) and low[w.lower()][7] in('B1','B2','C1') else 0
+    for k in sorted([k for k,v in ADM.items() if v==1 and k not in out and k.lower() in low],key=lambda k:-z(k)):
+        l=LI(k);i=next((j for j,x in enumerate(out) if LI(x)>l or (LI(x)==l and ' ' not in x and z(x)<z(k))),len(out));out.insert(i,k)
 open(os.path.join(ROOT,'core.js'),'w',encoding='utf8').write('/* Çekirdek liste (Odak modu). tools/core/build.py ile üretilir; elle düzenleme. */\nwindow.CORE='+json.dumps(out,ensure_ascii=False,separators=(',',':'))+';\n')
 import collections
 c=collections.Counter((low[x.lower()][7],' ' in x) for x in out)
