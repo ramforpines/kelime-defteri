@@ -488,6 +488,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/afx-efd193255c.js"></script>
 <script src="d/fam-0ef1775da1.js"></script>
 <script src="d/pat-036daf5dcf.js"></script>
+<script src="d/conf-a4ca76df8c.js"></script>
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
@@ -498,7 +499,7 @@ const DATA=window.WORDS||[];
 (function(){
 'use strict';
 const LEVELS=['A1','A2','B1','B2','C1','C2'];
-const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu','2. anlam','3. anlam','Cümlede anlam','Türkçe cümle → İngilizce','Cümlede yakın anlam','Cümlede karşıt anlam','Kelime türetme','Kullanım kalıbı'];
+const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu','2. anlam','3. anlam','Cümlede anlam','Türkçe cümle → İngilizce','Cümlede yakın anlam','Cümlede karşıt anlam','Kelime türetme','Kullanım kalıbı','Karıştırılan kelime','Yalancı eşdeğer'];
 const REVERSE_RATE=0.4, STREAK_GOAL=3, INTERVALS=[1,3];
 const RMX=new Set(["academic", "academy", "actor", "alarm", "algorithm", "amateur", "ambulance", "ancestors", "animation", "anthropology", "antibiotic", "arena", "assistant", "astronomer", "astronomy", "automobile", "bacteria", "bipolar", "bravo", "cameraman", "capitalism", "captain", "carbon", "cartel", "category", "cement", "ceramic", "chances", "cholesterol", "cinema", "courts", "crater", "crystal", "cultural", "culture", "decorative", "delta", "democratic", "descendants", "diagram", "digital", "diploma", "diplomacy", "diplomat", "dollar", "drama", "dramatic", "dynamic", "economic", "economist", "economy", "ecosystem", "editor", "electron", "electronic", "emissions", "employees", "expenses", "federal", "federation", "fees", "festival", "figures", "formula", "fossil", "funds", "gallery", "gallon", "garments", "genetic", "genome", "geometry", "germs", "graffiti", "hormone", "ideal", "industrial", "industry", "inhabitants", "insults", "jewels", "leftovers", "legends", "lemon", "liberalism", "litre", "machine", "manifesto", "mathematics", "maximum", "media", "median", "melody", "metabolism", "metal", "metre", "microscope", "milligram", "millimetre", "mineral", "minibus", "minimum", "mittens", "module", "molecule", "motivation", "motor", "musical", "mutation", "normally", "nuclear", "obesity", "opera", "orchestra", "organic", "organism", "organizer", "origins", "panel", "panic", "parliament", "patent", "pedal", "piano", "pilot", "placebo", "plastic", "platform", "pollen", "polyester", "principles", "professional", "professor", "profile", "program", "programme", "programmer", "propaganda", "quarantine", "records", "referendum", "reform", "repairs", "reservation", "robot", "robotics", "romantic", "roots", "rotor", "routine", "scenario", "sector", "seminar", "senate", "senator", "sensor", "slogan", "spectrum", "spiral", "standards", "statistics", "strategic", "strategy", "studio", "symbol", "symbolic", "symbolism", "syndrome", "talks", "telescope", "therapist", "therapy", "tourist", "tractor", "traffic", "trauma", "trillion", "tsunami", "tunes", "tunnel", "turbine", "uniform", "virus", "voltage", "weapons", "writings"]);
 const RMW=new Set(["Internet", "TRUE", "a few", "a little", "a lot", "a lot of", "aeroplane", "airplane", "app", "banana", "basketball", "be", "black", "blog", "blue", "brown", "burger", "cafe", "camera", "can't", "centimetre", "championship", "computer", "cop", "curry", "dad", "diesel", "do", "doctor", "donut", "download", "earlier", "eighth", "eightieth", "eighty", "email", "farm animals", "farmers", "ferry", "fifteenth", "fifth", "fiftieth", "fifty", "filled", "film", "fireman", "football", "for", "fortieth", "forty", "fourteenth", "fourth", "from", "giraffe", "go", "golf", "goodbye", "granddad", "grandma", "grandpa", "granny", "gray", "greatest", "green", "grey", "guitar", "hacker", "hamburger", "hashtag", "have", "helicopter", "hello", "hi", "highest", "hotel", "how are you", "how's it going", "in", "ketchup", "kick a ball", "kilogram", "kilometre", "laptop", "lemonade", "like this", "lips", "mango", "marathon", "menu", "metro", "million", "mister", "mom", "motorbike", "movie theater", "muffin", "mum", "must", "nearer", "nearest", "newest", "next day", "ninetieth", "ninety", "ninth", "no thanks", "noodles", "novels", "of", "okay", "on", "one more", "one time", "online", "ow", "paid", "parents", "password", "pasta", "pc", "penguin", "pink", "pizza", "plants", "please", "podcast", "policeman", "pony", "protein", "purple", "puzzle", "radio", "red", "relatives", "ride a bus", "rules", "sandwich", "seen", "selfie", "seventh", "seventieth", "seventy", "shampoo", "should", "singers", "sir", "sixth", "sixtieth", "sixty", "ski", "sleeping", "small child", "small group", "small lake", "smartphone", "so", "soda", "soldiers", "spaghetti", "spam", "stadium", "started", "steps", "stories", "subway", "sushi", "sweets", "taco", "taken", "taxi", "telephone", "television", "tell me", "tennis", "tenth", "thank you", "thanks", "things", "third", "thirteenth", "thirtieth", "thirty", "time of year", "to", "tomato sauce", "tournament", "tram", "tuna", "tv", "twelfth", "twelve months", "twentieth", "two times", "understood", "up", "upload", "username", "vegan", "very healthy", "very much", "very thankful", "video", "visa", "vitamin", "waffle", "watching", "what number", "what price", "what's the price", "what's your job", "white", "why", "with", "woods", "written", "yeah", "years", "yellow", "yes", "yoga", "yogurt", "you", "yummy", "zebra", "zero"]);
@@ -584,7 +585,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.166.2';
+const APP_VERSION = '4.166.3';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2416,7 +2417,9 @@ function applicable(w){
   if(MULTI.indexOf(g)!==-1&&blankIdx(w).length)f.push(8);
   if(g==='preposition phrase'&&prepBlank(w))f.push(9);
   if(famOk(w))f.push(28);
-  if(patOf(w).length)f.push(29);   // kullanım kalıbı (enjoy + -ing, interested in): öğrenilme şartı değil   // kelime türetme (sınav tarzı): öğrenilme şartı değil (>=24)
+  if(patOf(w).length)f.push(29);
+  if(confOf(w).length)f.push(30);   // karıştırılan kelimeler (borrow/lend)
+  if(ffOf(w))f.push(31);   // yalancı eşdeğer (actually ≠ aktüel)   // kullanım kalıbı (enjoy + -ing, interested in): öğrenilme şartı değil   // kelime türetme (sınav tarzı): öğrenilme şartı değil (>=24)
   if(g==='prefix/suffix'&&(affixTok(w)||(window.AFX||{})[String(w.word).trim()]))f.push(10);
   if((MULTI.indexOf(g)!==-1||g==='phrasal verb')&&w.def&&wtoks(w).length>=2)f.push(11);
   if(senseOk(w,0))f.push(22);
@@ -2490,6 +2493,25 @@ function patQ(t){
 function patHtml(w){
   const L=patOf(w);if(!L.length)return'';
   return`<dt style="grid-column:1/-1;margin-top:4px">Kullanım kalıbı</dt><dd style="grid-column:1/-1"><div class="stack" style="gap:6px">${L.map(([pat,tr,ex])=>{const x=patSplit(ex);return`<div style="background:var(--surface2);border-radius:10px;padding:8px 10px"><div><b lang="en">${esc(pat)}</b> <span class="muted small">· ${esc(tr)}</span></div><div class="small" lang="en"><i>${esc(x.pre)}<b>${esc(x.o[0])}</b>${esc(x.post)}</i></div></div>`}).join('')}</div></dd>`;
+}
+/* ---------- karıştırılan kelimeler ve yalancı eşdeğerler (conf.js, tools/conf) ---------- */
+const confOf=w=>((window.CONF||{}).g||[]).filter(g=>g.w.indexOf(String(w.word||w))!==-1);
+const ffOf=w=>((window.CONF||{}).f||{})[String(w.word||w)]||null;
+function confQ(t){
+  const G=confOf(t);if(!G.length)return null;
+  const g=G[Math.floor(Math.random()*G.length)],ex=g.s[Math.floor(Math.random()*g.s.length)],x=patSplit(ex);
+  return{question:'Boşluğa hangisi gelmeli?\n"'+x.pre+'_____'+x.post+'"',correct:x.o[0],distractors:x.o.slice(1),note:'<b lang="en">'+esc(g.w.join(' / '))+'</b><br>'+esc(g.e)+'<br><i lang="en">'+esc(x.pre)+'<b>'+esc(x.o[0])+'</b>'+esc(x.post)+'</i>'};
+}
+function ffQ(t){
+  const f=ffOf(t);if(!f)return null;
+  const others=Object.keys(window.CONF.f).filter(k=>k!==t.word).map(k=>window.CONF.f[k].t);
+  const d=f.x.slice(0,2);if(d.length<2)d.push(shuffle(others)[0]);
+  return{question:'Dikkat, yalancı eşdeğer!\n"'+t.word+'" ne anlama gelir?',correct:f.t,distractors:d,note:'<b lang="en">'+esc(t.word)+'</b> = '+esc(f.t)+'<br>'+esc(f.n)};
+}
+function confHtml(w){
+  const G=confOf(w),f=ffOf(w);if(!G.length&&!f)return'';
+  const go=x=>BYWORD.has(x)?`<button type="button" class="chip" data-act="fam-go" data-w="${esc(x)}" style="padding:2px 10px">${esc(x)}</button>`:`<b>${esc(x)}</b>`;
+  return`<dt style="grid-column:1/-1;margin-top:4px">⚠️ Dikkat</dt><dd style="grid-column:1/-1"><div class="stack" style="gap:6px">${f?`<div style="background:var(--surface2);border-left:4px solid var(--warn,#e0a100);border-radius:10px;padding:8px 10px"><div><b>Yalancı eşdeğer:</b> <span lang="en">${esc(w.word)}</span> = ${esc(f.t)}, <u>${esc(f.x[0])}</u> değil.</div><div class="muted small">${esc(f.n)}</div></div>`:''}${G.map(g=>{const ex=patSplit(g.s[0]);return`<div style="background:var(--surface2);border-left:4px solid var(--accent);border-radius:10px;padding:8px 10px"><div class="row" style="gap:6px;flex-wrap:wrap;align-items:center"><span class="small muted">Karıştırma:</span>${g.w.map(go).join('')}</div><div class="small" style="margin-top:4px">${esc(g.e)}</div><div class="small" lang="en" style="margin-top:2px"><i>${esc(ex.pre)}<b>${esc(ex.o[0])}</b>${esc(ex.post)}</i></div></div>`}).join('')}</div></dd>`;
 }
 function famHtml(w){
   const F=famOf(w).filter(x=>x!==w.word);if(!F.length)return'';
@@ -2725,6 +2747,8 @@ function buildQuestionRaw(t,k,opts){
   else if(k===10)return affixQ(t);
   else if(k===28)return famQ(t);
   else if(k===29)return patQ(t);
+  else if(k===30)return confQ(t);
+  else if(k===31)return ffQ(t);
   else if(k===11)return phraseDefQ(t);
   else if(k===22)return senseQ(t,0);
   else if(k===23)return senseQ(t,1);
@@ -3448,7 +3472,7 @@ function entryHtml(w,fixed){   // fixed: vize kelime listesi, sözlükteki açı
   return`<div class="entry"><button class="head" ${fixed?'':`data-act="toggle" data-w="${esc(w.word)}" `}aria-expanded="${open}">
     <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def||(w.phr?w.tr:''))}</span></span>
     <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
-    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${w.phr?'<br><span class="extr">('+esc(w.phr.ex[1])+')</span>':exTr(w)}</dd>${exMore(w)}${patHtml(w)}${afxHtml(w)}${famHtml(w)}
+    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${w.phr?'<br><span class="extr">('+esc(w.phr.ex[1])+')</span>':exTr(w)}</dd>${exMore(w)}${confHtml(w)}${patHtml(w)}${afxHtml(w)}${famHtml(w)}
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
       ${senseHtml(w)}
       ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
