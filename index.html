@@ -415,7 +415,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 
 <!--ASSETS: tools/release/assets.py üretir, elle düzenleme-->
 <script src="d/w00-93c0d0b498.js"></script>
-<script src="d/w01-c918f99971.js"></script>
+<script src="d/w01-9a9ff520f8.js"></script>
 <script src="d/w02-17b5de7f95.js"></script>
 <script src="d/w03-fee24dee49.js"></script>
 <script src="d/w04-386edea400.js"></script>
@@ -484,7 +484,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-e6d9ddfc2f.js", "sinav.js": "d/sinav-7820b1f81c.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-0d28738d9a.js", "sinav.js": "d/sinav-7820b1f81c.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -577,7 +577,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.164.1';
+const APP_VERSION = '4.164.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2117,7 +2117,7 @@ const tl=x=>toks(x).map(y=>y.toLowerCase());
 function nb2(list){const out=new Set();for(const x of list){out.add(x);const n=ADJ.get(x);if(n)n.forEach(y=>out.add(y))}return out}
 const XTR={mediation:['uzlaş','anlaş','barış']};   // raporlardan: bu kelimenin Türkçe şıkkında bulunamayacak parçalar
 const xtrBan=(t,txt)=>{const b=XTR[String(t.word).toLowerCase()];return !!b&&b.some(x=>String(txt||'').toLowerCase().indexOf(x)!==-1)};
-const XSYN={surpass:['improve','enhance','better'],tackle:['resolve','solve','handle'],mindful:['careful','cautious','considerate','thoughtful','heedful','conscious','wary'],frightening:['scared','afraid','frightened','terrified','fearful','terrifying','alarming'],opposing:['against','opposed','hostile','contrary','opposite','conflicting']};   // raporlardan: bu kelimeler için şık olamayacak yakın anlamlılar
+const XSYN={surpass:['improve','enhance','better'],tackle:['resolve','solve','handle'],mindful:['careful','cautious','considerate','thoughtful','heedful','conscious','wary'],frightening:['scared','afraid','frightened','terrified','fearful','terrifying','alarming'],matching:['alike','similar','same','identical','equal','like','twin'],opposing:['against','opposed','hostile','contrary','opposite','conflicting']};   // raporlardan: bu kelimeler için şık olamayacak yakın anlamlılar
 function validSyn(t){adjInit();return nb2([String(t.word).toLowerCase()].concat(tl(t.syn),XSYN[String(t.word).toLowerCase()]||[]))}   // t'nin gerçekten eş anlamlı sayılabilecek kelimeleri
 function validAnt(t){   // t'nin gerçekten zıt anlamlı sayılabilecek kelimeleri (eş anlamlılarının zıtları dahil)
   adjInit();const base=nb2([String(t.word).toLowerCase()].concat(tl(t.syn))),s=new Set(tl(t.ant));
@@ -2424,12 +2424,12 @@ function proverbQ(t){
   return{question:'Atasözünü tamamla:\n"'+head+' …"\n(Anlamı: '+parts(t.tr)[0]+')',correct:tail,distractors:d};
 }
 function missingQ(t){
-  if(/^one of (those|these)\b/i.test(String(t.word)))return null;   // 'one of those ___': her isim uyar, şıklar belirsiz kalır (kullanıcı raporu)
   const idx=blankIdx(t);if(!idx.length)return null;
   const T=wtoks(t),i=idx[Math.floor(Math.random()*idx.length)],right=cleanT(T[i]).toLowerCase();
   const own=new Set(T.map(x=>cleanT(x).toLowerCase()));
   const pool=[];sameGroupWords(t).forEach(r=>{blankIdx(r).forEach(j=>{const c=cleanT(wtoks(r)[j]).toLowerCase();if(!own.has(c))pool.push(c)})});
-  const d=shuffle(Array.from(new Set(pool))).slice(0,3);
+  const open=/^(those|these)$/i.test(cleanT(T[i-1]||''));   // 'one of those ___': çoğul isim her yere uyar, çoğul biçimli şık konmaz (rapor)
+  const d=shuffle(Array.from(new Set(pool)).filter(x=>!open||!/s$/.test(x))).slice(0,3);
   if(d.length<3)return null;
   const shown=T.map((x,j)=>j===i?'_____'+(/[.,;:!?]+$/.test(x)?x.match(/[.,;:!?]+$/)[0]:''):x).join(' ');
   return{question:'Eksik kelimeyi bul:\n"'+shown+'"\n(Anlamı: '+parts(t.tr)[0]+')',correct:right,distractors:d};
@@ -2606,7 +2606,7 @@ function senseQ1(t,s,st){
   return{question:b.question+'\n(Anlamı: '+ct+')',correct:b.correct,distractors:b.distractors};
 }
 /* Raporlanan hatalı şıklar: bu kelimenin sorularında şık olarak çıkmaz (cümleye de uyabilen şıklar). Kullanıcı raporlarına göre büyür */
-const BAN_OPT={motivation:['guidance','devotion'],shift:['vary, oscillate','rotate','suppress, restrain']};
+const BAN_OPT={'hit the roof':['furious','angry','enraged','livid','irritated'],motivation:['guidance','devotion'],shift:['vary, oscillate','rotate','suppress, restrain']};
 function buildQuestion(t,k,opts){
   const ban=BAN_OPT[String(t.word).toLowerCase()];
   for(let i=0;i<8;i++){
