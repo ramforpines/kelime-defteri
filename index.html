@@ -433,7 +433,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/w13-9a3ef38e89.js"></script>
 <script src="d/w14-e46dd034e9.js"></script>
 <script src="d/w15-feb063e2c3.js"></script>
-<script src="d/w16-3cda549019.js"></script>
+<script src="d/w16-fe7ffa2331.js"></script>
 <script src="d/grammar-24c5272e6a.js"></script>
 <script src="d/x00-f86d17b433.js"></script>
 <script src="d/x01-ef03f3761c.js"></script>
@@ -485,7 +485,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/s15-7d54860c38.js"></script>
 <script src="d/gloss-6e4fa53eb6.js"></script>
 <script src="d/core-0e796929af.js"></script>
-<script src="d/afx-bef5505aa8.js"></script>
+<script src="d/afx-efd193255c.js"></script>
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
@@ -582,7 +582,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.165.5';
+const APP_VERSION = '4.165.6';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -2413,7 +2413,7 @@ function applicable(w){
   if(g==='proverb'&&wtoks(w).length>=5)f.push(7);
   if(MULTI.indexOf(g)!==-1&&blankIdx(w).length)f.push(8);
   if(g==='preposition phrase'&&prepBlank(w))f.push(9);
-  if(g==='prefix/suffix'&&affixTok(w))f.push(10);
+  if(g==='prefix/suffix'&&(affixTok(w)||(window.AFX||{})[String(w.word).trim()]))f.push(10);
   if((MULTI.indexOf(g)!==-1||g==='phrasal verb')&&w.def&&wtoks(w).length>=2)f.push(11);
   if(senseOk(w,0))f.push(22);
   if(senseOk(w,1))f.push(23);
@@ -2453,7 +2453,23 @@ function prepQ(t){
 }
 let AFFSET=null;
 function affSet(){if(AFFSET)return AFFSET;AFFSET=new Set();for(const r of W){AFFSET.add(String(r.word).toLowerCase().replace(/[^a-z]/g,''));if(r.ex)(r.ex.toLowerCase().match(/[a-z]+(?:-[a-z]+)*/g)||[]).forEach(x=>AFFSET.add(x.replace(/-/g,'')))}return AFFSET}
+function affixQ2(t){   // afx.js: eki alan sık kelimeden: "_____night (gece yarısı)" → mid-
+  const L=(window.AFX||{})[String(t.word).trim()];if(!L||!L.length)return null;
+  const tw=String(t.word).trim(),suf=tw[0]==='-',a=tw.replace(/^-|-$/g,'').toLowerCase(),AS=affSet();
+  for(const [x,tr] of shuffle(L.slice())){
+    const lx=x.toLowerCase();let stem;
+    if(suf){if(!lx.endsWith(a))continue;stem=x.slice(0,x.length-a.length)}else{if(!lx.startsWith(a))continue;stem=x.slice(a.length)}
+    const hy=!suf&&stem[0]==='-';const bare=stem.replace(/^-|-$/g,'');if(bare.length<3)continue;
+    const made=r=>{const y=String(r.word).trim().replace(/^-|-$/g,'').toLowerCase();return(suf?bare+y:y+bare).replace(/-/g,'')};
+    const others=W.filter(r=>r!==t&&posGroup(r)==='prefix/suffix'&&(String(r.word).trim()[0]==='-')===suf&&!AS.has(made(r))&&!Object.values(window.AFX||{}).some(l=>l.some(z=>z[0].toLowerCase().replace(/-/g,'')===made(r)))).map(r=>r.word);
+    const d=shuffle(others).slice(0,3);if(d.length<3)continue;
+    const shown=suf?stem+'_____':'_____'+(hy?stem:stem);
+    return{question:'Boşluğa hangi '+(suf?'sonek':'önek')+' gelir?\n"'+shown+'"\n(Anlamı: '+tr+')',correct:t.word,distractors:d};
+  }
+  return null;
+}
 function affixQ(t){
+  if((window.AFX||{})[String(t.word).trim()]&&(Math.random()<0.5||!affixTok(t))){const q=affixQ2(t);if(q)return q}
   const a=affixTok(t);if(!a)return null;
   const others=W.filter(r=>r!==t&&posGroup(r)==='prefix/suffix'&&String(r.word).trim()[0]==='-'===a.suf&&!(a.suf?a.tok.replace(/-/g,'').endsWith(String(r.word).replace(/-/g,'').toLowerCase()):a.tok.replace(/-/g,'').startsWith(String(r.word).replace(/-/g,'').toLowerCase()))).map(r=>r.word);
   const stem0=a.suf?a.tok.slice(0,a.tok.length-a.a.length):a.tok.slice(a.a.length),AS=affSet();
