@@ -586,7 +586,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.167.0';
+const APP_VERSION = '4.167.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1062,6 +1062,21 @@ function mergeDay(x,y){
   Object.keys(ga.l).forEach(k=>{const o=l[k]||(l[k]=[0,0]);o[0]+=ga.l[k][0];o[1]+=ga.l[k][1]});
   z.l=l;z.ev=U;return z}
 /* iki cihazın durumunu birleştirir: hiçbir cihazın ilerlemesi kaybolmaz */
+/* ---------- cihaz başına sayaçlar: her cihaz yalnız kendi dilimini artırır; birleştirmede dilim başına büyük olan alınır, toplam = dilimlerin toplamı (veri kaybı yok) ---------- */
+const DEV=(()=>{try{let d=localStorage.getItem('kd-dev');if(!d){d='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);localStorage.setItem('kd-dev',d)}return d}catch(e){return'd'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}})();
+function deepMax(a,b){   // yapraklar [doğru, yanlış] dizileri
+  if(Array.isArray(a)||Array.isArray(b)){const x=a||[0,0],y=b||[0,0];return[Math.max(x[0]|0,y[0]|0),Math.max(x[1]|0,y[1]|0)]}
+  const r={};new Set(Object.keys(a||{}).concat(Object.keys(b||{}))).forEach(k=>{r[k]=deepMax((a||{})[k],(b||{})[k])});return r;
+}
+function deepSum(slots){const r={};const add=(t,s)=>{Object.keys(s||{}).forEach(k=>{const v=s[k];if(Array.isArray(v)){const x=t[k]||(t[k]=[0,0]);x[0]+=v[0]|0;x[1]+=v[1]|0}else add(t[k]||(t[k]={}),v)})};Object.keys(slots||{}).forEach(d=>add(r,slots[d]));return r}
+function devMig(x){   // eski biçim: tek sayaç (lv, st) -> 'base' dilimi
+  if(!x)return x;
+  if(!x.lvd)x.lvd={base:JSON.parse(JSON.stringify(x.lv||{}))};
+  if(!x.std&&x.st)x.std={base:JSON.parse(JSON.stringify(x.st))};
+  return x;
+}
+function devSync(x){if(x.lvd)x.lv=deepSum(x.lvd);if(x.std){const t=deepSum(x.std);x.st={f:t.f||{},p:t.p||{}}}return x}
+function lvAdd(l,ok){devMig(S);const q=S.lv[l]||(S.lv[l]=[0,0]);q[ok?0:1]++;const d=S.lvd[DEV]||(S.lvd[DEV]={}),x=d[l]||(d[l]=[0,0]);x[ok?0:1]++}
 function mergeStates(a,b){
   if(b.rs&&b.rs>(a.upd||0)&&b.rs>(a.rs||0))return normState(b);   // buluttaki açık sıfırlama, yerel son değişiklikten yeni
   if(a.rs&&a.rs>(b.upd||0)&&a.rs>(b.rs||0))return normState(a);
@@ -1082,8 +1097,7 @@ function mergeStates(a,b){
     let z;
     if(x.ev||y.ev)z=mergeDay(x,y);else if((y.a|0)>(x.a|0))z=y;else return;
     m.tp=Math.max(0,(m.tp||0)+nt(z)-nt(x));m.days[k]=z});   // gün başka cihazdan alınırsa/birleşirse farkı toplam puana da yansıt   // gün başka cihazdan alınırsa farkı toplam puana da yansıt
-  {const a2=ot.st||{},b2=m.st||{},r={f:{},p:{}};['f','p'].forEach(g=>{const A=a2[g]||{},B=b2[g]||{};new Set(Object.keys(A).concat(Object.keys(B))).forEach(k=>{const x=A[k]||[0,0],y=B[k]||[0,0];r[g][k]=[Math.max(x[0],y[0]),Math.max(x[1],y[1])]})});if(ot.st||m.st)m.st=r}   // ayrıntılı istatistik: büyük olan
-  Object.keys(ot.lv||{}).forEach(k=>{const x=m.lv[k],y=ot.lv[k];m.lv[k]=x?[Math.max(x[0]|0,y[0]|0),Math.max(x[1]|0,y[1]|0)]:y});
+  devMig(m);devMig(ot);m.lvd=deepMax(m.lvd,ot.lvd);if(m.std||ot.std)m.std=deepMax(m.std||{},ot.std||{});devSync(m);   // seviye ve tür istatistiği: cihaz dilimleri birleşir, toplam yeniden hesaplanır
   m.dl=Object.assign({},ot.dl||{},m.dl||{});Object.keys(ot.dl||{}).forEach(k=>{const x=m.dl[k],y=ot.dl[k];if(x&&y){x.s=x.s||y.s;x.p=x.p||y.p;x.rf=x.rf||y.rf}});
   {const ex=Object.assign({},ot.ex||{});Object.keys(m.ex||{}).forEach(k=>{const a=m.ex[k],b=ex[k];ex[k]=!b||(a.b|0)>(b.b|0)||((a.b|0)===(b.b|0)&&(a.d||'')>(b.d||''))?a:b});m.ex=ex}
   {const c=JSON.parse(JSON.stringify(ot.exc||{}));Object.keys(m.exc||{}).forEach(k=>{c[k]=Object.assign(c[k]||{},m.exc[k])});m.exc=c}
@@ -3087,16 +3101,16 @@ const stKeyF=it=>it.f>=200?'g':String(it.f);
 const stKeyP=w=>w.gram?'Gramer':w.phr?'Kalıp':posGroup(w);
 function stAdd(it,ok){
   if(EXNOST||!it||!it.w||it.noW)return;
-  const st=S.st||(S.st={f:{},p:{}});
+  stInit();const st=S.st,sd=S.std[DEV]||(S.std[DEV]={f:{},p:{}});
   const a=(o,k)=>{const x=o[k]||(o[k]=[0,0]);x[ok?0:1]++};
-  a(st.f,stKeyF(it));try{a(st.p,stKeyP(it.w))}catch(e){}
+  const fk=stKeyF(it);a(st.f,fk);a(sd.f,fk);try{const pk=stKeyP(it.w);a(st.p,pk);a(sd.p,pk)}catch(e){}
 }
 function stInit(){   // ilk açılışta son 21 günün cevap kayıtlarından başlat
-  if(S.st)return;const st={f:{},p:{}};
+  if(S.std){if(!S.st)devSync(S);return}if(S.st){devMig(S);return}const st={f:{},p:{}};
   Object.keys(S.days||{}).forEach(d=>{const ev=S.days[d].ev||{};Object.keys(ev).forEach(k=>{const e=ev[k];if(!e||e.t!=='q')return;const p=k.split('|');if(p.length<4)return;const f=+p[p.length-2],wd=p.slice(1,-2).join('|'),w=BYWORD.get(wd);
     const fk=f>=200?'g':String(f),x=st.f[fk]||(st.f[fk]=[0,0]);x[e.ok?0:1]++;
     if(w){const pk=f>=200?'Gramer':f>=100?'Kalıp':posGroup(w),y=st.p[pk]||(st.p[pk]=[0,0]);y[e.ok?0:1]++}})});
-  S.st=st;
+  S.std={base:st};S.st=JSON.parse(JSON.stringify(st));   // geçmiş 21 gün herkes için aynı olaydan türetilir: 'base' dilimi
 }
 function applyAnswer(it,ok,ua,qz,gate){
   try{stAdd(it,ok)}catch(e){}
@@ -3114,8 +3128,7 @@ function applyAnswerCore(it,ok,ua,qz,gate){
   if(!EXNOST){
   if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
   d.a++;if(ok)d.c++;
-  const lv=S.lv[w.level]||(S.lv[w.level]=[0,0]);
-  lv[ok?0:1]++;
+  lvAdd(w.level,ok);
   const dl=d.l||(d.l={});const dv=dl[w.level]||(dl[w.level]=[0,0]);dv[0]++;if(ok)dv[1]++;}
   const cf=COEF[w.level]||1,bq=cf*(TYPEC[it.f]||1);
   let pt=0;
@@ -3744,7 +3757,7 @@ function examOne(it,qz,first,al){
         if(!EXNOST){
         if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
         d.a++;if(ok)d.c++;
-        const lv=S.lv[lvn]||(S.lv[lvn]=[0,0]);lv[ok?0:1]++;
+        lvAdd(lvn,ok);
         const dl=d.l||(d.l={});const dv=dl[lvn]||(dl[lvn]=[0,0]);dv[0]++;if(ok)dv[1]++;
         CUR_EV=evAdd(d,evKey(d,'x|'+qz.exam+'|'+it.question.slice(0,40)),{t:'q',ok:ok?1:0,lv:lvn,pts:0});}
         if(!EXNOPT){
