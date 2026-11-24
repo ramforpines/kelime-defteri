@@ -484,7 +484,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/s14-9e51e48750.js"></script>
 <script src="d/s15-7d54860c38.js"></script>
 <script src="d/gloss-6e4fa53eb6.js"></script>
-<script src="d/core-f8dc754fdd.js"></script>
+<script src="d/core-cacc359a08.js"></script>
 <script src="d/afx-efd193255c.js"></script>
 <script src="d/fam-0ef1775da1.js"></script>
 <script src="d/pat-036daf5dcf.js"></script>
@@ -587,7 +587,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.171.5';
+const APP_VERSION = '4.172.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1493,7 +1493,7 @@ function rkAdHtml(){
   <div class="rka-s">KILICINI SAVAŞ SAATİNDE ÇEK!</div></div>`}
 const OD_AD={from:'2026-11-24',to:'2026-11-29'};   // Odak modu afişi: 24-29 Kasım arası her girişte (pazartesi kalkar); yönetici hemen görür
 const odAdDue=()=>{const t=today();return t<=OD_AD.to&&(t>=OD_AD.from||!!CLOUD.admin)};
-const odAdHtml=()=>`<img src="img/ann/odak-4171b.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.500+ kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
+const odAdHtml=()=>`<img src="img/ann/odak-4172.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1, B2 ve C1 seviyesinden seçilmiş 3.500+ kelime; listeyi kendine göre düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
 const SX_AD={from:'2026-11-10',to:'2026-11-13'};   // Sınav duyurusu: 10-13 Kasım arası her girişte; yönetici hemen görür
 const sxAdDue=()=>{const t=today();return t<=SX_AD.to&&(t>=SX_AD.from||!!CLOUD.admin)};
 function sxAdHtml(){
@@ -1924,14 +1924,14 @@ function vHelp(){
     'Bugün sekmesinde günün hedefini ve "Bugünün testini başlat" düğmesini görürsün. Her gün birkaç test çözmen yeter.',
     'Çalışma → <b>Test</b>: soru sayısını (10–40), seviyeyi (A1–C2, birden fazla seçilebilir) ve kelime türünü (birden fazla seçilebilir) seçip istediğin zaman test çözersin.',
     'Çalışma → <b>Sözlük</b>: '+nf(Math.floor(W.length/1000)*1000)+'\'den fazla kayıt; <b>Kelimeler</b> ve <b>İfadeler</b> (phrasal verb, deyim, kolokasyon) diye iki sekme. Kelimeye dokunarak açarsın.',
-    '<b>🎯 Odak modu</b>: 16 binden fazla kayıt yerine B1–B2 ağırlıklı 3.500+ kelime ve kalıptan oluşan çekirdek listeyle çalış. Bugün sayfasındaki Odak kartından açarsın.',
+    '<b>🎯 Odak modu</b>: 16 binden fazla kayıt yerine B1, B2 ve C1\'den seçilmiş 3.500+ kelimelik listeyle çalış; listeyi kendine göre düzenleyebilirsin. Bugün sayfasındaki Odak kartından açarsın.',
     'İlk girişte yönetici onayı gerekebilir. Onaylanınca sıralamaya girer, sohbete ve düelloya katılırsın.',
     'İlerlemen hesabına kaydedilir. Başka cihazda aynı kullanıcı adı ve şifreyle girince kaldığın yerden devam edersin.']),true)}
   ${sec('🎯 Odak modu',li([
-    '<b>Ne işe yarar</b>: sözlükteki her şeyi değil, B1–B2 seviyesinde en çok işine yarayacak '+nf(coreSize())+' kelime ve kalıbı öğrenmen için seçilmiş bir liste. En sık kullanılan kelimelerden oluşur.',
+    '<b>Ne işe yarar</b>: sözlükteki her şeyi değil, en çok işine yarayacak kelimeleri öğrenmen için seçilmiş bir liste: B1\'den 1.300, B2\'den 1.300, C1\'den 900 ve C2\'den 99 kelime. En sık kullanılan kelimelerden oluşur.',
     '<b>Açmak / kapatmak</b>: Bugün sayfasındaki 🎯 Odak modu kartından, ya da Sözlük ve Test ekranındaki "Tüm sözlük / 🎯 Odak" seçiminden. Ayar her yerde ortaktır ve hesabına kaydedilir. Varsayılan kapalıdır.',
     '<b>Açıkken</b>: Bugünün testindeki ve Test sekmesindeki yeni kelimeler yalnız bu listeden, karışık gelir. Tekrar, Yanlış defteri ve düello değişmez; sözlükte her şey aranabilir.',
-    '<b>Kendi listen</b>: sözlükte kelimeyi açınca "🎯 Odağa ekle" ya da "🎯 Odakta · çıkar" düğmesi vardır. Bu değişiklik yalnız seni etkiler ve hesabına kaydedilir.',
+    '<b>Listeyi sen düzenle</b>: liste senindir; istemediğin kelimeyi çıkar, öğrenmek istediğini ekle. Sözlükte kelimeyi açınca "🎯 Odağa ekle" ya da "🎯 Odakta · çıkar" düğmesi vardır. Bu değişiklik yalnız seni etkiler ve hesabına kaydedilir.',
     '<b>İlerleme</b>: Bugün sayfasındaki Odak kartında ve Ben → İstatistik\'te seviye seviye ne kadarını öğrendiğini ve bu hızla kalanın kaç gün süreceğini görürsün.']))}
   ${sec('📗 Sözlük ve kelime kartları',li([
     '<b>Kelimeler / İfadeler</b>: Sözlük\'ün üstündeki iki sekme. İfadeler\'de phrasal verb, deyim, kolokasyon, kalıp ve atasözleri bulunur. Aradığın şey öbür sekmede de varsa listenin altında "… sonuç daha" düğmesi çıkar.',
@@ -3533,7 +3533,7 @@ function focusCard(){
   if(!(window.CORE||[]).length)return'';
   const on=focusOn(),c=coreStat(),p=c.t?c.n/c.t:0;
   return`<div class="card stack" style="${on?'border-color:var(--accent)':''}"><div class="row" style="justify-content:space-between;align-items:center;gap:10px">
-    <div><b>🎯 Odak modu</b> ${on?'<span class="badge ok">Açık</span>':'<span class="badge">Kapalı</span>'}<div class="muted small">B1–B2 ağırlıklı ${nf(c.t)} kelime ve kalıptan oluşan çekirdek liste. Açıkken yeni kelimeler yalnız bu listeden gelir. Sözlükte her kelimenin altındaki "🎯" düğmesiyle listene kelime ekleyip çıkarabilirsin; yalnız seni etkiler.</div></div>
+    <div><b>🎯 Odak modu</b> ${on?'<span class="badge ok">Açık</span>':'<span class="badge">Kapalı</span>'}<div class="muted small">B1, B2 ve C1'den seçilmiş ${nf(c.t)} kelimelik liste. <b>Listeyi sen düzenleyebilirsin</b>: sözlükte kelimenin altındaki 🎯 düğmesiyle ekle ya da çıkar. Açıkken yeni kelimeler yalnız bu listeden gelir.</div></div>
     <button class="btn ${on?'':'primary'}" data-act="focus-tg" style="flex:0 0 auto">${on?'Kapat':'Aç'}</button></div>
     <div><div class="row small" style="justify-content:space-between"><span>Çekirdekten öğrendiğin</span><b>${nf(c.n)} / ${nf(c.t)}</b></div>
     <div style="height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-top:4px"><div style="height:100%;width:${Math.round(p*1000)/10}%;background:var(--accent)"></div></div></div></div>`;
@@ -4620,7 +4620,7 @@ function vStatsMore(){
   wk.forEach(([k,r])=>tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)"><b>${esc(stLab(k))}</b> sorularında başarın %${Math.round(r*100)}; bu türe dikkat et.</div>`));
   if(due)tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)">Tekrar zamanı gelmiş <b>${nf(due)}</b> kelime var; Bugünün testi bunları öne alır.</div>`);
   if(wl>=20)tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)">Yanlış defterinde <b>${nf(wl)}</b> soru birikti; Tekrar → Yanlış defteri'nden temizle.</div>`);
-  if(!focusOn()&&(window.CORE||[]).length)tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)">B1–B2'ye odaklanmak için Bugün sayfasından <b>🎯 Odak modu</b>'nu açabilirsin.</div>`);
+  if(!focusOn()&&(window.CORE||[]).length)tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)">B1, B2 ve C1'in en gerekli kelimelerine odaklanmak için Bugün sayfasından <b>🎯 Odak modu</b>'nu açabilirsin.</div>`);
   tips.push(`<div class="small muted" style="padding:6px 0;border-top:1px solid var(--line)">Günlük hedefin ${nf(g)} doğru. Son 14 günün ortalaması ${nf(Math.round(Object.keys(S.days).filter(d=>d>=addDays(today(),-13)).reduce((a,d)=>a+(S.days[d].c|0),0)/14))} doğru.</div>`);
   return`<div class="card stack"><h2>📋 Çalışma planı önerisi</h2><div class="small muted">İstatistiklerine göre öncelik sırası.</div>${tips.join('')}</div>${core}
   <div class="card"><h2 style="margin-bottom:4px">Soru türlerine göre başarı</h2><div class="small muted" style="margin-bottom:4px">Gruba dokununca alt türler açılır. Renk: yeşil %80+, sarı %60–79, kırmızı %60 altı.</div>${groups||'<div class="small muted">Henüz yeterli cevap yok.</div>'}</div>
