@@ -1,0 +1,72 @@
+# G | kelimeler (virgülle) | açıklama | örnek cümleler ({doğru|yanlış...}; ; ile ayrılır)
+# F | kelime | doğru Türkçe | tuzak Türkçe (; ile) | not
+G|borrow,lend|borrow: birinden ödünç ALMAK · lend: birine ödünç VERMEK|Can I {borrow|lend} your pen for a minute?;I can {lend|borrow} you some money until Friday.
+G|say,tell,speak,talk|tell + kişi (tell me) · say + söz (say hello) · speak: dil / resmî konuşma · talk: sohbet|She {told|said|spoke|talked} me a funny story.;He {said|told|spoke|talked} that he was tired.;Do you {speak|talk|say|tell} German?;We {talked|said|told|spoke} about our plans for hours.
+G|make,do|do: iş, görev, ödev (do homework, do the dishes) · make: üretmek, oluşturmak (make a cake, make a decision, make a mistake)|I have to {do|make} my homework first.;Don't {make|do} so much noise!;She {made|did} a big mistake.;Can you {do|make} me a favour?
+G|rob,steal|steal + eşya (steal a bag) · rob + kişi/yer (rob a bank)|Someone {stole|robbed} my phone on the bus.;Two men {robbed|stole} the bank yesterday.
+G|lose,miss|lose: kaybetmek (eşya, maç) · miss: kaçırmak (otobüs, fırsat), özlemek|Hurry up or we'll {miss|lose} the train!;I always {lose|miss} my keys.;I {miss|lose} my family when I travel.
+G|bring,take|bring: buraya, konuşana doğru getirmek · take: oraya götürmek|Can you {bring|take} me a glass of water, please?;Please {take|bring} this letter to the post office.
+G|win,earn,beat|win: maç/ödül kazanmak · beat: rakibi yenmek · earn: para kazanmak|She {earns|wins|beats} a good salary.;Our team {beat|won|earned} them 3–0.;He {won|beat|earned} first prize.
+G|look,see,watch|see: görmek (istemsiz) · look at: bakmak · watch: izlemek (hareket eden)|Did you {see|look} the bird outside?;We {watched|saw|looked} a film last night.;{Look|See|Watch} at this photo!
+G|hear,listen|hear: duymak (istemsiz) · listen to: dinlemek (dikkatle)|Can you {hear|listen} that noise?;I like {listening|hearing} to jazz.
+G|remember,remind|remember: hatırlamak · remind: birine hatırlatmak|Please {remind|remember} me to call Ali.;I can't {remember|remind} his name.
+G|learn,teach|learn: öğrenmek · teach: öğretmek|My mother {taught|learnt} me how to cook.;I want to {learn|teach} Japanese.
+G|raise,rise|raise + nesne: kaldırmak, artırmak · rise (nesnesiz): yükselmek|The sun {rises|raises} in the east.;{Raise|Rise} your hand if you know the answer.
+G|lie,lay|lie: uzanmak (nesnesiz) · lay + nesne: yatırmak, koymak, sermek|I'm going to {lie|lay} down for an hour.;Please {lay|lie} the table for dinner.
+G|fun,funny|fun: eğlenceli · funny: komik, güldüren|The party was great {fun|funny}.;He told a really {funny|fun} joke.
+G|bored,boring|-ed: hisseden kişi (bored = sıkılmış) · -ing: hissettiren şey (boring = sıkıcı)|The lesson was so {boring|bored}.;I'm {bored|boring}. Let's go out.
+G|interested,interesting|interested: ilgili (kişi) · interesting: ilginç (şey)|This book is really {interesting|interested}.;Are you {interested|interesting} in art?
+G|embarrassed,ashamed|embarrassed: mahcup, utanmış (komik/küçük durum) · ashamed: utanç duyan (yanlış davranış)|I was so {embarrassed|ashamed} when I fell in front of everyone.;You should be {ashamed|embarrassed} of lying to your mother.
+G|economic,economical|economic: ekonomiyle ilgili · economical: tasarruflu, hesaplı|The country has serious {economic|economical} problems.;This small car is very {economical|economic}.
+G|historic,historical|historic: tarihî önemi olan (historic day) · historical: tarihle ilgili, geçmişe ait|It was a {historic|historical} moment for the country.;She writes {historical|historic} novels.
+G|sensible,sensitive|sensible: mantıklı, akıllıca · sensitive: hassas, duyarlı|That's a very {sensible|sensitive} idea.;She has very {sensitive|sensible} skin.
+G|alone,lonely|alone: yalnız başına (durum) · lonely: yalnızlık hisseden (duygu)|She lives {alone|lonely} in a big house.;He felt {lonely|alone} after his friends left.
+G|affect,effect|affect (fiil): etkilemek · effect (isim): etki|Stress can {affect|effect} your health.;The medicine had a strong {effect|affect}.
+G|advice,advise|advice (isim, sayılamaz): tavsiye · advise (fiil): tavsiye etmek|Can you give me some {advice|advise}?;I {advise|advice} you to see a doctor.
+G|practice,practise|İngiliz İngilizcesinde: practice (isim) · practise (fiil)|I need more {practice|practise}.;You should {practise|practice} every day.
+G|between,among|between: iki şey/kişi arasında · among: üç ve daha fazlası arasında, içinde|Sit {between|among} Ali and Ayşe.;She was {among|between} the best students in the class.
+G|during,while,for|during + isim (during the film) · while + cümle (while I was eating) · for + süre (for two hours)|I fell asleep {during|while|for} the film.;Somebody called {while|during|for} I was eating.;I waited {for|during|while} two hours.
+G|since,for,ago|since + başlangıç noktası (since 2020) · for + süre (for three years) · ago: ... önce (two years ago)|I've lived here {since|for|ago} 2019.;I've known him {for|since|ago} ten years.;I met her three years {ago|since|for}.
+G|already,yet,still|already: zaten, çoktan · yet: henüz (olumsuz/soru) · still: hâlâ|I haven't finished {yet|already|still}.;I've {already|yet|still} eaten, thanks.;She is {still|yet|already} sleeping.
+G|until,by|until: -e kadar (süreç devam eder) · by: en geç -e kadar (son tarih)|Please send it {by|until} Friday.;I'll wait here {until|by} you come back.
+G|especially,specially|especially: özellikle · specially: özel olarak, bir amaç için|I love fruit, {especially|specially} apples.;This cake was made {specially|especially} for you.
+G|actually,currently|actually: aslında · currently: şu anda|{Actually|Currently}, I don't like coffee.;She is {currently|actually} working in Berlin.
+G|eventually,possibly|eventually: sonunda, nihayet · possibly: muhtemelen|After hours of waiting, the bus {eventually|possibly} arrived.;It will {possibly|eventually} rain tomorrow, but I'm not sure.
+G|journey,trip,travel|journey: yolculuk (bir yerden bir yere) · trip: kısa gezi (gidip gelme) · travel: genel olarak seyahat (fiil/sayılamaz)|We went on a day {trip|travel|journey} to the beach.;The {journey|travel} from Ankara to Van took 15 hours.;I love {travel|trip|journey}.
+G|job,work|job (sayılabilir): iş, pozisyon · work (sayılamaz): çalışma, iş|She found a new {job|work} in a bank.;I have a lot of {work|job} to do today.
+G|fewer,less|fewer + sayılabilir (fewer people) · less + sayılamaz (less water)|There were {fewer|less} people than last year.;You should drink {less|fewer} coffee.
+G|much,many|many + sayılabilir çoğul · much + sayılamaz|How {many|much} brothers do you have?;How {much|many} money do you need?
+G|wear,carry|wear: giymek, takmak · carry: taşımak|She always {wears|carries} glasses.;Can you help me {carry|wear} these bags?
+G|check,control|check: kontrol etmek, gözden geçirmek · control: yönetmek, hâkim olmak|Please {check|control} your answers before you finish.;The pilot lost {control|check} of the plane.
+G|attend,join|attend: katılmak (ders, toplantı, okul) · join: üye olmak, aramıza katılmak|Which school did you {attend|join} as a child?;Why don't you {join|attend} our football team?
+G|arrive,reach|arrive (in/at) + yer · reach + yer (edatsız)|We {arrived|reached} at the hotel late.;We {reached|arrived} the top of the mountain.
+G|hope,wish|hope: gerçekleşebilecek şey için umut · wish: gerçek olmayan durum için keşke|I {hope|wish} you have a good trip.;I {wish|hope} I could fly.
+G|look like,like|look like: -e benzemek (görünüş) · like (fiil): sevmek, hoşlanmak|She {looks like|likes} her mother. They have the same eyes.;I {like|look like} chocolate ice cream.
+G|loose,lose|loose (sıfat): bol, gevşek · lose (fiil): kaybetmek|These trousers are too {loose|lose}.;Don't {lose|loose} your ticket.
+G|quite,quiet|quite: oldukça · quiet: sessiz|The library is very {quiet|quite}.;The film was {quite|quiet} good.
+G|shade,shadow|shade: gölgelik alan (güneşten korunan yer) · shadow: bir şeyin gölgesi (şekil)|Let's sit in the {shade|shadow} of that tree.;The cat was scared of its own {shadow|shade}.
+G|customer,client|customer: müşteri (dükkân) · client: müşteri (avukat, danışman gibi hizmet)|The shop was full of {customers|clients}.;The lawyer met her {client|customer} at ten.
+G|salary,wage|salary: aylık maaş (yıllık sabit) · wage: saatlik/haftalık ücret|Teachers receive a monthly {salary|wage}.;He earns a {wage|salary} of 15 dollars an hour.
+G|price,cost|price: bir şeyin satış fiyatı · cost: maliyet, bir işin masrafı|The {price|cost} tag says 50 euros.;The {cost|price} of living in London is very high.
+G|discover,invent|discover: var olanı keşfetmek · invent: olmayanı icat etmek|Who {invented|discovered} the telephone?;Columbus {discovered|invented} America in 1492.
+G|expect,wait|expect: beklemek (olmasını ummak) · wait (for): beklemek (zaman geçirmek)|I'm {waiting|expecting} for the bus.;I {expect|wait} it will rain later.
+G|realise,understand|realise: farkına varmak · understand: anlamak (anlamını kavramak)|I suddenly {realised|understood} I had left my keys at home.;I don't {understand|realise} this word.
+# F (yalancı eşdeğerler)
+F|actual|gerçek, asıl|aktüel, güncel|"aktüel" anlamına gelmez; güncel için current kullanılır.
+F|actually|aslında|şu anda, güncel olarak|"şu anda" için currently ya da at the moment denir.
+F|eventually|sonunda, nihayet|muhtemelen, olası olarak|"olası" için possible/possibly kullanılır.
+F|sympathetic|anlayışlı, halden anlayan|sempatik, cana yakın|"sempatik" için nice, likeable, friendly denir.
+F|sensible|mantıklı, akıllıca|hassas, duyarlı|"hassas" için sensitive kullanılır.
+F|sympathy|üzüntüyü paylaşma, taziye|sempati, hoşlanma|"sempati" için liking ya da warmth denir.
+F|pension|emekli maaşı|pansiyon|"pansiyon" için guesthouse ya da B&B denir.
+F|preservative|koruyucu madde (gıda)|prezervatif|"prezervatif" için condom kullanılır.
+F|camping|kamp yapma|kamp alanı (kamping)|"kamp alanı" için campsite denir.
+F|control|yönetmek, hâkim olmak|kontrol etmek (gözden geçirmek)|"gözden geçirmek" için check kullanılır.
+F|mark|not, işaret|marka|"marka" için brand denir.
+F|chef|aşçıbaşı|şef (yönetici)|"iş yerindeki şef" için boss ya da manager denir.
+F|fabric|kumaş|fabrika|"fabrika" için factory denir.
+F|apartment|daire (Amerikan İng.)|apartman (bina)|"apartman binası" için block of flats ya da apartment building denir.
+F|confident|kendinden emin|güvenilir (confidential)|"gizli" için confidential, "güvenilir" için reliable kullanılır.
+F|library|kütüphane|kitapçı (librairie)|"kitapçı" için bookshop denir.
+F|eventual|sonunda olan, nihai|olası, muhtemel|"olası" için possible denir.
+F|tuition|öğrenim ücreti; ders verme|sezgi (intuition)|"sezgi" için intuition denir.

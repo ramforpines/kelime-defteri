@@ -433,7 +433,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/w13-9a3ef38e89.js"></script>
 <script src="d/w14-e46dd034e9.js"></script>
 <script src="d/w15-feb063e2c3.js"></script>
-<script src="d/w16-3cda549019.js"></script>
+<script src="d/w16-fe7ffa2331.js"></script>
 <script src="d/grammar-24c5272e6a.js"></script>
 <script src="d/x00-f86d17b433.js"></script>
 <script src="d/x01-ef03f3761c.js"></script>
@@ -485,6 +485,11 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/s15-7d54860c38.js"></script>
 <script src="d/gloss-6e4fa53eb6.js"></script>
 <script src="d/core-0e796929af.js"></script>
+<script src="d/afx-efd193255c.js"></script>
+<script src="d/fam-0ef1775da1.js"></script>
+<script src="d/pat-036daf5dcf.js"></script>
+<script src="d/conf-a4ca76df8c.js"></script>
+<script src="d/lab-292cc38b4b.js"></script>
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
@@ -495,8 +500,8 @@ const DATA=window.WORDS||[];
 (function(){
 'use strict';
 const LEVELS=['A1','A2','B1','B2','C1','C2'];
-const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu','2. anlam','3. anlam','Cümlede anlam','Türkçe cümle → İngilizce','Cümlede yakın anlam','Cümlede karşıt anlam'];
-const REVERSE_RATE=0.4, STREAK_GOAL=3, INTERVALS=[1,3];
+const FEAT=['Türkçe','Tanım','Tür','Örnek','Yakın anlam','Karşıt anlam','Hal','Atasözü','Eksik kelime','Edat','Ek','İfade','Boşluk doldurma','Tanım → kelime','Okuma','Kim söyledi','Doğru / Yanlış / Verilmemiş','Dinleme','Kalıp ifade','Yazılı boşluk doldurma','Kişi–metin eşleştirme','Paragraf boşluğu','2. anlam','3. anlam','Cümlede anlam','Türkçe cümle → İngilizce','Cümlede yakın anlam','Cümlede karşıt anlam','Kelime türetme','Kullanım kalıbı','Karıştırılan kelime','Yalancı eşdeğer','Sayılamaz isim'];
+const REVERSE_RATE=0.4, STREAK_GOAL=3, INTERVALS=[3,7,14];   // yanlıştan 3 gün sonra ilk tekrar; 1. doğrudan 7, 2. doğrudan 14 gün sonra; 3. doğruda listeden çıkar
 const RMX=new Set(["academic", "academy", "actor", "alarm", "algorithm", "amateur", "ambulance", "ancestors", "animation", "anthropology", "antibiotic", "arena", "assistant", "astronomer", "astronomy", "automobile", "bacteria", "bipolar", "bravo", "cameraman", "capitalism", "captain", "carbon", "cartel", "category", "cement", "ceramic", "chances", "cholesterol", "cinema", "courts", "crater", "crystal", "cultural", "culture", "decorative", "delta", "democratic", "descendants", "diagram", "digital", "diploma", "diplomacy", "diplomat", "dollar", "drama", "dramatic", "dynamic", "economic", "economist", "economy", "ecosystem", "editor", "electron", "electronic", "emissions", "employees", "expenses", "federal", "federation", "fees", "festival", "figures", "formula", "fossil", "funds", "gallery", "gallon", "garments", "genetic", "genome", "geometry", "germs", "graffiti", "hormone", "ideal", "industrial", "industry", "inhabitants", "insults", "jewels", "leftovers", "legends", "lemon", "liberalism", "litre", "machine", "manifesto", "mathematics", "maximum", "media", "median", "melody", "metabolism", "metal", "metre", "microscope", "milligram", "millimetre", "mineral", "minibus", "minimum", "mittens", "module", "molecule", "motivation", "motor", "musical", "mutation", "normally", "nuclear", "obesity", "opera", "orchestra", "organic", "organism", "organizer", "origins", "panel", "panic", "parliament", "patent", "pedal", "piano", "pilot", "placebo", "plastic", "platform", "pollen", "polyester", "principles", "professional", "professor", "profile", "program", "programme", "programmer", "propaganda", "quarantine", "records", "referendum", "reform", "repairs", "reservation", "robot", "robotics", "romantic", "roots", "rotor", "routine", "scenario", "sector", "seminar", "senate", "senator", "sensor", "slogan", "spectrum", "spiral", "standards", "statistics", "strategic", "strategy", "studio", "symbol", "symbolic", "symbolism", "syndrome", "talks", "telescope", "therapist", "therapy", "tourist", "tractor", "traffic", "trauma", "trillion", "tsunami", "tunes", "tunnel", "turbine", "uniform", "virus", "voltage", "weapons", "writings"]);
 const RMW=new Set(["Internet", "TRUE", "a few", "a little", "a lot", "a lot of", "aeroplane", "airplane", "app", "banana", "basketball", "be", "black", "blog", "blue", "brown", "burger", "cafe", "camera", "can't", "centimetre", "championship", "computer", "cop", "curry", "dad", "diesel", "do", "doctor", "donut", "download", "earlier", "eighth", "eightieth", "eighty", "email", "farm animals", "farmers", "ferry", "fifteenth", "fifth", "fiftieth", "fifty", "filled", "film", "fireman", "football", "for", "fortieth", "forty", "fourteenth", "fourth", "from", "giraffe", "go", "golf", "goodbye", "granddad", "grandma", "grandpa", "granny", "gray", "greatest", "green", "grey", "guitar", "hacker", "hamburger", "hashtag", "have", "helicopter", "hello", "hi", "highest", "hotel", "how are you", "how's it going", "in", "ketchup", "kick a ball", "kilogram", "kilometre", "laptop", "lemonade", "like this", "lips", "mango", "marathon", "menu", "metro", "million", "mister", "mom", "motorbike", "movie theater", "muffin", "mum", "must", "nearer", "nearest", "newest", "next day", "ninetieth", "ninety", "ninth", "no thanks", "noodles", "novels", "of", "okay", "on", "one more", "one time", "online", "ow", "paid", "parents", "password", "pasta", "pc", "penguin", "pink", "pizza", "plants", "please", "podcast", "policeman", "pony", "protein", "purple", "puzzle", "radio", "red", "relatives", "ride a bus", "rules", "sandwich", "seen", "selfie", "seventh", "seventieth", "seventy", "shampoo", "should", "singers", "sir", "sixth", "sixtieth", "sixty", "ski", "sleeping", "small child", "small group", "small lake", "smartphone", "so", "soda", "soldiers", "spaghetti", "spam", "stadium", "started", "steps", "stories", "subway", "sushi", "sweets", "taco", "taken", "taxi", "telephone", "television", "tell me", "tennis", "tenth", "thank you", "thanks", "things", "third", "thirteenth", "thirtieth", "thirty", "time of year", "to", "tomato sauce", "tournament", "tram", "tuna", "tv", "twelfth", "twelve months", "twentieth", "two times", "understood", "up", "upload", "username", "vegan", "very healthy", "very much", "very thankful", "video", "visa", "vitamin", "waffle", "watching", "what number", "what price", "what's the price", "what's your job", "white", "why", "with", "woods", "written", "yeah", "years", "yellow", "yes", "yoga", "yogurt", "you", "yummy", "zebra", "zero"]);
 /* Çok basit A1/A2 kelimeleri sözlük ve sorulardan çıkarıldı (veri words.js'te duruyor) */
@@ -581,7 +586,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.165.4';
+const APP_VERSION = '4.167.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -1057,6 +1062,21 @@ function mergeDay(x,y){
   Object.keys(ga.l).forEach(k=>{const o=l[k]||(l[k]=[0,0]);o[0]+=ga.l[k][0];o[1]+=ga.l[k][1]});
   z.l=l;z.ev=U;return z}
 /* iki cihazın durumunu birleştirir: hiçbir cihazın ilerlemesi kaybolmaz */
+/* ---------- cihaz başına sayaçlar: her cihaz yalnız kendi dilimini artırır; birleştirmede dilim başına büyük olan alınır, toplam = dilimlerin toplamı (veri kaybı yok) ---------- */
+const DEV=(()=>{try{let d=localStorage.getItem('kd-dev');if(!d){d='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);localStorage.setItem('kd-dev',d)}return d}catch(e){return'd'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}})();
+function deepMax(a,b){   // yapraklar [doğru, yanlış] dizileri
+  if(Array.isArray(a)||Array.isArray(b)){const x=a||[0,0],y=b||[0,0];return[Math.max(x[0]|0,y[0]|0),Math.max(x[1]|0,y[1]|0)]}
+  const r={};new Set(Object.keys(a||{}).concat(Object.keys(b||{}))).forEach(k=>{r[k]=deepMax((a||{})[k],(b||{})[k])});return r;
+}
+function deepSum(slots){const r={};const add=(t,s)=>{Object.keys(s||{}).forEach(k=>{const v=s[k];if(Array.isArray(v)){const x=t[k]||(t[k]=[0,0]);x[0]+=v[0]|0;x[1]+=v[1]|0}else add(t[k]||(t[k]={}),v)})};Object.keys(slots||{}).forEach(d=>add(r,slots[d]));return r}
+function devMig(x){   // eski biçim: tek sayaç (lv, st) -> 'base' dilimi
+  if(!x)return x;
+  if(!x.lvd)x.lvd={base:JSON.parse(JSON.stringify(x.lv||{}))};
+  if(!x.std&&x.st)x.std={base:JSON.parse(JSON.stringify(x.st))};
+  return x;
+}
+function devSync(x){if(x.lvd)x.lv=deepSum(x.lvd);if(x.std){const t=deepSum(x.std);x.st={f:t.f||{},p:t.p||{}}}return x}
+function lvAdd(l,ok){devMig(S);const q=S.lv[l]||(S.lv[l]=[0,0]);q[ok?0:1]++;const d=S.lvd[DEV]||(S.lvd[DEV]={}),x=d[l]||(d[l]=[0,0]);x[ok?0:1]++}
 function mergeStates(a,b){
   if(b.rs&&b.rs>(a.upd||0)&&b.rs>(a.rs||0))return normState(b);   // buluttaki açık sıfırlama, yerel son değişiklikten yeni
   if(a.rs&&a.rs>(b.upd||0)&&a.rs>(b.rs||0))return normState(a);
@@ -1077,7 +1097,7 @@ function mergeStates(a,b){
     let z;
     if(x.ev||y.ev)z=mergeDay(x,y);else if((y.a|0)>(x.a|0))z=y;else return;
     m.tp=Math.max(0,(m.tp||0)+nt(z)-nt(x));m.days[k]=z});   // gün başka cihazdan alınırsa/birleşirse farkı toplam puana da yansıt   // gün başka cihazdan alınırsa farkı toplam puana da yansıt
-  Object.keys(ot.lv||{}).forEach(k=>{const x=m.lv[k],y=ot.lv[k];m.lv[k]=x?[Math.max(x[0]|0,y[0]|0),Math.max(x[1]|0,y[1]|0)]:y});
+  devMig(m);devMig(ot);m.lvd=deepMax(m.lvd,ot.lvd);if(m.std||ot.std)m.std=deepMax(m.std||{},ot.std||{});devSync(m);   // seviye ve tür istatistiği: cihaz dilimleri birleşir, toplam yeniden hesaplanır
   m.dl=Object.assign({},ot.dl||{},m.dl||{});Object.keys(ot.dl||{}).forEach(k=>{const x=m.dl[k],y=ot.dl[k];if(x&&y){x.s=x.s||y.s;x.p=x.p||y.p;x.rf=x.rf||y.rf}});
   {const ex=Object.assign({},ot.ex||{});Object.keys(m.ex||{}).forEach(k=>{const a=m.ex[k],b=ex[k];ex[k]=!b||(a.b|0)>(b.b|0)||((a.b|0)===(b.b|0)&&(a.d||'')>(b.d||''))?a:b});m.ex=ex}
   {const c=JSON.parse(JSON.stringify(ot.exc||{}));Object.keys(m.exc||{}).forEach(k=>{c[k]=Object.assign(c[k]||{},m.exc[k])});m.exc=c}
@@ -1452,7 +1472,7 @@ function rkAdHtml(){
   <div class="rka-s">KILICINI SAVAŞ SAATİNDE ÇEK!</div></div>`}
 const OD_AD={from:'2026-11-24',to:'2026-11-29'};   // Odak modu afişi: 24-29 Kasım arası her girişte (pazartesi kalkar); yönetici hemen görür
 const odAdDue=()=>{const t=today();return t<=OD_AD.to&&(t>=OD_AD.from||!!CLOUD.admin)};
-const odAdHtml=()=>`<img src="img/ann/odak-4165.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.583 kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
+const odAdHtml=()=>`<img src="img/ann/odak-4167.jpg" alt="Yeni: Odak modu. 16.000+ yerine B1–B2 ağırlıklı 3.583 kelime ve kalıp; sözlükte kendi listeni düzenleyebilirsin. Bu sürümde ayrıca Sınav bölümü, Gramer menüsünde Kalıplar ve soru düzeltmeleri var." style="display:block;width:100%;height:auto"><button class="adgo" type="button" data-adgo="1">🎯 Odak modunu aç</button>`;
 const SX_AD={from:'2026-11-10',to:'2026-11-13'};   // Sınav duyurusu: 10-13 Kasım arası her girişte; yönetici hemen görür
 const sxAdDue=()=>{const t=today();return t<=SX_AD.to&&(t>=SX_AD.from||!!CLOUD.admin)};
 function sxAdHtml(){
@@ -1914,7 +1934,7 @@ function vHelp(){
     'Cevapların (tekrar çözümde de) günlük hedefine, doğruluk oranına, seviye istatistiklerine ve doğru serine eklenir; yalnızca kelime ilerlemeni (öğrenildi, tekrar listesi) etkilemez.']))}
   ${sec('🔁 Tekrar ve yanlış defteri',li([
     '<b>Tekrar listesi</b>: Türkçe karşılığını ya da tanımını yanlış bildiğin kelime listeye girer.',
-    '<b>Listeden çıkmak</b>: Türkçe ve Tanım sorularını art arda <b>3 kez</b> doğru bilmen gerekir. İlk doğrudan 1 gün, ikinci doğrudan 3 gün sonra yeniden sorulur; yanlış yaparsan sayaç düşer. Kelime listeden çıkınca +1 × seviye katsayısı puan alırsın.',
+    '<b>Listeden çıkmak</b>: Türkçe ve Tanım sorularını art arda <b>3 kez</b> doğru bilmen gerekir. Türkçe ve Tanım soruları birlikte gelir: yanlıştan 3 gün sonra, ikisini de bir kez doğru bilince 7 gün, iki kez doğru bilince 14 gün sonra yeniden sorulur; yanlış yaparsan sayaç düşer. Kelime listeden çıkınca +1 × seviye katsayısı puan alırsın.',
     '<b>Yanlış defteri</b>: testte yanlış yaptığın her soru saklanır. Orada tekrar çözüp doğru yaparsan soru defterden çıkar; "Defterden çıkar" ile elle de silebilirsin.']))}
   ${sec('⭐ Puan sistemi',li([
     '<b>Doğru cevap</b> = seviye katsayısı × soru türü katsayısı. Seviye katsayıları: '+LEVELS.map(l=>l+' × '+COEF[l]).join(', ')+'. Örnek cümle, yakın/karşıt anlam gibi türlerin katsayısı biraz daha yüksektir.',
@@ -2412,7 +2432,12 @@ function applicable(w){
   if(g==='proverb'&&wtoks(w).length>=5)f.push(7);
   if(MULTI.indexOf(g)!==-1&&blankIdx(w).length)f.push(8);
   if(g==='preposition phrase'&&prepBlank(w))f.push(9);
-  if(g==='prefix/suffix'&&affixTok(w))f.push(10);
+  if(famOk(w))f.push(28);
+  if(patOf(w).length)f.push(29);
+  if(confOf(w).length)f.push(30);   // karıştırılan kelimeler (borrow/lend)
+  if(ffOf(w))f.push(31);
+  if(labU(w))f.push(32);   // sayılamaz isim (advice, information)   // yalancı eşdeğer (actually ≠ aktüel)   // kullanım kalıbı (enjoy + -ing, interested in): öğrenilme şartı değil   // kelime türetme (sınav tarzı): öğrenilme şartı değil (>=24)
+  if(g==='prefix/suffix'&&(affixTok(w)||(window.AFX||{})[String(w.word).trim()]))f.push(10);
   if((MULTI.indexOf(g)!==-1||g==='phrasal verb')&&w.def&&wtoks(w).length>=2)f.push(11);
   if(senseOk(w,0))f.push(22);
   if(senseOk(w,1))f.push(23);
@@ -2452,7 +2477,118 @@ function prepQ(t){
 }
 let AFFSET=null;
 function affSet(){if(AFFSET)return AFFSET;AFFSET=new Set();for(const r of W){AFFSET.add(String(r.word).toLowerCase().replace(/[^a-z]/g,''));if(r.ex)(r.ex.toLowerCase().match(/[a-z]+(?:-[a-z]+)*/g)||[]).forEach(x=>AFFSET.add(x.replace(/-/g,'')))}return AFFSET}
+/* ---------- kelime ailesi (fam.js, tools/fam/build.py) ---------- */
+const famOf=w=>((window.FAM||{})[String(w.word||w)]||[]).filter(x=>BYWORD.has(x));
+const famRe=x=>new RegExp('(^|[^A-Za-z-])('+x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')(?![A-Za-z-])','i');
+function famDist(w){   // farklı sözcük türünden aile üyeleri (aynı türden üye cümleye uyabilir: separate/separated); -ing biçimleri isim fiil olarak uyabileceği için alınmaz
+  const F=famOf(w),pt=posSet(w.pos);
+  return F.filter(x=>x!==w.word&&!/ing$/.test(x)&&!(/ise$/.test(x)&&F.includes(x.replace(/ise$/,'ize')))&&!posSet(BYWORD.get(x).pos).some(k=>pt.includes(k)));
+}
+const posSet=p=>{p=String(p||'').toLowerCase();const r=[];if(/adverb/.test(p))r.push('adv');if(/adjective/.test(p))r.push('adj');if(/(^|[^d])verb/.test(p.replace(/adverb/g,'')))r.push('v');if(/noun/.test(p))r.push('n');return r};
+const famBase=w=>famOf(w).slice().sort((a,b)=>(/ly$/.test(a)-/ly$/.test(b))||a.length-b.length)[0];
+function famOk(w){
+  if(!w.ex||w.ex.split(/\s+/).length<5)return false;
+  const F=famOf(w);if(F.length<4||famBase(w)===w.word)return false;
+  if(!famRe(w.word).test(w.ex)||F.some(x=>x!==w.word&&famRe(x).test(w.ex)))return false;
+  return famDist(w).length>=3;
+}
+function famQ(t){   // "Her _____ surprised everyone. (KIND)" → kindness; şıklar aynı aileden
+  if(!famOk(t))return null;
+  const base=famBase(t),d=shuffle(famDist(t)).slice(0,3);
+  if(d.length<3)return null;
+  const sent=t.ex.replace(famRe(t.word),(m,p)=>p+'_____');
+  return{question:'Boşluğa kelimenin doğru biçimi hangisidir?\n"'+sent+'"\n('+base.toUpperCase()+')',correct:t.word,distractors:d.slice(0,3)};
+}
+/* ---------- kullanım kalıpları (pat.js, tools/pat) ---------- */
+const patOf=w=>(window.PAT||{})[String(w.word||w)]||[];
+const patSplit=ex=>{const m=ex.match(/\{([^}]*)\}/),o=m[1].split('|');return{pre:ex.slice(0,m.index),post:ex.slice(m.index+m[0].length),o}};
+function patQ(t){
+  const L=patOf(t);if(!L.length)return null;
+  const [pat,tr,ex]=L[Math.floor(Math.random()*L.length)],x=patSplit(ex);
+  return{question:'Boşluğa hangisi gelmeli?\n"'+x.pre+'_____'+x.post+'"',correct:x.o[0],distractors:x.o.slice(1),note:'<b lang="en">'+esc(pat)+'</b> · '+esc(tr)+'<br><i lang="en">'+esc(x.pre)+'<b>'+esc(x.o[0])+'</b>'+esc(x.post)+'</i>'};
+}
+function patHtml(w){
+  const L=patOf(w);if(!L.length)return'';
+  return`<dt style="grid-column:1/-1;margin-top:4px">Kullanım kalıbı</dt><dd style="grid-column:1/-1"><div class="stack" style="gap:6px">${L.map(([pat,tr,ex])=>{const x=patSplit(ex);return`<div style="background:var(--surface2);border-radius:10px;padding:8px 10px"><div><b lang="en">${esc(pat)}</b> <span class="muted small">· ${esc(tr)}</span></div><div class="small" lang="en"><i>${esc(x.pre)}<b>${esc(x.o[0])}</b>${esc(x.post)}</i></div></div>`}).join('')}</div></dd>`;
+}
+/* ---------- karıştırılan kelimeler ve yalancı eşdeğerler (conf.js, tools/conf) ---------- */
+const confOf=w=>((window.CONF||{}).g||[]).filter(g=>g.w.indexOf(String(w.word||w))!==-1);
+const ffOf=w=>((window.CONF||{}).f||{})[String(w.word||w)]||null;
+function confQ(t){
+  const G=confOf(t);if(!G.length)return null;
+  const g=G[Math.floor(Math.random()*G.length)],ex=g.s[Math.floor(Math.random()*g.s.length)],x=patSplit(ex);
+  return{question:'Boşluğa hangisi gelmeli?\n"'+x.pre+'_____'+x.post+'"',correct:x.o[0],distractors:x.o.slice(1),note:'<b lang="en">'+esc(g.w.join(' / '))+'</b><br>'+esc(g.e)+'<br><i lang="en">'+esc(x.pre)+'<b>'+esc(x.o[0])+'</b>'+esc(x.post)+'</i>'};
+}
+function ffQ(t){
+  const f=ffOf(t);if(!f)return null;
+  const others=Object.keys(window.CONF.f).filter(k=>k!==t.word).map(k=>window.CONF.f[k].t);
+  const d=f.x.slice(0,2);if(d.length<2)d.push(shuffle(others)[0]);
+  return{question:'Dikkat, yalancı eşdeğer!\n"'+t.word+'" ne anlama gelir?',correct:f.t,distractors:d,note:'<b lang="en">'+esc(t.word)+'</b> = '+esc(f.t)+'<br>'+esc(f.n)};
+}
+function confHtml(w){
+  const G=confOf(w),f=ffOf(w);if(!G.length&&!f)return'';
+  const go=x=>BYWORD.has(x)?`<button type="button" class="chip" data-act="fam-go" data-w="${esc(x)}" style="padding:2px 10px">${esc(x)}</button>`:`<b>${esc(x)}</b>`;
+  return`<dt style="grid-column:1/-1;margin-top:4px">⚠️ Dikkat</dt><dd style="grid-column:1/-1"><div class="stack" style="gap:6px">${f?`<div style="background:var(--surface2);border-left:4px solid var(--warn,#e0a100);border-radius:10px;padding:8px 10px"><div><b>Yalancı eşdeğer:</b> <span lang="en">${esc(w.word)}</span> = ${esc(f.t)}, <u>${esc(f.x[0])}</u> değil.</div><div class="muted small">${esc(f.n)}</div></div>`:''}${G.map(g=>{const ex=patSplit(g.s[0]);return`<div style="background:var(--surface2);border-left:4px solid var(--accent);border-radius:10px;padding:8px 10px"><div class="row" style="gap:6px;flex-wrap:wrap;align-items:center"><span class="small muted">Karıştırma:</span>${g.w.map(go).join('')}</div><div class="small" style="margin-top:4px">${esc(g.e)}</div><div class="small" lang="en" style="margin-top:2px"><i>${esc(ex.pre)}<b>${esc(ex.o[0])}</b>${esc(ex.post)}</i></div></div>`}).join('')}</div></dd>`;
+}
+/* ---------- kelimeyle kurulan ifadeler: sözlükteki phrasal verb / kolokasyon / deyim kayıtlarından ---------- */
+let MWIX=null;
+function mwInit(){if(MWIX)return;MWIX=new Map();for(const r of W){const k=String(r.word).trim();if(!/\s/.test(k))continue;new Set(k.toLowerCase().replace(/[^a-z' -]/g,' ').split(/\s+/)).forEach(t=>{if(t.length<2)return;if(!MWIX.has(t))MWIX.set(t,[]);MWIX.get(t).push(r)})}}
+const MWG=[['Phrasal verb',r=>/phrasal verb/.test(r.pos)],['Kolokasyon',r=>/collocation/.test(r.pos)],['Deyim ve kalıp',r=>/idiom|phrase|proverb/.test(r.pos)]];
+function mwHtml(w){
+  const k=String(w.word).trim().toLowerCase();if(/\s/.test(k)||k.length<3)return'';
+  mwInit();const L=MWIX.get(k);if(!L||!L.length)return'';
+  const LVI={A1:0,A2:1,B1:2,B2:3,C1:4,C2:5};coreInit();
+  const srt=a=>a.slice().sort((x,y)=>(CORESET.has(y.word)-CORESET.has(x.word))||((LVI[x.level]??9)-(LVI[y.level]??9))||x.word.length-y.word.length);
+  const open=(UI.mwOpen||{})[w.word];
+  const parts=MWG.map(([lab,fn])=>{const a=srt(L.filter(fn));if(!a.length)return'';const sh=open?a:a.slice(0,8);
+    return`<div><div class="small muted" style="font-weight:600;margin:2px 0 4px">${lab} (${a.length})</div><div class="row" style="gap:6px;flex-wrap:wrap">${sh.map(r=>`<button type="button" class="chip" data-act="fam-go" data-w="${esc(r.word)}" title="${esc(r.tr)}" style="padding:4px 10px;text-align:left;line-height:1.2"><span lang="en">${esc(r.word)}</span> <span class="muted small">${esc(trFirst(r.tr))}</span></button>`).join('')}</div></div>`}).filter(Boolean);
+  if(!parts.length)return'';
+  const more=MWG.some(([l,fn])=>L.filter(fn).length>8);
+  return`<dt style="grid-column:1/-1;margin-top:4px">Bu kelimeyle kurulan ifadeler</dt><dd style="grid-column:1/-1"><div class="stack" style="gap:8px">${parts.join('')}${more?`<button type="button" class="btn" data-act="mw-more" data-w="${esc(w.word)}" style="min-height:34px;padding:4px 12px;font-size:.85rem;align-self:flex-start">${open?'Daha az göster':'Tümünü göster'}</button>`:''}</div></dd>`;
+}
+/* ---------- kullanım etiketleri (lab.js): sayılamaz, Amerikan/İngiliz, resmî/gündelik ---------- */
+let LABU=null;const labU=w=>{if(!LABU)LABU=new Set((window.LAB||{}).u||[]);return LABU.has(String(w.word||w))};
+const labAB=w=>((window.LAB||{}).ab||[]).filter(x=>x[0]===w.word||x[1]===w.word);
+const labReg=w=>/\((very )?formal\)|\bformal (word|way of saying|term)\b/i.test(w.def)?'resmî':/\((informal|slang)\)|\binformal (word|way of saying|term|expression)\b|\bslang\b/i.test(w.def)?'gündelik':'';
+function labHtml(w){
+  const b=[];if(labU(w))b.push('<span class="badge" title="Sayılamaz isim: a/an almaz, çoğul olmaz">sayılamaz</span>');
+  const r=labReg(w);if(r)b.push('<span class="badge">'+r+'</span>');
+  const ab=labAB(w);
+  const ln=ab.map(([a,br,t])=>`<div class="small">🇺🇸 <b lang="en">${esc(a)}</b> = 🇬🇧 <b lang="en">${esc(br)}</b> <span class="muted">· ${esc(t)}</span></div>`).join('');
+  const un=labU(w)?`<div class="small">Sayılamaz: <b>a/an</b> almaz, çoğul yapılmaz. <span lang="en"><i>some ${esc(w.word)}, a lot of ${esc(w.word)}${uncPiece(w.word)?', a piece of '+esc(w.word):''}</i></span></div>`:'';
+  if(!b.length&&!ln)return'';
+  return`<dt>Kullanım</dt><dd><div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:${ln||un?4:0}px">${b.join('')}</div>${un}${ln}</dd>`;
+}
+const UNCP=new Set('advice information news furniture luggage baggage equipment homework research knowledge evidence software feedback jewellery clothing rubbish garbage music bread cash'.split(' '));
+const uncPiece=x=>UNCP.has(x);
+function uncQ(t){   // sayılamaz isim: tek doğru kullanım
+  if(!labU(t))return null;const x=t.word;
+  const pl=/(s|x|ch|sh)$/.test(x)?x+'es':/[^aeiou]y$/.test(x)?x.slice(0,-1)+'ies':x+'s';
+  const an=/^[aeiou]/.test(x)?'an':'a';
+  return{question:'Hangisi doğrudur?',correct:(uncPiece(x)&&Math.random()<0.5?'a piece of ':'some ')+x,distractors:[an+' '+x,'two '+pl,'many '+x],note:'<b lang="en">'+esc(x)+'</b> sayılamaz bir isimdir: a/an almaz, çoğul olmaz.'};
+}
+function famHtml(w){
+  const F=famOf(w).filter(x=>x!==w.word);if(!F.length)return'';
+  return`<dt style="grid-column:1/-1;margin-top:4px">Kelime ailesi</dt><dd style="grid-column:1/-1"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px">${F.map(x=>{const r=BYWORD.get(x);return`<button type="button" data-act="fam-go" data-w="${esc(x)}" style="text-align:left;line-height:1.25;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px;color:inherit;font:inherit;cursor:pointer"><div lang="en"><b>${esc(x)}</b> <span class="muted small">${esc(posShort(r.pos))}</span></div><div class="muted small">${esc(trFirst(r.tr))}</div></button>`}).join('')}</div><div class="muted small" style="margin-top:4px">Dokununca o kelimenin kartı açılır.</div></dd>`;
+}
+const posShort=p=>{p=String(p||'').toLowerCase();return /adverb/.test(p)?'zarf':/adjective/.test(p)?'sıfat':/verb/.test(p)?'fiil':/noun/.test(p)?'isim':p};
+function affixQ2(t){   // afx.js: eki alan sık kelimeden: "_____night (gece yarısı)" → mid-
+  const L=(window.AFX||{})[String(t.word).trim()];if(!L||!L.length)return null;
+  const tw=String(t.word).trim(),suf=tw[0]==='-',a=tw.replace(/^-|-$/g,'').toLowerCase(),AS=affSet();
+  for(const [x,tr] of shuffle(L.slice())){
+    const lx=x.toLowerCase();let stem;
+    if(suf){if(!lx.endsWith(a))continue;stem=x.slice(0,x.length-a.length)}else{if(!lx.startsWith(a))continue;stem=x.slice(a.length)}
+    const hy=!suf&&stem[0]==='-';const bare=stem.replace(/^-|-$/g,'');if(bare.length<3)continue;
+    const made=r=>{const y=String(r.word).trim().replace(/^-|-$/g,'').toLowerCase();return(suf?bare+y:y+bare).replace(/-/g,'')};
+    const others=W.filter(r=>r!==t&&posGroup(r)==='prefix/suffix'&&(String(r.word).trim()[0]==='-')===suf&&!AS.has(made(r))&&!Object.values(window.AFX||{}).some(l=>l.some(z=>z[0].toLowerCase().replace(/-/g,'')===made(r)))).map(r=>r.word);
+    const d=shuffle(others).slice(0,3);if(d.length<3)continue;
+    const shown=suf?stem+'_____':'_____'+(hy?stem:stem);
+    return{question:'Boşluğa hangi '+(suf?'sonek':'önek')+' gelir?\n"'+shown+'"\n(Anlamı: '+tr+')',correct:t.word,distractors:d};
+  }
+  return null;
+}
 function affixQ(t){
+  if((window.AFX||{})[String(t.word).trim()]&&(Math.random()<0.5||!affixTok(t))){const q=affixQ2(t);if(q)return q}
   const a=affixTok(t);if(!a)return null;
   const others=W.filter(r=>r!==t&&posGroup(r)==='prefix/suffix'&&String(r.word).trim()[0]==='-'===a.suf&&!(a.suf?a.tok.replace(/-/g,'').endsWith(String(r.word).replace(/-/g,'').toLowerCase()):a.tok.replace(/-/g,'').startsWith(String(r.word).replace(/-/g,'').toLowerCase()))).map(r=>r.word);
   const stem0=a.suf?a.tok.slice(0,a.tok.length-a.a.length):a.tok.slice(a.a.length),AS=affSet();
@@ -2663,6 +2799,11 @@ function buildQuestionRaw(t,k,opts){
   else if(k===8)return missingQ(t);
   else if(k===9)return prepQ(t);
   else if(k===10)return affixQ(t);
+  else if(k===28)return famQ(t);
+  else if(k===29)return patQ(t);
+  else if(k===30)return confQ(t);
+  else if(k===31)return ffQ(t);
+  else if(k===32)return uncQ(t);
   else if(k===11)return phraseDefQ(t);
   else if(k===22)return senseQ(t,0);
   else if(k===23)return senseQ(t,1);
@@ -2809,7 +2950,7 @@ function makeItem(w,f,kind){
   if(w&&w.gram)return gmItem(w,f,kind);
   const b=buildQuestion(w,f);
   if(!b)return null;
-  return{w,f,kind,question:b.question,correct:b.correct,options:shuffle([b.correct].concat(b.distractors)),chosen:null,exu:b.exu};
+  return{w,f,kind,question:b.question,correct:b.correct,options:shuffle([b.correct].concat(b.distractors)),chosen:null,exu:b.exu,note:b.note};
 }
 const lvOk=(sel,l)=>!sel||sel==='Hepsi'||sel.split(',').indexOf(l)!==-1;
 const lvOn=(sel,v)=>v==='Hepsi'?(!sel||sel==='Hepsi'):(!!sel&&sel!=='Hepsi'&&sel.split(',').indexOf(v)!==-1);
@@ -2874,7 +3015,7 @@ function reviewItems(n,all){
     if(out.length>=n)break;
     const w=BYWORD.get(k),e=S.wrong[k];
     const order=[0,1].sort((a,b)=>e.t[a]-e.t[b]).filter(f=>e.t[f]<STREAK_GOAL);
-    for(const f of order){const it=makeItem(w,f,'review');if(it){out.push(it);break}}
+    for(const f of order){if(out.length>=n)break;const it=makeItem(w,f,'review');if(it)out.push(it)}   // Türkçe ve Tanım aynı tekrarda birlikte sorulur (aralıklar iki tür birlikte ilerler)
   }
   if(out.length<n){
     const have=new Set(out.map(i=>i.w.word));
@@ -2955,7 +3096,24 @@ function startQuiz(mode,all){
   UI.quiz={mode,items,i:0,right:0,wrong:[],learnedNow:[],pts:{c:0,b:0,w:0},done:false};
   UI.tab='quiz';render();
 }
+/* ---------- ayrıntılı istatistik: soru türü ve kelime türüne göre birikimli [doğru, yanlış] (S.st) ---------- */
+const stKeyF=it=>it.f>=200?'g':String(it.f);
+const stKeyP=w=>w.gram?'Gramer':w.phr?'Kalıp':posGroup(w);
+function stAdd(it,ok){
+  if(EXNOST||!it||!it.w||it.noW)return;
+  stInit();const st=S.st,sd=S.std[DEV]||(S.std[DEV]={f:{},p:{}});
+  const a=(o,k)=>{const x=o[k]||(o[k]=[0,0]);x[ok?0:1]++};
+  const fk=stKeyF(it);a(st.f,fk);a(sd.f,fk);try{const pk=stKeyP(it.w);a(st.p,pk);a(sd.p,pk)}catch(e){}
+}
+function stInit(){   // ilk açılışta son 21 günün cevap kayıtlarından başlat
+  if(S.std){if(!S.st)devSync(S);return}if(S.st){devMig(S);return}const st={f:{},p:{}};
+  Object.keys(S.days||{}).forEach(d=>{const ev=S.days[d].ev||{};Object.keys(ev).forEach(k=>{const e=ev[k];if(!e||e.t!=='q')return;const p=k.split('|');if(p.length<4)return;const f=+p[p.length-2],wd=p.slice(1,-2).join('|'),w=BYWORD.get(wd);
+    const fk=f>=200?'g':String(f),x=st.f[fk]||(st.f[fk]=[0,0]);x[e.ok?0:1]++;
+    if(w){const pk=f>=200?'Gramer':f>=100?'Kalıp':posGroup(w),y=st.p[pk]||(st.p[pk]=[0,0]);y[e.ok?0:1]++}})});
+  S.std={base:st};S.st=JSON.parse(JSON.stringify(st));   // geçmiş 21 gün herkes için aynı olaydan türetilir: 'base' dilimi
+}
 function applyAnswer(it,ok,ua,qz,gate){
+  try{stAdd(it,ok)}catch(e){}
   const dd=dayStat(),ev=EXNOST?null:evAdd(dd,evKey(dd,'q|'+it.w.word+'|'+it.f),{t:'q',ok:ok?1:0,lv:it.w.level,pts:0});
   CUR_EV=ev;
   try{return applyAnswerCore(it,ok,ua,qz,gate)}finally{CUR_EV=null}
@@ -2970,8 +3128,7 @@ function applyAnswerCore(it,ok,ua,qz,gate){
   if(!EXNOST){
   if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
   d.a++;if(ok)d.c++;
-  const lv=S.lv[w.level]||(S.lv[w.level]=[0,0]);
-  lv[ok?0:1]++;
+  lvAdd(w.level,ok);
   const dl=d.l||(d.l={});const dv=dl[w.level]||(dl[w.level]=[0,0]);dv[0]++;if(ok)dv[1]++;}
   const cf=COEF[w.level]||1,bq=cf*(TYPEC[it.f]||1);
   let pt=0;
@@ -2995,13 +3152,13 @@ function applyAnswerCore(it,ok,ua,qz,gate){
     if(bw&&(it.f===0||it.f===1)){
       bw.t[it.f]=Math.min(STREAK_GOAL,bw.t[it.f]+1);
       if(bw.t[0]>=STREAK_GOAL&&bw.t[1]>=STREAK_GOAL){delete S.wrong[w.word];it.cleared=true;pt+=ap(cf,'b')}
-      else bw.due=addDays(today(),INTERVALS[Math.min(bw.t[it.f],INTERVALS.length)-1]||INTERVALS[INTERVALS.length-1]);
+      else bw.due=addDays(today(),INTERVALS[Math.min(Math.min(bw.t[0],bw.t[1]),INTERVALS.length-1)]);   // iki tür birlikte sorulur: ikisi de 1 doğru → 7 gün, 2 doğru → 14 gün (biri eksikse 3 gün)
     }
   }else{
     qz.wrong.push(it);
     if(it.f===0||it.f===1){
       const e=S.wrong[w.word]||(S.wrong[w.word]={t:[0,0],due:today()});
-      e.t[it.f]=0;e.due=today();
+      e.t[it.f]=0;e.due=addDays(today(),INTERVALS[0]);   // ilk tekrar 3 gün sonra (aynı gün pratiği Yanlış defterinden gelir)
     }
   }
   return pt;
@@ -3359,7 +3516,7 @@ const trType=g=>TYPE_TR[g]||g;
 function dictFiltered(){
   const D=UI.dict,q=D.q.trim().toLowerCase(),fo=focusOn();coreInit();
   const r=W.filter(w=>{
-    if(fo&&!CORESET.has(w.word))return false;
+    if(fo&&!CORESET.has(w.word)&&w.word!==D.open)return false;   // aileden/bağlantıdan açılan kelime odakta olmasa da görünür
     if(!lvOk(D.level,w.level))return false;
     if(!lvOk(D.pos,posGroup(w)))return false;
     if(D.status==='Öğrenilen'&&!S.learned[w.word])return false;
@@ -3374,13 +3531,19 @@ function exTrT(t){const v=EXTR[exH(t)];return v?'<br><span class="extr">('+esc(v
 function senseHtml(w){   // 2. ve 3. anlamlar: Türkçe, tanım, örnek (+çevirisi), eş anlam
   return(w.sn||[]).map((z,i)=>`<dt>${i+2}. anlam</dt><dd><b>${esc(z.t)}</b>${z.p&&z.p!==w.pos?` <span class="muted small">(${esc(z.p)})</span>`:''}<br><span class="small">${esc(z.d)}</span><br><i>${esc(z.e)}</i>${exTrT(z.e)}${has(z.s)?`<br><span class="small muted">Eş anlam: ${esc(z.s)}</span>`:''}</dd>`).join('');
 }
+function afxHtml(w){   // ön/son ek kartı: bu eki alan sık kelimeler (afx.js), ek kısmı kalın
+  const L=(window.AFX||{})[String(w.word).trim()];if(!L||!L.length)return'';
+  const k=String(w.word).trim().replace(/^-|-$/g,''),pre=/-$/.test(String(w.word).trim());
+  const mark=x=>{const lx=x.toLowerCase();if(pre&&lx.startsWith(k))return'<b>'+esc(x.slice(0,k.length))+'</b>'+esc(x.slice(k.length));const i=lx.lastIndexOf(k);return !pre&&i>0?esc(x.slice(0,i))+'<b>'+esc(x.slice(i))+'</b>':esc(x)};
+  return`<dt style="grid-column:1/-1;margin-top:4px">Bu eki alan sık kelimeler</dt><dd style="grid-column:1/-1"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px">${L.map(([x,t])=>`<div style="background:var(--surface2);border-radius:10px;padding:6px 10px;line-height:1.25"><div lang="en">${mark(x)}</div><div class="muted small">${esc(t)}</div></div>`).join('')}</div></dd>`;
+}
 function entryHtml(w,fixed){   // fixed: vize kelime listesi, sözlükteki açık kayıtla aynı içerik
   const open=fixed||UI.dict.open===w.word;
   const st=S.learned[w.word]?'<span class="badge ok">Öğrenildi</span>':S.wrong[w.word]?'<span class="badge bad">Tekrarda</span>':'';
   return`<div class="entry"><button class="head" ${fixed?'':`data-act="toggle" data-w="${esc(w.word)}" `}aria-expanded="${open}">
     <span><span class="w">${esc(w.word)}</span> <span class="mono muted">${esc(w.pron)}</span><br><span class="tr">${esc(w.def||(w.phr?w.tr:''))}</span></span>
     <span class="row" style="justify-content:flex-end;gap:6px">${st}${lvTag(w.level)}</span></button>
-    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${w.phr?'<br><span class="extr">('+esc(w.phr.ex[1])+')</span>':exTr(w)}</dd>${exMore(w)}
+    ${open?`<dl><dt>Türkçe</dt><dd>${esc(w.tr)}</dd><dt>Tür</dt><dd>${esc(w.pos)}</dd><dt>Örnek</dt><dd><i>${esc(w.ex)}</i>${w.phr?'<br><span class="extr">('+esc(w.phr.ex[1])+')</span>':exTr(w)}</dd>${exMore(w)}${labHtml(w)}${confHtml(w)}${patHtml(w)}${afxHtml(w)}${famHtml(w)}${mwHtml(w)}
       ${has(w.syn)?`<dt>Eş anlam</dt><dd>${esc(w.syn)}</dd>`:''}${has(w.ant)?`<dt>Zıt anlam</dt><dd>${esc(w.ant)}</dd>`:''}
       ${senseHtml(w)}
       ${w.v2?`<dt>V2 - V3</dt><dd class="mono">${esc(w.v2)} - ${esc(w.v3)}</dd>`:''}
@@ -3594,7 +3757,7 @@ function examOne(it,qz,first,al){
         if(!EXNOST){
         if(ok){S.run=(S.run||0)+1;if(S.run>(S.br||0))S.br=S.run}else S.run=0;
         d.a++;if(ok)d.c++;
-        const lv=S.lv[lvn]||(S.lv[lvn]=[0,0]);lv[ok?0:1]++;
+        lvAdd(lvn,ok);
         const dl=d.l||(d.l={});const dv=dl[lvn]||(dl[lvn]=[0,0]);dv[0]++;if(ok)dv[1]++;
         CUR_EV=evAdd(d,evKey(d,'x|'+qz.exam+'|'+it.question.slice(0,40)),{t:'q',ok:ok?1:0,lv:lvn,pts:0});}
         if(!EXNOPT){
@@ -3712,6 +3875,7 @@ function vQuiz(){
     fb=it.noW?`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.pt?` · ${it.pt>0?'+':'−'}${nf(Math.round(Math.abs(it.pt)*100)/100)} puan`:''}</b>${it.ok?'':`<div class="small" style="margin-top:6px">${it.type==='text'?`Senin cevabın: ${esc(it.ua||'')}<br>`:''}Doğru cevap: <b>${esc(it.correct)}</b></div>`}${it.e?`<div class="small muted" style="margin-top:6px">${esc(it.e)}</div>`:''}</div>`
     :`<div class="fb ${it.ok?'ok':'bad'}"><b class="t">${it.ok?'Doğru':'Yanlış'}${it.cleared?' · tekrar listesinden çıktı':''}${qz.learnedNow.indexOf(w.word)!==-1?' · öğrenildi':''}${it.pt?` · ${it.pt>0?'+':'−'}${nf(Math.round(Math.abs(it.pt)*100)/100)} puan`:''}</b>
       <div><b>${esc(w.word)}</b> <span class="mono muted">${esc(w.pron)}</span> ${lvTag(w.level)}</div>
+      ${it.note?`<div class="small" style="margin:4px 0">Kalıp: ${it.note}</div>`:''}
       ${(it.f===22||it.f===23)&&w.sn[it.f-22]?(z=>`<div><span class="muted small">${it.f-20}. anlam:</span> ${esc(z.t)}</div><div class="small muted">${esc(z.d)}</div><div class="small"><i>${esc(z.e)}</i>${exTrT(z.e)}</div><div class="small muted" style="margin-top:4px">İlk anlam: ${esc(w.tr)}</div>`)(w.sn[it.f-22]):`<div>${esc(w.tr)}</div><div class="small muted">${esc(w.def)}</div>${(it.exu||w.ex)?`<div class="small"><i>${esc(it.exu||w.ex)}</i>${exTrT(it.exu||w.ex)}</div>`:''}`}
       ${it.ok?'':`<div class="small" style="margin-top:6px">Doğru cevap: <b>${esc(it.correct)}</b></div>`}${whyHtml(it)}${optMeans(it)}</div>`;
     nb=`<button class="btn primary block" style="margin-top:12px" data-act="next" id="nextbtn">${qz.i+1>=qz.items.length?'Sonucu gör':'Sonraki soru'}</button>`;
@@ -4310,7 +4474,7 @@ function vReview(){
     </div>`;
   }
   return`<div class="top"><h1>Tekrar</h1><span class="muted small">${keys.length} kelime</span></div><div class="stack">${tabs}
-  <div class="card stack"><div class="muted small">Öğrendiğin kelimeler 15 gün sonra ilk kez, sonra ayda bir kez tekrar sorulur${dl?' (şu an '+dl+' kelime sırada)':''}. Türkçe karşılığını veya tanımını yanlış bildiğin kelimeler burada toplanır. İkisini de art arda ${STREAK_GOAL} kez doğru bilince listeden çıkar. İlk doğrudan 1 gün, ikinci doğrudan 3 gün sonra tekrar sorulur.</div>
+  <div class="card stack"><div class="muted small">Öğrendiğin kelimeler 15 gün sonra ilk kez, sonra ayda bir kez tekrar sorulur${dl?' (şu an '+dl+' kelime sırada)':''}. Türkçe karşılığını veya tanımını yanlış bildiğin kelimeler burada toplanır. İkisini de art arda ${STREAK_GOAL} kez doğru bilince listeden çıkar. Türkçe ve Tanım soruları birlikte gelir: yanlıştan 3 gün sonra, ikisini de bir kez doğru bilince 7 gün, iki kez doğru bilince 14 gün sonra.</div>
   <div class="row"><button class="btn primary" data-act="start-review" ${due?'':'disabled'}>Günü gelenleri çalış (${due})</button>
   ${keys.length&&!due?'<button class="btn" data-act="start-review-all">Yine de hepsini çalış</button>':''}</div></div>
   ${keys.length?keys.map(k=>{const w=BYWORD.get(k),e=S.wrong[k],d=e.due<=today();
@@ -4332,6 +4496,37 @@ function vMe(){
   if(UI.me==='stats')body=vStats()+'<h2 style="margin:10px 2px 0">Öğrenilenler</h2>'+vLearned();else if(UI.me==='help')body=vHelp();else if(UI.me==='prof')body=vProfile();else if(UI.me==='msg'&&CLOUD.admin)body=vMsgs();else if(UI.me==='live'&&CLOUD.admin)body=vLive();else if(UI.me==='fla'&&CLOUD.admin)body=vFlags();else if(UI.me==='rep'&&CLOUD.admin)body=vReports();else if(UI.me==='grd'&&CLOUD.admin)body=vGuard();else if(UI.me==='cban'&&CLOUD.admin)body=vChatBans();else if(UI.me==='adm'&&CLOUD.admin)body=vAdmin();else body=vSettings()+vFeedback();
   return`<div class="top"><h1>Ben</h1></div><div class="stack"><div class="seg">${seg.map(([k,l])=>`<button class="chip" aria-pressed="${k==='admin'?inAdm:UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>${inAdm?`<div class="seg">${subs.map(([k,l])=>`<button class="chip" aria-pressed="${UI.me===k}" data-me="${k}">${l}</button>`).join('')}</div>`:''}${body}</div>`;
 }
+const STG=[['Anlam',[0,1,13,22,23,24,25]],['Eş / zıt anlam',[4,5,26,27]],['Cümlede kullanım',[3,12,8,11,7,9]],['Dilbilgisi',[2,6,10,28,29,32]],['Karıştırılanlar',[30,31]],['Kalıplar',[100,101,102,103,104,105]],['Gramer',['g']]];
+const stLab=k=>k==='g'?'Gramer soruları':FEAT[+k]||('Tür '+k);
+function stBar(c,w,lab,act){const n=c+w,p=n?Math.round(c/n*100):0,col=p>=80?'var(--ok)':p>=60?'var(--warn,#e0a100)':'var(--bad)';
+  return`<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding:6px 0;border-top:1px solid var(--line)"><div class="small" style="font-weight:600">${lab}</div><div class="small"><b style="color:${col}">%${p}</b> <span class="muted">· ${nf(n)} soru</span></div><div style="grid-column:1/-1;height:6px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;width:${p}%;background:${col}"></div></div>${act||''}</div>`}
+function stWeak(){   // en az 15 cevaplı türlerden en düşük 3
+  const F=(S.st||{}).f||{};return Object.keys(F).filter(k=>F[k][0]+F[k][1]>=15&&k!=='g'&&+k<100).map(k=>[k,F[k][0]/(F[k][0]+F[k][1])]).sort((a,b)=>a[1]-b[1]).slice(0,3)}
+function vStatsMore(){
+  stInit();const st=S.st||{f:{},p:{}},F=st.f,P=st.p;
+  const sum=ks=>ks.reduce((a,k)=>{const x=F[String(k)];return x?[a[0]+x[0],a[1]+x[1]]:a},[0,0]);
+  const groups=STG.map(([lab,ks])=>{const t=sum(ks);if(!(t[0]+t[1]))return'';const rows=ks.filter(k=>F[String(k)]).map(k=>{const x=F[String(k)];return stBar(x[0],x[1],stLab(String(k)))}).join('');
+    return`<details style="border-top:1px solid var(--line)"><summary style="cursor:pointer;list-style:none">${stBar(t[0],t[1],lab+' <span class="muted" style="font-weight:400">▾</span>')}</summary><div style="padding-left:12px">${rows}</div></details>`}).join('');
+  const pk=Object.keys(P).filter(k=>P[k][0]+P[k][1]>=5).sort((a,b)=>(P[a][0]/(P[a][0]+P[a][1]))-(P[b][0]/(P[b][0]+P[b][1])));
+  const pos=pk.map(k=>stBar(P[k][0],P[k][1],esc(TYPE_TR[k]||k))).join('');
+  // Odak ilerlemesi ve tempo
+  coreInit();const cl={},ct={};CORESET.forEach(x=>{const w=BYWORD.get(x);if(!w)return;const l=w.level;ct[l]=(ct[l]||0)+1;if(S.learned[x])cl[l]=(cl[l]||0)+1});   // kullanıcının eklediği kelimeler kendi seviyesinde sayılır
+  let n14=0;for(let i=0;i<14;i++){const d=S.days[addDays(today(),-i)];if(d)n14+=d.n|0}
+  const cs=coreStat(),left=cs.t-cs.n,pace=n14/14,eta=pace>0?Math.ceil(left/pace):0;
+  const core=`<div class="card stack"><h2>🎯 Odak listesi</h2>${LEVELS.filter(l=>ct[l]).map(l=>{const t=ct[l],n=cl[l]||0,p=n/t*100;return`<div class="lvrow"><span class="lv lv-${l}">${l}</span><div><div class="bar"><i style="width:${p.toFixed(1)}%;background:var(--l-${l})"></i></div></div><span class="num">${nf(n)}/${nf(t)}</span></div>`}).join('')}
+    <div class="small muted">Son 14 günde ${nf(n14)} kelime öğrendin (günde ~${nf(Math.round(pace*10)/10)}). ${pace>0?`Bu hızla Odak listesinin kalan ${nf(left)} kaydı yaklaşık <b>${nf(eta)} gün</b> sürer.`:'Tempo hesaplamak için birkaç gün çalışman gerekiyor.'}</div></div>`;
+  // plan
+  const wk=stWeak(),due=dueWrong(false).length,wl=(S.wlog||[]).length,g=goalEff();
+  const tips=[];
+  wk.forEach(([k,r])=>tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)"><b>${esc(stLab(k))}</b> sorularında başarın %${Math.round(r*100)}; bu türe dikkat et.</div>`));
+  if(due)tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)">Tekrar zamanı gelmiş <b>${nf(due)}</b> kelime var; Bugünün testi bunları öne alır.</div>`);
+  if(wl>=20)tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)">Yanlış defterinde <b>${nf(wl)}</b> soru birikti; Tekrar → Yanlış defteri'nden temizle.</div>`);
+  if(!focusOn()&&(window.CORE||[]).length)tips.push(`<div class="small" style="padding:6px 0;border-top:1px solid var(--line)">B1–B2'ye odaklanmak için Bugün sayfasından <b>🎯 Odak modu</b>'nu açabilirsin.</div>`);
+  tips.push(`<div class="small muted" style="padding:6px 0;border-top:1px solid var(--line)">Günlük hedefin ${nf(g)} doğru. Son 14 günün ortalaması ${nf(Math.round(Object.keys(S.days).filter(d=>d>=addDays(today(),-13)).reduce((a,d)=>a+(S.days[d].c|0),0)/14))} doğru.</div>`);
+  return`<div class="card stack"><h2>📋 Çalışma planı önerisi</h2><div class="small muted">İstatistiklerine göre öncelik sırası.</div>${tips.join('')}</div>${core}
+  <div class="card"><h2 style="margin-bottom:4px">Soru türlerine göre başarı</h2><div class="small muted" style="margin-bottom:4px">Gruba dokununca alt türler açılır. Renk: yeşil %80+, sarı %60–79, kırmızı %60 altı.</div>${groups||'<div class="small muted">Henüz yeterli cevap yok.</div>'}</div>
+  ${pos?`<div class="card"><h2 style="margin-bottom:4px">Kelime türlerine göre başarı</h2><div class="small muted" style="margin-bottom:4px">En zayıftan güçlüye.</div>${pos}</div>`:''}`;
+}
 function vStats(){
   const tot={},lrn={};
   W.forEach(w=>{tot[w.level]=(tot[w.level]||0)+1});
@@ -4343,7 +4538,7 @@ function vStats(){
     const t=tot[l]||0,n=lrn[l]||0,p=t?n/t*100:0,q=S.lv[l]||[0,0],qa=q[0]+q[1];
     return`<div class="lvrow"><span class="lv lv-${l}">${l}</span><div><div class="bar"><i style="width:${p.toFixed(1)}%;background:var(--l-${l})"></i></div>${qa?`<div class="small muted" style="margin-top:3px">Test başarısı %${Math.round(q[0]/qa*100)} (${q[0]} doğru, ${q[1]} yanlış)</div>`:''}</div><span class="num">${nf(n)}/${nf(t)}</span></div>`}).join('')}</div>
   <div class="card"><h2>Son 14 gün</h2><div class="muted small">Mavi: doğru, kırmızı: yanlış cevap sayısı</div>
-  <div class="days" role="img" aria-label="Son 14 günün cevap grafiği">${days.map(([d,x])=>`<div title="${fmt(d)}: ${x.c} doğru, ${x.a-x.c} yanlış"><i class="w" style="height:${((x.a-x.c)/mx*80).toFixed(1)}%"></i><i style="height:${(x.c/mx*80).toFixed(1)}%"></i><small>${new Date(d+'T12:00:00').getDate()}</small></div>`).join('')}</div></div>`;
+  <div class="days" role="img" aria-label="Son 14 günün cevap grafiği">${days.map(([d,x])=>`<div title="${fmt(d)}: ${x.c} doğru, ${x.a-x.c} yanlış"><i class="w" style="height:${((x.a-x.c)/mx*80).toFixed(1)}%"></i><i style="height:${(x.c/mx*80).toFixed(1)}%"></i><small>${new Date(d+'T12:00:00').getDate()}</small></div>`).join('')}</div></div>${vStatsMore()}`;
 }
 function vLearned(){
   const keys=Object.keys(S.learned).filter(k=>BYWORD.has(k)).sort((a,b)=>S.learned[b].d.localeCompare(S.learned[a].d));
@@ -5823,6 +6018,8 @@ document.addEventListener('click',async e=>{
     case'duel-exit':if(DUEL.id&&DUEL.id!=='bot')(DUEL.done=DUEL.done||{})[DUEL.id]=1;dReset();render();lobbyLoad();break;
     case'start-today':startQuiz('today');break;
     case'start-new':startQuiz('new');break;
+    case'mw-more':{const x=g('data-w');UI.mwOpen=UI.mwOpen||{};UI.mwOpen[x]=!UI.mwOpen[x];const y=window.scrollY;render();window.scrollTo(0,y);break}
+    case'fam-go':{const x=g('data-w');UI.tab='dict';UI.dict.q=x;UI.dict.open=x;UI.dict.level='Hepsi';UI.dict.pos='Hepsi';UI.dict.status='Hepsi';UI.dict.limit=40;UI.card=null;render();window.scrollTo(0,0);break}
     case'fo-w':{const w=g('data-w');toggleFocus(w);toast(inFocus(w)?'Odak listene eklendi.':'Odak listenden çıkarıldı.');const dl=$('#dlist');if(dl&&(UI.tab==='dict'||UI.tab==='saved')){if(focusOn()&&!inFocus(w)&&UI.tab==='dict')UI.dict.open=null;dl.innerHTML=UI.tab==='saved'?savedList():dictList()}else render();break}
     case'focus-tg':S.set.focus=!focusOn();save();render();toast(S.set.focus?'Odak modu açık: yeni kelimeler çekirdek listeden gelecek.':'Odak modu kapalı: tüm sözlük.');break;
     case'focus-set':S.set.focus=g('data-v')==='1';UI.dict.limit=40;save();render();break;

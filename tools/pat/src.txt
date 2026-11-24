@@ -1,0 +1,249 @@
+# kelime | kalıp | Türkçe not | örnek: {doğru|yanlış|yanlış|yanlış}
+## fiil + -ing
+enjoy|enjoy + -ing|-mekten hoşlanmak|I really enjoy {swimming|to swim|swim|swam} in the sea.
+avoid|avoid + -ing|-mekten kaçınmak|Try to avoid {eating|to eat|eat|ate} too much sugar.
+finish|finish + -ing|-meyi bitirmek|Have you finished {writing|to write|write|wrote} your essay?
+mind|mind + -ing|-mekte sakınca görmek|Would you mind {opening|to open|open|opened} the window?
+suggest|suggest + -ing / that|-meyi önermek|He suggested {going|to go|go|went} to the cinema.
+consider|consider + -ing|-meyi düşünmek|We are considering {moving|to move|move|moved} to Izmir.
+keep|keep + -ing|-meye devam etmek|She kept {talking|to talk|talk|talked} during the film.
+miss|miss + -ing|-meyi özlemek|I miss {living|to live|live|lived} by the sea.
+practise|practise + -ing|-meyi çalışmak|You should practise {speaking|to speak|speak|spoke} every day.
+deny|deny + -ing|-diğini inkâr etmek|He denied {taking|to take|take|took} the money.
+admit|admit + -ing|-diğini kabul etmek|She admitted {making|to make|make|made} a mistake.
+risk|risk + -ing|-meyi göze almak|Don't risk {losing|to lose|lose|lost} your job.
+imagine|imagine + -ing|-meyi hayal etmek|Can you imagine {living|to live|live|lived} on Mars?
+dislike|dislike + -ing|-mekten hoşlanmamak|I dislike {waiting|to wait|wait|waited} in long queues.
+delay|delay + -ing|-meyi ertelemek|They delayed {starting|to start|start|started} the meeting.
+postpone|postpone + -ing|-meyi ertelemek|We postponed {travelling|to travel|travel|travelled} until spring.
+give up|give up + -ing|-meyi bırakmak|He gave up {smoking|to smoke|smoke|smoked} last year.
+look forward to|look forward to + -ing|-meyi dört gözle beklemek|I'm looking forward to {seeing|see|seen|saw} you.
+can't stand|can't stand + -ing|-meye katlanamamak|I can't stand {waiting|wait|waited|waits} for buses.
+## fiil + to
+decide|decide + to|-meye karar vermek|I decided {to stay|staying|stay|stayed} at home.
+want|want + to|-mek istemek|She wants {to learn|learning|learn|learnt} Spanish.
+hope|hope + to|-meyi ummak|We hope {to see|seeing|see|seen} you soon.
+plan|plan + to|-meyi planlamak|They plan {to open|opening|open|opened} a café.
+promise|promise + to|-meye söz vermek|He promised {to call|calling|call|called} me.
+agree|agree + to|-meyi kabul etmek|She agreed {to help|helping|help|helped} us.
+refuse|refuse + to|-meyi reddetmek|He refused {to answer|answering|answer|answered} the question.
+manage|manage + to|-meyi başarmak|We managed {to finish|finishing|finish|finished} on time.
+afford|afford + to|-meye gücü yetmek|I can't afford {to buy|buying|buy|bought} a new car.
+expect|expect + to|-meyi beklemek|I expect {to hear|hearing|hear|heard} from them soon.
+learn|learn + to|-meyi öğrenmek|She learnt {to drive|driving|drive|drove} at eighteen.
+offer|offer + to|-meyi teklif etmek|He offered {to carry|carrying|carry|carried} my bag.
+pretend|pretend + to|-miş gibi yapmak|The child pretended {to be|being|be|was} asleep.
+seem|seem + to|gibi görünmek|She seems {to be|being|be|is} tired today.
+fail|fail + to|-meyi başaramamak|He failed {to notice|noticing|notice|noticed} the sign.
+tend|tend + to|-me eğiliminde olmak|People tend {to forget|forgetting|forget|forgot} names.
+deserve|deserve + to|-meyi hak etmek|You deserve {to win|winning|win|won}.
+threaten|threaten + to|-mekle tehdit etmek|He threatened {to leave|leaving|leave|left} the team.
+arrange|arrange + to|-mek için ayarlamak|We arranged {to meet|meeting|meet|met} at six.
+## fiil + nesne + to
+advise|advise sb to|birine -mesini tavsiye etmek|The doctor advised me {to rest|resting|rest|rested}.
+allow|allow sb to|birinin -mesine izin vermek|My parents allowed me {to go|going|go|went} to the party.
+ask|ask sb to|birinden -mesini istemek|She asked me {to close|closing|close|closed} the door.
+encourage|encourage sb to|birini -meye teşvik etmek|Teachers encourage students {to read|reading|read|reads} more.
+invite|invite sb to|birini -meye davet etmek|They invited us {to stay|staying|stay|stayed} for dinner.
+remind|remind sb to|birine -meyi hatırlatmak|Remind me {to buy|buying|buy|bought} some milk.
+tell|tell sb to|birine -mesini söylemek|He told me {to wait|waiting|wait|waited} outside.
+warn|warn sb (not) to|birini uyarmak|They warned us {not to swim|not swimming|don't swim|no swim} there.
+persuade|persuade sb to|birini -meye ikna etmek|She persuaded him {to come|coming|come|came} with us.
+let|let sb + yalın fiil|birinin -mesine izin vermek|Let me {help|to help|helping|helped} you.
+make|make sb + yalın fiil|birine -tirmek|The film made me {cry|to cry|crying|cried}.
+## anlam değiştiren: -ing / to
+remember|remember + -ing / to|-diğini hatırlamak / -meyi unutmamak|Remember {to lock|locking|lock|locked} the door before you leave.
+forget|forget + to / -ing|-meyi unutmak|Don't forget {to call|calling|call|called} your mother.
+stop|stop + -ing / to|-meyi bırakmak / -mek için durmak|He stopped {smoking|to smoke|smoke|smoked} two years ago.
+regret|regret + -ing|-diğine pişman olmak|I regret {saying|to say|say|said} that to her.
+## fiil + edat
+depend|depend on|-e bağlı olmak|It depends {on|of|from|at} the weather.
+rely|rely on|-e güvenmek|You can rely {on|to|at|of} me.
+insist|insist on|-de ısrar etmek|He insisted {on|to|for|at} paying the bill.
+concentrate|concentrate on|-e odaklanmak|I can't concentrate {on|to|at|in} my work.
+focus|focus on|-e odaklanmak|Let's focus {on|to|at|in} the main problem.
+apologise|apologise for|-den dolayı özür dilemek|She apologised {for|of|on|to} being late.
+apply|apply for|-e başvurmak|He applied {for|to|on|at} a job at the bank.
+wait|wait for|-i beklemek|We waited {for|to|of|at} the bus for an hour.
+look after|look after|-e bakmak, ilgilenmek|Who looks {after|for|at|on} your children?
+listen|listen to|-i dinlemek|I like listening {to|at|for|on} podcasts.
+belong|belong to|-e ait olmak|This bag belongs {to|at|for|with} my sister.
+succeed|succeed in|-de başarılı olmak|She succeeded {in|on|at|to} passing the exam.
+believe|believe in|-e inanmak|Do you believe {in|on|to|at} ghosts?
+complain|complain about|-den şikâyet etmek|They complained {about|on|for|at} the noise.
+worry|worry about|-i dert etmek|Don't worry {about|of|on|at} the test.
+think|think about / of|-i düşünmek|I'm thinking {about|on|at|to} changing my job.
+dream|dream of / about|-i hayal etmek|She dreams {of|on|for|at} becoming a pilot.
+consist|consist of|-den oluşmak|The team consists {of|from|in|with} five people.
+participate|participate in|-e katılmak|All students must participate {in|to|at|on} the project.
+pay|pay for|-in parasını ödemek|Who paid {for|to|on|at} the tickets?
+recover|recover from|-den iyileşmek|He is recovering {from|of|after|out} the flu.
+suffer|suffer from|-den muzdarip olmak|She suffers {from|of|to|by} headaches.
+protect|protect from|-den korumak|Sunscreen protects your skin {from|of|at|on} the sun.
+prevent|prevent from|-den alıkoymak|The rain prevented us {from|of|to|for} going out.
+accuse|accuse sb of|birini -le suçlamak|They accused him {of|for|with|about} stealing.
+congratulate|congratulate sb on|birini -den dolayı tebrik etmek|We congratulated her {on|for|of|at} her new job.
+thank|thank sb for|birine -den dolayı teşekkür etmek|Thank you {for|to|of|on} your help.
+blame|blame sb for|birini -den dolayı suçlamak|Don't blame me {for|of|on|about} the mistake.
+agree with|agree with|-e katılmak (fikir)|I agree {with|to|on|at} you completely.
+laugh|laugh at|-e gülmek|Everyone laughed {at|on|to|with} his joke.
+arrive|arrive at / in|-e varmak|We arrived {in|to|at the|on} London at noon.
+## sıfat + edat
+interested|interested in|-e ilgili|She is interested {in|on|at|for} art.
+good|good at|-de iyi|He is good {at|in|on|to} maths.
+bad|bad at|-de kötü|I'm bad {at|in|on|to} remembering names.
+afraid|afraid of|-den korkmak|My son is afraid {of|from|at|with} dogs.
+proud|proud of|-den gurur duymak|We are proud {of|with|for|at} you.
+tired|tired of|-den bıkmış|I'm tired {of|from|with|at} waiting.
+fond|fond of|-e düşkün|She is very fond {of|to|with|at} her grandmother.
+aware|aware of|-in farkında|Are you aware {of|about|on|at} the risks?
+full|full of|-le dolu|The room was full {of|with|by|at} people.
+famous|famous for|ile ünlü|Antep is famous {for|of|with|by} its baklava.
+responsible|responsible for|-den sorumlu|Who is responsible {for|of|on|to} this project?
+similar|similar to|-e benzer|Your bag is similar {to|with|as|of} mine.
+different|different from|-den farklı|This city is different {from|of|with|on} Istanbul.
+married|married to|ile evli|She is married {to|with|by|at} a doctor.
+keen|keen on|-e meraklı, hevesli|He is keen {on|in|of|at} football.
+satisfied|satisfied with|-den memnun|Are you satisfied {with|of|from|at} the service?
+pleased|pleased with|-den memnun|The teacher was pleased {with|of|from|to} our work.
+angry|angry with / about|-e kızgın|She was angry {with|to|at the|on} her brother.
+worried|worried about|-den endişeli|I'm worried {about|for|of|on} my exam.
+excited|excited about|-den heyecanlı|The kids are excited {about|for the|of|on} the trip.
+capable|capable of|-e muktedir|She is capable {of|to|for|at} doing better.
+used to|be used to + -ing|-e alışkın olmak|I'm used to {getting|get|got|gets} up early.
+## isim + edat
+reason|reason for|-in nedeni|What is the reason {for|of|to|about} the delay?
+increase|increase in|-de artış|There was an increase {in|of|on|at} prices.
+cause|cause of|-in nedeni|Smoking is a major cause {of|for|to|in} cancer.
+advantage|advantage of|-in avantajı|One advantage {of|for|in|to} living here is the sea.
+solution|solution to|-e çözüm|We need a solution {to|for the|of|in} this problem.
+attitude|attitude to / towards|-e karşı tutum|His attitude {towards|for|of|on} work is great.
+interest|interest in|-e ilgi|She has a strong interest {in|on|for|at} history.
+effect|effect on|-e etkisi|Music has a strong effect {on|to|in|at} our mood.
+demand|demand for|-e talep|There is a high demand {for|of|to|on} nurses.
+access|access to|-e erişim|Everyone should have access {to|for|of|at} clean water.
+## fiil + -ing ile sık karışan yapılar
+spend|spend time + -ing|-erek zaman geçirmek|She spends hours {reading|to read|read|reads} every day.
+be worth|be worth + -ing|-meye değer|This museum is worth {visiting|to visit|visit|visited}.
+it's no use|it's no use + -ing|-menin faydası yok|It's no use {crying|to cry|cry|cried} about it.
+have difficulty|have difficulty + -ing|-mekte zorlanmak|I have difficulty {understanding|to understand|understand|understood} his accent.
+## ek: fiil + -ing
+recommend|recommend + -ing|-meyi tavsiye etmek|I recommend {booking|to book|book|booked} a table early.
+involve|involve + -ing|-meyi gerektirmek|The job involves {travelling|to travel|travel|travelled} a lot.
+appreciate|appreciate + -ing|-mesini takdir etmek|I'd appreciate {hearing|to hear|hear|heard} your opinion.
+can't help|can't help + -ing|-meden edememek|I couldn't help {laughing|to laugh|laugh|laughed} at the joke.
+feel like|feel like + -ing|canı -mek istemek|I don't feel like {cooking|to cook|cook|cooked} tonight.
+carry on|carry on + -ing|-meye devam etmek|Carry on {working|to work|work|worked} while I'm away.
+quit|quit + -ing|-meyi bırakmak|She quit {eating|to eat|eat|ate} meat last year.
+mention|mention + -ing|-diğinden bahsetmek|He mentioned {seeing|to see|see|saw} you at the station.
+## ek: fiil + to
+choose|choose + to|-meyi seçmek|She chose {to study|studying|study|studied} medicine.
+prepare|prepare + to|-meye hazırlanmak|We are preparing {to leave|leaving|leave|left} tomorrow.
+intend|intend + to|-meye niyetli olmak|I intend {to finish|finishing|finish|finished} this today.
+attempt|attempt + to|-meye girişmek|He attempted {to climb|climbing|climb|climbed} the wall.
+claim|claim + to|-diğini iddia etmek|She claims {to know|knowing|know|knew} the answer.
+hesitate|hesitate + to|-mekte tereddüt etmek|Don't hesitate {to ask|asking|ask|asked} for help.
+struggle|struggle + to|-mekte zorlanmak|He struggled {to understand|understanding|understand|understood} the rules.
+wish|wish + to|-mek istemek (resmî)|I wish {to speak|speaking|speak|spoke} to the manager.
+need|need + to|-mesi gerekmek|You need {to rest|resting|rest|rested} more.
+would like|would like + to|-mek istemek|I would like {to book|booking|book|booked} a room.
+used to|used to + yalın fiil|eskiden -erdi|I used to {play|playing|played|plays} the piano.
+## ek: fiil + nesne + to
+expect|expect sb to|birinin -mesini beklemek|They expect us {to arrive|arriving|arrive|arrived} early.
+order|order sb to|birine -mesini emretmek|The officer ordered them {to stop|stopping|stop|stopped}.
+force|force sb to|birini -meye zorlamak|The storm forced us {to stay|staying|stay|stayed} inside.
+require|require sb to|birinin -mesini şart koşmak|The rules require students {to wear|wearing|wear|wore} a uniform.
+teach|teach sb to|birine -meyi öğretmek|My father taught me {to swim|swimming|swim|swam}.
+help|help sb (to) + fiil|birine -mesinde yardım etmek|Can you help me {carry|carrying|carried|carries} these boxes?
+## ek: fiil + edat
+search|search for|-i aramak|They are searching {for|to|on|at} the missing child.
+look for|look for|-i aramak|I'm looking {for|to|on|of} my keys. I can't find them.
+look at|look at|-e bakmak|Look {at|to|on|of} this photo!
+deal|deal with|-le ilgilenmek, başa çıkmak|She deals {with|to|on|at} customer complaints.
+cope|cope with|-le başa çıkmak|How do you cope {with|to|on|at} stress?
+provide|provide sb with|birine -i sağlamak|The hotel provides guests {with|to|of|at} free Wi-Fi.
+supply|supply sb with|birine -i tedarik etmek|They supplied the school {with|to|of|at} new computers.
+share|share with|ile paylaşmak|She shared her lunch {with|to|for|at} me.
+compare|compare with / to|ile karşılaştırmak|Don't compare yourself {with|than|as|from} others.
+contribute|contribute to|-e katkıda bulunmak|Everyone contributed {to|for|in|at} the project.
+respond|respond to|-e yanıt vermek|She didn't respond {to|at|on|for} my email.
+react|react to|-e tepki vermek|How did he react {to|at|on|for} the news?
+refer|refer to|-den bahsetmek, -e atıfta bulunmak|Which book are you referring {to|at|on|for}?
+adapt|adapt to|-e uyum sağlamak|It took me months to adapt {to|at|on|with the} the new city.
+object|object to + -ing|-e itiraz etmek|I object {to|at|for|on} being treated like a child.
+specialise|specialise in|-de uzmanlaşmak|She specialises {in|on|at|for} children's law.
+invest|invest in|-e yatırım yapmak|He invested {in|on|at|to} a small company.
+result|result in|ile sonuçlanmak|The accident resulted {in|on|to|with} two injuries.
+benefit|benefit from|-den yararlanmak|Students benefit {from|of|by the|at} extra lessons.
+escape|escape from|-den kaçmak|The bird escaped {from|of|at|on} its cage.
+differ|differ from|-den farklı olmak|British English differs {from|of|to|at} American English.
+graduate|graduate from|-den mezun olmak|She graduated {from|of|at the|in the} Ankara University.
+hear|hear from / about|-den haber almak|Have you heard {from|of the|by|at} Ali recently?
+borrow|borrow from|-den ödünç almak|Can I borrow some money {from|to|by|of} you?
+lend|lend to|-e ödünç vermek|I lent my car {to|from|by|for} my brother.
+explain|explain sth to sb|birine bir şeyi açıklamak|Can you explain this {to|on|at|with} me?
+introduce|introduce sb to|birini -e tanıtmak|Let me introduce you {to|with|at|for} my wife.
+prefer|prefer A to B|A'yı B'ye tercih etmek|I prefer tea {to|than|from|over than} coffee.
+translate|translate into|-e çevirmek|Translate this text {into|to the|at|in the} Turkish.
+divide|divide into|-e bölmek|Divide the class {into|in the|at|to the} three groups.
+turn into|turn into|-e dönüşmek|The caterpillar turned {into|to the|at|on} a butterfly.
+## ek: sıfat + edat
+ashamed|ashamed of|-den utanmış|He was ashamed {of|for|with|about the} his behaviour.
+jealous|jealous of|-i kıskanan|She is jealous {of|to|on|with the} her sister.
+scared|scared of|-den korkmuş|I'm scared {of|from|at|with} spiders.
+sure|sure of / about|-den emin|Are you sure {about|on|in|to} that?
+certain|certain of / about|-den emin|I'm certain {of|for|on|to} his honesty.
+guilty|guilty of|-den suçlu|He was found guilty {of|for|in|with} theft.
+short|short of|-i az olan, eksik|We're short {of|in|at|with the} time.
+typical|typical of|-e özgü, tipik|This weather is typical {of|for the|to|at} April.
+kind|kind to / of|-e karşı nazik|She is always kind {to|for|with the|at} animals.
+nice|nice to|-e karşı iyi|Be nice {to|for|with the|at} your little brother.
+rude|rude to|-e karşı kaba|He was rude {to|for|with the|at} the waiter.
+polite|polite to|-e karşı kibar|Always be polite {to|for|with the|at} customers.
+familiar|familiar with|-e aşina|Are you familiar {with|to|of|at} this software?
+careful|careful with|-e dikkatli|Be careful {with|to|of the|at} that knife.
+busy|busy with|-le meşgul|I'm busy {with|to|of|at the} my homework.
+crowded|crowded with|-le kalabalık|The beach was crowded {with|of|by the|at} tourists.
+popular|popular with|arasında popüler|This app is popular {with|to|by the|at} teenagers.
+disappointed|disappointed with / in|-den hayal kırıklığına uğramış|I'm disappointed {with|of|for|at the} the results.
+bored|bored with / of|-den sıkılmış|The kids are bored {with|from|to|at the} this game.
+surprised|surprised at / by|-e şaşırmış|We were surprised {by|of|to|from} the news.
+shocked|shocked by / at|-den şoke olmuş|Everyone was shocked {by|of|to|from} his death.
+involved|involved in|-e dahil, -de yer alan|She is involved {in|on|at|to} many projects.
+successful|successful in|-de başarılı|He was successful {in|on|at the|to} his career.
+rich|rich in|-ce zengin|Oranges are rich {in|of|with the|on} vitamin C.
+late|late for|-e geç kalmış|Don't be late {for|in|at the|on} class.
+ready|ready for|-e hazır|Are you ready {for|to the|at|on} the exam?
+suitable|suitable for|-e uygun|This film is not suitable {for|to the|at|with the} children.
+grateful|grateful for / to|-e minnettar|I'm grateful {for|of|on|at} your help.
+sorry|sorry for / about|-den dolayı üzgün|I'm sorry {for|of|on|at} being late.
+addicted|addicted to|-e bağımlı|Many teenagers are addicted {to|of|on|with} their phones.
+related|related to|ile ilgili, akraba|Is this problem related {to|with the|of|at} the last one?
+opposed|opposed to|-e karşı|Many people are opposed {to|against the|of|at} the new law.
+equal|equal to|-e eşit|One kilo is equal {to|with the|of|as} 1,000 grams.
+close|close to|-e yakın|Our hotel is close {to|of|at|from} the beach.
+harmful|harmful to|-e zararlı|Smoking is harmful {to|for the|of|at} your health.
+## ek: isim + edat
+damage|damage to|-e verilen hasar|The storm caused damage {to|on the|at|of the} many houses.
+need|need for|-e ihtiyaç|There is a need {for|of|to the|at} more teachers.
+example|example of|-in örneği|This is a good example {of|for the|to|at} modern art.
+lack|lack of|-in eksikliği|The plants died because of a lack {of|in|for|at} water.
+knowledge|knowledge of|-in bilgisi|She has a good knowledge {of|in the|on the|at} history.
+connection|connection between / with|arasında bağlantı|Is there a connection {between|among the|at|of the} these events?
+difference|difference between|arasındaki fark|What's the difference {between|among the|of the|at} these two words?
+relationship|relationship with / between|ile ilişki|She has a good relationship {with|to|for|at} her boss.
+experience|experience in / of|-de deneyim|Do you have any experience {in|at the|on the|to} teaching?
+invitation|invitation to|-e davet|Thanks for the invitation {to|for the|of|at} your wedding.
+answer|answer to|-in cevabı|Do you know the answer {to|of|for the|at} this question?
+key|key to|-in anahtarı|Hard work is the key {to|of|for the|at} success.
+threat|threat to|-e tehdit|Pollution is a threat {to|for the|of|at} wildlife.
+decrease|decrease in|-de azalış|There was a decrease {in|of the|on|at} sales.
+rise|rise in|-de artış|There was a sharp rise {in|of the|on|at} unemployment.
+change|change in|-de değişiklik|There has been a change {in|of the|on|at} the weather.
+## ek: kalıplar
+be supposed to|be supposed to + fiil|-mesi gerekmek, beklenmek|You're supposed {to be|being|be|been} here at nine.
+had better|had better + yalın fiil|-se iyi olur|You'd better {leave|to leave|leaving|left} now.
+would rather|would rather + yalın fiil|-meyi tercih etmek|I'd rather {stay|to stay|staying|stayed} at home.
+it's time|it's time + to / geçmiş zaman|-me zamanı|It's time {to go|going|go|gone} home.
+there's no point|there's no point (in) + -ing|-menin anlamı yok|There's no point {arguing|to argue|argue|argued} about it.
+be about to|be about to + fiil|-mek üzere olmak|The film is about {to start|starting|start|started}.
