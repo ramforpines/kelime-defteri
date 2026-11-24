@@ -45,3 +45,6 @@ S={
   "Yes, I think they should. Many students are at school until late afternoon and then have hours of homework, so they have almost no free time. Shorter days would give them time to rest, exercise and pursue interests like music or art, which are just as important for their development. Some countries with shorter school days, like Finland, still achieve excellent results, so it's clearly possible."],
  ["I imagine technology is likely to play a much bigger role. Lessons will probably be more personalised, with programs adapting to each student's level and speed. Students might also learn more through virtual reality, for example visiting ancient Rome in a history lesson. But I think teachers will still be needed to motivate students and help them develop social skills.",
   "I think there'll be a bigger focus on practical skills, like problem solving, communication and managing money, rather than memorising facts, since everyone can look up information instantly. Exams might also change, with more projects and less pressure on a single test at the end of the year. I think that would be fairer, because some students perform badly under exam pressure even when they understand the subject well."]]}
+
+import more_b2_4 as _y4
+W.update(_y4.XW);S.update(_y4.XS)

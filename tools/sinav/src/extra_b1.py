@@ -58,3 +58,9 @@ S={
   "In some ways, it's easier online. Shy people, like me, find it less stressful to write than to speak. Also, online you can find people who love the same things as you, even if they live far away. I met one of my best friends in an online game."],
  ["Today it's quite easy. You can send messages every day, share photos and have video calls. I talk to my cousin in Germany every Sunday on video. But I think it's also important to visit each other when you can, because meeting face to face is different.",
   "People can use social media to see what their friends are doing, and they can play online games together. Some people still send letters or postcards, which I think is very special. Planning a holiday together once a year is also a good way to stay close."]]}
+
+import more_b1_3 as _x3
+W.update(_x3.XW);S.update(_x3.XS)
+
+import more_b1_6 as _x6
+W.update(_x6.XW);S.update(_x6.XS)

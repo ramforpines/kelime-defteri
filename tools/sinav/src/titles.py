@@ -7,6 +7,13 @@ T={'a2r1':'Shop and School Notices','a2r2':'New Schools','a2r3':'A Young Swimmer
 'b1l1':'Short Recordings','b1l2':'Opinions','b1l3':'Summer Camp','b1l4':'Volunteering Abroad','b1l5':'A Cookery Course','b1l1b':'Short Recordings (2)','b1l2b':'School, Work and Holidays','b1l3b':'The Harbour Museum','b1l4b':'A Young Chef',
 'b1w1':'The New Sports Club','b1w2':'The Class Trip','b1w3':'Free Time','b1w4':'Technology at School','b1w5':'The Midnight Phone Call','b1w6':'The Missing Key',
 'b1s1':'About You (1)','b1s2':'About You (2)','b1s3':'A Favourite Place','b1s4':'A Busy Moment','b1s5':'Making New Friends','b1s6':'Friendship','b1s7':'Work and Education','b1s8':'Hobbies and Free Time','b1s9':'At the Train Station','b1s10':'Moving House','b1s11':'A Class Meal','b1s12':'Shopping',
+'b1r1c':'Library, Bus and Messages','b1r2c':'Weekend Courses','b1r3c':'Cycling to School','b1r3d':'Working Nights','b1r4c':'A Garden at School','b1r5d':'A Lost Bag','b1r5e':'New Neighbours','b1r6d':'A Weekend Trip','b1r6e':'Joining a Gym',
+'b1w7':'The Birthday Surprise','b1w8':'The Summer Job','b1w9':'The Best Teacher','b1w10':'The Surprise Visitor','b1s13':'Daily Life','b1s14':'A Market Stall','b1s15':'A Farewell Party','b1s16':'Teachers and Gifts','b1s17':'Food and Health',
+'b1l1c':'Short Recordings (3)','b1l2c':'Everyday Conversations','b1l3c':'A Cycle Tour','b1l4c':'The Village Doctor',
+'b2r5a':'Learning a Language Later in Life','b2r5b':'The Future of the High Street','b2r6a':'A Revolution in the School Canteen','b2r1c':'Silent Discos','b2r3a':'The Power of Taking Breaks',
+'b2w6':'Cars in City Centres','b2w7':'A Film Worth Watching','b2w8':'A Complaint About a Hotel','b2s6':'Technology and Habits','b2s7':'A Community Project','b2l6':'Short Extracts (3)','b2r5c':'Is the Four-Day Week the Future?','b2r5d':'The Sounds of the City','b2r6b':'A Forest in the City','b2r1d':'Beekeeping on City Roofs','b2r3b':'Why Do We Put Things Off?','b2l8':'Short Extracts (4)','b2l9':'Young Inventors Workshop','b2l10':'First Job Experiences','b2l11':'A Street Food Chef','b2l7':'Coastal Wildlife Project',
+'b1r1d':'Signs and Messages','b1r2d':'Summer Activities for Teenagers','b1r3e':'Working with Dogs','b1r4d':'A Café with a Difference','b1r5f':'A Music Festival','b1r5g':'A New Hobby','b1r6f':'A Letter to a Friend','b1l2d':'Plans and Opinions','b1l3d':'A Swimming Course',
+'b1w11':'The School Trip Email','b1w12':'Moving to a New Town','b1s18':'Family and Home','b1s19':'A Rainy Day',
 'b2r1':'Why Volunteer?','b2r2':'Teenagers and Sleep','b2r3':'Working from Home','b2r4':'Key Word Transformations','b1r5c':'A Morning at the Market','b1r6c':'A New Flat','c1r1d':'Green Spaces in Cities','c1r1c':'Describing a Chart','c1r4d':'Key Word Transformations 4','b2r4d':'Key Word Transformations 4','b2r4e':'Key Word Transformations 5','a2r4b':'My Weekend','a2r5b':'A Message About School','c1r4b':'Key Word Transformations 2','c1r4c':'Key Word Transformations 3','c1r1b':'Urban Beekeeping','c1r3b':'The Slow Food Movement','b2r4b':'Key Word Transformations 2','b2r4c':'Key Word Transformations 3','b2r1b':'The Umbrella','b2r2b':'Libraries of Things','b2r6':'A Year in Antarctica',
 'b2l1':'Short Extracts (1)','b2l2':'Beekeeping','b2l3':'Moving to a New City','b2l4':'A Wildlife Photographer','b2l5':'Short Extracts (2)',
 'b2w1':'Social Media and Young People','b2w2':'Tourism','b2w3':'My Perfect Weekend','b2w4':'A TV Series','b2w5':'Advice on a Summer Job',
@@ -17,7 +24,9 @@ T={'a2r1':'Shop and School Notices','a2r2':'New Schools','a2r3':'A Young Swimmer
 'c1s1':'Opinions and Experiences','c1s2':'Learning from Others','c1s3':'Choosing a Job','c1s4':'Technology and Society','c1s5':'The Environment'}
 
 # Konuşma fotoğraflarının altında görünen basit İngilizce açıklamalar
-IMG={'b1-cooking':'Three young people are cooking together in a kitchen: one is making a pizza, one is preparing a salad and one is checking the oven.',
+IMG={'b1-rain':'Two girls are walking in the rain with colourful umbrellas. A bus is passing behind them and the trees have yellow leaves.',
+'b1-market':'A man is selling fruit at a market stall while a woman puts oranges into a bag. There are other stalls and people behind them.',
+'b1-cooking':'Three young people are cooking together in a kitchen: one is making a pizza, one is preparing a salad and one is checking the oven.',
 'b2-office':'A young woman is working on a laptop in a busy open-plan office. Two colleagues are working behind her, and there is a coffee machine.',
 'b2-farm':'A farmer in a cap is standing in a green field next to a red tractor on a sunny day.',
 'b2-classroom':'A teacher is writing on the board in a classroom while three students sit at their desks and take notes.',
@@ -30,3 +39,8 @@ IMG={'b1-cooking':'Three young people are cooking together in a kitchen: one is 
 'c1-phone':'A teenage boy is showing his grandmother how to use a smartphone on the sofa.',
 'c1-mechanic':'An experienced mechanic is showing a young apprentice how to repair a car in a garage.',
 'c1-globe':'A teacher is showing a globe to a group of young children in a classroom.'}
+
+import sys,os
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import okuma_import as _oi
+T.update(_oi.TITLES)

@@ -12,3 +12,16 @@ mk('R6','b1r6c','Açık boşluk: Yeni daire','open','Okuma 6 · Açık boşluk',
  tg=[['prepositions-in-on-at'],['comparatives-superlatives'],['there-is-are'],['present-perfect'],['reported-speech'],['first-conditional']],
  e=['move into a flat: daireye taşınmak.','smaller than: -den daha küçük.','there is a lift: asansör var (tekil).','for two weeks: iki haftadır (süre).','asked me if I could help: evet/hayır sorusunun aktarımı.','as long as: -mek koşuluyla.']),
 ]}
+
+import more_b1_2 as _m2
+import more_b1_4 as _m4
+import more_b1_5 as _m5
+MORE['R']+=_m2.R+_m5.R
+MORE['L']=_m4.L+_m5.L
+import more_b1_3 as _m3
+import more_b1_6 as _m6
+MORE['W']=_m3.W+_m6.W
+MORE['S']=_m3.S+_m6.S
+
+import okuma_import as _oi
+MORE['R']+=_oi.BY.get('B1',[])

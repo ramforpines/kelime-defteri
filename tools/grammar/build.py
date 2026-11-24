@@ -234,7 +234,11 @@ for t in topics:
     topics[topics.index(next(x for x in topics if x.get('id')==P))]=t
 for _k in NOTES:
     if _k not in NOTE_USED:E('hiçbir soruyla eşleşmeyen not: %s | %s'%(_k[0][:50],_k[1][:30]))
-topics.sort(key=lambda t:(LEVELS.index(t['lv']),t.get('ord',50)))
+from themes import THEME_POS
+for _t in topics:
+    if _t['id'] not in THEME_POS:E('%s: themes.py içinde tema yok'%_t['id'])
+    else:_t['cat']=THEME_POS[_t['id']][2]
+topics.sort(key=lambda t:(LEVELS.index(t['lv']),THEME_POS.get(t['id'],(99,0,''))[:2]))
 if '--lt' in sys.argv:
     import language_tool_python as lt
     tool=lt.LanguageTool('en-US');bad=0

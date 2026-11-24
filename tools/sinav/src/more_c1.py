@@ -44,3 +44,6 @@ mk('R1','c1r1d','Çoktan seçmeli boşluk: Kentsel yeşil alanlar','cloze','Okum
  o=[(['recognise','realise','remark','regard'],0,['vocab']),(['characterise','describe','illustrate','indicate'],0,['vocab']),(['reduce','relate','rotate','reject'],0,['collocation']),(['extremely','extreme','extremity','more extreme'],0,['vocab']),(['outweigh','overcome','overtake','overlook'],0,['vocab']),(['compromise','conclusion','comparison','combination'],0,['collocation']),(['reconcile','resemble','reflect','reserve'],0,['collocation']),(['attracted','attached','attributed','attempted'],0,['collocation'])],
  e=['recognise that: -diğini kabul etmek, fark etmek.','characterise: nitelemek, belirgin özellik olmak.','reduce stress: stresi azaltmak.','extremely expensive: son derece pahalı (zarf + sıfat).','outweigh: ağır basmak.','find a compromise: orta yol bulmak.','reconcile ... with ...: ... ile ... uzlaştırmak.','attract interest: ilgi çekmek.']),
 ]}
+
+import okuma_import as _oi
+MORE['R']+=_oi.BY.get('C1',[])
