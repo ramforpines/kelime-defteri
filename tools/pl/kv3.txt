@@ -1,0 +1,547 @@
+# Seviye tespiti — Kelime kullanımı ek havuz 2
+
+@A1
+syn: happy
+* glad
+- sorry
+- busy
+- ready
+
+syn: shop
+* store
+- house
+- street
+- room
+
+def: the day before today
+* yesterday
+- tomorrow
+- tonight
+- weekday
+
+def: a place where you can see animals from many countries
+* zoo
+- farm
+- park
+- shop
+
+def: a person who flies a plane
+* pilot
+- driver
+- sailor
+- guide
+
+def: the colour of the sky on a sunny day
+* blue
+- green
+- grey
+- brown
+
+def: you use this to cut bread
+* knife
+- spoon
+- cup
+- plate
+
+use: I can't see. Please ___ on the light.
+* turn
+- open
+- close
+- make
+
+use: It's my sister's birthday. I'm going to buy her a ___.
+* present
+- party
+- cake shop
+- card shop
+
+use: She's ___. She doesn't feel well today.
+* ill
+- old
+- happy
+- tall
+
+use: Can you ___ me with my bags, please?
+* help
+- carry
+- give
+- take
+
+use: My brother is a student. He ___ at the university.
+* studies
+- teaches
+- works out
+- learns to
+
+col: Please ___ your homework before you watch TV.
+* do
+- make
+- play
+- go
+
+col: Let's ___ a walk after lunch.
+* go for
+- make
+- do
+- play
+
+col: She ___ a lot of photos on holiday.
+* took
+- made
+- did
+- gave
+
+@A2
+syn: unhappy
+* sad
+- tired
+- bored
+- angry
+
+syn: large
+* big
+- long
+- tall
+- wide
+
+def: a small amount of money you give to a waiter for good service
+* tip
+- bill
+- price
+- change
+
+def: a building where you can see paintings and other art
+* gallery
+- theatre
+- library
+- stadium
+
+def: to say that you don't like something or are not happy with it
+* complain
+- explain
+- remain
+- obtain
+
+def: the person who is in charge of a company or a department
+* manager
+- customer
+- assistant
+- colleague
+
+use: I'm ___ — can I have something to eat?
+* hungry
+- thirsty
+- angry
+- sleepy
+
+use: Please ___ quiet. The baby's sleeping.
+* keep
+- stay on
+- make
+- hold
+
+use: He's very ___. He always shares his things with others.
+* generous
+- jealous
+- serious
+- nervous
+
+use: Could you ___ the dishes, please? I cooked dinner.
+* wash
+- clean up to
+- make
+- do up
+
+use: The flight leaves at seven, so we need to ___ in at five.
+* check
+- get
+- go
+- book
+
+col: Can you ___ the table? Dinner is ready.
+* set
+- put
+- place
+- do
+
+col: I usually ___ the bus to school.
+* catch
+- go
+- ride up
+- walk
+
+col: I'm going to ___ a bath.
+* have
+- make
+- do
+- get up
+
+col: Can I ___ a look at your new phone?
+* have
+- make
+- do
+- see
+
+@B1
+syn: aim
+* goal
+- result
+- reason
+- effect
+
+syn: fortunate
+* lucky
+- famous
+- healthy
+- wealthy
+
+def: a person who is staying in a hotel
+* guest
+- host
+- tenant
+- owner
+
+def: to do something again because the first time was not good enough
+* repeat
+- remove
+- return
+- receive
+
+def: feeling worried because you think something bad might happen
+* anxious
+- ashamed
+- curious
+- jealous
+
+def: a written statement that shows you have paid for something
+* receipt
+- recipe
+- receiver
+- reception
+
+use: The museum is free, so there's no ___ for entry.
+* charge
+- price
+- fare
+- cost to
+
+use: I'm sorry, but I can't ___ to buy a new car this year.
+* afford
+- allow
+- offer
+- agree
+
+use: The teacher ___ us to work in pairs.
+* asked
+- said
+- made
+- let
+
+use: He ___ the job because the salary was too low.
+* turned down
+- turned up
+- turned over
+- turned in
+
+use: I'd like to ___ my English before I go to London.
+* improve
+- increase
+- develop up
+- grow
+
+col: I need to ___ an appointment with the dentist.
+* make
+- do
+- take
+- give
+
+col: I have to ___ an important decision this week.
+* make
+- do
+- take up
+- have
+
+col: She ___ her best friend's secret for years.
+* kept
+- held
+- saved
+- stayed
+
+col: We need to ___ a solution quickly.
+* find
+- make out
+- take
+- win
+
+@B2
+syn: crucial
+* vital
+- valid
+- vivid
+- visible
+
+syn: sufficient
+* adequate
+- accurate
+- abundant
+- adjacent
+
+def: to make someone believe something that is not true
+* deceive
+- receive
+- perceive
+- conceive
+
+def: a fixed amount of money paid regularly to someone who has stopped working because of age
+* pension
+- salary
+- allowance
+- grant
+
+def: to say officially that something is not allowed
+* forbid
+- forgive
+- forget
+- forgo
+
+def: able to deal with difficult situations and recover quickly
+* resilient
+- reluctant
+- relevant
+- resistant to
+
+use: The company has ___ a new policy on working from home.
+* introduced
+- produced
+- reduced
+- induced
+
+use: She was ___ to the post of director last year.
+* appointed
+- applied
+- approved
+- appealed
+
+use: The evidence ___ that he was telling the truth.
+* suggests
+- suggestions
+- suggesting
+- suggestive
+
+use: We need to ___ the problem before it gets worse.
+* tackle
+- tumble
+- tremble
+- trickle
+
+use: Prices vary ___ depending on the season.
+* considerably
+- considerately
+- consequently
+- conveniently
+
+col: The proposal received ___ support from the staff.
+* widespread
+- widened
+- wide-eyed
+- widely
+
+col: She made a ___ effort to finish the project on time.
+* determined
+- determining
+- determination
+- determinable
+
+col: The two companies have ___ a deal worth millions.
+* struck
+- hit
+- beaten
+- knocked
+
+col: He has a ___ knowledge of European history.
+* thorough
+- through
+- though
+- thought
+
+@C1
+syn: meagre
+* scanty
+- sturdy
+- steady
+- stocky
+
+syn: resilient
+* tough
+- tender
+- timid
+- tense
+
+def: to make something seem less important or serious than it is
+* trivialise
+- tranquillise
+- tantalise
+- terrorise
+
+def: very easy to see or notice
+* conspicuous
+- contagious
+- continuous
+- courteous
+
+def: unwilling to change your ideas or behaviour despite good reasons
+* intransigent
+- intermittent
+- indifferent
+- inconsistent
+
+def: to make a situation, especially a bad one, worse
+* exacerbate
+- exaggerate
+- exasperate
+- exterminate
+
+use: The report ___ the need for urgent reform.
+* highlights
+- highlighters
+- high-handed
+- highlighted to
+
+use: The minister was forced to ___ after the scandal.
+* step down
+- step up
+- step in
+- step out of
+
+use: His argument was ___ by a lack of evidence.
+* undermined
+- underlined
+- underpinned
+- undertaken
+
+use: The company's profits have ___ in recent months.
+* plummeted
+- plundered
+- plumbed
+- plunged into
+
+use: She ___ the offer after careful consideration.
+* declined
+- descended
+- deflected
+- denied to
+
+col: The government is under ___ pressure to reduce taxes.
+* intense
+- intensive
+- intent
+- intentional
+
+col: The film received ___ acclaim from critics.
+* widespread
+- wide-ranging
+- widening
+- widespreading
+
+col: There is a ___ risk of flooding in the area.
+* significant
+- signified
+- signifying
+- signal
+
+col: The scandal ___ serious questions about the minister's judgement.
+* raised
+- rose
+- arose
+- rised
+
+@C2
+syn: perfunctory
+* cursory
+- cordial
+- candid
+- cogent
+
+syn: obdurate
+* unyielding
+- unsettling
+- unfounded
+- unassuming
+
+def: a person who opposes the introduction of new technology or ways of working
+* Luddite
+- loyalist
+- lobbyist
+- libertine
+
+def: to express strong disapproval of something publicly
+* denounce
+- renounce
+- announce
+- pronounce
+
+def: lacking originality because it has been used too often
+* hackneyed
+- hapless
+- haughty
+- harried
+
+def: characterised by excessive and showy decoration
+* ornate
+- ornery
+- orotund
+- orderly
+
+use: The scheme was ___ from the start by poor planning.
+* bedevilled
+- bewildered
+- bespoke
+- beholden
+
+use: Critics have ___ the novel as a modern classic.
+* lauded
+- laundered
+- loitered
+- lumbered
+
+use: His resignation was the ___ of months of speculation.
+* culmination
+- cultivation
+- calibration
+- capitulation
+
+use: The minister's comments were widely seen as ___.
+* disingenuous
+- disinterested
+- dissonant
+- dispassionate
+
+use: She has a ___ wit that occasionally offends people.
+* caustic
+- causal
+- cautious
+- casual
+
+col: The proposal was ___ dismissed by the board.
+* summarily
+- summery
+- seemingly
+- sombrely
+
+col: Their relationship has reached an ___ low.
+* all-time
+- all-round
+- all-out
+- all-purpose
+
+col: The evidence is ___ circumstantial.
+* largely
+- greatly
+- highly
+- strongly
+
+col: He made a ___ attempt to justify his actions.
+* feeble
+- fertile
+- fickle
+- frugal

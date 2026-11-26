@@ -1,0 +1,165 @@
+# Seviye tespiti — Anlam ve ima ek havuz 2
+
+@A2
+A: Do you want to watch the match tonight? B: I've got an exam tomorrow.
+* B probably can't watch it.
+- B wants to watch it after the exam tonight.
+- B has already watched the match.
+
+A: Is the soup hot? B: Be careful!
+* The soup is very hot.
+- The soup is cold now.
+- B doesn't want any soup.
+
+A: Can I use your phone? B: The battery's dead, sorry.
+* B's phone isn't working now.
+- B doesn't want to lend the phone.
+- B has lost the phone somewhere.
+
+A: How about a walk in the park? B: In this weather?
+* B thinks the weather is too bad.
+- B loves walking in the rain.
+- B wants to go to a different park.
+
+A: Have you met my brother? B: Yes, at your party last month.
+* B has met him before.
+- B wants to meet him soon.
+- B didn't go to the party.
+
+A: Is it expensive? B: It's only five pounds.
+* It's cheap.
+- It's very expensive.
+- B doesn't know the price.
+
+A: Shall we go by car? B: There's nowhere to park in the town centre.
+* B thinks driving is a bad idea.
+- B wants to park in the town centre.
+- B doesn't have a car at the moment.
+
+A: Is Anna at home? B: Her coat's not here.
+* B thinks Anna has gone out.
+- Anna is looking for her coat.
+- B has borrowed Anna's coat.
+
+@B1
+A: Can you give me a hand with this table? B: Sure, where do you want it?
+* B is willing to help move it.
+- B wants to buy the table.
+- B doesn't know where the table is.
+
+A: Did you get the tickets? B: They'd sold out by the time I got there.
+* B didn't manage to buy them.
+- B bought the last tickets.
+- B forgot to go and buy them.
+
+A: What did you think of the hotel? B: Let's just say I won't be recommending it.
+* B didn't like the hotel.
+- B hasn't decided yet.
+- B loved the hotel.
+
+A: Are you free on Friday? B: It depends what time.
+* B may be available for part of the day.
+- B is busy all day on Friday.
+- B is free at any time on Friday.
+
+A: Your English has really improved! B: Thanks — I've been watching a lot of films.
+* B thinks the films have helped.
+- B prefers films to studying.
+- B hasn't noticed any improvement.
+
+A: Is the new shopping centre any good? B: It's nothing special.
+* It's quite ordinary.
+- It's excellent.
+- It's closed now.
+
+A: Do you mind if I bring a friend? B: The more the merrier!
+* B is happy for the friend to come.
+- B doesn't want any more guests.
+- B wants A to bring several friends.
+
+A: I'll pay for dinner. B: Absolutely not — it's my turn.
+* B insists on paying this time.
+- B refuses to have dinner with A.
+- B thinks A should pay.
+
+@B2
+A: Do you think he'll apologise? B: Pigs might fly.
+* B thinks it is very unlikely.
+- B thinks he will apologise soon.
+- B doesn't care whether he does.
+
+A: How's your new boss? B: She runs a tight ship.
+* She is strict and well organised.
+- She is relaxed and easy-going.
+- She used to work on boats.
+
+A: Did the meeting go well? B: Well, nobody walked out, which is something.
+* It didn't go particularly well.
+- It was an outstanding success.
+- Nobody came to the meeting.
+
+A: Should I tell him the truth? B: I'd let sleeping dogs lie.
+* B advises not causing trouble by raising it.
+- B thinks A should tell him immediately.
+- B thinks he is too tired to talk.
+
+A: Have you finished the essay? B: I've barely scratched the surface.
+* B has only just started.
+- B has nearly finished.
+- B has decided not to write it.
+
+A: Do you want to join our book club? B: Reading isn't really my cup of tea.
+* B doesn't enjoy reading much.
+- B would prefer to drink tea.
+- B is too busy to join.
+
+A: Can you recommend a good plumber? B: I know just the person.
+* B knows someone suitable.
+- B is a plumber.
+- B can't think of anyone.
+
+A: Was the exam hard? B: It was a piece of cake.
+* It was very easy.
+- It was very difficult.
+- It was about cooking.
+
+@C1
+A: Do you think the merger will go ahead? B: I wouldn't bet on it.
+* B doubts it will happen.
+- B is certain it will happen.
+- B has bet money on it.
+
+A: Have you heard from the publishers? B: Radio silence, I'm afraid.
+* B has received no reply.
+- B has been rejected.
+- B's radio is broken.
+
+A: The project's over budget again. B: Why am I not surprised?
+* This keeps happening.
+- B didn't expect it at all.
+- B wasn't told about the budget.
+
+A: Did your presentation impress the board? B: Put it this way — they've asked me to present again next month.
+* It seems to have gone well.
+- It went badly, so B must repeat it.
+- The board didn't attend.
+
+A: Should we invest in the new scheme? B: It sounds too good to be true.
+* B is suspicious of it.
+- B is excited about it.
+- B doesn't understand it.
+
+A: Is she still angry with you? B: We've buried the hatchet.
+* They have made peace.
+- They are still arguing.
+- They have stopped speaking.
+
+A: Can we discuss my pay rise? B: Now's not really the time.
+* B wants to discuss it later.
+- B has agreed to the pay rise.
+- B has refused completely.
+
+A: Did you finish the marathon? B: Only just — I crossed the line as they were packing up.
+* B finished, but very late.
+- B didn't finish the race.
+- B won the race easily.

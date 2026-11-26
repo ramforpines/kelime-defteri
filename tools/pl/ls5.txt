@@ -1,0 +1,37 @@
+# Seviye tespiti — Dinleme kayıtları (özel), ek 3: C2
+
+=== C2 | Talk: the limits of forecasting
+M: We have never had more data, more computing power or more sophisticated models, and yet our ability to predict events such as recessions, elections or pandemics remains strikingly limited. Part of the problem is that many of these systems are what scientists call complex: small changes in initial conditions can produce wildly different outcomes, and the behaviour of the whole cannot be deduced simply by studying its parts. But there's a subtler difficulty too. In social systems, forecasts can alter the very behaviour they attempt to predict. If an influential bank predicts a crisis, investors may sell, thereby helping to bring the crisis about. The lesson isn't that forecasting is pointless, but that we should treat predictions as scenarios to prepare for rather than as certainties to rely on.
+Q: Why does the speaker find our limited forecasting ability notable?
+* We have more resources for prediction than ever before.
+- Forecasters have become less skilled than in the past.
+- Most predictions are now made without data.
+Q: What "subtler difficulty" does he describe?
+* Predictions can change what people do.
+- Social systems are simpler than natural ones.
+- Banks rarely publish their forecasts.
+Q: What does the speaker recommend?
+* Using forecasts to prepare for possibilities.
+- Abandoning forecasting altogether.
+- Trusting only the most influential forecasts.
+
+=== C2 | Discussion: authenticity in travel
+F: There's this obsession now with "authentic" travel — avoiding tourist areas, eating where the locals eat. I find it slightly absurd.
+M: Absurd? I'd have thought it was a reasonable reaction to mass tourism.
+F: In some ways, yes. But the very pursuit of authenticity tends to destroy what it seeks. The moment a hidden café appears in a guidebook as a place only locals know about, it's full of tourists.
+M: That's a fair point, though it doesn't make the desire itself illegitimate.
+F: No, but it often rests on a rather romantic notion that other cultures are somehow frozen in time, and that anything modern or commercial isn't really "them".
+M: So what would you suggest instead?
+F: Simply being honest that we're visitors, and treating the places we go with curiosity rather than a hunt for some imagined purity.
+Q: What does the woman think of the search for "authentic" travel?
+* It tends to undermine itself.
+- It is the best way to avoid mass tourism.
+- It is only possible in remote places.
+Q: What assumption does she criticise?
+* That other cultures do not change.
+- That local food is better than tourist food.
+- That guidebooks are always accurate.
+Q: What does she recommend?
+* Accepting one's role as a visitor and staying curious.
+- Avoiding all popular destinations.
+- Only travelling with local guides.

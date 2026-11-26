@@ -35,7 +35,7 @@ Q: Who probably listened to the first episode?
 Q: Why does the writer think the podcast became popular?
 * It covers a team other podcasts ignore, and it's honest.
 - The writers are well-known football experts.
-- It is shorter than most other football podcasts.
+- It is shorter and more frequent than most other football podcasts.
 
 === B1 | The repair café
 P: Every Saturday morning, the community hall in our village turns into a "repair café". Local volunteers with different skills — electricians, tailors, carpenters — sit at tables and help people fix broken things for free. Visitors bring everything from toasters and lamps to torn jackets and wobbly chairs.
@@ -44,7 +44,7 @@ P: Not everything can be saved, of course. Some modern electronic products are d
 Q: What happens at the repair café?
 * Volunteers help people fix their things without charging.
 - People buy second-hand toasters and lamps.
-- Volunteers sell repaired items to raise money.
+- Volunteers sell the repaired items to raise money for the hall.
 Q: What does Ruth say about the volunteers' approach?
 * They teach visitors to do repairs themselves.
 - They prefer to repair things without visitors watching.
@@ -65,15 +65,15 @@ P: Sara's final tip is to watch short scenes more than once. "The first time, ju
 Q: Why does Sara think subtitles in your own language are not very helpful?
 * Learners stop paying attention to what they hear.
 - They are often badly translated.
-- They make films more difficult to follow.
+- They make films much more difficult to follow and enjoy.
 Q: Why does she recommend series rather than films?
 * Learners become familiar with the voices and words.
 - Series are usually shorter and easier.
-- Films use too many difficult accents.
+- Films use too many difficult accents and fast conversations.
 Q: What should learners do the second time they watch a scene?
 * Focus on specific expressions and say them aloud.
 - Turn off the subtitles completely.
-- Write down every word they don't know.
+- Write down every single word they don't know in a notebook.
 
 === B2 | Why we love lists
 P: Open any news website and you are likely to find articles with titles such as "Ten Habits of Successful People" or "Seven Places You Must Visit Before You're Thirty". These so-called listicles have become one of the most popular forms of online content, and psychologists have several explanations for their appeal.
@@ -82,11 +82,11 @@ P: Critics argue that the format encourages shallow thinking. Complex subjects a
 Q: According to the text, why does clicking on a list feel "low-risk"?
 * Readers know in advance what they will get and how long it will take.
 - Lists are always written by experts.
-- Lists are shorter than other news articles.
+- Lists are always much shorter than other news articles on the site.
 Q: What impression can numbers in headlines create?
 * That the content has been carefully chosen.
 - That the article is very recent.
-- That the writer is very successful.
+- That the writer is very successful and well known.
 Q: What do critics say about the format?
 * It oversimplifies complicated topics.
 - It makes articles too long to read.
@@ -106,7 +106,7 @@ Q: What evidence of the boom is mentioned?
 - Board games replacing smartphones in schools.
 Q: How are modern board games different from older ones?
 * They depend more on skill and planning than on luck.
-- They are designed mainly for young children.
+- They are designed mainly for young children and their parents.
 - They are played mostly online.
 Q: According to the café owner, what is the main appeal of board games?
 * They bring people together face to face.
@@ -128,7 +128,7 @@ Q: What do the examples in the second paragraph show?
 Q: What is surprising about "open-label" placebos?
 * They can help even when patients know there's no medicine.
 - They only work for patients who are lied to.
-- They have stronger effects than real drugs.
+- They have much stronger effects than real drugs for most conditions.
 Q: What is the researchers' attitude to these findings?
 * Interested but careful not to overstate them.
 - Completely convinced that placebos should replace drugs.
@@ -141,10 +141,10 @@ P: There is also evidence that learning to form letters by hand helps young chil
 Q: Why, according to the research, do handwritten notes aid memory?
 * Writing slowly makes students process the information.
 - Handwritten notes are easier to read later.
-- Students write more words by hand than they type.
+- Students write many more words by hand than they do when typing.
 Q: What benefit of handwriting for young children is mentioned?
 * It helps them recognise letters when reading.
-- It improves their typing speed later.
+- It improves their typing speed later when they start using computers.
 - It makes them more interested in books.
 Q: What do most researchers recommend?
 * Teaching both handwriting and digital skills.
@@ -157,19 +157,19 @@ P: Other factors compound the distortion. Risks that are imposed on us provoke m
 P: These biases are not merely academic curiosities. They shape public policy, since governments under pressure to respond to well-publicised dangers may divert resources from less visible but more lethal ones. A more rational allocation would require not only better data but also a willingness to confront the uncomfortable gap between what frightens us and what actually harms us.
 Q: What does the "availability heuristic" explain?
 * Why memorable events seem more probable than they are.
-- Why people prefer flying to driving.
+- Why most people prefer flying to driving on long journeys.
 - Why rare events are reported less often.
 Q: Why might someone reject a nearby power station but enjoy skiing?
 * People tolerate risks they choose more readily than imposed ones.
 - Skiing is statistically safer than nuclear power.
-- Power stations are more dramatic than ski accidents.
+- Power stations are far more dramatic and visible than ski accidents.
 Q: What does the writer say about drivers' self-assessment?
 * Most of them overestimate their own ability.
 - Most of them are better than average.
 - Most of them underestimate road dangers deliberately.
 Q: What consequence of these biases is described in the last paragraph?
 * Resources may be spent on visible rather than deadly risks.
-- Governments ignore public opinion about danger.
+- Governments usually ignore public opinion about which dangers matter.
 - Better data has already solved the problem.
 
 === C2 | The afterlife of words
@@ -186,5 +186,5 @@ Q: According to the second paragraph, what often causes semantic change?
 - The influence of legal and technical language.
 Q: What is the writer's view of concerns about clarity?
 * They are sometimes justified, especially in specialised contexts.
-- They are always an excuse for resisting change.
+- They are always just an excuse for resisting any kind of change.
 - They should lead to laws protecting the language.

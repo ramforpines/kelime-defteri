@@ -46,7 +46,7 @@ def mc(fn, pre, typed=False):
           f' · doğru şık tek başına en uzun %{round(100*longest/n)} · en kısa %{round(100*shortest/n)} (rastgele beklenti ~%25)')
     return items
 
-CT_ALT = {'this': ['that'], 'these': ['those'], 'paralysing': ['paralyzing'], 'favourite': ['favorite'], 'realise': ['realize']}   # bağlamda da doğru olan başka tamamlamalar
+CT_ALT = {'this': ['that'], 'these': ['those'], 'paralysing': ['paralyzing'], 'favourite': ['favorite'], 'realise': ['realize'], 'organisations': ['organizations'], 'metres': ['meters']}   # bağlamda da doğru olan başka tamamlamalar
 def ctest(fn):
     texts = []
     for lv, L in blocks(fn):

@@ -1,0 +1,353 @@
+# Seviye tespiti — Dinleme kayıtları (özel), ek 2
+
+=== A2 | Ordering food
+M: Good evening. Are you ready to order?
+F: Yes, I'd like the chicken soup to start, please. And then the fish with rice.
+M: I'm sorry, we haven't got any fish left tonight. Would you like the pasta instead?
+F: Hmm, what kind of pasta is it?
+M: It's with tomatoes and cheese. It's very popular.
+F: OK, I'll have that. And just a glass of water, please.
+M: Still or sparkling?
+F: Still, please.
+Q: What does the woman order first?
+* Soup.
+- Fish.
+- Pasta.
+Q: Why can't she have the fish?
+* There isn't any more today.
+- It isn't on the menu.
+- It takes too long to cook.
+Q: What will she drink?
+* Still water.
+- Sparkling water.
+- Orange juice.
+
+=== A2 | At the doctor's
+F: Good morning. What's the problem?
+M: I've had a bad headache for three days, and I feel very tired.
+F: Are you sleeping well?
+M: Not really. I'm studying for exams, so I go to bed very late, after one o'clock usually.
+F: And do you drink a lot of coffee?
+M: Yes, about five cups a day.
+F: Well, I think that's the problem. Try to drink less coffee and go to bed before eleven. If you still have the headache next week, come back and see me.
+Q: How long has the man had a headache?
+* Three days.
+- One week.
+- Five days.
+Q: Why does he go to bed late?
+* He is studying.
+- He works at night.
+- He watches films.
+Q: What does the doctor tell him to do?
+* Change his habits and come back if he isn't better.
+- Take some medicine every day for the headache.
+- Stop studying for his exams.
+
+=== A2 | A new neighbour
+F: Hello! You must be the new neighbour. I'm Jane, from number twelve.
+M: Hi Jane, nice to meet you. I'm Ali. We moved in on Saturday.
+F: Welcome to the street! Have you got everything you need?
+M: Almost. But I can't find a supermarket near here.
+F: There's a small one at the end of the road, but it's quite expensive. The big supermarket is about ten minutes by bus. The number seven stops just outside.
+M: Thanks, that's really helpful.
+F: And if you need anything, just knock on my door.
+Q: When did Ali move into the street?
+* On Saturday.
+- Ten days ago.
+- This morning.
+Q: What does Jane say about the small supermarket?
+* Its prices are high.
+- It is closed at the weekend.
+- It is ten minutes away by bus.
+Q: How can Ali get to the big supermarket?
+* By taking the bus.
+- By walking to the end of the road.
+- By asking Jane to drive him.
+
+=== A2 | Announcement at a shopping centre
+F: Good afternoon, shoppers. This is an announcement for the parents of a little boy called Leo. Leo is five years old and he's wearing a yellow T-shirt and blue shorts. He's waiting for you at the information desk on the ground floor, next to the main entrance. He's safe and happy, and he's eating an ice cream with our staff. Please come to the information desk as soon as possible. Thank you.
+Q: Why is the announcement being made?
+* A child is looking for his parents.
+- A child has lost his ice cream.
+- The shopping centre is closing.
+Q: Where is Leo now?
+* At the information desk.
+- At the main entrance outside.
+- In the ice cream shop.
+Q: What is Leo wearing?
+* A yellow T-shirt.
+- A blue T-shirt.
+- Yellow shorts.
+
+=== B1 | Booking a course
+M: Hello, I'm calling about the photography course I saw on your website.
+F: Of course. We have two options. There's an evening course on Tuesdays, which runs for ten weeks, or an intensive weekend course over two Saturdays.
+M: Which would you recommend for a complete beginner?
+F: Honestly, the evening course. The weekend one moves quite fast, and you don't get time to practise between lessons.
+M: That makes sense. And do I need my own camera?
+F: It's better if you have one, but we can lend you one for the first few weeks. A phone camera isn't really enough, though.
+M: Great. And how much is it?
+F: The evening course is one hundred and eighty pounds, including all materials.
+Q: Why does the woman recommend the evening course?
+* It gives beginners time to practise between classes.
+- It is much cheaper than the intensive weekend course.
+- It is the only course for beginners.
+Q: What does she say about cameras?
+* The school can lend him one at first.
+- He can use his phone camera.
+- He must buy a camera before starting.
+Q: What is included in the price?
+* All the materials.
+- A free camera.
+- Two extra Saturday classes.
+
+=== B1 | Talking about a film
+F: Did you see that new science fiction film at the weekend?
+M: Yes, I went on Saturday. I thought the special effects were amazing, but the story was a bit confusing.
+F: Really? I read that it was quite easy to follow.
+M: Well, the first half was fine. But then they kept jumping between different times, and I lost track of who was who.
+F: Would you recommend it?
+M: Maybe — but watch it at the cinema. It wouldn't be the same on a small screen, because the effects are the best thing about it.
+Q: What did the man think of the film?
+* The effects were great but the story was hard to follow.
+- The story was excellent but the effects were poor.
+- It was far too long and quite boring from the start.
+Q: When did the man get confused?
+* In the second half.
+- At the very beginning.
+- During the last five minutes.
+Q: What does the man advise?
+* Watching it on a big screen.
+- Waiting until it is on TV.
+- Reading the book first.
+
+=== B1 | A message from the gym
+M: Hello, this is a message for all members of Fit Life Gym. From next Monday, the swimming pool will be closed for two weeks for repairs. During this time, members can use the pool at our sister gym on Park Road free of charge — just show your membership card at reception. All the other facilities, including the classes, will stay open as usual. We're also changing our opening hours: from next month, we'll open at six in the morning instead of seven. We're sorry for any problems this causes.
+Q: Why is the pool closing?
+* It needs to be repaired.
+- It is being made bigger.
+- There aren't enough swimmers.
+Q: What can members do while the pool is closed?
+* Swim at another gym without paying.
+- Get a refund for the two weeks of closure.
+- Join extra classes for free.
+Q: What change will happen next month?
+* The gym will open an hour earlier.
+- The gym will close an hour later.
+- The classes will start at seven.
+
+=== B2 | Interview: a wildlife photographer
+F: You've photographed animals all over the world. What's the hardest part of the job?
+M: People always expect me to say the danger, but actually it's the waiting. For one photograph of a snow leopard, I spent six weeks in the mountains and only saw the animal twice. You need a huge amount of patience, and you have to accept that many trips produce nothing usable.
+F: Has the job changed with digital cameras?
+M: Enormously. In the past, you might come home with a few rolls of film and hope that something was good. Now you can take thousands of pictures. But that has its own problem — there are so many wildlife images online that it's much harder to produce something people haven't already seen.
+F: What advice would you give to young photographers?
+M: Start with what's around you. Some of my favourite photos are of birds in my own garden.
+Q: What does the photographer say is the most difficult part of his work?
+* Spending long periods waiting.
+- The risk of being attacked.
+- Carrying heavy equipment.
+Q: What problem has digital photography created?
+* It is harder to take original pictures.
+- Pictures are often lost by mistake.
+- Cameras have become too expensive.
+Q: What does he advise young photographers to do?
+* Photograph the wildlife close to home.
+- Travel abroad as soon as possible.
+- Buy the most expensive camera they can.
+
+=== B2 | Discussion: school uniforms
+F: I read that our school might stop having uniforms next year.
+M: Really? I'm not sure that's a good idea.
+F: Why not? I'd love to wear my own clothes.
+M: I know, but I think uniforms actually make things easier. Nobody's judged on what they wear, and families don't have to spend a fortune keeping up with fashion.
+F: But uniforms aren't cheap either. My mum says the blazer alone costs fifty pounds.
+M: That's true, it's not perfect. Maybe they could keep a uniform but make it simpler — like just a school sweatshirt.
+F: That would be a reasonable compromise, I suppose.
+Q: Why does the man prefer uniforms?
+* They reduce pressure about appearance and cost.
+- They make students study harder.
+- They are more comfortable than normal clothes.
+Q: What point does the woman make about uniforms?
+* They can also be expensive.
+- They are better quality than normal clothes.
+- They are not allowed in most schools.
+Q: What do they agree on at the end?
+* A simpler uniform might be a good solution.
+- Uniforms should be stopped immediately.
+- Students should design their own uniform.
+
+=== B2 | Radio report: a new bridge
+M: After three years of building work, the new footbridge across the river finally opened this morning. The bridge, which is only for pedestrians and cyclists, links the old town with the new business district, and it's expected to reduce traffic on the main road bridge by around fifteen per cent. However, the project hasn't been without controversy. It cost almost twice the original budget, and the opening was delayed by a year because of problems with the foundations. Some residents have also complained that the modern design doesn't fit with the historic buildings nearby. But on the first morning, at least, hundreds of people crossed it on their way to work, and most seemed delighted.
+Q: Who can use the new bridge?
+* People on foot or on bicycles.
+- Cars and buses only.
+- Only people who work in the business district.
+Q: What problem with the project is mentioned?
+* It was much more expensive than planned.
+- It has increased traffic on the main road.
+- It was opened before it was finished.
+Q: Why have some residents complained?
+* They think it looks out of place.
+- They can't use it on the way to work.
+- They think it is too narrow.
+
+=== C1 | Lecture: the history of the umbrella
+F: The umbrella is such an ordinary object that it's easy to forget how controversial it once was. In eighteenth-century London, men who carried umbrellas were often mocked in the street. The umbrella was associated with women and with the French, and using one suggested that you couldn't afford a carriage. Interestingly, the hostility also came from coach drivers, who saw umbrellas as a threat to their business — after all, one of the reasons people hired coaches was to stay dry. It was only towards the end of the century, thanks largely to a few persistent individuals who carried them despite the ridicule, that umbrellas became respectable. By the nineteenth century, a black umbrella had become almost a symbol of the English gentleman.
+Q: Why were men with umbrellas once mocked in London?
+* Umbrellas were linked to women, foreigners and poverty.
+- Umbrellas were considered dangerous in crowded streets.
+- Umbrellas were too expensive for ordinary people.
+Q: Why were coach drivers against umbrellas?
+* Umbrellas might reduce the demand for coaches.
+- Umbrellas frightened their horses in the busy streets.
+- Umbrellas made the streets too crowded.
+Q: How did umbrellas eventually become accepted?
+* Some people kept using them despite being laughed at.
+- The government encouraged people to use them.
+- Coach drivers began to sell them to their passengers.
+
+=== C1 | Conversation: a difficult decision
+M: So have you decided whether to accept the job in Singapore?
+F: Not yet. It's a fantastic opportunity, and the salary's much better than here. But it would mean leaving everyone behind.
+M: How long is the contract?
+F: Three years, with the option to extend. That's what worries me — three years feels like a long time, but it's also not long enough to really settle somewhere.
+M: Could you treat it as an experiment? If it doesn't work out, you could come back.
+F: In theory. But I'd have to give up my flat here, and the housing market's so difficult that I might not find anything as good again.
+M: Couldn't you rent it out while you're away?
+F: Actually, that's not a bad idea. I hadn't really thought about that.
+Q: What is the woman's main reason for hesitating?
+* She would be far from the people she knows.
+- She doesn't think the salary is high enough.
+- She has already accepted another job.
+Q: Why does the length of the contract worry her?
+* It's long but not long enough to settle properly.
+- It's too short to make the move worthwhile financially.
+- It can't be extended after three years.
+Q: What does she think of the man's last suggestion?
+* It could solve one of her problems.
+- It would be too complicated to organise.
+- She has already tried it before.
+
+=== C1 | Talk: why we procrastinate online
+M: Most of us have had the experience of opening a laptop to do some work and finding, forty minutes later, that we've done nothing except read the news and check social media. It's tempting to see this as a lack of willpower, but the design of the tools we use plays a significant part. Many apps are deliberately built to be hard to leave, using techniques such as infinite scrolling and unpredictable rewards, the same principle that makes slot machines so addictive. What this means in practice is that relying purely on self-control is often a losing battle. A more effective approach is to change the environment — for example, using a separate device or account for work, or blocking certain sites during working hours. In other words, rather than trying to resist temptation, it's usually easier to remove it.
+Q: According to the speaker, why do people waste time online?
+* Apps are designed to keep people using them.
+- People are naturally lazy when they work alone.
+- Work tasks are becoming more boring.
+Q: What comparison does the speaker make?
+* Some app features work like gambling machines.
+- Social media is very similar to reading a printed newspaper.
+- Laptops are like televisions.
+Q: What does the speaker recommend?
+* Making temptations harder to access.
+- Practising self-control every day.
+- Working for shorter periods.
+
+=== C2 | Debate: the four-day week
+F: Advocates of the four-day week often cite trials showing that productivity stayed the same or even improved. But I think we need to be careful about generalising from those results.
+M: In what sense?
+F: Well, the companies that volunteer for such trials are hardly a random sample. They tend to be office-based firms with flexible workloads, often already committed to the idea. It's far from obvious that the same results would hold in hospitals, schools or manufacturing, where output depends directly on hours of cover.
+M: That's fair, although I'd argue that's a reason to design the policy differently for different sectors, not to abandon it.
+F: I don't disagree. My concern is more that the evidence is sometimes presented as conclusive when it's really preliminary.
+M: So you're not against the idea itself.
+F: Not at all. I'm against overstating what we know.
+Q: What is the woman's main concern about the trials?
+* The companies involved may not be representative.
+- The trials lasted for too short a time.
+- Productivity actually fell in most companies.
+Q: How does the man respond to her point?
+* He suggests adapting the policy for each sector.
+- He argues that all sectors are essentially the same.
+- He agrees that the policy should be abandoned.
+Q: What is the woman's overall position?
+* She is cautious about how strong the evidence is.
+- She is completely opposed to a four-day week.
+- She thinks the evidence is already conclusive.
+
+=== C2 | Lecture: the economics of happiness
+M: For much of the twentieth century, economists assumed that rising incomes would translate fairly directly into rising wellbeing. The economist Richard Easterlin challenged this in the 1970s when he observed that, although richer people within a country tended to be happier than poorer ones, average happiness in many countries had barely changed despite decades of economic growth. Several explanations have been proposed. One is that people judge their circumstances relative to those around them, so that if everyone becomes richer, no one feels much better off. Another is adaptation: we quickly grow accustomed to improvements, and what once felt like a luxury soon comes to seem normal. More recent research has complicated the picture, suggesting that growth does increase wellbeing in poorer countries, but the paradox remains a powerful challenge to the assumption that more is always better.
+Q: What did Easterlin observe?
+* National growth did not seem to raise average happiness much.
+- Poorer people were generally happier than the richer people in their country.
+- Happiness rose steadily with economic growth.
+Q: What does the "relative" explanation suggest?
+* People compare themselves with others around them.
+- People always prefer luxuries to the basic things they need.
+- People feel happier in poorer countries.
+Q: How has recent research changed the picture?
+* Growth appears to matter more in poorer countries.
+- It has completely disproved Easterlin's ideas.
+- It shows that adaptation does not exist.
+
+=== C2 | Interview: a translator of poetry
+F: Is it even possible to translate poetry?
+M: I think it's possible to produce something valuable, but not to produce the same poem. Every translation involves losses. Sometimes you can preserve the rhythm but not the exact meaning, sometimes the reverse. The translator's job is to decide which losses matter least for a particular poem.
+F: How do you decide?
+M: I ask what the poem is really doing. If it depends on a play on words, I'll try to find an equivalent joke in English, even if it means changing the words entirely. A literal translation would be more accurate in a narrow sense, but it would kill the poem.
+F: Some critics say that's taking too much freedom.
+M: They do, and they have a point — there's a risk of the translator's voice replacing the poet's. But I'd rather produce something that lives in English than something that's technically faithful but lifeless.
+Q: What does the translator believe about translating poetry?
+* Something is always lost, so choices must be made.
+- A good translation can be identical to the original.
+- Only the rhythm of a poem can be translated.
+Q: What does he do with a play on words?
+* Create a similar joke in English.
+- Translate it word for word as accurately as possible.
+- Leave it out completely.
+Q: How does he respond to his critics?
+* He accepts their concern but defends his approach.
+- He says that his critics simply don't understand poetry at all.
+- He has decided to change his method.
+
+=== C2 | Talk: museums and returned objects
+F: Few issues in the museum world are as contentious as the question of whether objects acquired during the colonial era should be returned to their countries of origin. For a long time, major European museums resisted such demands, arguing that their collections were universal, accessible to visitors from around the world, and that they possessed the expertise to preserve fragile objects. These arguments have lost much of their force. Many countries of origin now have well-equipped museums of their own, and the claim to universality sits uneasily with the fact that most of the world's population will never be able to visit London or Paris. Increasingly, the debate has shifted from whether objects should be returned to how — through permanent restitution, long-term loans or shared ownership arrangements.
+Q: What argument did European museums traditionally use?
+* Their collections served people from all over the world.
+- The objects had all been bought legally and at fair prices at the time.
+- Countries of origin did not want the objects back.
+Q: Why does the speaker say the "universal" argument is weak?
+* Most people in the world cannot visit those museums.
+- European museums now have very few visitors from other countries.
+- The objects are rarely put on display.
+Q: How has the debate changed?
+* The focus is now on the method of return.
+- Most countries have stopped asking for objects.
+- Museums now refuse all requests.
+
+=== B1 | Phone call: a broken washing machine
+F: Hello, I bought a washing machine from your shop two weeks ago, and it's already stopped working.
+M: I'm sorry to hear that. What's the problem exactly?
+F: It fills with water, but then it doesn't spin. And it makes a strange noise.
+M: OK. As it's still under guarantee, we can send an engineer to look at it. The earliest appointment is Thursday morning.
+F: Thursday? I'll be at work. Is there anything on Saturday?
+M: Yes, we have Saturday between ten and twelve.
+F: That's better. And if he can't fix it?
+M: Then we'll replace it with a new one, free of charge.
+Q: What is wrong with the washing machine?
+* It doesn't spin and it's noisy.
+- It doesn't fill with water.
+- It leaks water onto the floor.
+Q: Why doesn't the woman want the Thursday appointment?
+* She won't be at home.
+- It's too early in the morning.
+- She thinks it's too late.
+Q: What will happen if the engineer can't repair it?
+* She will get a new machine without paying.
+- She will get all of her money back immediately.
+- She will have to pay for a new one.
+
+=== B2 | Podcast: learning to cook
+F: I didn't learn to cook until I was nearly thirty, and I was embarrassed about it for years. Then I realised that most of the cookbooks I'd tried assumed you already knew the basics. They'd say things like "cook the onions until soft" without explaining how long that takes or what "soft" actually looks like. So my first piece of advice is to find recipes aimed at real beginners, ideally with videos. Second, don't try to cook a different dish every night. Master five or six simple recipes you actually enjoy, and repeat them until you don't need the instructions. That's how you build confidence. And finally, don't worry about mistakes. Some of my worst disasters taught me more than my successes.
+Q: Why did the speaker find cookbooks difficult?
+* They assumed readers already had basic skills.
+- They used ingredients that were hard to find.
+- They contained too many photographs.
+Q: What does she recommend instead of cooking new dishes every night?
+* Repeating a few recipes until they are easy.
+- Following a different recipe book each week.
+- Eating out until you feel more confident.
+Q: What does she say about mistakes?
+* They can be useful for learning.
+- They should be avoided by measuring carefully.
+- They are a sign that cooking isn't for you.
