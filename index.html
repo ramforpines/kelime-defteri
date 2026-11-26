@@ -411,6 +411,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 @media (max-width:420px){.hero{grid-template-columns:1fr;justify-items:center;text-align:center}.kpis{gap:8px}.kpi{padding:10px}}
 @media (prefers-reduced-motion: no-preference){.bar>i,.days i{transition:width .4s ease,height .4s ease}.opt{transition:border-color .15s,background .15s}}
 .extr{color:var(--muted,#8a8f98);font-size:.92em}
+.plc{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:1rem;letter-spacing:.6ch;padding:0 0 0 .15ch;margin:0 2px;border:0;border-radius:0;color:inherit;outline:none;background-image:linear-gradient(90deg,color-mix(in srgb,var(--accent,#2b4eff) 14%,transparent) 0 1.3ch,transparent 1.3ch 1.6ch),linear-gradient(90deg,var(--accent,#2b4eff) 0 1.3ch,transparent 1.3ch 1.6ch);background-size:1.6ch 100%,1.6ch 2px;background-repeat:repeat-x;background-position:0 0,0 100%;vertical-align:baseline;line-height:1.5}.plc:focus{background-image:linear-gradient(90deg,color-mix(in srgb,var(--accent,#2b4eff) 26%,transparent) 0 1.3ch,transparent 1.3ch 1.6ch),linear-gradient(90deg,var(--accent,#2b4eff) 0 1.3ch,transparent 1.3ch 1.6ch)}
 </style>
 </head>
 <body>
@@ -592,7 +593,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.175.0';
+const APP_VERSION = '4.175.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4503,7 +4504,7 @@ function vPl(){
    <div class="row" style="gap:10px"><button class="btn block" style="flex:1" data-act="pl-ans" data-v="0">✗ Bilmiyorum</button><button class="btn primary block" style="flex:1" data-act="pl-ans" data-v="1">✓ Biliyorum</button></div></div>`;
   if(q.s==='c'){const T=window.PLB.ct.find(x=>x.id===q.id);if(!T)return head;let gi=0;
     const body=T.s.map(g=>{if(typeof g==='string')return esc(g);const i=gi++,n=Math.max(g.a.length,...(g.x||[]).map(x=>x.length));
-      return`<span style="white-space:nowrap">${esc(g.p)}<input data-plc="${i}" value="${esc((c.cv||{})[i]||'')}" maxlength="${n}" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:${n+1.2}ch;font:inherit;padding:0 2px;margin:0 1px;border:0;border-bottom:2px solid var(--accent,#2b4eff);background:transparent;color:inherit;letter-spacing:.05em" placeholder="${'·'.repeat(g.a.length)}" aria-label="${g.a.length} harf"></span>`}).join('');
+      return`<span style="white-space:nowrap">${esc(g.p)}<input class="plc" data-plc="${i}" value="${esc((c.cv||{})[i]||'')}" maxlength="${n}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="width:${n*1.6-0.3}ch" aria-label="${g.a.length} harf eksik"></span>`}).join('');
     return head+`<div class="card stack"><div class="small muted">${esc(T.t)}</div><div lang="en" style="line-height:2.1;font-size:1.05rem">${esc(T.f)} ${body}</div><button class="btn primary block" data-act="pl-cdone">Metni bitir</button></div>`}
   if(q.s==='w'){const T=PL_WT[q.lv],wc=sxWc(c.wt);
     return head+`<div class="card stack"><div class="small">${esc(T.tr)}</div><div lang="en" class="card" style="white-space:pre-line;line-height:1.55;margin:0">${esc(T.t)}</div>
