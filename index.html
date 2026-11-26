@@ -593,7 +593,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.175.3';
+const APP_VERSION = '4.175.4';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4326,7 +4326,7 @@ async function sxAi(id0){
 const PL_ON=()=>!!CLOUD.admin||/\/beta\//.test(location.pathname);
 const PL_LV=['A1','A2','B1','B2','C1','C2'],PL_LO={A1:-3.6,A2:-2.4,B1:-1.2,B2:0,C1:1.2,C2:2.4},PL_SUB=['başlangıcı','ortası','ilerisi'];
 function plBand(t){t=Math.max(-3.599,Math.min(3.599,t));const L=PL_LV[Math.floor((t+3.6)/1.2)],s=Math.max(0,Math.min(2,Math.floor((t-PL_LO[L])/0.4+1e-9)));return{L,s,name:L+' '+PL_SUB[s],code:L+'.'+(s+1)}}
-const plScore=t=>Math.round(Math.max(0,Math.min(140,20+(t+3.6)/1.2*20)));   // 0–140: her seviye 20 puan (A1 20–40 … C2 120–140), 20 altı A1 öncesi
+const plScore=t=>Math.round(Math.max(0,Math.min(130,10+(t+3.6)/1.2*20)));   // 0–130: her seviye 20 puan (A1 10–30 … C2 110–130), 10 altı A1 öncesi
 const PL_SEC=[
  {k:'v',n:'Kelime taraması',ic:'⚡',N:60,m:4,u:'60 kelime',ins:'Ekrana gelen kelimeyi tanıyor musun? Bazıları uydurma kelimedir. Anlamını bildiğin gerçek bir kelimeyse “Biliyorum”, emin değilsen ya da uydurmaysa “Bilmiyorum” de. Hızlı ilerle, düşünmeye gerek yok.'},
  {k:'c',n:'Metin tamamlama',ic:'🧩',N:2,m:12,u:'2 metin',ins:'Metinde bazı kelimelerin ikinci yarısı silinmiş. Eksik harfleri yaz; kutudaki çizgi sayısı eksik harf sayısını gösterir. Bitince “Metni bitir”e bas.'},
@@ -4496,13 +4496,13 @@ function vPlHome(seg){
   const R=plRecs(),c=S.plc,wt=plWait();
   return`<div class="top"><h1>Seviye tespiti</h1><span class="badge">beta</span></div><div class="stack">${seg}
   <div class="card stack"><div><b>İngilizce seviyeni alt seviyesine kadar ölç</b></div>
-   <div class="small">Sınav sorularını cevaplarına göre zorlaştırır ya da kolaylaştırır. Sonunda seviyeni <b>“B2 başlangıcı / ortası / ilerisi”</b> hassasiyetinde, 0–140 puanla ve her bölüm için ayrı ayrı görürsün.</div>
+   <div class="small">Sınav sorularını cevaplarına göre zorlaştırır ya da kolaylaştırır. Sonunda seviyeni <b>“B2 başlangıcı / ortası / ilerisi”</b> hassasiyetinde, 0–130 puanla ve her bölüm için ayrı ayrı görürsün.</div>
    <div class="small" style="display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px">${PL_SEC.map(s=>`<span>${s.ic}</span><span><b>${s.n}</b></span><span class="muted">${s.u}</span>`).join('')}</div>
    <div class="small muted">Yaklaşık ${PL_MIN} dakika. Süre sınırı yok; istediğin zaman ara verip kaldığın yerden devam edebilirsin. Bilmediğin soruda tahmin etmek yerine <b>Bilmiyorum</b>'u seç; sonuç daha doğru çıkar.</div>
    ${c&&c.v===2?`<button class="btn primary block" data-act="pl-go">Devam et · ${PL_SEC[c.sec]?esc(PL_SEC[c.sec].n):'Bitir'} (${c.rs.length} cevap)</button>${CLOUD.admin?'<button class="btn block" data-act="pl-new">Baştan başla</button>':''}`
      :wt?`<div class="small" style="color:#b35a00">Sınavı ${wt} gün sonra yeniden çözebilirsin.</div>`:`<button class="btn primary block" data-act="pl-start">Sınava başla</button>`}
   </div>
-  ${R.length?`<div class="card stack"><b>Sonuçların</b>${R.map(r=>{const B=plBand(r.t);return`<button class="btn block" style="text-align:left" data-act="pl-res" data-v="${esc(r.id)}"><div class="row" style="justify-content:space-between"><span><b>${esc(B.name)}</b> <span class="muted small">${fmt(r.d)}</span></span><span class="mono">${plScore(r.t)}/140</span></div></button>`}).join('')}</div>`:''}
+  ${R.length?`<div class="card stack"><b>Sonuçların</b>${R.map(r=>{const B=plBand(r.t);return`<button class="btn block" style="text-align:left" data-act="pl-res" data-v="${esc(r.id)}"><div class="row" style="justify-content:space-between"><span><b>${esc(B.name)}</b> <span class="muted small">${fmt(r.d)}</span></span><span class="mono">${plScore(r.t)}/130</span></div></button>`}).join('')}</div>`:''}
   ${CLOUD.admin?`<div class="card stack"><b>Yönetici</b><button class="btn block" data-act="pl-copy">📋 Kalibrasyon verisini kopyala</button>${UI.plTxt?`<textarea rows="4" style="width:100%" readonly>${esc(UI.plTxt)}</textarea>`:''}</div>`:''}
   <div class="small muted" style="padding:0 4px">Beta: soru zorlukları şimdilik tahmini; sınavlar çözüldükçe gerçek cevaplarla ayarlanıp keskinleşecek.</div></div>`}
 function plDlg(q){   // "A: ... B: ..." konuşmasını satırlara böl
@@ -4554,7 +4554,7 @@ function vPlRes(id){
   const prev=plRecs().filter(x=>x.id!==r.id&&(x.u||0)<(r.u||0))[0],kn=r.kn||{};
   return`<div class="top"><h1>Seviye tespiti</h1><span class="badge">beta</span></div><div class="stack">
   <div class="card stack" style="text-align:center"><div class="small muted">${fmt(r.d)} · Tahmini seviyen</div><div class="score" style="font-size:2.3rem">${esc(B.name)}</div>
-   <div class="mono">${plScore(r.t)}/140${prev?(d=>` <span class="small ${d>=0?'':'muted'}">(${d>=0?'+':''}${d} önceki sınava göre)</span>`)(plScore(r.t)-plScore(prev.t)):''}</div>
+   <div class="mono">${plScore(r.t)}/130${prev?(d=>` <span class="small ${d>=0?'':'muted'}">(${d>=0?'+':''}${d} önceki sınava göre)</span>`)(plScore(r.t)-plScore(prev.t)):''}</div>
    ${plScale(r.t,r.se)}
    <div class="small">${lo.code===hi.code?'Ölçüm bu dilimde oldukça kesin.':`Büyük ihtimalle <b>${esc(lo.name)}</b> ile <b>${esc(hi.name)}</b> arasındasın; en olası yer <b>${esc(B.name)}</b>.`}</div></div>
   <div class="card stack"><b>Bölümler</b><div>${secs}</div><div class="small muted">Bölüm sonuçları daha az soruya dayandığı için genel sonuçtan daha az kesindir.</div></div>
