@@ -1,7 +1,7 @@
 {
   "name": "Kelime Defteri",
   "short_name": "Kelime Defteri",
-  "description": "İngilizce sözlük, test, okuma, gramer, kalıplar, sınav, düello ve sıralama",
+  "description": "İngilizce sözlük, Odak modu, test, gramer, kalıplar, sınav, düello ve sıralama",
   "lang": "tr",
   "start_url": "./",
   "scope": "./",

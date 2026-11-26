@@ -32,13 +32,13 @@ def buckets(o,var,stem,k=16):
     return [put('%s%02d'%(stem,i),'Object.assign(window.%s=window.%s||{},%s);\n'%(var,var,json.dumps(b,ensure_ascii=False,separators=(',',':')))) for i,b in enumerate(B)]
 # 3) betikleri özetli adla kopyala
 def copy(path):return put(os.path.basename(path)[:-3],open(os.path.join(ROOT,path),encoding='utf8').read())
-ORDER=['grammar.js','extr.js','examples.js','senses.js','gloss.js','core.js','afx.js','fam.js','pat.js','conf.js','lab.js','freq.js','exam.js','mock.js','supabase.js']
+ORDER=['extr.js','examples.js','senses.js','gloss.js','core.js','afx.js','fam.js','pat.js','conf.js','lab.js','freq.js','exam.js','mock.js','supabase.js']
 for f in ORDER:
     if f=='extr.js':tags+=buckets(G['X'],'EXTR','x')   # extr.js + examples.js içindeki ek EXTR girdileri birleşik
     elif f=='examples.js':tags+=buckets(G['E'],'EXS','e')
     elif f=='senses.js':tags+=buckets(G['S'],'SENSES','s')
     else:tags.append(copy(f))
-lazy={f:copy(f) for f in ['phrases.js','sinav.js']}
+lazy={f:copy(f) for f in ['phrases.js','sinav.js','grammar.js']}
 # eski parçaları sil (kaynaklar duruyor; bunlar yeniden üretilebilir kopyalardır)
 for p in glob.glob(os.path.join(D,'*.js')):
     if os.path.basename(p) not in made:os.remove(p)

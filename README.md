@@ -1,6 +1,6 @@
 # Kelime Defteri
 
-Cihaza kurulabilen (PWA) İngilizce çalışma uygulaması: sözlük, test, okuma, tekrar, gramer, kalıplar, sınav, düello, sıralama ve sohbet.
+Cihaza kurulabilen (PWA) İngilizce çalışma uygulaması: sözlük, Odak modu, test, tekrar, gramer, kalıplar, sınav, düello, sıralama ve sohbet.
 
 - Yayın: https://ramforpines.github.io/kelime-defteri/
 - Beta (yönetici): https://ramforpines.github.io/kelime-defteri/beta/
@@ -15,7 +15,7 @@ Cihaza kurulabilen (PWA) İngilizce çalışma uygulaması: sözlük, test, okum
 - `examples.js`, `extr.js`, `senses.js`, `gloss.js`: örnek cümleler, çevirileri, ek anlamlar, yardımcı kelimeler
 - `grammar.js`: gramer konuları (`tools/grammar/build.py` üretir)
 - `phrases.js`: kalıp grupları (`tools/phrases/build.py` üretir)
-- `reading*.js`: okuma parçaları ve çevirileri
+- `core.js`, `freq.js`: Odak listesi ve sıklık; `afx.js`, `fam.js`, `pat.js`, `conf.js`, `lab.js`: kart ekleri (ek örnekleri, kelime ailesi, kalıplar, karıştırılanlar, etiketler)
 - `sinav.js`: A2–C1 sınavları ve çalışma bölümleri; `exam.js`, `mock.js`: ünite soruları ve örnek vize
 - `d/`: yukarıdaki veri dosyalarının içerik adresli parçaları (`tools/release/assets.py` üretir; elle düzenlenmez)
 - `audio/`, `img/`: sınav ses kayıtları ve görseller
