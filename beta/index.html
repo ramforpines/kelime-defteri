@@ -496,7 +496,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-0d28738d9a.js", "sinav.js": "d/sinav-7820b1f81c.js", "grammar.js": "d/grammar-24c5272e6a.js", "pl-bank.js": "d/pl-bank-52251a5087.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-0d28738d9a.js", "sinav.js": "d/sinav-7820b1f81c.js", "grammar.js": "d/grammar-24c5272e6a.js", "pl-bank.js": "d/pl-bank-002d82561a.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -593,7 +593,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.177.1';
+const APP_VERSION = '4.178.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4359,9 +4359,13 @@ function plZ(){   // seviye içi sıklık sapması: aynı seviyede sık kelime k
   PLZ={byL,adj:w=>{const o=zs[w.level];return o?Math.max(-0.5,Math.min(0.5,-0.3*(F[w.word]-o.m)/o.sd)):0}};return PLZ}
 function plVList(){   // 40 gerçek (seviyelere yayılmış) + 20 uydurma kelime, karışık
   const Z=plZ(),out=[],cnt={A1:5,A2:6,B1:8,B2:8,C1:8,C2:5};
-  PL_LV.forEach(L=>{const A=shuffle((Z.byL[L]||[]).slice()).slice(0,cnt[L]);A.forEach(w=>out.push({w:w.word,b:Math.round((PL_LO[L]+PL_OFF+Z.adj(w))*100)/100,lv:L}))});
-  shuffle(window.PLB.nw.slice()).slice(0,20).forEach(w=>out.push({w,nw:1}));
+  PL_LV.forEach(L=>{const A=shuffle(plFresh(Z.byL[L]||[],w=>'v:'+w.word).slice()).slice(0,cnt[L]);A.forEach(w=>out.push({w:w.word,b:Math.round((PL_LO[L]+PL_OFF+Z.adj(w))*100)/100,lv:L}))});
+  shuffle(plFresh(window.PLB.nw,w=>'v:'+w).slice()).slice(0,20).forEach(w=>out.push({w,nw:1}));
   return shuffle(out)}
+/* önceki seviye tespitlerinde sorulanlar: yeni sınavda önce hiç sorulmamışlar seçilir, havuz biterse tekrar sorulabilir */
+function plPrev(){const u=new Map();Object.values(S.plr||{}).concat(S.plc&&S.plc.id?[]:[]).forEach(r=>{const t=r.u||0,add=k=>{if(!u.has(k)||u.get(k)<t)u.set(k,t)};(r.rs||[]).forEach(e=>add(String(e[0]).split('|')[0]));if(r.w&&r.w.pid)add('w:'+r.w.pid)});return u}
+/* önce hiç sorulmamışlar; hepsi sorulduysa en eski sınavda sorulanlar */
+const plFresh=(A,key)=>{const P=plPrev(),F=A.filter(x=>!P.has(key(x)));if(F.length||!A.length)return F.length?F:A;const m=Math.min(...A.map(x=>P.get(key(x))));return A.filter(x=>P.get(key(x))===m)};
 const plUsed=c=>{const u=new Set();c.rs.forEach(r=>u.add(String(r.k).split('|')[0]));if(c.q)u.add(String(c.q.k).split('|')[0]);(c.tx||[]).forEach(x=>u.add(x));return u};
 /* seviye etiketinden başlangıç zorluğu (kalibrasyonla değişecek). Ölçüt: bir seviyenin ortasındaki kişi o seviyenin sorularının ~%80'ini bilir;
    böylece bir seviyenin sorularında %80 civarı başarı "o seviyenin başı", %90 "ilerisi" demektir (şişirmemek için temkinli). */
@@ -4369,20 +4373,21 @@ const PL_OFF=-0.8,PL_COFF=-1.1;
 const plBb=lv=>PL_LO[lv]+PL_OFF;
 const plCAdj=n=>n<=3?-0.9:n>=8?0.4:0;   // C-test: kısa işlev kelimeleri kolay, uzun kelimeler zor
 function plBankQ(s,bs,c){   // bankadan: hedef zorluğa en yakın seviyeden, kullanılmamış bir soru
-  const B=window.PLB,A=(s==='g'?B.gr:s==='m'?B.mn:B.kv).filter(x=>!plUsed(c).has(s+':'+x.id));if(!A.length)return null;
-  const dmin=Math.min(...A.map(x=>Math.abs(plBb(x.lv)-bs))),near=A.filter(x=>Math.abs(plBb(x.lv)-bs)<=dmin+0.01);
-  const x=near[Math.floor(Math.random()*near.length)],o=shuffle(x.o.slice());
+  const B=window.PLB,U=plUsed(c),A0=(s==='g'?B.gr:s==='m'?B.mn:B.kv).filter(x=>!U.has(s+':'+x.id));if(!A0.length)return null;
+  const A=plFresh(A0,x=>s+':'+x.id),ws=A.map(x=>Math.exp(-0.9*Math.abs(plBb(x.lv)-bs))),tot=ws.reduce((a,b)=>a+b,0);   // en yakın seviye ağırlıklı, komşu seviyelerden de
+  let r=Math.random()*tot,x=A[A.length-1];for(let i=0;i<A.length;i++){r-=ws[i];if(r<=0){x=A[i];break}}
+  const o=shuffle(x.o.slice());
   return{s,k:s+':'+x.id,b:plBb(x.lv),c:1/o.length,q:x.q,o,a:o.indexOf(x.o[0]),lv:x.lv,t:x.t}}
 function plCText(bs,c){const B=window.PLB,used=plUsed(c),L0=plBand(bs+0.3).L,L=L0==='A1'?'A2':L0,ord=['A2','B1','B2','C1','C2'];
-  const A=B.ct.filter(x=>!used.has('c:'+x.id));if(!A.length)return null;
+  const A=plFresh(B.ct.filter(x=>!used.has('c:'+x.id)),x=>'c:'+x.id).slice();if(!A.length)return null;
   A.sort((a,b)=>Math.abs(ord.indexOf(a.lv)-ord.indexOf(L))-Math.abs(ord.indexOf(b.lv)-ord.indexOf(L)));
   const best=A.filter(x=>x.lv===A[0].lv),x=best[Math.floor(Math.random()*best.length)];c.tx=(c.tx||[]).concat('c:'+x.id);return{s:'c',k:'c:'+x.id,id:x.id,lv:x.lv}}
 function plMeanQ(bs,c){
-  const Z=plZ(),used=plUsed(c),seen=k=>!!(S.learned[k]||S.wrong[k]||(S.prog[k]||[]).length),nA=plSecRs(c,'a').length,f=nA%2?1:0;let best=null;
+  const Z=plZ(),used=plUsed(c),P=plPrev(),seen=k=>!!(S.learned[k]||S.wrong[k]||(S.prog[k]||[]).length),nA=plSecRs(c,'a').length,f=nA%2?1:0;let best=null;
   for(let n=0;n<90;n++){
     const ws=PL_LV.map(L=>(Z.byL[L]||[]).length?Math.exp(-1.6*Math.abs(PL_LO[L]+PL_OFF-bs)):0),tot=ws.reduce((a,b)=>a+b,0);if(!tot)break;
     let r=Math.random()*tot,L=PL_LV[0];for(let i=0;i<6;i++){r-=ws[i];if(r<=0){L=PL_LV[i];break}}
-    const A=Z.byL[L],w=A[Math.floor(Math.random()*A.length)];if(!w||used.has('a:'+w.word)||seen(w.word))continue;
+    const A=Z.byL[L],w=A[Math.floor(Math.random()*A.length)];if(!w||used.has('a:'+w.word)||(n<70&&P.has('a:'+w.word))||seen(w.word))continue;
     const b=PL_LO[L]+PL_OFF+Z.adj(w)+(f?0.1:-0.2);if(best&&Math.abs(b-bs)>=Math.abs(best.b-bs))continue;
     let it=null;try{it=makeItem(w,f,'pl')}catch(e){}if(!it||!it.options||it.options.length<3)continue;
     best={s:'a',k:'a:'+w.word+'|'+f,b,c:1/it.options.length,q:it.question,o:it.options,a:it.options.indexOf(it.correct),lv:L};if(n>15&&Math.abs(b-bs)<0.12)break}
@@ -4392,11 +4397,12 @@ function plText(s,bs,c){   // okuma / dinleme: hedef seviyeye en yakın, çözü
   const P=(window.SINAV||{}).prac||{},L0=plBand(bs+0.3).L,L=L0==='A1'?'A2':L0==='C2'?'C1':L0,used=plUsed(c);
   const ord=PL_TXL.slice().sort((a,b)=>Math.abs(PL_TXL.indexOf(a)-PL_TXL.indexOf(L))-Math.abs(PL_TXL.indexOf(b)-PL_TXL.indexOf(L)));
   for(const pass of [0,1])for(const lv of ord){
-    const C=(P[lv]||{})[s==='r'?'R':'L']||[],ok0=C.filter(p=>p.ty==='mc'&&(p.q||[]).length>=2&&!used.has(s+':'+p.id)&&(pass||!sxDoneRec(p.id))),ok4=ok0.filter(p=>p.q.length>=4),ok=ok4.length?ok4:ok0;if(!ok.length)continue;
+    const C=(P[lv]||{})[s==='r'?'R':'L']||[],ok0=C.filter(p=>p.ty==='mc'&&(p.q||[]).length>=2&&!used.has(s+':'+p.id)&&(pass||(!sxDoneRec(p.id)&&!plPrev().has(s+':'+p.id)))),ok4=ok0.filter(p=>p.q.length>=4),ok=ok4.length?ok4:ok0;if(!ok.length)continue;
     const p=ok[Math.floor(Math.random()*ok.length)];c.tx=(c.tx||[]).concat(s+':'+p.id);
     const its=sxItems(p,'p'+lv.toLowerCase()).slice(0,PL_TQ),b0=PL_LO[lv]+PL_OFF+0.1+(p.k==='R1'?-0.2:0);
     return its.map((x,i)=>({s,k:s+':'+p.id+'|'+i,b:b0,c:1/x.o.length,q:x.q,o:x.o,a:x.a,lv,pid:p.id,i}))}
   return[]}
+const plWT=q=>((window.PLB||{}).wt||[]).find(x=>x.id===q.pid)||PL_WT[q.lv];
 function plTextOf(q){const P=window.SINAV.prac[q.lv],p=(P[q.s==='r'?'R':'L']||[]).find(x=>x.id===q.pid);return p?sxItems(p,'p'+q.lv.toLowerCase())[q.i]:null}
 const PL_WT={
  A2:{g:'email',t:'Write an email to an English-speaking friend about a special day you had recently.',p:['where you were and who you were with','what you did that day','why the day was special for you'],tr:'Yakın zamanda yaşadığın özel bir günü İngilizce bilen bir arkadaşına e-postayla anlat.'},
@@ -4415,7 +4421,7 @@ function plSecEnd(c,k){c.dn=c.dn||{};c.dn[k]=1;c.ss=k;c.q=null;c.qq=[];try{plUp(
 function plNext(c){   // geçerli bölümün sıradaki sorusunu hazırlar; bölüm bitince bölüm sonucu ekranına geçer
   const sec=PL_SEC[c.sec];c.q=null;if(!sec||(c.dn||{})[sec.k]||c.ss)return;
   const th=plTh(c).t,bs=th-0.15;
-  if(sec.k==='w'){c.q={s:'w',k:'w',lv:c.wlv||(c.wlv=plWLv(th))};return}
+  if(sec.k==='w'){const lv=c.wlv||(c.wlv=plWLv(th));if(!c.wpid){const A=plFresh((window.PLB.wt||[]).filter(x=>x.lv===lv),x=>'w:'+x.id);if(A.length)c.wpid=A[Math.floor(Math.random()*A.length)].id}c.q={s:'w',k:'w',lv,pid:c.wpid};return}
   if(sec.k==='v'){if(!c.vq)c.vq=plVList();const n=plSecRs(c,'v').length;if(n<c.vq.length){const x=c.vq[n];c.q={s:'v',k:'v:'+x.w,w:x.w,b:x.b,lv:x.lv,nw:x.nw};return}}
   else if(sec.k==='c'){if(plTxtIds(c,'c').size<sec.N){const q=plCText(bs,c);if(q){c.q=q;c.cv={};return}}}
   else if(sec.k==='r'||sec.k==='l'){
@@ -4432,7 +4438,7 @@ function plReady(fn){   // sınav için gereken dosyalar: soru bankası, gramer 
   if(!window.SINAV){toast('Hazırlanıyor…',1500);sxLoad();const t=setInterval(()=>{if(window.SINAV){clearInterval(t);fn()}},400);setTimeout(()=>clearInterval(t),20000);return false}
   return true}
 function plStart(){
-  if(S.plc||plDone())return;
+  if(S.plc||plWait())return;
   if(!plReady(plStart))return;
   PLZ=null;const c={id:Date.now().toString(36),v:2,d:today(),sec:0,si:-1,rs:[],el:0,last:Date.now(),u:Date.now()};
   S.plc=c;UI.pl=1;UI.plr=null;save();render();window.scrollTo(0,0)}
@@ -4458,14 +4464,14 @@ async function plWSend(skip){
   const c=S.plc;if(!c||!c.q||c.q.s!=='w'||UI.plBusy)return;plTick(c);
   const txt=String(c.wt||'').trim(),wc=sxWc(txt);
   if(wc<20){UI.plErr='short';render();return}
-  const lv=c.q.lv,T=PL_WT[lv];UI.plBusy=true;UI.plErr=null;render();let res=null,err=null;
+  const lv=c.q.lv,T=plWT(c.q);UI.plBusy=true;UI.plErr=null;render();let res=null,err=null;
   try{const x=await sb.functions.invoke('pet-eval',{body:{kind:'w',id:'pl-'+c.id,lv,part:1,genre:T.g,task:T.t,points:T.p.map(p=>'- '+p).join('\n'),text:txt,words:wc,min:70,max:100,topics:(window.GRAMMAR||[]).map(t=>({id:t.id,t:t.title}))}});
     if(x.error){let e='net';try{const j=await x.error.context.json();e=j.error||e;UI.plDet=j.detail||''}catch(z){if(/404|not found/i.test(String(x.error.message)))e='setup'}err=e}
     else if(x.data&&x.data.ok)res=x.data.res;else err=(x.data&&x.data.error)||'ai'}
   catch(e){err='net'}
   UI.plBusy=false;
   if(err){UI.plErr=err;render();return}
-  c.w={res,lv,wc,txt:String(txt).slice(0,2500)};plSecEnd(c,'w');c.u=Date.now();save();render();window.scrollTo(0,0)}
+  c.w={res,lv,wc,txt:String(txt).slice(0,2500),pid:c.wpid||''};plSecEnd(c,'w');c.u=Date.now();save();render();window.scrollTo(0,0)}
 function plSecEst(c,k){const R=plRs(c.rs.filter(r=>r.s===k),c.rs);return R.length?plEst(R):null}
 function plBuild(c){   // şu ana kadarki cevaplardan sonuç kaydı (tamamlanmamışsa part:1)
   const w=c.w,ex=[];let tw=null;if(w&&w.res){tw=plWTheta(w.res,w.lv);ex.push([tw,0.45])}
@@ -4477,13 +4483,13 @@ function plBuild(c){   // şu ana kadarki cevaplardan sonuç kaydı (tamamlanmam
   const rec={id:c.id,v:2,v3:1,d:today(),t:Math.round(all.t*100)/100,se:Math.round(all.se*100)/100,sc:plScore(all.t),b:plBand(all.t).code,sec,dn,dur:Math.round((c.el||0)/1000),exp:PL_MIN*60,
     rs:c.rs.map(r=>r.s==='v'?[r.k,r.nw?'nw':r.b,r.y?1:0]:[r.k,r.b,r.c,r.dk?2:r.ok]),x:c.rs.filter(r=>r.x).map(r=>Object.assign({s:r.s},r.x)).slice(0,80),u:Date.now()};
   if(dn.length<PL_NSEC)rec.part=1;
-  if(w&&w.res)rec.w={lv:w.lv,res:w.res,wc:w.wc,txt:w.txt,t:Math.round(tw*100)/100};
+  if(w&&w.res)rec.w={lv:w.lv,res:w.res,wc:w.wc,txt:w.txt,pid:w.pid||'',t:Math.round(tw*100)/100};
   return rec}
 function plFinish(){
   const c=S.plc;if(!c)return;plTick(c);const rec=plBuild(c);
   S.plr=S.plr||{};S.plr[c.id]=rec;delete S.plc;UI.pl=0;UI.plp=0;UI.plr=c.id;save();plUp(rec);render();window.scrollTo(0,0)}
 async function plUp(r){   // kalibrasyon için sunucuya kaydet (pl_runs); tablo yoksa sessizce geçer
-  if(!sb||!CLOUD.uid)return;const d=Object.assign({},r);delete d.x;if(d.w)d.w={lv:d.w.lv,t:d.w.t,wc:d.w.wc,res:{level:d.w.res.level,scores:d.w.res.scores}};
+  if(!sb||!CLOUD.uid)return;const d=Object.assign({},r);delete d.x;if(d.w)d.w={lv:d.w.lv,t:d.w.t,wc:d.w.wc,pid:d.w.pid,res:{level:d.w.res.level,scores:d.w.res.scores}};
   try{await sb.from('pl_runs').upsert({user_id:CLOUD.uid,rid:r.id,data:d,updated_at:new Date().toISOString()})}catch(e){}}
 async function plCopy(){   // yönetici: tüm sınav verisini panoya (Claude'a yapıştırmak için)
   if(!CLOUD.admin||!sb)return;const x=await sb.rpc('admin_pl_runs');if(x.error){toast('Alınamadı: '+(x.error.message||'hata')+' (supabase-pl.sql çalıştırıldı mı?)',5000);return}
@@ -4502,7 +4508,8 @@ function plRecalc(r){   // ilk ölçekle puanlanmış sonuçları yeni (temkinli
 function plRecalcAll(){let ch=false;Object.values(S.plr||{}).forEach(r=>{if(plRecalc(r))ch=true});if(ch)save()}
 const plRecs=()=>Object.values(S.plr||{}).filter(r=>r&&r.t!=null).sort((a,b)=>(b.u||0)-(a.u||0));
 const plMin=s=>Math.max(1,Math.round(s/60));
-const plDone=()=>plRecs().some(r=>r.v===2&&!r.part);   // seviye tespiti bir kez çözülür
+const PL_GAP=21;   // seviye tespiti en erken 21 günde bir yeniden çözülür
+const plWait=()=>{const r=plRecs().find(r=>r.v===2&&!r.part);if(!r)return 0;const d=PL_GAP-Math.floor((Date.parse(today())-Date.parse(r.d))/864e5);return d>0?d:0};
 function plScale(t,se){   // 18 dilimlik ölçek; işaret kişinin yeri, çerçeve kesinlik aralığı
   const pos=x=>Math.max(0,Math.min(100,(x+3.6)/7.2*100)),col=['#9bd3ae','#5cb87d','#7fb2ff','#3f7cf0','#c49bff','#8a4fe0'];
   return`<div style="position:relative;margin:18px 0 4px"><div style="display:grid;grid-template-columns:repeat(18,1fr);gap:2px;height:14px">${PL_LV.map((L,i)=>[0,1,2].map(j=>`<i style="background:${col[i]};opacity:${.45+j*.25};border-radius:3px"></i>`).join('')).join('')}</div>
@@ -4511,14 +4518,14 @@ function plScale(t,se){   // 18 dilimlik ölçek; işaret kişinin yeri, çerçe
   <div style="display:grid;grid-template-columns:repeat(6,1fr);margin-top:6px" class="small muted">${PL_LV.map(L=>`<span style="text-align:center">${L}</span>`).join('')}</div></div>`}
 function vPlHome(seg){
   plRecalcAll();
-  const R=plRecs(),c=S.plc,wt=plDone();
+  const R=plRecs(),c=S.plc,wt=plWait();
   return`<div class="top"><h1>Seviye tespiti</h1><span class="badge">beta</span></div><div class="stack">${seg}
   <div class="card stack"><div><b>İngilizce seviyeni alt seviyesine kadar ölç</b></div>
    <div class="small">Sınav sorularını cevaplarına göre zorlaştırır ya da kolaylaştırır. Sonunda seviyeni <b>“B2 başlangıcı / ortası / ilerisi”</b> hassasiyetinde, 0–130 puanla ve her bölüm için ayrı ayrı görürsün.</div>
    <div class="small" style="display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px">${PL_SEC.map(s=>`<span>${s.ic}</span><span><b>${s.n}</b></span><span class="muted">${s.u}</span>`).join('')}</div>
    <div class="small muted">Yaklaşık ${PL_MIN} dakika. Süre sınırı yok; istediğin zaman ara verip kaldığın yerden devam edebilirsin. Bilmediğin soruda tahmin etmek yerine <b>Bilmiyorum</b>'u seç; sonuç daha doğru çıkar.</div>
    ${c&&c.v===2?`<div class="small"><b>Yarım kalan sınavın var</b> · ${plSecDone(c)}/${PL_NSEC} bölüm bitti</div><button class="btn primary block" data-act="pl-go">Devam et · ${PL_SEC[c.sec]?esc(PL_SEC[c.sec].n):''}</button>${c.rs.length?'<button class="btn block" data-act="pl-part">Şu ana kadarki sonucu gör</button>':''}`
-     :wt?`<div class="small muted">Seviye tespit sınavını çözdün; sonucun aşağıda. Bu sınav bir kez çözülür.</div>`:`<div class="small"><b>Bu sınavı yalnız bir kez çözebilirsin.</b> Ara verip devam edebilirsin ama baştan başlayamazsın.</div><button class="btn primary block" data-act="pl-start">Sınava başla</button>`}
+     :wt?`<div class="small muted">Seviye tespitini ${PL_GAP} günde bir çözebilirsin. Sonraki sınavın <b>${wt} gün</b> sonra açılacak.</div>`:`<div class="small"><b>Seviye tespitini ${PL_GAP} günde bir çözebilirsin.</b> Başladıktan sonra ara verip devam edebilirsin ama baştan başlayamazsın. Her sınavda farklı sorular gelir.</div><button class="btn primary block" data-act="pl-start">Sınava başla</button>`}
   </div>
   ${R.length?`<div class="card stack"><b>Sonuçların</b>${R.map(r=>{const B=plBand(r.t);return`<button class="btn block" style="text-align:left" data-act="pl-res" data-v="${esc(r.id)}"><div class="row" style="justify-content:space-between"><span><b>${esc(B.name)}</b> <span class="muted small">${fmt(r.d)}</span></span><span class="mono">${plScore(r.t)}/130</span></div></button>`}).join('')}</div>`:''}
   ${CLOUD.admin?`<div class="card stack"><b>Yönetici</b><button class="btn block" data-act="pl-copy">📋 Kalibrasyon verisini kopyala</button>${UI.plTxt?`<textarea rows="4" style="width:100%" readonly>${esc(UI.plTxt)}</textarea>`:''}</div>`:''}
@@ -4544,7 +4551,7 @@ function vPl(){
     const body=T.s.map(g=>{if(typeof g==='string')return esc(g);const i=gi++,n=Math.max(g.a.length,...(g.x||[]).map(x=>x.length));
       return`<span style="white-space:nowrap">${esc(g.p)}<input class="plc" data-plc="${i}" value="${esc((c.cv||{})[i]||'')}" maxlength="${n}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="width:${n*1.6-0.3}ch" aria-label="${g.a.length} harf eksik"></span>`}).join('');
     return head+`<div class="card stack"><div class="small muted">${esc(T.t)}</div><div lang="en" style="line-height:2.1;font-size:1.05rem">${esc(T.f)} ${body}</div><button class="btn primary block" data-act="pl-cdone">Metni bitir</button></div>`}
-  if(q.s==='w'){const T=PL_WT[q.lv],wc=sxWc(c.wt);
+  if(q.s==='w'){const T=plWT(q),wc=sxWc(c.wt);
     return head+`<div class="card stack"><div class="small">${esc(T.tr)}</div><div lang="en" class="card" style="white-space:pre-line;line-height:1.55;margin:0">${esc(T.t)}</div>
      <div class="small" lang="en"><b>Write about:</b><ul style="margin:4px 0 0 18px;padding:0">${T.p.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>
      <textarea data-plw rows="12" lang="en" spellcheck="false" autocapitalize="sentences" style="width:100%;font:inherit;line-height:1.5;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:inherit" placeholder="Write 70–100 words…" ${UI.plBusy?'disabled':''}>${esc(c.wt||'')}</textarea>
