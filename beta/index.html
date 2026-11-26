@@ -496,7 +496,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-0d28738d9a.js", "sinav.js": "d/sinav-7820b1f81c.js", "grammar.js": "d/grammar-24c5272e6a.js", "pl-bank.js": "d/pl-bank-be14f8f557.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-0d28738d9a.js", "sinav.js": "d/sinav-7820b1f81c.js", "grammar.js": "d/grammar-24c5272e6a.js", "pl-bank.js": "d/pl-bank-7055a8ec28.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -593,7 +593,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.179.0';
+const APP_VERSION = '4.180.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4384,10 +4384,10 @@ function plCText(bs,c){const B=window.PLB,used=plUsed(c),L0=plBand(bs+0.3).L,L=L
   const best=A.filter(x=>x.lv===A[0].lv),x=best[Math.floor(Math.random()*best.length)];c.tx=(c.tx||[]).concat('c:'+x.id);return{s:'c',k:'c:'+x.id,id:x.id,lv:x.lv}}
 function plMeanQ(bs,c){
   const Z=plZ(),used=plUsed(c),P=plPrev(),seen=k=>!!(S.learned[k]||S.wrong[k]||(S.prog[k]||[]).length),nA=plSecRs(c,'a').length,f=nA%2?1:0;let best=null;
-  for(let n=0;n<90;n++){
+  for(let n=0;n<160;n++){
     const ws=PL_LV.map(L=>(Z.byL[L]||[]).length?Math.exp(-1.6*Math.abs(PL_LO[L]+PL_OFF-bs)):0),tot=ws.reduce((a,b)=>a+b,0);if(!tot)break;
     let r=Math.random()*tot,L=PL_LV[0];for(let i=0;i<6;i++){r-=ws[i];if(r<=0){L=PL_LV[i];break}}
-    const A=Z.byL[L],w=A[Math.floor(Math.random()*A.length)];if(!w||used.has('a:'+w.word)||(n<70&&P.has('a:'+w.word))||seen(w.word))continue;
+    const A=Z.byL[L],w=A[Math.floor(Math.random()*A.length)];if(!w||used.has('a:'+w.word)||(n<150&&P.has('a:'+w.word))||seen(w.word))continue;
     const b=PL_LO[L]+PL_OFF+Z.adj(w)+(f?0.1:-0.2);if(best&&Math.abs(b-bs)>=Math.abs(best.b-bs))continue;
     let it=null;try{it=makeItem(w,f,'pl')}catch(e){}if(!it||!it.options||it.options.length<3)continue;
     best={s:'a',k:'a:'+w.word+'|'+f,b,c:1/it.options.length,q:it.question,o:it.options,a:it.options.indexOf(it.correct),lv:L};if(n>15&&Math.abs(b-bs)<0.12)break}
