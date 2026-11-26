@@ -1,0 +1,559 @@
+# Seviye tespiti — Kelime kullanımı (Aptis tarzı 4 tip). syn: eş anlam · def: tanım → kelime · use: cümlede kullanım · col: birlikte kullanım (collocation). '*' doğru.
+
+@A1
+use: It's cold outside. Put on your ___.
+* coat
+- plate
+- chair
+- window
+
+syn: big
+* large
+- long
+- tall
+- heavy
+
+def: the day after today
+* tomorrow
+- yesterday
+- tonight
+- weekend
+
+use: My father's mother is my ___.
+* grandmother
+- aunt
+- cousin
+- niece
+
+col: Can I ___ a photo of you?
+* take
+- make
+- do
+- play
+
+use: I ___ my teeth every morning.
+* brush
+- wash
+- cut
+- comb
+
+def: a piece of furniture that you sleep in
+* bed
+- desk
+- shelf
+- door
+
+use: This watch isn't cheap. It's very ___.
+* expensive
+- poor
+- rich
+- small
+
+col: I always ___ my homework after dinner.
+* do
+- make
+- write
+- play
+
+use: Excuse me, can you ___ me the time?
+* tell
+- say
+- speak
+- talk
+
+def: a person who works in a hospital and looks after sick people
+* nurse
+- waiter
+- pilot
+- farmer
+
+@A2
+syn: quickly
+* fast
+- soon
+- early
+- often
+
+use: I'm very ___ in history. It's my favourite subject.
+* interested
+- interesting
+- bored
+- boring
+
+col: Don't worry — everybody ___ mistakes.
+* makes
+- does
+- has
+- gets
+
+use: Could you ___ me your dictionary? I left mine at home.
+* lend
+- borrow
+- take
+- keep
+
+syn: begin
+* start
+- open
+- finish
+- try
+
+use: Our flight was ___ because of the snow.
+* cancelled
+- closed
+- stopped
+- finished
+
+def: a place where you can borrow books
+* library
+- bookshop
+- office
+- gallery
+
+col: Please ___ attention to the instructions.
+* pay
+- make
+- take
+- put
+
+use: He ___ the bus, so he was late for work.
+* missed
+- lost
+- forgot
+- left
+
+syn: difficult
+* hard
+- heavy
+- strong
+- serious
+
+use: I can't ___ where I put my keys.
+* remember
+- remind
+- memorise
+- realise
+
+col: I'm going to ___ a shower before dinner.
+* have
+- make
+- do
+- go
+
+use: It's ___ outside, so take an umbrella.
+* raining
+- sunny
+- dry
+- warm
+
+def: the meal that you eat in the evening
+* dinner
+- breakfast
+- snack
+- dessert
+
+@B1
+syn: annoyed
+* irritated
+- ashamed
+- anxious
+- amazed
+
+use: The company ___ 200 people.
+* employs
+- works
+- earns
+- costs
+
+col: You need to ___ more effort if you want to pass.
+* make
+- do
+- take
+- have
+
+def: to tell someone that you will certainly do something
+* promise
+- suggest
+- admit
+- warn
+
+use: I'm sorry, I didn't ___ to hurt your feelings.
+* mean
+- avoid
+- bother
+- agree
+
+syn: enormous
+* huge
+- heavy
+- wide
+- thick
+
+use: Can you ___ an eye on my bag while I go to the toilet?
+* keep
+- have
+- take
+- hold
+
+col: There was ___ rain all night, and the roads flooded.
+* heavy
+- strong
+- big
+- thick
+
+def: a person travelling in a car, bus or train who is not driving it
+* passenger
+- pedestrian
+- customer
+- resident
+
+use: The price ___ breakfast and dinner.
+* includes
+- contains
+- consists
+- involves
+
+syn: purchase
+* buy
+- sell
+- order
+- pay
+
+use: She ___ her driving test on her first try.
+* passed
+- succeeded
+- won
+- achieved
+
+def: extremely tired
+* exhausted
+- bored
+- confused
+- relaxed
+
+use: I've ___ up my mind — I'm going to study medicine.
+* made
+- set
+- taken
+- put
+
+col: He always ___ his promises, so you can trust him.
+* keeps
+- holds
+- saves
+- stays
+
+use: The meeting has been ___ until next week.
+* put off
+- put out
+- put up
+- put away
+
+syn: frightened
+* scared
+- shocked
+- tired
+- upset
+
+@B2
+syn: reluctant
+* unwilling
+- unable
+- unaware
+- unlikely
+
+use: The new law will come into ___ next month.
+* force
+- power
+- action
+- place
+
+col: If you don't back up your files, you ___ the risk of losing everything.
+* run
+- do
+- make
+- go
+
+def: to agree, often unwillingly, that something is true
+* admit
+- announce
+- assume
+- argue
+
+use: Despite the bad weather, the festival ___ ahead as planned.
+* went
+- carried
+- took
+- held
+
+syn: obvious
+* evident
+- obscure
+- curious
+- previous
+
+use: The company had to ___ 50 workers because of financial problems.
+* lay off
+- lay down
+- lay out
+- lay aside
+
+col: My grandfather was a ___ smoker for forty years.
+* heavy
+- strong
+- hard
+- thick
+
+def: a feeling of worry about something that might happen
+* anxiety
+- jealousy
+- sympathy
+- curiosity
+
+use: I'm afraid her argument doesn't hold ___.
+* water
+- air
+- ground
+- sense
+
+syn: thorough
+* comprehensive
+- considerate
+- conscious
+- continuous
+
+use: I'm afraid I can't ___ your offer.
+* accept
+- except
+- expect
+- affect
+
+use: The museum is ___ worth a visit.
+* well
+- very
+- much
+- too
+
+col: She pays ___ attention to detail.
+* close
+- near
+- tight
+- deep
+
+def: unwilling to change your opinions or behaviour
+* stubborn
+- generous
+- sensitive
+- cautious
+
+use: Prices have ___ dramatically over the past year.
+* risen
+- raised
+- arisen
+- aroused
+
+syn: deliberately
+* on purpose
+- by chance
+- in advance
+- at random
+
+use: He was ___ of stealing money from the company.
+* accused
+- blamed
+- charged
+- criticised
+
+@C1
+syn: meticulous
+* painstaking
+- ambitious
+- impulsive
+- tedious
+
+use: The government has pledged to ___ poverty within a decade.
+* eradicate
+- evacuate
+- evaporate
+- elevate
+
+col: After hours of talks, the two sides finally ___ a compromise.
+* reached
+- gained
+- earned
+- won
+
+def: to make a pain or problem less severe
+* alleviate
+- aggravate
+- alienate
+- allocate
+
+use: The two reports ___ on several key points.
+* diverge
+- divert
+- divide
+- disperse
+
+syn: ambiguous
+* equivocal
+- ambitious
+- tentative
+- impartial
+
+use: Her success is largely ___ to her hard work.
+* attributable
+- accountable
+- dependent
+- indebted
+
+col: If you break the rules, you'll have to ___ the consequences.
+* face
+- front
+- stand
+- hold
+
+def: done too quickly, without thinking about the possible results
+* rash
+- tentative
+- deliberate
+- sincere
+
+col: There is a ___ contrast between the two cities.
+* stark
+- bare
+- plain
+- blunt
+
+syn: candid
+* frank
+- brief
+- bitter
+- crude
+
+use: The project was ___ by a lack of funding.
+* hampered
+- harnessed
+- harboured
+- hastened
+
+use: He made a ___ attempt to apologise, but nobody believed him.
+* half-hearted
+- light-hearted
+- broken-hearted
+- big-hearted
+
+def: to formally tell your employer that you are leaving your job
+* resign
+- relieve
+- repeal
+- revoke
+
+syn: scrutinise
+* examine
+- estimate
+- exaggerate
+- eliminate
+
+use: The new findings ___ doubt on the original theory.
+* cast
+- lay
+- set
+- draw
+
+col: As a shareholder, she had a ___ of interest and couldn't vote.
+* conflict
+- clash
+- fight
+- battle
+
+use: She was ___ to the idea at first, but she soon came round.
+* averse
+- adverse
+- diverse
+- inverse
+
+@C2
+syn: obsequious
+* servile
+- pompous
+- devious
+- tenacious
+
+use: The CEO's remarks were seen as a ___ attempt to shift the blame.
+* thinly veiled
+- thinly spread
+- finely tuned
+- deeply rooted
+
+def: not saying clearly what you think or what you intend to do
+* noncommittal
+- nonchalant
+- nondescript
+- nonsensical
+
+use: His argument was ___ by numerous factual errors.
+* vitiated
+- vindicated
+- ventilated
+- venerated
+
+col: When she finished speaking, there was a ___ silence.
+* deafening
+- thundering
+- roaring
+- booming
+
+syn: ephemeral
+* fleeting
+- fragile
+- feeble
+- futile
+
+use: The new evidence ___ his claim that he was at home that night.
+* corroborates
+- collaborates
+- correlates
+- coordinates
+
+def: to make something seem less important than it really is
+* downplay
+- outweigh
+- overstate
+- uphold
+
+use: She has a ___ for saying the wrong thing at the wrong time.
+* knack
+- hunch
+- quirk
+- whim
+
+syn: recalcitrant
+* uncooperative
+- unrepentant
+- unremarkable
+- unconventional
+
+use: The report pulls no ___ in its criticism of the management.
+* punches
+- strings
+- weights
+- strokes
+
+col: The whole system is rotten to the ___.
+* core
+- root
+- bone
+- base
+
+use: Sales have been ___ since the new competitor arrived.
+* flagging
+- flogging
+- fledging
+- flaring
+
+def: a feeling of doubt or worry about whether something is right
+* misgiving
+- mishap
+- misnomer
+- mischief

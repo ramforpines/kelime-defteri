@@ -38,7 +38,7 @@ for f in ORDER:
     elif f=='examples.js':tags+=buckets(G['E'],'EXS','e')
     elif f=='senses.js':tags+=buckets(G['S'],'SENSES','s')
     else:tags.append(copy(f))
-lazy={f:copy(f) for f in ['phrases.js','sinav.js','grammar.js']}
+lazy={f:copy(f) for f in ['phrases.js','sinav.js','grammar.js','pl-bank.js']}
 # eski parçaları sil (kaynaklar duruyor; bunlar yeniden üretilebilir kopyalardır)
 for p in glob.glob(os.path.join(D,'*.js')):
     if os.path.basename(p) not in made:os.remove(p)

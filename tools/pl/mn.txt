@@ -1,0 +1,130 @@
+# Seviye tespiti — Anlam ve ima: "B ne demek istiyor?" (Oxford Placement Test 'meaning' görevi tarzı). '*' doğru.
+
+@A2
+A: Shall we go to the beach tomorrow? B: I'd love to, but I'm working.
+* B can't go to the beach tomorrow.
+- B will go to the beach after work.
+- B doesn't really like the beach.
+
+A: How was the hotel? B: Well, the room was small, but the staff were lovely.
+* B liked the people who worked there.
+- B didn't like anything about the hotel.
+- B thought the room was too big for him.
+
+A: Are you coming to the party on Saturday? B: I'll see how I feel.
+* B hasn't decided whether to come yet.
+- B is definitely coming to it.
+- B is feeling ill today.
+
+A: Is this seat free? B: Sorry, my friend's just gone to get a coffee.
+* Someone is already sitting there.
+- B wants a coffee too.
+- A can sit there now.
+
+@B1
+A: Do you want to see the new action film? B: I'm not really into action films.
+* B would prefer not to see it.
+- B has already seen that film.
+- B hasn't heard of that film.
+
+A: Could you turn the music down a bit? B: Oh, sorry — I didn't realise it was so loud.
+* B will make the music quieter.
+- B thinks the music isn't loud.
+- B wants A to turn it up a bit.
+
+A: The train leaves at 7.10. B: Then we'd better get a move on.
+* They need to hurry to catch it.
+- They should wait for it.
+- They have plenty of time.
+
+A: Is that new restaurant any good? B: Let's just say I won't be going back.
+* B didn't enjoy eating there.
+- B is going back there soon.
+- B has never eaten there yet.
+
+A: I failed my driving test again. B: Oh well, third time lucky!
+* B hopes A will pass next time.
+- B thinks A was lucky this time.
+- B says A should stop trying now.
+
+A: Can you finish the report today? B: I'll do my best, but don't count on it.
+* B might not manage to finish it today.
+- B has already finished it.
+- B won't write the report.
+
+@B2
+A: What did you think of Sarah's presentation? B: Well, she certainly spoke for a long time.
+* B wasn't very impressed by it.
+- B thought it was far too short.
+- B enjoyed it from start to end.
+
+A: Shall I bring anything tonight? B: Just yourself.
+* A doesn't need to bring anything.
+- A should come without any friends.
+- A should bring a friend with him.
+
+A: Can I give you a lift? B: Thanks, but it's only around the corner.
+* B would rather walk there.
+- B doesn't know the way there.
+- B wants A to drive her there.
+
+A: I'm thinking of buying a used car from that website. B: I'd think twice if I were you.
+* B is advising A to be careful.
+- B is planning to buy one too.
+- B thinks the cars are a bargain.
+
+A: Did you manage to talk to the boss? B: I tried, but she was tied up all day.
+* The boss was too busy to talk.
+- The boss refused to talk to B.
+- The boss was away from the office.
+
+A: Do you think Mark will help us move house? B: I wouldn't hold your breath.
+* It's unlikely Mark will help.
+- Mark will be there very soon.
+- A should ask Mark straight away.
+
+A: This soup's a bit salty, isn't it? B: Now that you mention it...
+* B hadn't noticed but now agrees.
+- B made the soup himself.
+- B thinks it needs salt.
+
+@C1
+A: Are you going to apply for the manager's job? B: I'd be lying if I said it hadn't crossed my mind.
+* B has thought about applying.
+- B has already sent an application.
+- B has no interest in the job.
+
+A: How's the new flatmate? B: Let's just say we have very different ideas about cleaning.
+* B finds the flatmate untidy.
+- B thinks the flat is too clean.
+- B and the flatmate clean together.
+
+A: Is the course worth doing? B: It's not the worst way to spend a weekend.
+* B thinks it's reasonably worthwhile.
+- B thinks it's a complete waste of time.
+- B hasn't actually done the course yet.
+
+A: Did the negotiations go well? B: Well, we're not out of the woods yet.
+* There are still some difficulties to solve.
+- They have reached an agreement.
+- The talks have been cancelled.
+
+A: Was the interview difficult? B: They certainly didn't make it easy for me.
+* The interview was challenging.
+- The interview was very relaxed.
+- B didn't go to the interview.
+
+A: Shall we ask Tom to organise the trip? B: Tom? He can't even organise his own desk.
+* B doubts Tom could do it well.
+- B thinks Tom is too busy for it.
+- B would like to help Tom with it.
+
+A: Will the new policy affect our team? B: Not so as you'd notice.
+* It will hardly affect them at all.
+- It will affect them badly.
+- Nobody knows yet.
+
+A: Have you told Emma about the mistake? B: I'm waiting for the right moment.
+* B hasn't told Emma about it so far.
+- B told Emma at a good time.
+- B is waiting for Emma to arrive.
