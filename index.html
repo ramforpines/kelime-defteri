@@ -593,7 +593,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.176.0';
+const APP_VERSION = '4.176.1';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4564,11 +4564,10 @@ function vPlSS(c){   // bir bölüm bitince: o bölümün değerlendirmesi
     :`<button class="btn primary block" data-act="pl-fin">Tüm bölümler bitti · Sonucu gör</button>`}</div>`}
 function plClock(c){const ms=(c.el||0)+Math.min(Math.max(0,Date.now()-(c.last||Date.now())),300000),s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
 setInterval(()=>{const e=document.getElementById('pltm');if(e&&S.plc)e.textContent=plClock(S.plc)},1000);
-function plLvSet(t){const B=plBand(t),i=PL_LV.indexOf(B.L);return B.s===2&&i<5?B.L+','+PL_LV[i+1]:B.L}
 function vPlRes(id,part){
   plRecalcAll();
   const r=part||(S.plr||{})[id];if(!r){UI.plr=null;return''}
-  const B=plBand(r.t),lo=plBand(r.t-r.se),hi=plBand(r.t+r.se),lvs=plLvSet(r.t),SEC=r.v===2?PL_SEC:[{k:'k',n:'Kelime',ic:'🔤'},{k:'g',n:'Gramer',ic:'🧩'},{k:'u',n:'Kullanım',ic:'🔗'},{k:'r',n:'Okuma',ic:'📖'},{k:'l',n:'Dinleme',ic:'🎧'},{k:'w',n:'Yazma',ic:'✍️'}];
+  const B=plBand(r.t),lo=plBand(r.t-r.se),hi=plBand(r.t+r.se),SEC=r.v===2?PL_SEC:[{k:'k',n:'Kelime',ic:'🔤'},{k:'g',n:'Gramer',ic:'🧩'},{k:'u',n:'Kullanım',ic:'🔗'},{k:'r',n:'Okuma',ic:'📖'},{k:'l',n:'Dinleme',ic:'🎧'},{k:'w',n:'Yazma',ic:'✍️'}];
   const secs=SEC.map((s,i)=>{const x=r.sec[s.k];if(r.part&&(r.dn||[]).indexOf(s.k)<0)return`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;border-top:1px solid var(--line);padding:7px 0"><span>${s.ic}</span><span><b>${esc(s.n)}</b> <span class="small muted">${x?'yarım kaldı':'tamamlanmadı'}</span></span><button class="btn" style="padding:4px 12px" data-act="pl-goto" data-v="${i}">${x?'Devam':'Başla'}</button></div>`;if(!x)return'';const b=plBand(x.t);return`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;border-top:1px solid var(--line);padding:7px 0"><span>${s.ic}</span><span><b>${esc(s.n)}</b>${x.n?` <span class="small muted">${x.c}/${x.n} ${s.k==='v'?'biliyorum':'doğru'}${s.k==='v'&&x.np?` · uydurma ${x.fa}/${x.np}`:''}</span>`:''}</span><span><b>${esc(b.name)}</b></span></div>`}).join('');
   const dm=plMin(r.dur),em=plMin(r.exp),tl=dm<=em?`Bu sınavı yaklaşık <b>${em} dakikada</b> çözmeni bekliyorduk; sen <b>${dm} dakikada</b> bitirdin.`:`Bu sınavı yaklaşık <b>${em} dakikada</b> çözmeni bekliyorduk; sen <b>${dm} dakika</b> çalıştın. Süre sonucu etkilemez.`;
   const prev=plRecs().filter(x=>x.id!==r.id&&(x.u||0)<(r.u||0))[0],kn=r.kn||{};
@@ -4582,7 +4581,6 @@ function vPlRes(id,part){
   <div class="card stack"><b>Bölümler</b><div>${secs}</div><div class="small muted">Bölüm sonuçları daha az soruya dayandığı için genel sonuçtan daha az kesindir.</div></div>
   ${r.w&&r.w.res?`<div class="card stack"><b>✍️ Yazma değerlendirmesi</b>${aiHtml(r.w.res,'w')}<details class="small"><summary style="cursor:pointer">Yazdığın metin (${r.w.wc} kelime)</summary><div lang="en" style="white-space:pre-line;line-height:1.6;margin-top:6px">${esc(r.w.txt||'')}</div></details></div>`:(r.part?'':'<div class="card small muted">Yazma bölümü değerlendirilmedi; sonuç diğer bölümlere göre hesaplandı.</div>')}
   ${r.part?'':`<div class="card small">⏱ ${tl}</div>`}
-  <div class="card stack"><b>Şimdi ne yapmalı?</b><div class="small">Test sekmesindeki yeni kelimeler senin seviyene göre gelsin: <b>${esc(lvs.replace(',',' + '))}</b>.</div><button class="btn primary block" data-act="pl-lv" data-v="${esc(lvs)}" ${S.set.level===lvs?'disabled':''}>${S.set.level===lvs?'Test seviyen ayarlı':'Test seviyemi ayarla'}</button></div>
   ${r.part?'':`<div class="card stack"><b>Ölçümü geliştirmemize yardım et</b><div class="small">Bildiğin gerçek bir seviyen ya da sınav puanın var mı? (okul kuru, YDS/YÖKDİL, IELTS, TOEFL…) Bu sonuçları gerçek seviyelerle karşılaştırıp sınavı ayarlamak için kullanılır.</div>
    <div class="row" style="gap:6px;flex-wrap:wrap">${['?'].concat(PL_LV).map(L=>`<button class="chip" aria-pressed="${(kn.lv||'')===L}" data-act="pl-kn" data-v="${esc(id)}|${L}">${L==='?'?'Bilmiyorum':L}</button>`).join('')}</div>
    <input data-plkn="${esc(id)}" value="${esc(kn.src||'')}" placeholder="Kaynak (isteğe bağlı): örn. IELTS 6.5, YDS 72, okulda B1 kuru" style="width:100%;font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit"></div>`}
@@ -6406,7 +6404,6 @@ document.addEventListener('click',async e=>{
     case'pl-kn':{const[id,L]=g('data-v').split('|'),r=(S.plr||{})[id];if(r){r.kn=Object.assign({},r.kn||{},{lv:L==='?'?'':L});r.u2=Date.now();save();plUp(r);render()}break}
     case'pl-res':UI.plr=g('data-v');UI.sxm='t';render();window.scrollTo(0,0);break;
     case'pl-close':UI.plr=null;UI.sxm='t';render();break;
-    case'pl-lv':S.set.level=g('data-v');save();render();toast('Test seviyen ayarlandı: '+g('data-v').replace(',',' + '));break;
     case'sx-l':UI.sxl=g('data-v');render();break;
     case'sx-k':UI.sxk=g('data-v');render();break;
     case'sx-open':UI.sxe=g('data-v');UI.sxres=true;sxRec(UI.sxe);render();window.scrollTo(0,0);break;
