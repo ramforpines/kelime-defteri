@@ -1,0 +1,435 @@
+# Seviye tespiti — Kelime kullanımı ek havuz: A1, A2
+
+@A1
+syn: small
+* little
+- short
+- thin
+- young
+
+syn: finish
+* end
+- start
+- open
+- win
+
+syn: gift
+* present
+- party
+- letter
+- card
+
+syn: correct
+* right
+- real
+- clean
+- good
+
+syn: shut
+* close
+- lock
+- turn
+- push
+
+def: the room where you cook food
+* kitchen
+- bedroom
+- garage
+- garden
+
+def: the person who teaches you at school
+* teacher
+- student
+- doctor
+- driver
+
+def: the season after winter
+* spring
+- summer
+- autumn
+- holiday
+
+def: a place where you can buy medicine
+* chemist
+- bakery
+- library
+- museum
+
+def: the opposite of 'old' for things
+* new
+- young
+- small
+- empty
+
+def: you wear these on your feet
+* shoes
+- gloves
+- hats
+- shirts
+
+def: a meal you eat in the middle of the day
+* lunch
+- snack
+- breakfast
+- supper
+
+def: the number after nineteen
+* twenty
+- twelve
+- ninety
+- eleven
+
+use: I'm thirsty. Can I have a glass of ___?
+* water
+- bread
+- cheese
+- rice
+
+use: It's very dark. Please turn on the ___.
+* light
+- door
+- window
+- table
+
+use: We sleep at ___ and work during the day.
+* night
+- morning
+- noon
+- lunch
+
+use: My sister is a ___. She works in a hospital.
+* doctor
+- farmer
+- teacher
+- pilot
+
+use: Can you ___ the window? It's hot in here.
+* open
+- close
+- clean
+- wash
+
+use: I need a pen to ___ a letter.
+* write
+- read
+- draw
+- send
+
+use: He's very ___. He's two metres!
+* tall
+- long
+- high
+- wide
+
+use: I ___ to music every evening.
+* listen
+- hear
+- watch
+- look
+
+use: Turn ___ at the traffic lights.
+* left
+- down
+- out
+- up
+
+use: The shop is ___ on Sundays, so we can't go.
+* closed
+- open
+- empty
+- free
+
+use: My ___ is Ahmet. What's yours?
+* name
+- age
+- job
+- home
+
+use: Let's ___ the bus to the city centre.
+* take
+- drive
+- walk
+- go
+
+use: I can't ___ you. Can you speak louder?
+* hear
+- listen
+- see
+- say
+
+use: Wash your ___ before dinner.
+* hands
+- feet
+- hair
+- eyes
+
+col: I ___ a shower every morning.
+* have
+- do
+- make
+- wash
+
+col: Can you ___ me a favour?
+* do
+- make
+- give
+- have
+
+col: Let's ___ a break.
+* have
+- do
+- make
+- go
+
+col: We ___ football in the park.
+* play
+- do
+- make
+- go
+
+col: I usually ___ shopping on Saturdays.
+* go
+- do
+- make
+- have
+
+col: Don't ___ a noise. The baby is sleeping.
+* make
+- do
+- have
+- give
+
+col: She always ___ the bed in the morning.
+* makes
+- does
+- puts
+- has
+
+col: I ___ the washing-up after dinner.
+* do
+- make
+- have
+- give
+
+@A2
+syn: angry
+* cross
+- sad
+- tired
+- afraid
+
+syn: rich
+* wealthy
+- famous
+- lucky
+- healthy
+
+syn: wonderful
+* fantastic
+- terrible
+- ordinary
+- simple
+
+syn: choose
+* pick
+- try
+- keep
+- find
+
+syn: arrive
+* get to
+- go off
+- set out
+- take off
+
+def: a person who serves food in a restaurant
+* waiter
+- cook
+- guest
+- owner
+
+def: a place where planes land and take off
+* airport
+- station
+- harbour
+- garage
+
+def: to say you are sorry
+* apologise
+- complain
+- promise
+- explain
+
+def: not having enough money
+* poor
+- cheap
+- lazy
+- empty
+
+def: a long seat for two or more people
+* sofa
+- stool
+- shelf
+- desk
+
+def: something you buy to remember a holiday
+* souvenir
+- passport
+- ticket
+- luggage
+
+def: the person who lives next to you
+* neighbour
+- relative
+- visitor
+- partner
+
+def: very bad weather with strong wind and rain
+* storm
+- fog
+- frost
+- shower
+
+use: I'm going to the ___ to post this letter.
+* post office
+- police station
+- train station
+- bus stop
+
+use: Please ___ your seat belt.
+* fasten
+- close
+- tie
+- lock
+
+use: The hotel was ___ — we didn't have to pay much.
+* cheap
+- expensive
+- crowded
+- comfortable
+
+use: He ___ his leg playing football.
+* broke
+- fell
+- won
+- played
+
+use: I'm ___ of spiders.
+* afraid
+- worried
+- angry
+- scared at
+
+use: Can you ___ me how to get to the station?
+* tell
+- say
+- speak
+- explain
+
+use: I'd like to ___ a table for two, please.
+* book
+- order
+- buy
+- take
+
+use: My grandmother is ill, so I'm ___ after her.
+* looking
+- taking
+- caring
+- seeing
+
+use: We ___ for the bus for twenty minutes.
+* waited
+- stayed
+- expected
+- hoped
+
+use: Could you ___ me up at the station?
+* pick
+- take
+- bring
+- get
+
+use: The ___ for my phone is in my bag.
+* charger
+- battery
+- screen
+- button
+
+use: I ___ English at school for five years.
+* studied
+- learnt from
+- taught
+- teached
+
+use: Please ___ off your shoes before you come in.
+* take
+- put
+- get
+- turn
+
+use: I'm sorry, I ___ my homework at home.
+* left
+- put
+- lost
+- missed
+
+use: This shirt is too small. Can I ___ it on in a bigger size?
+* try
+- put
+- wear
+- check
+
+col: I need to ___ some money from the cash machine.
+* get out
+- take off
+- pull out
+- bring out
+
+col: Can I ___ a question?
+* ask
+- make
+- do
+- say
+
+col: It's late. I'm going to ___ bed.
+* go to
+- go in
+- go the
+- sleep to
+
+col: He ___ his best, but he didn't win.
+* did
+- made
+- had
+- gave
+
+col: Let's ___ a party for Sara's birthday.
+* have
+- do
+- make up
+- take
+
+col: She ___ a lot of money in her new job.
+* earns
+- wins
+- gains
+- pays
+
+col: I ___ my driving test last week.
+* took
+- made
+- did on
+- gave
+
+col: Don't forget to ___ the lights before you go.
+* turn off
+- turn down
+- put off
+- close off
+
+col: Can you ___ care of my cat this weekend?
+* take
+- make
+- have
+- do

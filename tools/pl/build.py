@@ -3,14 +3,15 @@
 Kontroller: şık sayısı, tek doğru, tekrar eden soru, şık uzunluk dengesi (doğru şık en uzun/en kısa olma oranı),
 uydurma kelimelerin gerçek kelime olmaması (wordfreq + words.js), C-test boşluklarının dökümü (gözle kontrol için).
 Kimlikler sorunun metninden türetilir (md5): soru değişirse yeni soru sayılır, kalibrasyon verisi karışmaz."""
-import re, json, hashlib, sys, os
+import re, json, hashlib, sys, os, glob
 D = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(D, '..', '..')
 LV = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 hid = lambda p, s: p + hashlib.md5(s.encode()).hexdigest()[:7]
 
 def blocks(fn):
     lv = None; out = []
-    for b in re.split(r'\n\s*\n', open(os.path.join(D, fn), encoding='utf-8').read()):
+    txt = '\n\n'.join(open(f, encoding='utf-8').read() for f in sorted(glob.glob(os.path.join(D, fn))))
+    for b in re.split(r'\n\s*\n', txt):
         lines = [l for l in b.strip().split('\n') if l.strip() and not l.startswith('#')]
         while lines and lines[0].startswith('@'):
             lv = lines[0][1:].strip(); lines = lines[1:]
@@ -45,7 +46,7 @@ def mc(fn, pre, typed=False):
           f' · doğru şık tek başına en uzun %{round(100*longest/n)} · en kısa %{round(100*shortest/n)} (rastgele beklenti ~%25)')
     return items
 
-CT_ALT = {'this': ['that'], 'these': ['those'], 'paralysing': ['paralyzing'], 'favourite': ['favorite']}   # bağlamda da doğru olan başka tamamlamalar
+CT_ALT = {'this': ['that'], 'these': ['those'], 'paralysing': ['paralyzing'], 'favourite': ['favorite'], 'realise': ['realize']}   # bağlamda da doğru olan başka tamamlamalar
 def ctest(fn):
     texts = []
     for lv, L in blocks(fn):
@@ -74,16 +75,32 @@ def ctest(fn):
 
 def nonwords(fn):
     from wordfreq import zipf_frequency as z
+    from english_words import get_english_words_set as gw
+    E = gw(['web2', 'gcide'], lower=True)
     words = set(re.findall(r'\["([a-z\-]+)"', open(os.path.join(ROOT, 'words.js'), encoding='utf-8').read()))
     nw = [l.strip() for l in open(os.path.join(D, fn)) if l.strip() and not l.startswith('#')]
-    bad = [w for w in nw if z(w, 'en') > 0 or w in words]
+    assert len(nw) == len(set(nw)), 'tekrar eden uydurma kelime'
+    bad = [w for w in nw if z(w, 'en') > 0 or w in words or w in E]
     assert not bad, ('gerçek kelime olabilir', bad)
     print(f'{fn}: {len(nw)} uydurma kelime (hiçbiri sözlükte/frekans listesinde yok)')
     return nw
 
 ALT = {}
 if os.path.exists(os.path.join(D, 'alt.json')): ALT = json.load(open(os.path.join(D, 'alt.json')))
-B = {'v': 1, 'gr': mc('gr.txt', 'g'), 'mn': mc('mn.txt', 'm'), 'kv': mc('kv.txt', 'k', typed=True), 'ct': ctest('ct.txt'), 'nw': nonwords('nw.txt'), 'alt': ALT}
+def wtasks(fn):
+    out = []
+    for lv, L in blocks(fn):
+        lvl, g = [x.strip() for x in lv.split('|')]
+        d = {}
+        for l in L:
+            k, v = l.split(':', 1); d[k.strip()] = v.strip()
+        assert lvl in LV and set(d) == {'TR', 'EN', 'P'}, (lv, d.keys())
+        pts = [p.strip() for p in d['P'].split(';')]; assert len(pts) == 3, d['P']
+        out.append({'id': hid('w', d['EN']), 'lv': lvl, 'g': g, 'tr': d['TR'], 't': d['EN'].replace(' // ', '\n'), 'p': pts})
+    print(f'{fn}: {len(out)} yazma konusu · ' + ' '.join(f'{l}:{sum(1 for i in out if i["lv"]==l)}' for l in LV))
+    return out
+
+B = {'v': 1, 'gr': mc('gr*.txt', 'g'), 'mn': mc('mn*.txt', 'm'), 'kv': mc('kv*.txt', 'k', typed=True), 'ct': ctest('ct*.txt'), 'nw': nonwords('nw.txt'), 'wt': wtasks('wt.txt'), 'alt': ALT}
 open(os.path.join(ROOT, 'pl-bank.js'), 'w', encoding='utf-8').write(
     '/* Seviye tespiti soru bankası — tools/pl/build.py üretir, elle düzenleme */\nwindow.PLB=' + json.dumps(B, ensure_ascii=False, separators=(',', ':')) + ';\n')
 print('pl-bank.js yazıldı', os.path.getsize(os.path.join(ROOT, 'pl-bank.js')), 'bayt')

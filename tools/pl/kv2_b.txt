@@ -1,0 +1,459 @@
+# Seviye tespiti — Kelime kullanımı ek havuz: B1, B2
+
+@B1
+syn: brave
+* courageous
+- generous
+- cautious
+- anxious
+
+syn: rude
+* impolite
+- impatient
+- unfair
+- unkind
+
+syn: wealthy
+* well-off
+- well-known
+- well-made
+- well-paid
+
+syn: allow
+* permit
+- prevent
+- prefer
+- persuade
+
+syn: mend
+* repair
+- replace
+- remove
+- reduce
+
+syn: tidy
+* neat
+- quiet
+- empty
+- plain
+
+def: to make a guess about what will happen in the future
+* predict
+- pretend
+- prepare
+- protect
+
+def: the money you pay to live in a house that belongs to someone else
+* rent
+- tax
+- fee
+- loan
+
+def: a person who watches a sports event
+* spectator
+- referee
+- competitor
+- coach
+
+def: feeling nervous and embarrassed with people you don't know
+* shy
+- proud
+- lonely
+- jealous
+
+def: to stop doing something regularly, for example smoking
+* give up
+- put off
+- take up
+- turn down
+
+def: a small book that gives you information about a product or place
+* brochure
+- receipt
+- novel
+- diary
+
+def: the place where two roads cross
+* junction
+- pavement
+- motorway
+- tunnel
+
+use: She ___ a lot of time on social media.
+* spends
+- passes
+- makes
+- takes
+
+use: Can you ___ me to buy some milk on the way home?
+* remind
+- remember
+- warn
+- notice
+
+use: The museum is free, so you don't have to pay an entrance ___.
+* fee
+- fare
+- price
+- cost
+
+use: The bus ___ is cheaper if you buy a weekly ticket.
+* fare
+- fee
+- price list
+- payment
+
+use: I don't ___ with you. I think you're wrong.
+* agree
+- accept
+- allow
+- admit
+
+use: The hotel room had a beautiful ___ of the sea.
+* view
+- sight
+- scene
+- look
+
+use: He's very ___ — he's always telling jokes.
+* funny
+- fond
+- fair
+- fussy
+
+use: Please ___ the form and give it to the receptionist.
+* fill in
+- fill up
+- fill out of
+- fill on
+
+use: Our flight was ___ by two hours because of fog.
+* delayed
+- cancelled
+- stopped
+- slowed
+
+use: Could you ___ the music down? I'm trying to sleep.
+* turn
+- put
+- take
+- set
+
+use: I'm ___ forward to the holidays.
+* looking
+- waiting
+- seeing
+- hoping
+
+use: She ___ her exam, so she has to take it again.
+* failed
+- lost
+- won
+- dropped
+
+use: It was a difficult decision, but in the ___ I chose the cheaper car.
+* end
+- last
+- final
+- finish
+
+use: Do you ___ if I sit here?
+* mind
+- care
+- matter
+- worry
+
+use: There's a ___ of 50 euros if you park here.
+* fine
+- fare
+- fee
+- tax
+
+use: I couldn't ___ my eyes — he had won the lottery!
+* believe
+- trust
+- accept
+- imagine
+
+col: Can you ___ a secret?
+* keep
+- hold
+- save
+- guard
+
+col: I ___ a mistake in my essay.
+* made
+- did
+- had
+- took
+
+col: We had to ___ a long queue at the airport.
+* wait in
+- wait on
+- stand on
+- stay at
+
+col: She ___ a speech at the wedding.
+* gave
+- said
+- told
+- spoke
+
+col: I'd like to ___ a complaint.
+* make
+- do
+- give
+- say
+
+col: The company is ___ a profit for the first time.
+* making
+- doing
+- taking
+- winning
+
+col: He ___ a lot of progress in English this year.
+* made
+- did
+- got
+- took
+
+col: You should ___ advantage of the sunny weather.
+* take
+- make
+- have
+- get
+
+col: She ___ her temper and started shouting.
+* lost
+- missed
+- broke
+- dropped
+
+@B2
+syn: accurate
+* precise
+- prompt
+- prudent
+- private
+
+syn: drawback
+* disadvantage
+- disappointment
+- disagreement
+- disapproval
+
+syn: fragile
+* delicate
+- flexible
+- elegant
+- portable
+
+syn: postpone
+* put off
+- put out
+- put down
+- put up with
+
+syn: tremendous
+* enormous
+- numerous
+- generous
+- nervous
+
+syn: vague
+* unclear
+- unusual
+- unfair
+- unwise
+
+def: to persuade someone not to do something
+* discourage
+- disappoint
+- dismiss
+- distract
+
+def: a sudden increase in the number of something, often a problem
+* surge
+- trend
+- gap
+- slump
+
+def: able to be trusted or depended on
+* reliable
+- relevant
+- reasonable
+- respectable
+
+def: to make something seem bigger, better or worse than it really is
+* exaggerate
+- emphasise
+- estimate
+- encourage
+
+def: a feeling of being sad because something you hoped for did not happen
+* disappointment
+- embarrassment
+- resentment
+- relief
+
+def: to say publicly that you are against something
+* protest
+- protect
+- propose
+- provoke
+
+def: happening or done every year
+* annual
+- monthly
+- seasonal
+- regular
+
+use: The company is trying to ___ costs by using less energy.
+* cut
+- slice
+- drop
+- fall
+
+use: The weather forecast says there's a high ___ of rain tomorrow.
+* chance
+- luck
+- hope
+- opportunity
+
+use: Smoking is ___ in all public buildings.
+* banned
+- refused
+- denied
+- rejected
+
+use: He was ___ for the accident, so he had to pay.
+* responsible
+- guilty
+- reliable
+- sensible
+
+use: I'm not ___ about the results yet. We'll know tomorrow.
+* sure
+- confident in
+- clear about it
+- known
+
+use: The new manager made a good ___ on the staff.
+* impression
+- influence
+- effect to
+- expression
+
+use: The children were ___ to see their grandparents.
+* thrilled
+- thrilling
+- excited at
+- exciting
+
+use: I've been ___ a lot of stress at work lately.
+* under
+- in
+- with
+- on
+
+use: His behaviour was completely ___ — he shouted at everyone.
+* unacceptable
+- unaffordable
+- unavailable
+- unbearable to
+
+use: The film is ___ on a true story.
+* based
+- founded
+- built
+- made
+
+use: We need to ___ a solution to this problem quickly.
+* come up with
+- come down with
+- come across to
+- come out of
+
+use: The police are ___ the cause of the fire.
+* investigating
+- inventing
+- inspecting into
+- interrogating
+
+use: The meeting has been ___ because the boss is ill.
+* called off
+- called up
+- called out
+- called back
+
+use: He ___ to be ill so he didn't have to go to school.
+* pretended
+- intended
+- attended
+- extended
+
+use: I can't ___ this noise any longer!
+* stand
+- bear with
+- suffer
+- hold
+
+use: The hotel was ___ to the beach — just two minutes' walk.
+* close
+- near by
+- beside
+- nearby
+
+col: It's important to ___ a balance between work and family.
+* strike
+- hit
+- beat
+- knock
+
+col: She ___ a lot of attention to her appearance.
+* pays
+- gives
+- makes
+- takes
+
+col: The new rules will ___ effect next month.
+* take
+- make
+- have
+- get
+
+col: We need to ___ steps to reduce pollution.
+* take
+- make
+- do
+- put
+
+col: He has a ___ sense of humour.
+* great
+- tall
+- huge amount
+- high
+
+col: She ___ a promise to visit us every summer.
+* made
+- did
+- gave up
+- took
+
+col: I'm afraid I have to ___ your invitation.
+* turn down
+- turn off
+- turn over
+- turn out
+
+col: They ___ a heated argument about money.
+* had
+- made
+- did
+- gave
+
+col: The two countries ___ an agreement on trade.
+* signed
+- wrote
+- drew
+- marked

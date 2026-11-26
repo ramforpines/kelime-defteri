@@ -1,0 +1,472 @@
+# Seviye tespiti — Gramer ek havuz 2: B1, B2
+
+@B1
+I ___ to London several times, but I've never been to Scotland.
+* 've been
+- have go
+- 've gone
+- was
+
+When we arrived at the party, most of the guests ___.
+* had left
+- have left
+- leave
+- were leaving to
+
+She ___ in Paris for two years before she moved to Rome.
+* had lived
+- has lived
+- lives
+- is living
+
+If it ___ sunny tomorrow, we'll have a picnic.
+* is
+- will be
+- would be
+- was
+
+If I ___ the answer, I would tell you.
+* knew
+- know
+- would know
+- had know
+
+I ___ you if I see him.
+* 'll tell
+- tell
+- 'd told
+- 'm telling to
+
+My bike ___ last night, so I walked to work.
+* was stolen
+- stole
+- has stolen
+- was stealing
+
+English ___ in many countries around the world.
+* is spoken
+- speaks
+- is speaking
+- spoke
+
+He said he ___ come to the party, but he didn't.
+* would
+- will
+- does
+- is
+
+She asked me where I ___ the previous weekend.
+* had been
+- have been
+- was been
+- am
+
+The teacher told us ___ quiet.
+* to be
+- be
+- being
+- that be
+
+Do you know what time ___?
+* the train leaves
+- does the train leave
+- leaves the train
+- the train does leave
+
+I can't afford ___ a new car.
+* to buy
+- buying
+- buy
+- bought
+
+He suggested ___ to the beach.
+* going
+- to go
+- go
+- went
+
+I'm looking forward to ___ my family at Christmas.
+* seeing
+- see
+- saw
+- be seeing
+
+We managed ___ the top of the mountain.
+* to reach
+- reaching
+- reach
+- reached
+
+She's interested ___ joining the drama club.
+* in
+- on
+- about
+- for
+
+I'm afraid ___ dogs.
+* of
+- from
+- with
+- for
+
+It's not ___ to swim in this river.
+* safe enough
+- enough safe
+- too safe
+- safe too
+
+There's ___ bread left, so I'll buy some more.
+* hardly any
+- hardly no
+- a few
+- any hardly
+
+I've got ___ money. Let's go to a café.
+* a little
+- a few
+- few
+- many
+
+Can you tell me ___ the museum opens?
+* when
+- what
+- which
+- how
+
+This is the man ___ son is a famous singer.
+* whose
+- who
+- who's
+- which
+
+The house ___ we lived in was very old.
+* that
+- where
+- what
+- whose
+
+I ___ smoke, but I gave up five years ago.
+* used to
+- use to
+- was used to
+- am used to
+
+She ___ be at home — her car is outside.
+* must
+- can't
+- mustn't
+- should to
+
+He ___ be very rich — he lives in a tiny flat.
+* can't
+- must
+- mustn't
+- couldn't to
+
+You ___ pay for the tickets — they're free.
+* don't have to
+- mustn't
+- haven't to
+- don't must
+
+How long have you ___ waiting?
+* been
+- be
+- being
+- was
+
+I didn't go to work yesterday ___ I was ill.
+* because
+- so
+- although
+- unless
+
+He works hard; ___, he never seems to have any money.
+* however
+- although
+- because
+- despite
+
+She was ___ angry that she couldn't speak.
+* so
+- such
+- too
+- enough
+
+We left early ___ miss the traffic.
+* so as not to
+- for not
+- not to for
+- so not to
+
+I'd rather you ___ here tomorrow.
+* came
+- come
+- will come
+- to come
+
+It's the most beautiful place I ___ visited.
+* have ever
+- ever have
+- had never
+- am ever
+
+The flight was cancelled ___ the bad weather.
+* because of
+- because
+- due
+- so
+
+By next June, I ___ here for ten years.
+* will have worked
+- will work
+- work
+- have worked
+
+Have you finished ___ that book yet?
+* reading
+- to read
+- read
+- of reading
+
+He decided ___ a new job.
+* to look for
+- looking for
+- look for
+- to looking for
+
+@B2
+I'd have called you if I ___ your number.
+* had had
+- would had
+- would have
+- have had
+
+Supposing you ___ the lottery, what would you do?
+* won
+- win
+- will win
+- had to win
+
+If he ___ so lazy, he'd have a better job by now.
+* weren't
+- wouldn't be
+- isn't
+- won't be
+
+You ___ have worried. Everything was fine.
+* needn't
+- mustn't
+- couldn't
+- can't
+
+She ___ have forgotten about the meeting — she's never late.
+* must
+- can
+- should
+- would to
+
+The thief is thought ___ through the back window.
+* to have entered
+- to enter
+- entering
+- that entered
+
+It is said that the castle ___ by a famous architect.
+* was designed
+- designed
+- has designed
+- was designing
+
+I'm getting my car ___ on Friday.
+* serviced
+- service
+- to service
+- servicing
+
+We've had the kitchen ___.
+* repainted
+- repaint
+- to repaint
+- repainting
+
+He's said to ___ the richest man in town.
+* be
+- being
+- been
+- is
+
+The harder you concentrate, ___ mistakes you'll make.
+* the fewer
+- the less
+- fewer
+- less
+
+She has ___ of the best grades in her year.
+* one
+- ones
+- some one
+- a one
+
+___ I didn't know anyone at the party, I had a great time.
+* Although
+- Despite
+- However
+- In spite
+
+___ his injury, he finished the race.
+* In spite of
+- Although
+- Even though
+- In spite
+
+Hardly ___ arrived when the meeting began.
+* had I
+- I had
+- did I
+- I have
+
+Only then ___ how serious the situation was.
+* did I realise
+- I realised
+- I did realise
+- realised I
+
+You'd better take some cash ___ the card machine isn't working.
+* in case
+- unless
+- whereas
+- provided
+
+He talks ___ he knew everything.
+* as if
+- even if
+- as long as
+- unless
+
+I'm not used ___ up so early.
+* to getting
+- to get
+- getting
+- get
+
+By the time she retires, she ___ for the company for forty years.
+* will have been working
+- will work
+- has been working
+- is working
+
+At this time next week, we ___ across the Atlantic.
+* 'll be sailing
+- 'll sail
+- sail
+- 're sailing to
+
+I regret not ___ harder at school.
+* studying
+- to study
+- study
+- studied
+
+Stop ___ me! I'm trying to concentrate.
+* interrupting
+- to interrupt
+- interrupt
+- interrupted
+
+The museum, ___ was opened in 1920, attracts millions of visitors.
+* which
+- that
+- what
+- where
+
+That was the day ___ everything changed.
+* when
+- which
+- what
+- who
+
+What I don't understand is ___ he left so suddenly.
+* why
+- what
+- that
+- which
+
+He ___ to have been a brilliant student.
+* is said
+- says
+- is saying
+- said
+
+She would rather ___ alone than with people she doesn't like.
+* work
+- to work
+- working
+- worked
+
+I wish I ___ so much cake last night.
+* hadn't eaten
+- didn't eat
+- wouldn't eat
+- haven't eaten
+
+If only I ___ more time to finish this project!
+* had
+- have
+- would have
+- will have
+
+The new stadium ___ by the time the Olympics start.
+* will have been built
+- will build
+- will have built
+- is building
+
+It's high time you ___ a job.
+* got
+- get
+- will get
+- have got
+
+She denied ___ the documents.
+* having signed
+- to have signed
+- to sign
+- that signed
+
+The company has decided ___ 200 new workers.
+* to take on
+- taking on
+- take on
+- to taking on
+
+Neither of the answers ___ correct.
+* is
+- be
+- were being
+- have been
+
+Everybody ___ to bring their own lunch.
+* has
+- have
+- are
+- were
+
+Never ___ such a beautiful sunset.
+* have I seen
+- I have seen
+- I saw
+- did I saw
+
+You can borrow my bike ___ you return it tonight.
+* provided
+- unless
+- in case
+- whereas
+
+She's ___ talented that she could become a professional.
+* so
+- such
+- such a
+- too
+

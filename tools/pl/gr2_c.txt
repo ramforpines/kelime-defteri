@@ -1,0 +1,471 @@
+# Seviye tespiti — Gramer ek havuz: C1, C2
+
+@C1
+Rarely ___ such a talented young musician.
+* have I heard
+- I have heard
+- I heard
+- did I heard
+
+On no account ___ this door be left unlocked.
+* should
+- must not
+- it should
+- shouldn't
+
+If he had taken the job in London, he ___ a lot richer now.
+* would be
+- would have been
+- will be
+- had been
+
+If I weren't so busy, I ___ you with the move last weekend.
+* would have helped
+- would help
+- had helped
+- will have helped
+
+The company is thought ___ heavy losses last year.
+* to have suffered
+- to suffer
+- having suffered
+- that it suffered
+
+___ the bad weather, the ceremony would have been held outdoors.
+* Had it not been for
+- If it hadn't
+- Unless for
+- Were it not
+
+It's essential that every member ___ the form before Friday.
+* complete
+- completes to
+- will complete
+- completing
+
+The building, ___ roof was damaged in the storm, is now closed.
+* whose
+- which
+- of which
+- that its
+
+There were forty applicants, most of ___ had no experience.
+* whom
+- who
+- them
+- which
+
+He was the first person ___ the summit without oxygen.
+* to reach
+- reaching
+- reached
+- who reach
+
+___ in a hurry, she forgot her passport.
+* Being
+- Been
+- To be
+- She was
+
+___ the letter, she burst into tears.
+* Having read
+- Having been read
+- To have read
+- Had read
+
+The children were made ___ for an hour after school.
+* to stay
+- stay
+- staying
+- stayed
+
+I'd prefer ___ by phone rather than by email.
+* to be contacted
+- being contact
+- be contacted
+- contacted
+
+You'd better not ___ that again.
+* say
+- to say
+- saying
+- said
+
+The new manager is used ___ long hours.
+* to working
+- to work
+- working
+- work
+
+She'll be furious when she finds out what ___.
+* you've done
+- will you have done
+- you'll have done
+- have you done
+
+Whatever ___, don't open the box.
+* happens
+- will happen
+- happening
+- happen
+
+There's no point ___ him; he never listens.
+* in asking
+- to ask
+- for asking
+- asking to
+
+It's high time the government ___ action on pollution.
+* took
+- takes
+- will take
+- has taken
+
+I wish you ___ interrupting me all the time.
+* would stop
+- to stop
+- will stop
+- had stop
+
+She was nowhere ___ found.
+* to be
+- being
+- been
+- be
+
+___ more carefully, the accident wouldn't have happened.
+* Had he driven
+- If he drove
+- He had driven
+- Did he drive
+
+The film, ___ I had heard so much, was a disappointment.
+* about which
+- which
+- that
+- about that
+
+It is the government ___ should be held responsible.
+* that
+- what
+- where
+- whom
+
+He is reported ___ from the prison yesterday.
+* to have escaped
+- to escape
+- escaping
+- having been escaped
+
+The negotiations are expected ___ for several weeks.
+* to continue
+- continuing
+- to have continued
+- continue
+
+It was not until midnight ___ the results were announced.
+* that
+- when
+- which
+- then
+
+Seldom ___ such a mess in my life.
+* have I seen
+- I have seen
+- I saw
+- seen I have
+
+The plan was rejected, ___ surprised nobody.
+* which
+- what
+- that
+- it
+
+___ his age, he is remarkably fit.
+* Considering
+- Considered
+- Consider
+- To consider
+
+All ___ left to do is wait.
+* that is
+- what is
+- which is
+- is it
+
+I'd sooner ___ than apologise to him.
+* resign
+- to resign
+- resigning
+- resigned
+
+If only I ___ so rude to her yesterday!
+* hadn't been
+- wasn't
+- wouldn't be
+- haven't been
+
+She talks to him as though he ___ a child.
+* were
+- is being
+- be
+- has been
+
+So quickly ___ that nobody saw him leave.
+* did he move
+- he moved
+- moved he
+- he did move
+
+Not a single word ___ during the whole meeting.
+* did she say
+- she said
+- she did say
+- said she
+
+Under no circumstances ___ give your password to anyone.
+* should you
+- you should
+- you shouldn't
+- shouldn't you
+
+The more experience you gain, ___ you will find the job.
+* the easier
+- easier
+- the easiest
+- more easy
+
+Were I to win the lottery, I ___ around the world.
+* would travel
+- will travel
+- would have travelled
+- travelled
+
+@C2
+___ the circumstances been different, I might have accepted.
+* Had
+- If
+- Were
+- Should
+
+Much ___ I would like to help, I simply don't have the time.
+* as
+- that
+- so
+- like
+
+Be that as it ___, we still need a decision by Friday.
+* may
+- might
+- will
+- can
+
+He insisted that the meeting ___ postponed.
+* be
+- is
+- was being
+- will be
+
+It's not so much the money ___ the principle that bothers me.
+* as
+- than
+- but
+- like
+
+___ he may be, he has no right to treat people like that.
+* Rich as
+- As rich
+- However rich as
+- So rich
+
+Only by working together ___ solve this problem.
+* can we
+- we can
+- we could
+- can't we
+
+___ that the company was losing money, the board decided to sell it.
+* Given
+- Giving
+- To give
+- Gave
+
+No sooner ___ the house than it began to pour.
+* had we left
+- we had left
+- did we leave
+- we left
+
+The proposal is unlikely ___ much support.
+* to attract
+- attracting
+- to have attracted
+- attract
+
+The proposal has much ___ it.
+* to recommend
+- recommending
+- recommended
+- to recommending
+
+She was on the point ___ when the phone rang.
+* of leaving
+- to leave
+- leaving
+- of leave
+
+It ___ be wise to check the figures again before we publish.
+* would
+- would to
+- should to
+- had
+
+There is nothing for it ___ to start again.
+* but
+- than
+- except to
+- only
+
+Little ___ he realise how much trouble he had caused.
+* did
+- had
+- was
+- does
+
+Such ___ his influence that nobody dared disagree.
+* was
+- had
+- did
+- is being
+
+___ to his advice, we would have saved a lot of money.
+* Had we listened
+- If we listened
+- Did we listen
+- We had listened
+
+The house needs ___ before we can sell it.
+* redecorating
+- to redecorate
+- redecorate
+- be redecorated
+
+Not only ___ the exam, but she also got the highest mark.
+* did she pass
+- she passed
+- she did pass
+- passed she
+
+Whether or not he agrees, we ___ go ahead.
+* shall
+- would
+- had
+- should to
+
+Suffice it ___ that the project was a complete failure.
+* to say
+- saying
+- say
+- said
+
+He denied ___ involved in the scandal.
+* having been
+- to have been
+- being been
+- that he been
+
+There's every likelihood ___ prices will rise again.
+* that
+- of
+- which
+- for
+
+It was only when I got home ___ I realised I had lost my wallet.
+* that
+- when
+- which
+- then
+
+Hard ___ she tried, she couldn't remember his name.
+* as
+- that
+- so
+- like
+
+The museum is well worth ___.
+* visiting
+- to visit
+- a visiting
+- being visit
+
+Were he ___ the truth, he would be in serious trouble.
+* to tell
+- telling
+- told
+- tell
+
+I'm not averse ___ the occasional glass of wine.
+* to
+- from
+- of
+- against
+
+Should you change your mind, ___ let me know.
+* do
+- you do
+- will you
+- to
+
+Far ___ helping, his comments made things worse.
+* from
+- of
+- for
+- off
+
+It was a decision for ___ he would later be criticised.
+* which
+- that
+- what
+- it
+
+The longer you leave it, ___ it will be to fix.
+* the harder
+- harder
+- the hardest
+- hard
+
+He had no sooner arrived ___ he was asked to leave.
+* than
+- when
+- then
+- that
+
+So engrossed ___ in her book that she missed her stop.
+* was she
+- she was
+- she has been
+- did she
+
+Lest anyone ___ confused, the rules are printed below.
+* be
+- is
+- will be
+- being
+
+Were it not ___ your support, I would have given up.
+* for
+- by
+- with
+- from
+
+He spoke as if he ___ everything about the subject.
+* knew
+- has knew
+- had know
+- is knowing
+
+Not for a moment ___ that he would betray us.
+* did I believe
+- I believed
+- I did believe
+- believed I

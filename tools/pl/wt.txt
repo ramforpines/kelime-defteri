@@ -1,0 +1,186 @@
+# Seviye tespiti — yazma konuları (70–100 kelime). Blok: @SEVİYE | tür ; TR: Türkçe yönerge ; EN: İngilizce görev (" // " satır sonu) ; P: üç madde (; ile)
+
+@A2 | email
+TR: Yakın zamanda yaşadığın özel bir günü İngilizce bilen bir arkadaşına e-postayla anlat.
+EN: Write an email to an English-speaking friend about a special day you had recently.
+P: where you were and who you were with; what you did that day; why the day was special for you
+
+@A2 | email
+TR: İngilizce bilen bir arkadaşını hafta sonu evine davet eden bir e-posta yaz.
+EN: Write an email to your English friend Sam. Invite Sam to your home next weekend.
+P: when Sam should come; what you can do together; what Sam should bring
+
+@A2 | email
+TR: Yeni evini/odanı bir arkadaşına anlatan bir e-posta yaz.
+EN: You have just moved to a new home. Write an email to your English friend about it.
+P: where your new home is; what your room is like; what you like most about it
+
+@A2 | note
+TR: Bir arkadaşından ödünç aldığın bir şeyi geri veremediğin için ona özür dileyen kısa bir mesaj yaz.
+EN: You borrowed a book from your English friend Alex, but you can't return it this week. Write a message to Alex.
+P: say sorry; explain why you can't return it; say when you will give it back
+
+@A2 | email
+TR: En sevdiğin yemeği ve onu nerede yediğini bir arkadaşına anlat.
+EN: Your English friend wants to know about food in your country. Write an email about your favourite meal.
+P: what the meal is; when and where you usually eat it; why you like it
+
+@A2 | story
+TR: Geçen yaz yaptığın bir geziyi anlatan kısa bir yazı yaz.
+EN: Write about a trip you went on last summer.
+P: where you went and how you travelled; what you saw or did there; how you felt about the trip
+
+@A2 | email
+TR: Bir arkadaşına yeni bir hobini anlatan bir e-posta yaz.
+EN: Write an email to your English friend Kim about a new hobby you have started.
+P: what the hobby is; when and where you do it; why you enjoy it
+
+@A2 | description
+TR: Ailenden ya da arkadaşlarından birini anlatan kısa bir yazı yaz.
+EN: Write about a person in your family or a good friend.
+P: what this person looks like; what this person is like; what you like doing together
+
+@A2 | email
+TR: Doğum günü hediyesi için arkadaşına teşekkür eden bir e-posta yaz.
+EN: Your English friend Jo sent you a birthday present. Write an email to Jo.
+P: thank Jo for the present; say what you did on your birthday; invite Jo to visit you
+
+@B1 | article
+TR: Senin için özel olan bir yeri anlatan bir makale yaz.
+EN: You see this notice on an English-language website: // "Articles wanted! A PLACE I LOVE // Describe a place that is special to you. What can people do there, and why is it important to you?" // Write your article.
+P: describe the place; what people can do there; why it is important to you
+
+@B1 | email
+TR: Bir İngiliz arkadaşın senin ülkene gelmek istiyor; ona tavsiyeler veren bir e-posta yaz.
+EN: Your English friend is planning to visit your country next summer and asks for your advice. Write an email to your friend.
+P: the best time and places to visit; what to eat or do there; something your friend should be careful about
+
+@B1 | story
+TR: "Kapıyı açtığımda hiç beklemediğim birini gördüm." cümlesiyle başlayan bir hikâye yaz.
+EN: Your English teacher has asked you to write a story. Your story must begin with this sentence: // "When I opened the door, I saw someone I didn't expect."
+P: who the person was; what happened next; how the story ends
+
+@B1 | article
+TR: Bir web sitesi için hayatını değiştiren bir kararı anlatan makale yaz.
+EN: You see this notice on a website for young people: // "A DECISION THAT CHANGED MY LIFE // Tell us about an important decision you made. What did you decide and what happened as a result?" // Write your article.
+P: what the decision was; why you made it; how it changed your life
+
+@B1 | email
+TR: Katıldığın bir kurs ya da etkinlik hakkında arkadaşına bilgi veren bir e-posta yaz.
+EN: You recently joined a club or a course. Write an email to your English friend about it.
+P: what the club or course is; what you have done there so far; whether you would recommend it
+
+@B1 | review
+TR: Son zamanlarda izlediğin bir film ya da dizi hakkında eleştiri yaz.
+EN: You see this announcement in an English-language magazine: // "Reviews wanted! Tell us about a film or series you have watched recently. What was it about, and would you recommend it?" // Write your review.
+P: what it was about; what you liked or didn't like; who you would recommend it to
+
+@B1 | article
+TR: Teknolojinin günlük hayatını nasıl değiştirdiğini anlatan bir makale yaz.
+EN: An English-language website is asking readers: // "How has technology changed your daily life? Is the change good or bad?" // Write an article answering these questions.
+P: one way technology helps you; one problem it causes; your opinion overall
+
+@B1 | email
+TR: Kaldığın oteldeki sorunlar hakkında otel müdürüne kibar bir şikâyet e-postası yaz.
+EN: You stayed at a hotel last weekend, but there were some problems. Write an email to the hotel manager.
+P: when you stayed and in which room; what the problems were; what you would like the hotel to do
+
+@B1 | essay
+TR: "Öğrenciler okul üniforması giymeli mi?" sorusu hakkında görüşünü yaz.
+EN: Your English teacher has asked you to write a short essay: // "Should students wear school uniforms? Give your opinion."
+P: one advantage of uniforms; one disadvantage; your own opinion
+
+@B2 | essay
+TR: "Sosyal medya gençlere yararından çok zarar veriyor" görüşüne katılıp katılmadığını gerekçeleriyle tartışan bir deneme yaz.
+EN: In your English class you have been talking about technology. Now your teacher has asked you to write an essay: // "Social media does more harm than good to young people. Do you agree?"
+P: effects on friendships; effects on studying and free time; your own idea
+
+@B2 | essay
+TR: "Ünlü sporcular çok fazla para kazanıyor" görüşünü tartışan bir deneme yaz.
+EN: Your teacher has asked you to write an essay: // "Professional athletes are paid far too much money. Do you agree?"
+P: how hard athletes work; comparison with other jobs; your own idea
+
+@B2 | review
+TR: Gittiğin bir restoran, kafe ya da otel için ayrıntılı bir değerlendirme yaz.
+EN: A travel website has asked readers to write reviews of places they have visited. Write a review of a restaurant, café or hotel you know well.
+P: what the place is like; what was good and what could be better; whether you would recommend it and to whom
+
+@B2 | essay
+TR: "Herkes en az bir yabancı dil öğrenmeli" görüşünü tartışan bir deneme yaz.
+EN: Your teacher has asked you to write an essay: // "Everyone should learn at least one foreign language. Do you agree?"
+P: benefits for work and travel; the time and effort it takes; your own idea
+
+@B2 | article
+TR: Bir dergi için "Mükemmel bir hafta sonu" konulu makale yaz.
+EN: You have seen this announcement in an international magazine: // "MY PERFECT WEEKEND // What would your perfect weekend be like? Where would you go, who would you be with, and why?" // Write your article.
+P: where you would go; who you would be with; why this would make it perfect
+
+@B2 | email
+TR: Bir şirkete yaz dönemi işi için başvuru e-postası yaz.
+EN: You have seen an advertisement for summer jobs at an international holiday camp. Write an email applying for a job.
+P: which job you want and why; your relevant skills or experience; when you are available
+
+@B2 | essay
+TR: "Şehirde yaşamak kırsalda yaşamaktan daha iyidir" görüşünü tartışan bir deneme yaz.
+EN: Your teacher has asked you to write an essay: // "Living in a city is better than living in the countryside. Do you agree?"
+P: opportunities for work and education; quality of life and health; your own idea
+
+@B2 | report
+TR: Okulundaki/işyerindeki bir tesisin (kütüphane, spor salonu vb.) iyileştirilmesi için kısa bir rapor yaz.
+EN: Your manager or head teacher has asked for a short report on a facility at your school or workplace (for example the library, canteen or gym). Write your report.
+P: what the facility is like now; what problems people have with it; what improvements you recommend
+
+@B2 | essay
+TR: "Evden çalışmak, ofiste çalışmaktan daha verimlidir" görüşünü tartışan bir deneme yaz.
+EN: Your teacher has asked you to write an essay: // "Working from home is more productive than working in an office. Do you agree?"
+P: concentration and distractions; contact with colleagues; your own idea
+
+@B2 | story
+TR: "Telefonuma gelen mesajı okuyunca her şeyin değişeceğini anladım." cümlesiyle biten bir hikâye yaz.
+EN: You are entering a short story competition. Your story must end with this sentence: // "As soon as I read the message on my phone, I knew everything was about to change."
+P: who the main character is; what happens before the message; how the tension builds
+
+@C1 | essay
+TR: Şehirleri daha yaşanabilir yapmanın yollarından ikisini tartışan ve hangisinin daha önemli olduğunu gerekçelendiren bir deneme yaz.
+EN: Your class has attended a panel discussion on how cities can become better places to live. You made the notes below. // Methods: banning private cars from city centres / creating more green spaces / building affordable housing // Write an essay discussing two of these methods. Explain which method is more important for cities to adopt, giving reasons to support your opinion.
+P: discuss two of the methods; decide which one is more important; give reasons for your opinion
+
+@C1 | essay
+TR: Gençleri daha sağlıklı yaşamaya teşvik etmenin yollarından ikisini tartışan bir deneme yaz.
+EN: Your class has discussed how governments could encourage young people to lead healthier lives. You made these notes. // Methods: taxing unhealthy food / free sports facilities / health education in schools // Write an essay discussing two of these methods. Explain which would be more effective, giving reasons.
+P: discuss two of the methods; decide which would be more effective; give reasons for your opinion
+
+@C1 | proposal
+TR: Bir belediyeye, gençler için bir merkez kurulması önerisini sunan bir teklif yazısı yaz.
+EN: Your local council has invited proposals for spending money on facilities for young people. Write a proposal suggesting one facility.
+P: what facility you propose; how young people would benefit; why it is a better choice than alternatives
+
+@C1 | essay
+TR: Turizmin yerel topluluklara etkileri hakkında dengeli bir deneme yaz.
+EN: Your class has discussed the effects of mass tourism. You made these notes. // Effects: on the local economy / on the environment / on local culture // Write an essay discussing two of these effects. Explain which is more significant, giving reasons.
+P: discuss two of the effects; decide which is more significant; give reasons for your opinion
+
+@C1 | review
+TR: Seni derinden etkilemiş bir kitap hakkında bir dergi için eleştiri yaz.
+EN: A literary magazine is publishing reviews of books that have had a strong impact on readers. Write a review of a book that made you think differently about something.
+P: what the book is about; how it changed your thinking; who would benefit from reading it
+
+@C1 | essay
+TR: Yapay zekânın iş hayatına etkisi hakkında, iki alanı tartışan bir deneme yaz.
+EN: Your class has discussed how artificial intelligence may change the world of work. You made these notes. // Areas: job opportunities / working conditions / the skills people need // Write an essay discussing two of these areas. Explain which will be most affected, giving reasons.
+P: discuss two of the areas; decide which will be most affected; give reasons for your opinion
+
+@C1 | report
+TR: Çalıştığın/okuduğun kurumda iletişimin nasıl iyileştirilebileceğine dair bir rapor yaz.
+EN: Your director has asked you to write a report on communication within your organisation or school. Write your report.
+P: how people communicate at present; the main problems with this; your recommendations for improvement
+
+@C1 | essay
+TR: Çevreyi korumada bireylerin mi devletlerin mi daha fazla sorumluluğu olduğunu tartışan bir deneme yaz.
+EN: Your class has discussed who is responsible for protecting the environment. You made these notes. // Who: individuals / companies / governments // Write an essay discussing two of these. Explain which has the greater responsibility, giving reasons.
+P: discuss two of them; decide which has greater responsibility; give reasons for your opinion
+
+@C1 | letter
+TR: Bir gazetenin, gençlerin siyasete ilgisiz olduğunu iddia eden makalesine cevap veren bir okuyucu mektubu yaz.
+EN: A newspaper recently published an article claiming that young people today are not interested in politics or society. Write a letter to the editor responding to the article.
+P: whether you agree with the claim; examples that support your view; what could increase young people's involvement

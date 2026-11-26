@@ -1,0 +1,456 @@
+# Seviye tespiti — Gramer ek havuz 2: C1, C2
+
+@C1
+Never before ___ so many people attended the festival.
+* had
+- have been
+- did
+- were
+
+Scarcely ___ the stage when the audience started cheering.
+* had she reached
+- she had reached
+- did she reached
+- she reached
+
+Only when the report was published ___ the full extent of the problem.
+* did people understand
+- people understood
+- people did understand
+- understood people
+
+Were it ___ for the lifeguard, the boy would have drowned.
+* not
+- no
+- only
+- never
+
+Had the weather been better, the match ___ cancelled.
+* wouldn't have been
+- wouldn't be
+- hadn't been
+- won't have been
+
+If I had listened to my parents, I ___ in this mess now.
+* wouldn't be
+- wouldn't have been
+- won't be
+- hadn't been
+
+The minister is alleged ___ public money for private use.
+* to have used
+- to use
+- using
+- that used
+
+There are thought ___ more than a hundred species in the lake.
+* to be
+- being
+- that are
+- to have
+
+I'd rather you ___ me the truth from the start.
+* had told
+- told
+- have told
+- would tell
+
+It's vital that the patient ___ plenty of rest.
+* get
+- gets to
+- will get
+- getting
+
+The team, most of ___ members were under 20, won the championship.
+* whose
+- who
+- which
+- whom
+
+I spoke to three experts, none of ___ could explain it.
+* whom
+- who
+- them
+- which
+
+He gave me some advice, ___ was very useful.
+* which
+- what
+- that
+- who
+
+___ by the noise, she couldn't concentrate.
+* Distracted
+- Distracting
+- Being distract
+- Having distracting
+
+___ all the work, he went home early.
+* Having finished
+- Finished
+- Having been finished
+- To finish
+
+Not knowing ___ to do, I called my sister.
+* what
+- that
+- which
+- how
+
+She can't stand ___ told what to do.
+* being
+- to being
+- be
+- been
+
+He'll be here soon, I ___.
+* expect
+- am expecting so
+- expect it
+- am expect
+
+I ___ to the bank this morning, but I forgot.
+* was going to go
+- would go
+- had gone
+- was gone
+
+The building ___ when the earthquake struck.
+* was being renovated
+- was renovating
+- had renovated
+- renovated
+
+By the end of the year, the company ___ over a million units.
+* will have sold
+- will sell
+- has sold
+- sells
+
+She ___ have been more helpful; she did everything she could.
+* couldn't
+- mustn't
+- shouldn't
+- needn't
+
+You ___ have seen him — he's been in Spain all week.
+* can't
+- mustn't
+- shouldn't
+- needn't
+
+They ___ have arrived by now — they left hours ago.
+* should
+- can't
+- mustn't
+- would to
+
+The issue is ___ more complicated than it seems.
+* far
+- very
+- too
+- so
+
+He's by ___ the best player in the team.
+* far
+- much
+- very
+- most
+
+The film was nowhere near as good ___ the book.
+* as
+- than
+- like
+- that
+
+It's not that I don't like him; it's ___ we have nothing in common.
+* just that
+- only because of
+- just because of
+- that only
+
+I'll help you, ___ you promise not to tell anyone.
+* on condition that
+- unless
+- whereas
+- in case of
+
+___ the fact that he was tired, he kept driving.
+* Despite
+- Although
+- Even though
+- In spite
+
+The meeting was cancelled, ___ which nobody had been told.
+* about
+- with
+- for
+- in
+
+The older she gets, ___ she becomes.
+* the wiser
+- wiser
+- the wisest
+- more wiser
+
+What surprised me most ___ his calmness.
+* was
+- were
+- is being
+- had
+
+
+
+The police ___ investigating the incident.
+* are
+- is
+- has
+- was
+
+He acted as though nothing ___.
+* had happened
+- has happened
+- happens
+- would happen
+
+I'd sooner ___ the bus than wait for a taxi.
+* take
+- to take
+- taking
+- took
+
+It's about time we ___ a decision.
+* made
+- make
+- will make
+- have made
+
+Suppose you ___ the job, would you accept it?
+* were offered
+- are offered
+- will be offered
+- offered
+
+@C2
+Not until I read the letter ___ how much she had suffered.
+* did I understand
+- I understood
+- I did understand
+- understood I
+
+Nowhere ___ such a variety of birds.
+* will you find
+- you will find
+- you find
+- find you
+
+___ been warned, they went ahead anyway.
+* Despite having
+- Although having
+- Even though
+- In spite
+
+So successful ___ that it was translated into twenty languages.
+* was the book
+- the book was
+- the book has been
+- had the book
+
+Should the need ___, we can hire more staff.
+* arise
+- arises
+- arising
+- to arise
+
+He is rumoured ___ for the company before he left.
+* to have been spying
+- to spy
+- spying
+- that he spied
+
+The report, ___ conclusions few people agree with, has been withdrawn.
+* whose
+- which
+- of which
+- that its
+
+She resented ___ treated like a beginner.
+* being
+- to be
+- be
+- having be
+
+But ___ your help, I would never have finished.
+* for
+- with
+- by
+- from
+
+The decision, ___ it may seem, was the right one.
+* unpopular as
+- as unpopular
+- however unpopular as
+- so unpopular
+
+I'd just as soon you ___ tell her yet.
+* didn't
+- don't
+- won't
+- not
+
+It's not the cost ___ the time that worries me.
+* so much as
+- as much
+- than
+- rather
+
+The longer the negotiations drag on, ___ likely an agreement becomes.
+* the less
+- less
+- the least
+- lesser
+
+There is no denying ___ the plan has its flaws.
+* that
+- what
+- which
+- if
+
+
+He is not ___ to be trusted.
+* one
+- someone
+- a man who
+- ones
+
+___ is often the case, the simplest explanation turned out to be correct.
+* As
+- What
+- Which
+- It
+
+The more closely you look, ___ you'll see.
+* the more
+- more
+- the most
+- most
+
+On ___ arrival, guests will be given a welcome drink.
+* their
+- they
+- them
+- the
+
+He left the room without ___ a word.
+* saying
+- to say
+- say
+- said
+
+It was such ___ that we stayed indoors all day.
+* awful weather
+- an awful weather
+- awful a weather
+- a weather awful
+
+Were they ___ the truth, they would be shocked.
+* to learn
+- learning
+- learned
+- learn
+
+She looked at me as ___ to say "I told you so".
+* if
+- though if
+- like
+- that
+
+He is said to ___ for the company for over forty years.
+* have worked
+- work
+- be worked
+- working
+
+At no time ___ aware of the danger.
+* were the passengers
+- the passengers were
+- did the passengers
+- the passengers had been
+
+I would rather have stayed at home than ___ to that party.
+* gone
+- go
+- went
+- going
+
+The sooner we leave, ___ we'll get there.
+* the earlier
+- earlier
+- the earliest
+- earliest
+
+Not once ___ thank me for my help.
+* did he
+- he did
+- has he
+- he has
+
+Inasmuch ___ he is responsible, he should apologise.
+* as
+- that
+- so
+- like
+
+___ though it may sound, it's true.
+* Strange
+- Strangely
+- However strange
+- So strange
+
+It ill ___ you to criticise others.
+* becomes
+- suits to
+- fits
+- matches
+
+So ___ were the results that the experiment was repeated.
+* surprising
+- surprisingly
+- surprised
+- surprise
+
+Barely had the plane taken off ___ the storm hit.
+* when
+- than
+- then
+- that
+
+He couldn't have known, ___ he?
+* could
+- couldn't
+- did
+- had
+
+I'll never get used ___ in such a noisy city.
+* to living
+- to live
+- living
+- live
+
+There is little ___ we can do now.
+* that
+- what
+- which
+- who
+
+Whatever ___ the reason, it's unacceptable.
+* the
+- is
+- was
+- will be
+
+He was made ___ the money back.
+* to pay
+- pay
+- paying
+- paid

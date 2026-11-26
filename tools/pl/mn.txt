@@ -13,13 +13,13 @@ A: How was the hotel? B: Well, the room was small, but the staff were lovely.
 
 A: Are you coming to the party on Saturday? B: I'll see how I feel.
 * B hasn't decided whether to come yet.
-- B is definitely coming to it.
+- B is definitely coming, whatever happens.
 - B is feeling ill today.
 
 A: Is this seat free? B: Sorry, my friend's just gone to get a coffee.
 * Someone is already sitting there.
 - B wants a coffee too.
-- A can sit there now.
+- A can sit there because it's free now.
 
 @B1
 A: Do you want to see the new action film? B: I'm not really into action films.
@@ -35,7 +35,7 @@ A: Could you turn the music down a bit? B: Oh, sorry — I didn't realise it was
 A: The train leaves at 7.10. B: Then we'd better get a move on.
 * They need to hurry to catch it.
 - They should wait for it.
-- They have plenty of time.
+- They have plenty of time before it leaves.
 
 A: Is that new restaurant any good? B: Let's just say I won't be going back.
 * B didn't enjoy eating there.
@@ -107,7 +107,7 @@ A: Is the course worth doing? B: It's not the worst way to spend a weekend.
 A: Did the negotiations go well? B: Well, we're not out of the woods yet.
 * There are still some difficulties to solve.
 - They have reached an agreement.
-- The talks have been cancelled.
+- The talks have been cancelled completely now.
 
 A: Was the interview difficult? B: They certainly didn't make it easy for me.
 * The interview was challenging.

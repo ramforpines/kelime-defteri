@@ -1,0 +1,465 @@
+# Seviye tespiti — Gramer ek havuz 2: A1, A2
+
+@A1
+A: What's your name? B: ___ name is Daniel.
+* My
+- Me
+- Mine
+- I
+
+We ___ students at this school.
+* are
+- is
+- am
+- be
+
+A: Is Anna your sister? B: No, she ___.
+* isn't
+- doesn't
+- not
+- aren't
+
+A: Where do you live? B: I live ___ a flat in the city centre.
+* in
+- on
+- at
+- to
+
+A: Have you got a pet? B: Yes, I've got two ___.
+* cats
+- cat
+- cates
+- cat's
+
+Can you ___ me your phone number?
+* give
+- gives
+- giving
+- to give
+
+A: Are there any shops near here? B: Yes, there ___.
+* are
+- is
+- have
+- they are
+
+He ___ his car every Sunday.
+* washes
+- washs
+- wash
+- washing
+
+A: ___ you a teacher? B: No, I'm a student.
+* Are
+- Do
+- Is
+- Have
+
+My birthday is ___ 21st March.
+* on
+- in
+- at
+- by
+
+The children ___ in the garden at the moment.
+* are playing
+- play
+- plays
+- playing
+
+___ apple a day is good for you.
+* An
+- A
+- The
+- Some
+
+A: How do you go to school? B: I go ___ bike.
+* by
+- with
+- on the
+- in
+
+Look at ___ birds in that tree!
+* those
+- that
+- this
+- them
+
+A: What colour ___ your eyes? B: Brown.
+* are
+- is
+- have
+- do
+
+My father works ___ a bank.
+* in
+- on
+- to
+- of
+
+A: Do you want some tea? B: No, thanks. I don't like ___.
+* it
+- its
+- him
+- them
+
+There ___ a lot of people in the shop today.
+* are
+- is
+- has
+- have
+
+She ___ like vegetables.
+* doesn't
+- don't
+- isn't
+- not
+
+A: What do you usually have for breakfast? B: I usually ___ eggs.
+* have
+- has
+- having
+- am have
+
+He's from Spain. He's ___.
+* Spanish
+- Spain
+- Spainish
+- a Spanish
+
+A: Can your brother drive? B: Yes, he ___.
+* can
+- does
+- is
+- do
+
+Please ___ talk in the library.
+* don't
+- not
+- doesn't
+- no
+
+I ___ hungry. Can we eat now?
+* 'm
+- have
+- 's
+- do
+
+A: Where ___ you yesterday? B: At my grandmother's house.
+* were
+- was
+- are
+- did
+
+Our teacher ___ very funny.
+* is
+- are
+- has
+- be
+
+A: ___ do you start work? B: At nine o'clock.
+* What time
+- How many
+- Which time
+- How time
+
+I ___ my homework every evening.
+* do
+- make
+- does
+- doing
+
+There are some ___ on the table.
+* glasses
+- glass
+- glasss
+- glassies
+
+A: Who is that? B: ___ my new neighbour.
+* That's
+- This are
+- Those is
+- It are
+
+My mother cooks very ___.
+* well
+- good
+- nice
+- better than
+
+I can't find ___ glasses. Have you seen them?
+* my
+- me
+- mine
+- I
+
+A: What time is it? B: ___ half past three.
+* It's
+- Is
+- There's
+- It has
+
+They ___ to the cinema last Friday.
+* went
+- go
+- goed
+- going
+
+She has got long hair and ___ eyes are blue.
+* her
+- she
+- hers
+- his
+
+A: Did you like the pizza? B: Yes, I ___.
+* did
+- do
+- liked
+- was
+
+We usually go on holiday ___ August.
+* in
+- on
+- at
+- by
+
+A: How are you? B: I'm ___, thanks.
+* fine
+- good thanks
+- well good
+- fines
+
+@A2
+Last night I ___ a very strange dream.
+* had
+- have had
+- was having had
+- have
+
+I've never ___ to Australia.
+* been
+- go
+- went
+- be
+
+How long ___ you known your best friend?
+* have
+- did
+- are
+- do
+
+He ___ English for three years, but he still can't speak it well.
+* has studied
+- studies
+- is studying
+- studied for
+
+I'll call you when I ___ home.
+* get
+- will get
+- got
+- am getting to
+
+My brother ___ the guitar since he was ten.
+* has played
+- plays
+- played
+- is playing
+
+If you don't hurry, you ___ late.
+* 'll be
+- are
+- were
+- 'd be
+
+What ___ if you lose your job?
+* will you do
+- you will do
+- do you will
+- you do
+
+The streets were wet because it ___ all night.
+* had rained
+- has rained
+- rains
+- is raining
+
+A: Can you speak French? B: A ___. I learned it at school.
+* little
+- few
+- many
+- bit of
+
+This bag is ___ heavy for me to carry.
+* too
+- enough
+- so
+- very much
+
+Is there ___ I can do to help?
+* anything
+- anybody
+- nothing
+- everything
+
+I didn't see ___ at the party that I knew.
+* anyone
+- nobody
+- no one
+- anything
+
+The museum was closed, ___ we went to a café instead.
+* so
+- because
+- but
+- or
+
+He's ___ person who always helps others.
+* the kind of
+- a kind
+- kind of the
+- the kinds
+
+My new phone is ___ my old one.
+* better than
+- more good than
+- best than
+- better as
+
+The book was ___ than the film.
+* more interesting
+- interestinger
+- most interesting
+- more interested
+
+I was ___ the TV when the lights went out.
+* watching
+- watched
+- watch
+- to watch
+
+A: Why didn't you come to class? B: I ___ ill.
+* was
+- were
+- am
+- am being
+
+We should leave now. It's getting ___.
+* late
+- lately
+- later than
+- latest
+
+You look ___. Did you sleep badly?
+* tired
+- tiring
+- tiredly
+- tire
+
+I'm really ___ in learning to cook.
+* interested
+- interesting
+- interest
+- interests
+
+She ___ me a lovely present for my birthday.
+* gave
+- give
+- given
+- gived
+
+Have you ___ my keys? I can't find them.
+* seen
+- saw
+- see
+- seeing
+
+I'm going to the shop ___ some bread.
+* to buy
+- for buy
+- for buying
+- buy
+
+A: Do you mind if I open the window? B: No, ___.
+* go ahead
+- I mind
+- please don't
+- you mind
+
+He spends a lot of time ___ video games.
+* playing
+- to play
+- play
+- played
+
+It's ___ cold today that I'm wearing two jumpers.
+* so
+- such
+- too
+- very
+
+I haven't seen him ___ last summer.
+* since
+- for
+- ago
+- from
+
+Would you like ___ to the beach with us?
+* to come
+- come
+- coming
+- came
+
+A: Whose is this coat? B: I think it's ___.
+* hers
+- her
+- she
+- she's
+
+A: Shall I help you with your bags? B: That's very kind ___ you.
+* of
+- for
+- to
+- with
+
+The concert was ___. Everyone loved it.
+* amazing
+- amazed
+- amaze
+- amazingly
+
+I usually ___ to bed before eleven.
+* go
+- am going
+- went
+- have gone
+
+There's a man at the door ___ wants to speak to you.
+* who
+- which
+- what
+- he
+
+I'm afraid there's ___ time left. We must finish now.
+* no
+- not
+- any
+- none
+
+He ___ breakfast this morning because he was late.
+* didn't have
+- not have
+- doesn't have
+- not had
+
+We'll stay at home ___ the weather is bad.
+* if
+- unless
+- so
+- but
+
+She can't come to the phone. She ___ a shower.
+* 's having
+- has
+- had
+- has had

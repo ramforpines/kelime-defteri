@@ -1,0 +1,429 @@
+# Seviye tespiti — Kelime kullanımı ek havuz: C1, C2
+
+@C1
+syn: diligent
+* industrious
+- intelligent
+- indulgent
+- indifferent
+
+syn: plausible
+* credible
+- capable
+- culpable
+- curable
+
+syn: hostile
+* antagonistic
+- apathetic
+- anonymous
+- ambivalent
+
+syn: inevitable
+* unavoidable
+- unbearable
+- unthinkable
+- unforgettable
+
+syn: thrifty
+* economical
+- ecological
+- eccentric
+- elaborate
+
+syn: concise
+* succinct
+- distinct
+- extinct
+- precinct
+
+syn: obsolete
+* outdated
+- outgoing
+- outspoken
+- outlying
+
+syn: tentative
+* provisional
+- persistent
+- profound
+- prominent
+
+def: to officially end a law or agreement
+* abolish
+- abandon
+- abstain
+- absorb
+
+def: a strong feeling of dislike for someone who has treated you unfairly
+* resentment
+- remorse
+- reluctance
+- restraint
+
+def: to make something less strong, effective or certain
+* undermine
+- underline
+- undertake
+- undergo
+
+def: very careful to avoid risks
+* cautious
+- conscious
+- conscientious
+- contentious
+
+def: involving a lot of effort and energy, especially physical
+* strenuous
+- tedious
+- hazardous
+- hilarious
+
+def: to examine something carefully in order to understand it
+* analyse
+- admire
+- assume
+- allocate
+
+def: willing to accept behaviour or opinions different from your own
+* tolerant
+- tolerable
+- tremendous
+- tentative
+
+def: done or happening suddenly and without planning
+* spontaneous
+- simultaneous
+- superficial
+- substantial
+
+use: The government has ___ a new campaign to reduce smoking.
+* launched
+- landed
+- lodged
+- lifted
+
+use: The evidence was ___, so he was released.
+* inconclusive
+- incoherent
+- incompatible
+- inconsiderate
+
+use: She has a ___ understanding of the subject.
+* profound
+- profuse
+- prolific
+- prominent
+
+use: The new policy has ___ a lot of criticism.
+* attracted
+- attached
+- attained
+- attended
+
+use: Unemployment has ___ to its lowest level in ten years.
+* fallen
+- dropped off
+- lowered
+- decreased down
+
+use: The company was forced to ___ its plans for expansion.
+* shelve
+- shelter
+- shell
+- shed
+
+use: The two companies have agreed to ___ in order to cut costs.
+* merge
+- emerge
+- submerge
+- immerge
+
+use: The results of the study were ___ in a leading journal.
+* published
+- publicised
+- printed out
+- pronounced
+
+use: His comments were taken out of ___.
+* context
+- content
+- contest
+- contact
+
+use: Several factors ___ to the company's success.
+* contributed
+- attributed
+- distributed
+- constituted
+
+use: The protesters ___ the building for three days.
+* occupied
+- preoccupied
+- inhabited
+- resided
+
+use: It's ___ that you sign the contract before Friday.
+* imperative
+- imperial
+- impressive
+- impulsive
+
+use: The minister refused to ___ on the rumours.
+* comment
+- notify
+- mention
+- reply to them
+
+use: The team ___ a narrow victory in the final minutes.
+* clinched
+- clenched
+- clutched
+- clamped
+
+col: The new law has ___ widespread public support.
+* gained
+- earned up
+- reached
+- won over
+
+col: The two leaders held ___ talks behind closed doors.
+* lengthy
+- longing
+- longish
+- longed
+
+col: She has a ___ command of three languages.
+* fluent
+- flowing
+- fluid
+- fluctuating
+
+col: The company is facing ___ competition from abroad.
+* fierce
+- loud
+- bold
+- bright
+
+col: The government has come under ___ pressure to act.
+* mounting
+- climbing
+- rising up
+- elevating
+
+col: There is a ___ need for more teachers.
+* pressing
+- pushing
+- squeezing
+- crushing
+
+col: He made a ___ recovery after the operation.
+* full
+- whole
+- round
+- entire
+
+col: The proposal was ___ rejected by the committee.
+* unanimously
+- unilaterally
+- unconditionally
+- uniformly
+
+@C2
+syn: ubiquitous
+* omnipresent
+- omnipotent
+- omniscient
+- omnivorous
+
+syn: laconic
+* terse
+- tense
+- tame
+- trite
+
+syn: pernicious
+* harmful
+- hostile
+- humble
+- hasty
+
+syn: magnanimous
+* generous
+- glorious
+- gregarious
+- garrulous
+
+syn: esoteric
+* obscure
+- obscene
+- obsolete
+- obstinate
+
+syn: fastidious
+* meticulous
+- ridiculous
+- miraculous
+- tremulous
+
+syn: cogent
+* compelling
+- compliant
+- complacent
+- complicit
+
+def: to make something bad less severe, especially a punishment
+* mitigate
+- militate
+- migrate
+- mutilate
+
+def: a person who is new to and inexperienced in an activity
+* novice
+- notary
+- nominee
+- nomad
+
+def: lasting for a very short time
+* transient
+- translucent
+- transparent
+- transitive
+
+def: deliberately avoiding giving a clear answer
+* evasive
+- invasive
+- pervasive
+- abrasive
+
+def: to make an earlier decision or law no longer valid
+* revoke
+- evoke
+- invoke
+- provoke
+
+def: showing a lack of respect for something important
+* irreverent
+- irrelevant
+- irregular
+- irrational
+
+def: to speak or write about something at great length
+* expound
+- expend
+- expunge
+- expose
+
+use: The scandal ___ public confidence in the government.
+* eroded
+- erupted
+- evaded
+- elicited
+
+use: His explanation was so ___ that nobody could follow it.
+* convoluted
+- converted
+- conveyed
+- convened
+
+use: The charity relies on the ___ of its donors.
+* largesse
+- largeness
+- largely
+- largish
+
+use: She was ___ by the sudden death of her father.
+* devastated
+- devoted
+- deviated
+- devalued
+
+use: The new evidence ___ the defendant of all charges.
+* exonerated
+- exaggerated
+- exasperated
+- excavated
+
+use: The two theories are not mutually ___.
+* exclusive
+- excessive
+- expansive
+- exhaustive
+
+use: His speech was full of ___ remarks about his opponents.
+* disparaging
+- dispensing
+- disposing
+- dispersing
+
+use: The government's response to the crisis was widely ___.
+* criticised
+- compromised
+- sanitised
+- jeopardised
+
+use: Her latest novel has been ___ as a masterpiece.
+* hailed
+- haled
+- hauled
+- hurled
+
+use: The details of the agreement are still being ___ out.
+* hammered
+- nailed
+- screwed
+- bolted
+
+use: The government is accused of trying to ___ the truth.
+* suppress
+- surpass
+- suspend
+- sustain
+
+use: He has an ___ appetite for knowledge.
+* insatiable
+- insoluble
+- insufferable
+- insensible
+
+col: The plan was met with ___ scepticism.
+* considerable
+- considerate
+- considered
+- consideration
+
+col: Their argument rests on a ___ assumption.
+* flawed
+- floored
+- flawing
+- flown
+
+col: She launched a ___ attack on the government's policy.
+* scathing
+- scalding
+- scraping
+- scolding
+
+col: There is ___ evidence that the drug works.
+* compelling
+- compulsory
+- compulsive
+- complying
+
+col: The negotiations reached a ___ after months of talks.
+* stalemate
+- checkmate
+- stalwart
+- stagnate
+
+col: He spoke with ___ conviction about the need for reform.
+* deep
+- tall
+- wide
+- broad
+
+col: The company is in ___ financial trouble.
+* dire
+- dear
+- dour
+- dim

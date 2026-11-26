@@ -1,0 +1,380 @@
+# Seviye tespiti — Anlam ve ima ek havuz
+
+@A2
+A: Do you want to come for a coffee? B: Sorry, I've just had one.
+* B doesn't want a coffee now.
+- B wants to have another coffee.
+- B has never tried coffee before.
+
+A: Is it far to the station? B: It's just round the corner.
+* The station is very close.
+- The station is quite a long way away.
+- B doesn't know the way.
+
+A: Can you help me with my homework? B: Sure, give me five minutes.
+* B will help a bit later.
+- B can't help at all today.
+- B finished it five minutes ago.
+
+A: How was your holiday? B: It rained every day.
+* B didn't enjoy the weather.
+- B had wonderful sunny weather.
+- B didn't go on holiday at all.
+
+A: Shall we take a taxi? B: Let's walk. It's a lovely day.
+* B would prefer to walk there.
+- B wants to wait here for a taxi instead.
+- B thinks it's going to rain.
+
+A: Are you hungry? B: I could eat a horse!
+* B is very hungry.
+- B wants to eat meat.
+- B has just eaten.
+
+A: Do you know where Sam is? B: Try the library.
+* Sam might be in the library.
+- B is going to the library.
+- Sam doesn't like the library.
+
+A: Is the new teacher nice? B: She's a bit strict, but she's fair.
+* B mostly likes the new teacher.
+- B thinks the teacher is unfair.
+- B hasn't met the teacher yet.
+
+A: What time does the shop close? B: I'm not sure. Ask at the desk.
+* B doesn't know the answer.
+- The shop is already closed for the day.
+- B works at the desk.
+
+A: Would you like some more cake? B: I'd better not.
+* B is saying no politely.
+- B wants a bigger piece.
+- B doesn't like cake at all.
+
+A: Have you seen my glasses? B: They're on your head!
+* A is wearing the glasses already.
+- B has taken the glasses.
+- The glasses are lost somewhere in the house.
+
+A: Can we meet on Monday? B: Monday's no good for me. What about Tuesday?
+* B is free on Tuesday, not Monday.
+- B wants to meet on Monday.
+- B can't meet on any day next week at all.
+
+A: Did you like the film? B: I fell asleep halfway through.
+* B found the film boring.
+- B enjoyed every minute of it.
+- B didn't go to the cinema.
+
+A: Is Tom coming tonight? B: He said he'd try.
+* Tom might come.
+- Tom will definitely come.
+- Tom said he can't come.
+
+A: Is this your first time in Istanbul? B: No, I come here every summer.
+* B has been to Istanbul many times.
+- B is in Istanbul for the first time.
+- B only visits Istanbul in winter.
+
+@B1
+A: Are you going to Lisa's party? B: I wouldn't miss it for the world.
+* B is definitely going.
+- B can't go to the party.
+- B hasn't been invited.
+
+A: How's your new job going? B: Early days, but so far so good.
+* It's going well, but it's still new.
+- B has already decided to leave.
+- B has been working there for many years now.
+
+A: Can I borrow your car this weekend? B: I'm afraid I need it myself.
+* B won't lend the car.
+- B is afraid of driving.
+- B will lend the car on Sunday.
+
+A: I can't decide which dress to buy. B: Why not get both?
+* B suggests buying the two dresses.
+- B thinks neither of the dresses looks nice.
+- B wants A to buy nothing.
+
+A: Did you finish the book? B: I couldn't put it down.
+* B found the book very interesting.
+- B didn't like the book at all.
+- B lost the book before reaching the end.
+
+A: The meeting's been moved to Friday. B: That suits me better, actually.
+* B is happy about the change.
+- B is annoyed about the change.
+- B can't come on Friday.
+
+A: How did the exam go? B: Don't ask.
+* The exam went badly.
+- The exam went very well.
+- B didn't take the exam.
+
+A: Shall I call you a taxi? B: Don't worry, I'll get the bus.
+* B doesn't need a taxi.
+- B is worried about the bus.
+- B wants A to drive.
+
+A: Your brother looks just like you! B: People are always saying that.
+* Many people notice they look alike.
+- B doesn't think they look alike.
+- B doesn't actually have a brother at all.
+
+A: Do you think it'll rain? B: I'd take an umbrella if I were you.
+* B thinks it might rain.
+- B is sure it won't rain.
+- B wants to borrow an umbrella.
+
+A: I'm sorry I'm late. B: Don't worry, we've only just started.
+* A hasn't missed much.
+- A has missed everything.
+- They haven't started yet.
+
+A: Can you come to dinner on Saturday? B: Let me check my diary and get back to you.
+* B will answer later.
+- B is busy on Saturday.
+- B has accepted the invitation.
+
+A: The printer isn't working again. B: Typical!
+* This often happens.
+- This is the first time.
+- B fixed the printer.
+
+A: Do you fancy going to the cinema? B: I'm not really in the mood.
+* B doesn't feel like going.
+- B has already seen the film.
+- B wants to go later tonight.
+
+A: Is the restaurant expensive? B: It won't break the bank.
+* It's quite reasonable.
+- It's very expensive.
+- It doesn't accept cards.
+
+A: Have you finished the report? B: Almost — I just need to check a few figures.
+* B has nearly finished.
+- B hasn't started yet.
+- B finished it yesterday.
+
+A: Did you get the job? B: I'm still waiting to hear.
+* B doesn't know the result yet.
+- B got the job yesterday.
+- B decided not to apply for the job after all.
+
+A: I've lost my keys again! B: You'd lose your head if it wasn't screwed on.
+* B thinks A is very forgetful.
+- B thinks A has a headache.
+- B will help A look for the keys in the house.
+
+A: Shall we eat out tonight? B: I'm easy.
+* B doesn't mind either way.
+- B thinks it's an easy decision.
+- B would prefer to stay at home.
+
+A: Was the hotel clean? B: Spotless.
+* It was completely clean.
+- It was a bit dirty.
+- B didn't notice whether it was clean or not.
+
+@B2
+A: Did you enjoy the conference? B: It had its moments.
+* Parts of it were good, but not all.
+- B enjoyed every part of it.
+- B didn't attend the conference.
+
+A: Do you think he'll get the promotion? B: It's anyone's guess.
+* Nobody knows what will happen.
+- He will certainly get it.
+- He has already been promoted to a higher job.
+
+A: How was the job interview? B: I think I put my foot in it.
+* B said something embarrassing.
+- B arrived late for the interview.
+- B is sure she got the job.
+
+A: Shall we invite Paul? B: Only if you want an argument.
+* B thinks Paul causes problems.
+- B wants to argue with A.
+- B thinks Paul is too busy to come this time.
+
+A: The new manager seems very strict. B: His bark is worse than his bite.
+* He's not as harsh as he seems.
+- He is even stricter than he seems.
+- He shouts but never works.
+
+A: Can you lend me fifty pounds? B: Money doesn't grow on trees, you know.
+* B is reluctant to lend money.
+- B is happy to lend the money.
+- B wants to plant some trees.
+
+A: Are you nervous about your speech? B: I've got butterflies in my stomach.
+* B is very nervous.
+- B feels ill.
+- B is excited to eat.
+
+A: Is the new phone worth buying? B: Not unless you've money to burn.
+* It's too expensive for what it is.
+- It's excellent value for money.
+- It's very cheap at the moment.
+
+A: Did you tell her what happened? B: I didn't have the heart.
+* B didn't tell her to avoid upsetting her.
+- B was too ill to tell her.
+- B told her immediately.
+
+A: How's the project going? B: We're behind schedule, but we'll pull through.
+* B is confident they'll succeed despite delays.
+- B thinks the project will fail.
+- The project is ahead of schedule.
+
+A: I think Mike is lying. B: Give him the benefit of the doubt.
+* B thinks A should trust Mike for now.
+- B agrees that Mike is lying.
+- B wants A to ask Mike for money.
+
+A: Should I tell my boss I'm unhappy? B: I'd sleep on it if I were you.
+* B suggests waiting before deciding.
+- B suggests telling the boss today.
+- B thinks A is too tired.
+
+A: What did you think of the new restaurant? B: The food was nothing to write home about.
+* The food was ordinary.
+- The food was excellent.
+- B didn't eat there.
+
+A: Are you going to apply for the course? B: I'm in two minds about it.
+* B can't decide.
+- B has applied already.
+- B definitely won't apply.
+
+A: Did the boss accept your idea? B: She didn't exactly jump at it.
+* The boss wasn't very enthusiastic.
+- The boss loved the idea.
+- The boss didn't hear the idea because she was out.
+
+A: Is Sarah coming to help? B: She said she'd be here, but you know Sarah.
+* Sarah may not be reliable.
+- Sarah is always on time.
+- B doesn't know Sarah well.
+
+A: You look exhausted. B: I've been burning the candle at both ends.
+* B has been working too much and sleeping too little.
+- B has had a power cut at home.
+- B has been relaxing all week.
+
+A: Have you heard about the merger? B: Keep it under your hat, but yes.
+* B knows, but it's still a secret.
+- B hasn't heard anything about it.
+- B is happy to tell everyone.
+
+A: Can I ask you something personal? B: Fire away.
+* B is ready for the question.
+- B doesn't want to answer.
+- B wants A to leave and stop asking questions.
+
+A: Did your team win? B: We were robbed!
+* B thinks the result was unfair.
+- B's team won easily.
+- Someone stole B's things during the match.
+
+@C1
+A: Do you think the government will listen? B: I'm not holding my breath.
+* B doesn't expect them to listen.
+- B is sure they will listen.
+- B is waiting nervously for news.
+
+A: How did the presentation go? B: Let's just say it didn't go to plan.
+* Something went wrong.
+- It went exactly as planned.
+- B didn't give the presentation.
+
+A: Are you going to accept their offer? B: I'd be a fool not to.
+* B will accept the offer.
+- B will refuse the offer.
+- B thinks the offer is foolish.
+
+A: Is it true that the factory is closing? B: Not that I'm aware of.
+* B hasn't heard anything about it.
+- B knows that it is closing.
+- B is certain it will stay open forever.
+
+A: Your sister's very confident, isn't she? B: That's one way of putting it.
+* B thinks "confident" is too kind a word.
+- B completely agrees with A.
+- B has never actually met A's sister in person.
+
+A: Could you work late tonight? B: I suppose I could, if it's absolutely necessary.
+* B is willing, but reluctantly.
+- B is delighted to work late.
+- B refuses to work late.
+
+A: Did the new strategy work? B: The jury's still out.
+* It's too early to say.
+- It was a complete success.
+- It was rejected in court.
+
+A: Shall we ask Anna to join the team? B: She'd be the last person I'd ask.
+* B doesn't want Anna in the team.
+- B would ask Anna first.
+- B will ask Anna later, after asking the others.
+
+A: I hear you're thinking of moving abroad. B: It's early days.
+* B hasn't made a firm decision.
+- B is moving next week.
+- B has completely rejected the idea of moving.
+
+A: The report needs a few changes. B: A few? It needs rewriting from scratch!
+* The report needs major changes.
+- The report needs only small changes.
+- The report is perfect.
+
+A: Did you speak to the director? B: I tried, but I couldn't get a word in edgeways.
+* The director kept talking.
+- The director refused to see B.
+- B didn't want to speak.
+
+A: Is the hotel close to the beach? B: As the crow flies, yes.
+* It's close in a straight line, but the route may be longer.
+- It's right on the beach.
+- It's a long way by air.
+
+A: I don't think I'll pass. B: You're your own worst enemy.
+* B thinks A's negative attitude is the problem.
+- B thinks A has enemies.
+- B agrees that A will fail.
+
+A: Will you be at the meeting? B: Wild horses wouldn't keep me away.
+* B will certainly be there.
+- B can't come to the meeting.
+- B is worried about the meeting.
+
+A: What do you make of the new CEO? B: I'm reserving judgement.
+* B hasn't formed an opinion yet.
+- B already strongly dislikes the new CEO.
+- B knows the CEO very well.
+
+A: Did the talks produce anything? B: Nothing that we couldn't have agreed by email.
+* The talks achieved very little.
+- The talks were very productive.
+- The talks took place by email.
+
+A: Is he good at his job? B: He knows his stuff, I'll give him that.
+* B admits he is competent, despite other doubts.
+- B thinks he is incompetent.
+- B gave him the job.
+
+A: Can you give me a definite answer? B: I'm afraid I can't commit to anything at this stage.
+* B can't promise anything yet.
+- B has agreed to everything.
+- B is afraid of giving A the wrong answer.
+
+A: Have you finished your thesis? B: I can see the light at the end of the tunnel.
+* B is close to finishing.
+- B hasn't started yet.
+- B has given up and stopped working on it.
+
+A: The plan is risky. B: Nothing ventured, nothing gained.
+* Taking risks is necessary to succeed.
+- B agrees it's too risky.
+- B wants to cancel the plan before it's too late.

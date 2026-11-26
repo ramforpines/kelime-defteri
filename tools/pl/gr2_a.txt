@@ -1,0 +1,489 @@
+# Seviye tespiti — Gramer ek havuz: A1, A2
+
+@A1
+A: Where ___ your parents from? B: Turkey.
+* are
+- is
+- do
+- does
+
+My sister ___ a car, but she can't drive yet.
+* has
+- have
+- is
+- does
+
+A: What's that? B: It's ___ umbrella.
+* an
+- a
+- the
+- one
+
+A: Are these your keys? B: Yes, ___.
+* they are
+- it is
+- they're
+- there are
+
+A: What ___ your brother do? B: He's a doctor.
+* does
+- do
+- is
+- has
+
+I ___ TV in the evening. I prefer reading.
+* don't watch
+- not watch
+- doesn't watch
+- am not watch
+
+A: Where's the cat? B: It's ___ the bed.
+* under
+- between
+- among
+- into
+
+A: When do you have English? B: ___ Monday and Wednesday.
+* On
+- In
+- At
+- By
+
+The film starts ___ eight o'clock.
+* at
+- in
+- on
+- to
+
+A: ___ pens have you got? B: Three.
+* How many
+- How much
+- How long
+- How often
+
+Mary and John are married. ___ house is near the park.
+* Their
+- They're
+- There
+- Theirs
+
+A: Do you know Ali? B: Yes, I know ___ very well.
+* him
+- he
+- his
+- he's
+
+I usually ___ to work by bus.
+* go
+- goes
+- going
+- am go
+
+She ___ tea every morning.
+* drinks
+- drink
+- drinking
+- is drink
+
+A: Is your brother at home? B: No, he ___ at work.
+* 's
+- 're
+- has
+- does
+
+There ___ any milk in the fridge.
+* isn't
+- aren't
+- haven't
+- don't
+
+A: What are you doing? B: I ___ a letter to my aunt.
+* 'm writing
+- write
+- writing
+- 'm write
+
+A: ___ is your birthday? B: In June.
+* When
+- Where
+- Who
+- Which
+
+I like ___ to music in the car.
+* listening
+- listen
+- listens
+- to listening
+
+These ___ my friends, Ben and Lucy.
+* are
+- is
+- am
+- be
+
+A: Can I have ___ water, please? B: Of course.
+* some
+- few
+- an
+- many
+
+My father ___ always tired after work.
+* is
+- has
+- does
+- are
+
+A: Whose book is this? B: It's ___ book.
+* Emma's
+- Emmas
+- of Emma
+- Emma
+
+I ___ never late for school.
+* am
+- do
+- have
+- does
+
+A: Was the film good? B: Yes, it ___ great.
+* was
+- were
+- is been
+- did
+
+They ___ in Paris last year.
+* were
+- was
+- are
+- did
+
+A: Would you like a sandwich? B: Yes, ___.
+* please
+- I like
+- I'd
+- thanks you
+
+He can ___ three languages.
+* speak
+- speaks
+- to speak
+- speaking
+
+A: How old ___ your children? B: Five and eight.
+* are
+- is
+- have
+- do
+
+There are two ___ in the garden.
+* children
+- childs
+- childrens
+- child
+
+My brother ___ tennis on Saturdays.
+* plays
+- play
+- playing
+- is play
+
+___ your shoes here, please.
+* Leave
+- Leaves
+- Leaving
+- You leaving
+
+A: Is this your bag? B: No, it isn't ___.
+* mine
+- my
+- me
+- I
+
+The bank is ___ the supermarket and the post office.
+* between
+- among
+- next
+- opposite of
+
+A: Do you like football? B: No, I ___.
+* don't
+- not
+- doesn't
+- am not
+
+We have English lessons ___ the morning.
+* in
+- on
+- at
+- by
+
+A: How ___ is this jacket? B: It's forty pounds.
+* much
+- many
+- long
+- old
+
+My mother ___ like coffee.
+* doesn't
+- don't
+- isn't
+- not
+
+A: Who's that girl? B: ___ my cousin.
+* She's
+- Her
+- She
+- Hers
+
+I get up early, but my sister ___ up late.
+* gets
+- get
+- getting
+- is get
+
+@A2
+A: What were you doing at eight last night? B: I ___ dinner.
+* was having
+- had had
+- have had
+- am having
+
+I've ___ finished my homework, so I can go out now.
+* just
+- yet
+- ever
+- since
+
+She's lived in London ___ ten years.
+* for
+- since
+- during
+- ago
+
+A: Have you ever eaten Thai food? B: No, ___.
+* never
+- ever
+- yet
+- already
+
+We ___ a new car last month.
+* bought
+- have bought
+- buy
+- were buying
+
+Be quiet! The baby ___.
+* is sleeping
+- sleeps
+- sleep
+- slept
+
+This exercise is ___ than the last one.
+* easier
+- more easy
+- easiest
+- the easier
+
+This is the ___ beautiful beach in the country.
+* most
+- more
+- much
+- very
+
+I'm ___ to visit my grandparents next week.
+* going
+- go
+- will
+- goes
+
+A: The phone's ringing. B: OK, I ___ it.
+* 'll answer
+- answer
+- 'm answering
+- answered
+
+You ___ smoke in the hospital. It's not allowed.
+* mustn't
+- don't have to
+- needn't
+- shouldn't to
+
+Tomorrow is Sunday, so I ___ get up early.
+* don't have to
+- mustn't
+- haven't
+- can't to
+
+There were ___ people at the concert that we couldn't move.
+* so many
+- so much
+- such
+- too much
+
+I didn't go out ___ it was raining.
+* because
+- so
+- but
+- although
+
+Is this the restaurant ___ you told me about?
+* that
+- who
+- where
+- what
+
+The weather is ___ today than yesterday.
+* worse
+- badder
+- more bad
+- worst
+
+A: Did you enjoy the party? B: Yes, I had a ___ time.
+* great
+- greatly
+- greatest
+- more great
+
+He drives very ___.
+* carefully
+- careful
+- care
+- carefulness
+
+I'm not old ___ to drive a car.
+* enough
+- too
+- very
+- so
+
+There's ___ sugar in my coffee. It's too sweet.
+* too much
+- too many
+- enough
+- a few
+
+A: How ___ do you go to the cinema? B: About once a month.
+* often
+- many
+- long
+- much
+
+We ___ to the beach when it started to rain.
+* were walking
+- walk
+- are walking
+- have walked
+
+She ___ to Italy three times.
+* has been
+- has gone
+- was
+- is going
+
+I ___ my keys. I can't find them anywhere.
+* 've lost
+- lose
+- 'm losing
+- was lost
+
+A: Where's Tom? B: He ___ to the shops. He'll be back soon.
+* 's gone
+- 's been
+- has go
+- goes
+
+Could you tell me where ___?
+* the station is
+- is the station
+- the station
+- does the station
+
+Let's ___ a pizza tonight.
+* order
+- to order
+- ordering
+- ordered
+
+I'd like ___ a doctor when I'm older.
+* to be
+- be
+- being
+- to being
+
+My parents let me ___ out until ten.
+* stay
+- to stay
+- staying
+- stayed
+
+You ___ see that film. It's brilliant!
+* should
+- shouldn't
+- mustn't
+- don't have to
+
+Maria is ___ girl in our class.
+* the cleverest
+- cleverest
+- more clever
+- the cleverer
+
+I've got ___ friends in this town, so I'm never lonely.
+* a lot of
+- much
+- a little
+- any
+
+There aren't ___ eggs left. Can you buy some?
+* any
+- some
+- much
+- no
+
+He was ___ tired that he fell asleep on the sofa.
+* so
+- such
+- too
+- enough
+
+A: I don't like cold weather. B: ___ do I.
+* Neither
+- So
+- Either
+- Nor I
+
+A: I'm hungry. B: ___ am I.
+* So
+- Neither
+- Too
+- Also
+
+If you heat ice, it ___.
+* melts
+- melted
+- would melt
+- melting
+
+My grandfather ___ swim when he was young.
+* could
+- can
+- was able
+- couldn't to
+
+When I was a child, I ___ to the park every day.
+* used to go
+- use to go
+- was used to go
+- used going
+
+Our house ___ in 1985.
+* was built
+- built
+- was build
+- is building
+
+Do you know ___ she lives?
+* where
+- what
+- who
+- which
