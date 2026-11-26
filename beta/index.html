@@ -593,7 +593,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.175.1';
+const APP_VERSION = '4.175.2';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4358,11 +4358,15 @@ function plZ(){   // seviye içi sıklık sapması: aynı seviyede sık kelime k
   PLZ={byL,adj:w=>{const o=zs[w.level];return o?Math.max(-0.5,Math.min(0.5,-0.3*(F[w.word]-o.m)/o.sd)):0}};return PLZ}
 function plVList(){   // 40 gerçek (seviyelere yayılmış) + 20 uydurma kelime, karışık
   const Z=plZ(),out=[],cnt={A1:5,A2:6,B1:8,B2:8,C1:8,C2:5};
-  PL_LV.forEach(L=>{const A=shuffle((Z.byL[L]||[]).slice()).slice(0,cnt[L]);A.forEach(w=>out.push({w:w.word,b:Math.round((PL_LO[L]+0.2+Z.adj(w))*100)/100,lv:L}))});
+  PL_LV.forEach(L=>{const A=shuffle((Z.byL[L]||[]).slice()).slice(0,cnt[L]);A.forEach(w=>out.push({w:w.word,b:Math.round((PL_LO[L]+PL_OFF+Z.adj(w))*100)/100,lv:L}))});
   shuffle(window.PLB.nw.slice()).slice(0,20).forEach(w=>out.push({w,nw:1}));
   return shuffle(out)}
 const plUsed=c=>{const u=new Set();c.rs.forEach(r=>u.add(String(r.k).split('|')[0]));if(c.q)u.add(String(c.q.k).split('|')[0]);(c.tx||[]).forEach(x=>u.add(x));return u};
-const plBb=lv=>PL_LO[lv]+0.2;   // seviye etiketinden başlangıç zorluğu (kalibrasyonla değişecek)
+/* seviye etiketinden başlangıç zorluğu (kalibrasyonla değişecek). Ölçüt: bir seviyenin ortasındaki kişi o seviyenin sorularının ~%80'ini bilir;
+   böylece bir seviyenin sorularında %80 civarı başarı "o seviyenin başı", %90 "ilerisi" demektir (şişirmemek için temkinli). */
+const PL_OFF=-0.8,PL_COFF=-1.1;
+const plBb=lv=>PL_LO[lv]+PL_OFF;
+const plCAdj=n=>n<=3?-0.9:n>=8?0.4:0;   // C-test: kısa işlev kelimeleri kolay, uzun kelimeler zor
 function plBankQ(s,bs,c){   // bankadan: hedef zorluğa en yakın seviyeden, kullanılmamış bir soru
   const B=window.PLB,A=(s==='g'?B.gr:s==='m'?B.mn:B.kv).filter(x=>!plUsed(c).has(s+':'+x.id));if(!A.length)return null;
   const dmin=Math.min(...A.map(x=>Math.abs(plBb(x.lv)-bs))),near=A.filter(x=>Math.abs(plBb(x.lv)-bs)<=dmin+0.01);
@@ -4379,7 +4383,7 @@ function plText(s,bs,c){   // okuma / dinleme: hedef seviyeye en yakın, çözü
   for(const pass of [0,1])for(const lv of ord){
     const C=(P[lv]||{})[s==='r'?'R':'L']||[],ok0=C.filter(p=>p.ty==='mc'&&(p.q||[]).length>=2&&!used.has(s+':'+p.id)&&(pass||!sxDoneRec(p.id))),ok4=ok0.filter(p=>p.q.length>=4),ok=ok4.length?ok4:ok0;if(!ok.length)continue;
     const p=ok[Math.floor(Math.random()*ok.length)];c.tx=(c.tx||[]).concat(s+':'+p.id);
-    const its=sxItems(p,'p'+lv.toLowerCase()).slice(0,PL_TQ),b0=PL_LO[lv]+0.3+(p.k==='R1'?-0.2:0);
+    const its=sxItems(p,'p'+lv.toLowerCase()).slice(0,PL_TQ),b0=PL_LO[lv]+PL_OFF+0.1+(p.k==='R1'?-0.2:0);
     return its.map((x,i)=>({s,k:s+':'+p.id+'|'+i,b:b0,c:1/x.o.length,q:x.q,o:x.o,a:x.a,lv,pid:p.id,i}))}
   return[]}
 function plTextOf(q){const P=window.SINAV.prac[q.lv],p=(P[q.s==='r'?'R':'L']||[]).find(x=>x.id===q.pid);return p?sxItems(p,'p'+q.lv.toLowerCase())[q.i]:null}
@@ -4431,9 +4435,9 @@ function plAns(v){
   save();render()}
 function plCDone(){   // C-test metnini değerlendir: her boşluk ayrı bir madde
   const c=S.plc,q=c&&c.q;if(!q||q.s!=='c')return;const T=window.PLB.ct.find(x=>x.id===q.id);if(!T)return;plTick(c);
-  let gi=0;const b0=PL_LO[q.lv]+0.2;
+  let gi=0;const b0=PL_LO[q.lv]+PL_COFF;
   T.s.forEach(g=>{if(typeof g==='string')return;const u=String((c.cv||{})[gi]||'').trim().toLowerCase().replace(/[^a-z]/g,''),ok=u===g.a||(g.x||[]).indexOf(u)!==-1?1:0,full=g.p+g.a;
-    const r={s:'c',k:'c:'+q.id+'|'+gi,b:Math.round((b0+(full.length<=3?-0.6:full.length>=8?0.3:0))*100)/100,c:0,ok,lv:q.lv};if(!u)r.dk=1;
+    const r={s:'c',k:'c:'+q.id+'|'+gi,b:Math.round((b0+plCAdj(full.length))*100)/100,c:0,ok,lv:q.lv};if(!u)r.dk=1;
     if(!ok)r.x={q:g.p+'_'.repeat(g.a.length),a:full,u:u?g.p+u:null};c.rs.push(r);gi++});
   c.q=null;c.cv={};plNext(c);c.u=Date.now();save();render();window.scrollTo(0,0)}
 async function plWSend(skip){
@@ -4456,7 +4460,7 @@ function plFinish(w){
   PL_SEC.forEach(s=>{if(s.k==='w'){if(tw!=null)sec.w={t:Math.round(tw*100)/100};return}const e=plSecEst(c,s.k);if(!e)return;const R=plSecRs(c,s.k).filter(r=>!r.nw);
     sec[s.k]={t:Math.round(e.t*100)/100,se:Math.round(e.se*100)/100,n:R.length,c:R.filter(r=>s.k==='v'?r.y:r.ok).length};
     if(s.k==='v'){const P=plSecRs(c,'v').filter(r=>r.nw);sec.v.fa=P.filter(r=>r.y).length;sec.v.np=P.length}});
-  const rec={id:c.id,v:2,d:today(),t:Math.round(all.t*100)/100,se:Math.round(all.se*100)/100,sc:plScore(all.t),b:plBand(all.t).code,sec,dur:Math.round((c.el||0)/1000),exp:PL_MIN*60,
+  const rec={id:c.id,v:2,v3:1,d:today(),t:Math.round(all.t*100)/100,se:Math.round(all.se*100)/100,sc:plScore(all.t),b:plBand(all.t).code,sec,dur:Math.round((c.el||0)/1000),exp:PL_MIN*60,
     rs:c.rs.map(r=>r.s==='v'?[r.k,r.nw?'nw':r.b,r.y?1:0]:[r.k,r.b,r.c,r.dk?2:r.ok]),x:c.rs.filter(r=>r.x).map(r=>Object.assign({s:r.s},r.x)).slice(0,80),u:Date.now()};
   if(w&&w.res)rec.w={lv:w.lv,res:w.res,wc:w.wc,txt:String(w.txt).slice(0,2500),t:Math.round(tw*100)/100};
   S.plr=S.plr||{};S.plr[c.id]=rec;delete S.plc;UI.pl=0;UI.plr=c.id;save();plUp(rec);render();window.scrollTo(0,0)}
@@ -4466,6 +4470,18 @@ async function plUp(r){   // kalibrasyon için sunucuya kaydet (pl_runs); tablo 
 async function plCopy(){   // yönetici: tüm sınav verisini panoya (Claude'a yapıştırmak için)
   if(!CLOUD.admin||!sb)return;const x=await sb.rpc('admin_pl_runs');if(x.error){toast('Alınamadı: '+(x.error.message||'hata')+' (supabase-pl.sql çalıştırıldı mı?)',5000);return}
   const t=JSON.stringify(x.data||[]);try{await navigator.clipboard.writeText(t);toast(nf((x.data||[]).length)+' sınav kopyalandı. Sohbete yapıştırabilirsin.',4000)}catch(e){UI.plTxt=t;render()}}
+function plRecalc(r){   // ilk ölçekle puanlanmış sonuçları yeni (temkinli) zorluklarla yeniden hesapla
+  if(!r||r.v!==2||r.v3||!Array.isArray(r.rs))return false;
+  const rs=r.rs.map(e=>{const k=String(e[0]),s=k[0];if(s==='v')return e[1]==='nw'?{s,k,nw:1,y:e[2]}:{s,k,b:e[1]-1.0,y:e[2]};
+    let b=+e[1];if(s==='c'){const f=(((b+3.6)%1.2)+1.2)%1.2,oa=Math.abs(f-0.8)<0.05?-0.6:Math.abs(f-0.5)<0.05?0.3:0;b=b-1.3+((oa<0?-0.9:oa>0?0.4:0)-oa)}else b=b-1.0;
+    return{s,k,b:Math.round(b*100)/100,c:+e[2]||0,ok:e[3]===1?1:0,dk:e[3]===2?1:0}});
+  const ex=r.w&&r.w.t!=null?[[r.w.t,0.45]]:[],all=plEst(plRs(rs),ex),sec={};
+  PL_SEC.forEach(S_=>{if(S_.k==='w'){if(r.w&&r.w.t!=null)sec.w={t:r.w.t};return}const R=plRs(rs.filter(x=>x.s===S_.k),rs);if(!R.length)return;const e=plEst(R),O=rs.filter(x=>x.s===S_.k&&!x.nw);
+    sec[S_.k]={t:Math.round(e.t*100)/100,se:Math.round(e.se*100)/100,n:O.length,c:O.filter(x=>S_.k==='v'?x.y:x.ok).length};
+    if(S_.k==='v'){const P=rs.filter(x=>x.s==='v'&&x.nw);sec.v.fa=P.filter(x=>x.y).length;sec.v.np=P.length}});
+  r.old={t:r.t,b:r.b,sc:r.sc};r.t=Math.round(all.t*100)/100;r.se=Math.round(all.se*100)/100;r.sc=plScore(all.t);r.b=plBand(all.t).code;r.sec=sec;
+  r.rs=rs.map(x=>x.s==='v'?[x.k,x.nw?'nw':x.b,x.y?1:0]:[x.k,x.b,x.c,x.dk?2:x.ok]);r.v3=1;plUp(r);return true}
+function plRecalcAll(){let ch=false;Object.values(S.plr||{}).forEach(r=>{if(plRecalc(r))ch=true});if(ch)save()}
 const plRecs=()=>Object.values(S.plr||{}).filter(r=>r&&r.t!=null).sort((a,b)=>(b.u||0)-(a.u||0));
 const plMin=s=>Math.max(1,Math.round(s/60));
 const plWait=()=>{if(CLOUD.admin)return 0;const r=plRecs()[0];if(!r)return 0;const d=30-Math.floor((Date.parse(today())-Date.parse(r.d))/864e5);return d>0?d:0};
@@ -4476,6 +4492,7 @@ function plScale(t,se){   // 18 dilimlik ölçek; işaret kişinin yeri, çerçe
   <div style="position:absolute;top:-9px;left:calc(${pos(t)}% - 7px);width:14px;height:32px;border-radius:7px;background:var(--fg,#111);border:2px solid var(--bg,#fff)"></div>
   <div style="display:grid;grid-template-columns:repeat(6,1fr);margin-top:6px" class="small muted">${PL_LV.map(L=>`<span style="text-align:center">${L}</span>`).join('')}</div></div>`}
 function vPlHome(seg){
+  plRecalcAll();
   const R=plRecs(),c=S.plc,wt=plWait();
   return`<div class="top"><h1>Seviye tespiti</h1><span class="badge">beta</span></div><div class="stack">${seg}
   <div class="card stack"><div><b>İngilizce seviyeni alt seviyesine kadar ölç</b></div>
@@ -4529,6 +4546,7 @@ function plClock(c){const ms=(c.el||0)+Math.min(Math.max(0,Date.now()-(c.last||D
 setInterval(()=>{const e=document.getElementById('pltm');if(e&&S.plc)e.textContent=plClock(S.plc)},1000);
 function plLvSet(t){const B=plBand(t),i=PL_LV.indexOf(B.L);return B.s===2&&i<5?B.L+','+PL_LV[i+1]:B.L}
 function vPlRes(id){
+  plRecalcAll();
   const r=(S.plr||{})[id];if(!r){UI.plr=null;return''}
   const B=plBand(r.t),lo=plBand(r.t-r.se),hi=plBand(r.t+r.se),lvs=plLvSet(r.t),SEC=r.v===2?PL_SEC:[{k:'k',n:'Kelime',ic:'🔤'},{k:'g',n:'Gramer',ic:'🧩'},{k:'u',n:'Kullanım',ic:'🔗'},{k:'r',n:'Okuma',ic:'📖'},{k:'l',n:'Dinleme',ic:'🎧'},{k:'w',n:'Yazma',ic:'✍️'}];
   const secs=SEC.map(s=>{const x=r.sec[s.k];if(!x)return'';const b=plBand(x.t);return`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;border-top:1px solid var(--line);padding:7px 0"><span>${s.ic}</span><span><b>${esc(s.n)}</b>${x.n?` <span class="small muted">${x.c}/${x.n} ${s.k==='v'?'biliyorum':'doğru'}${s.k==='v'&&x.np?` · uydurma ${x.fa}/${x.np}`:''}</span>`:''}</span><span><b>${esc(b.name)}</b></span></div>`}).join('');
