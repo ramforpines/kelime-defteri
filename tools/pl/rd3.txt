@@ -1,0 +1,212 @@
+# Seviye tespiti — Okuma metinleri (özel): C1, C2
+
+=== C1 | The myth of multitasking
+P: Many people take pride in their ability to multitask, answering emails during meetings or listening to podcasts while studying. Yet cognitive scientists have long argued that what we call multitasking is, for the most part, an illusion. Except for highly practised activities such as walking, the brain does not genuinely perform two demanding tasks at once; instead, it switches rapidly between them.
+P: Each switch carries a cost. Studies consistently find that people who alternate between tasks take longer to complete them and make more errors than those who focus on one at a time. More worryingly, heavy multitaskers often perform worse on tests of attention even when they are doing only one thing, suggesting that the habit may gradually erode the ability to filter out distractions.
+P: Perhaps the most striking finding is how poorly people judge their own performance. In several experiments, those who multitasked the most rated themselves as the most skilled at it, despite performing worst. The researchers suggest that the constant stimulation of switching creates a feeling of productivity that does not correspond to actual output.
+P: None of this means that we should abandon all forms of multitasking. Listening to music while running, for instance, poses little problem. The difficulty arises when two tasks compete for the same mental resources, as reading and listening to speech both do.
+Q: According to the first paragraph, what actually happens when we "multitask"?
+* The brain alternates quickly between activities.
+- The brain divides its effort equally between tasks.
+- The brain completes simple tasks without attention.
+Q: What is suggested about people who multitask a lot?
+* Their concentration may suffer even during single tasks.
+- They become faster and more accurate at switching between tasks.
+- They make fewer errors over time.
+Q: What surprised researchers about heavy multitaskers?
+* They overestimated their own ability.
+- They were better at judging their performance.
+- They preferred to work on one task at a time.
+Q: Why, according to the writer, can music and running be combined?
+* They don't draw on the same mental resources.
+- Running is not a demanding activity.
+- Music improves concentration during exercise.
+Q: What is the writer's overall attitude?
+* Multitasking is often less effective than people believe.
+- Multitasking should be avoided completely in all situations.
+- Multitasking is a skill that can easily be learned.
+
+=== C1 | Why we keep things
+P: Most people own objects that have no practical use: a ticket from a concert attended decades ago, a chipped mug, a child's first pair of shoes. Psychologists who study our attachment to possessions argue that such items function as external stores of memory. Holding them allows us to revisit experiences and, in a sense, to confirm who we are.
+P: This attachment can become problematic. For people with hoarding disorder, the prospect of throwing anything away provokes intense anxiety, and homes can become so cluttered as to be unsafe. Yet researchers stress that the underlying impulse is entirely normal; it is only its intensity that differs.
+P: Interestingly, the value we place on objects rises the moment we own them. In a well-known experiment, participants who had been given a mug demanded roughly twice as much to sell it as other participants were willing to pay for an identical one. Economists call this the "endowment effect", and it helps to explain why decluttering is so much harder than it sounds.
+P: Recent minimalist movements encourage people to keep only what they truly need. Their critics, however, point out that the ability to discard possessions freely is itself something of a luxury, available mainly to those who could easily afford to replace them.
+Q: According to psychologists, what role do sentimental objects play?
+* They help people remember and maintain their identity.
+- They show other people how successful we are.
+- They are kept mainly because they might be useful later.
+Q: How do researchers view the behaviour of people who hoard?
+* As an extreme form of a common tendency.
+- As completely different from normal behaviour.
+- As a result of having too many possessions.
+Q: What did the mug experiment demonstrate?
+* People value something more once it belongs to them.
+- People generally prefer new objects to old and used ones.
+- People will pay more for objects they need.
+Q: What point do critics of minimalism make?
+* Getting rid of things is easier for wealthier people.
+- Minimalism leads to more anxiety about possessions, not less.
+- Most people already own too little.
+
+=== C1 | The return of the night train
+P: For much of the late twentieth century, overnight trains in Europe appeared to be in terminal decline. Cheap flights could carry passengers between capital cities in a couple of hours, and many sleeper services were cut as passenger numbers fell and maintenance costs rose. Yet in the past decade, night trains have made a remarkable comeback.
+P: The most obvious driver has been concern about climate change. A journey by rail produces a fraction of the emissions of the equivalent flight, and a growing number of travellers are willing to accept a longer journey in exchange for a clearer conscience. There is also a practical appeal: an overnight train leaves from the city centre in the evening and arrives the next morning, saving the cost of a hotel and the time spent travelling to and from airports.
+P: Nevertheless, operators face considerable obstacles. Sleeping carriages are expensive to build and carry far fewer passengers than ordinary seats, making it difficult to keep ticket prices competitive with budget airlines. Different countries also use different electrical systems and signalling standards, which complicates cross-border routes.
+P: Whether the revival proves lasting may depend on governments. Supporters argue that, as long as aviation fuel remains untaxed in much of Europe, trains are competing on unequal terms.
+Q: Why did many night train services disappear?
+* Air travel became cheaper and fewer people used the trains.
+- Governments banned most trains from crossing national borders.
+- Passengers complained about uncomfortable carriages.
+Q: According to the text, what practical advantage do night trains offer?
+* Travellers avoid paying for a hotel.
+- Tickets are cheaper than budget flights.
+- They are faster than flying between capitals.
+Q: Why is it hard to keep ticket prices low?
+* Sleeping carriages hold relatively few people.
+- Train stations in city centres are expensive.
+- Passengers expect free meals on board.
+Q: What do supporters of night trains want governments to do?
+* Remove the tax advantage enjoyed by airlines.
+- Build more airports outside city centres.
+- Introduce a single signalling system immediately.
+
+=== C1 | The ethics of zoos
+P: Few institutions provoke such divided opinions as zoos. Their defenders point to the role they play in conservation: several species that were extinct in the wild, such as the Arabian oryx, have been successfully bred in captivity and returned to their natural habitats. Zoos also fund research and, perhaps most importantly, inspire millions of visitors to care about wildlife.
+P: Critics, however, argue that these benefits are often exaggerated. Only a small proportion of the animals kept in zoos belong to endangered species, and an even smaller number are ever released. Meanwhile, large and intelligent animals such as elephants and orcas frequently show signs of stress in captivity, including repetitive movements that are rarely observed in the wild.
+P: Many modern zoos have responded by redesigning their enclosures, giving animals more space and opportunities to behave naturally, and by focusing on species that cope relatively well with captivity. Some have stopped keeping elephants altogether. Whether such reforms go far enough remains a matter of debate, but they suggest that the question is no longer simply whether zoos should exist, but what kind of zoos are acceptable.
+Q: What example is given to support the conservation argument?
+* An animal that was reintroduced to the wild after breeding in zoos.
+- An animal that has never been kept in captivity anywhere at all.
+- An animal that became extinct because of zoos.
+Q: What do critics say about the animals in zoos?
+* Most of them are not from endangered species.
+- Most of them are eventually released into the wild.
+- Most of them behave exactly as they would in the wild.
+Q: How have some zoos responded to criticism?
+* By changing which animals they keep and how they keep them.
+- By increasing the number of elephants and orcas in their care.
+- By closing their doors to visitors.
+Q: What does the writer suggest in the final sentence?
+* The debate has shifted from existence to standards.
+- Zoos will soon disappear completely.
+- Critics have now accepted that zoos are necessary.
+
+=== C1 | Rethinking the open-plan office
+P: When open-plan offices became fashionable, they were promoted as a way of breaking down barriers between colleagues. Without walls and closed doors, the argument went, people would talk more, share ideas and collaborate more effectively. Companies were also attracted by a less frequently mentioned advantage: open spaces allowed far more employees to fit into the same area.
+P: Research has since cast doubt on the promised benefits. One study that tracked employees before and after their company moved to an open-plan layout found that face-to-face interaction actually fell by around seventy per cent, while the number of emails and instant messages rose. Workers, it seems, responded to the lack of privacy by withdrawing, often wearing headphones to signal that they did not wish to be disturbed.
+P: Noise is another frequent complaint. Overheard conversations are particularly distracting because the brain automatically tries to process speech, making it difficult to concentrate on tasks that require reading or writing.
+P: Rather than abandoning open-plan designs entirely, many organisations are now adopting a mixed approach, combining open areas with quiet rooms and spaces for private calls.
+Q: According to the first paragraph, what was an unspoken reason for open-plan offices?
+* They saved space.
+- They reduced noise.
+- They improved privacy.
+Q: What did the study find after the move to open-plan offices?
+* People communicated less in person.
+- People sent fewer emails.
+- People collaborated more effectively.
+Q: Why do employees wear headphones, according to the text?
+* To show that they don't want to be interrupted.
+- To listen to music that improves concentration.
+- To take part in online meetings.
+Q: Why are overheard conversations especially distracting?
+* The brain cannot help trying to understand speech.
+- People are naturally curious about their colleagues.
+- Conversations are louder than other office noises.
+
+=== C1 | The science of procrastination
+P: It is tempting to regard procrastination as a simple matter of laziness or poor time management. Psychologists, however, increasingly describe it as a problem of emotional regulation. People tend to delay tasks not because they are unaware of the consequences, but because the task itself provokes unpleasant feelings, such as boredom, anxiety or self-doubt. Putting it off provides immediate relief, even if the long-term cost is greater stress.
+P: This explains why procrastinators often busy themselves with other, less important activities. Tidying a desk or answering trivial emails creates a sense of achievement while avoiding the source of discomfort. It also explains why advice focused purely on planning, such as making detailed to-do lists, frequently fails.
+P: More effective strategies tend to address the emotional side directly. One approach is to commit to working on a task for just a few minutes, which reduces the initial sense of threat; once started, people usually find it easier to continue. Another is self-compassion. Studies suggest that students who forgave themselves for procrastinating before one exam were less likely to procrastinate before the next — a finding that runs contrary to the common belief that being hard on ourselves keeps us motivated.
+Q: How do psychologists increasingly explain procrastination?
+* As a way of avoiding uncomfortable emotions.
+- As a lack of knowledge about deadlines.
+- As a result of having too much work.
+Q: Why do procrastinators often do unimportant tasks instead?
+* These tasks feel productive without causing discomfort.
+- These tasks must always be done before the main one can start.
+- These tasks are usually more urgent.
+Q: Why does the "few minutes" strategy work?
+* It makes starting the task feel less threatening.
+- It allows people to finish tasks more quickly.
+- It removes the need to make a plan.
+Q: What was surprising about the self-compassion study?
+* Being kind to oneself reduced later procrastination.
+- Strict students procrastinated less than others.
+- Students procrastinated more before the second exam.
+
+=== C2 | The tyranny of metrics
+P: In almost every field of modern life, from hospitals to universities, performance is now measured by numbers. Waiting times, citation counts, customer-satisfaction scores and sales targets are collected, compared and published, on the assumption that what can be measured can be managed. The rationale is superficially compelling: quantitative indicators appear objective, transparent and immune to the favouritism that may distort personal judgement.
+P: Yet a substantial body of evidence suggests that metrics frequently undermine the very goals they are meant to promote. Once a number becomes a target, those being assessed have every incentive to improve the figure rather than the underlying reality it is supposed to reflect. Hospitals set targets for emergency waiting times have been known to keep patients in ambulances outside the building so that the clock does not start; schools judged by exam results may quietly discourage weaker pupils from sitting the exams at all.
+P: Such distortions are not merely the product of dishonesty. Even conscientious professionals tend to concentrate on what is counted at the expense of what is not, so that difficult-to-measure qualities, such as mentoring junior colleagues or pursuing risky long-term research, are gradually neglected.
+P: None of this amounts to an argument for abandoning measurement altogether. The danger lies rather in treating numbers as a substitute for judgement instead of an aid to it.
+Q: Why, according to the first paragraph, are metrics attractive?
+* They seem to offer neutral and open assessment.
+- They are cheaper than employing managers.
+- They encourage professionals to take risks.
+Q: What do the hospital and school examples illustrate?
+* Institutions improving figures without improving the real situation.
+- Institutions failing to collect enough data about their performance.
+- Institutions refusing to publish their results.
+Q: What point does the writer make in the third paragraph?
+* Valuable but unmeasured work tends to be neglected, even by honest people.
+- Distortions occur only when professionals deliberately act dishonestly with figures.
+- Professionals generally ignore the figures they are given.
+Q: What is the writer's conclusion?
+* Numbers should support rather than replace human judgement.
+- Measurement should be abandoned in public services.
+- More sophisticated and detailed metrics will eventually solve these problems.
+
+=== C2 | Silence in conversation
+P: In many English-speaking cultures, silence in conversation is experienced as awkward, even threatening. Research on American speakers suggests that a pause of more than about four seconds is enough to make participants feel uncomfortable, prompting someone to fill the gap with small talk. Elsewhere, attitudes are strikingly different. In Finland and Japan, for instance, lengthy pauses are commonplace and may signal attentiveness or respect rather than a breakdown in communication.
+P: These differences can give rise to considerable misunderstanding. A speaker accustomed to rapid turn-taking may interpret a long silence as disagreement or disinterest, and hurry to rephrase or retract a remark, while the other person was simply considering a reply. Conversely, someone from a culture that values pauses may perceive a constant flow of talk as superficial, or even as a failure to listen.
+P: Linguists caution against crude national stereotypes; individuals vary considerably, and norms shift with context. Nonetheless, an awareness that silence carries no universal meaning may be one of the more useful insights for anyone navigating international workplaces.
+Q: According to the research, how do American speakers typically react to long pauses?
+* They feel uneasy and start talking.
+- They interpret them as a sign of respect.
+- They wait for the other person to continue.
+Q: What misunderstanding is described in the second paragraph?
+* A pause for thought can be mistaken for disagreement.
+- Small talk is mistaken for a lack of intelligence.
+- Disagreement is mistaken for respect.
+Q: Why do linguists warn against stereotypes?
+* Behaviour differs between individuals and situations.
+- National cultures are rapidly becoming identical to one another.
+- Silence means the same thing everywhere.
+Q: What does the writer consider most useful for international workplaces?
+* Recognising that silence can mean different things.
+- Avoiding silence during business meetings.
+- Learning the conversational rules of Finland and Japan.
+
+=== C2 | The paradox of tolerance
+P: Liberal societies pride themselves on tolerance, on allowing views that the majority finds objectionable to be expressed without fear of punishment. Yet the philosopher Karl Popper identified what he called the paradox of tolerance: a society that is unlimitedly tolerant, he argued, may eventually be destroyed by the intolerant, who exploit its freedoms in order to abolish them.
+P: Popper did not conclude that intolerant opinions should be suppressed as a matter of course. On the contrary, he maintained that as long as such views could be countered by rational argument and kept in check by public opinion, suppression would be unwise. The right to suppress them should be claimed only when their proponents refuse to engage in argument and resort instead to violence.
+P: The difficulty, of course, lies in deciding where that threshold falls. Critics note that the paradox is frequently invoked by those wishing to silence opinions they simply dislike, which risks turning a safeguard of liberty into an instrument against it. Others counter that waiting until violence has begun may leave a society unable to defend itself.
+Q: What is the "paradox of tolerance" according to Popper?
+* Unlimited tolerance can allow tolerance itself to be destroyed.
+- Intolerant people are usually more tolerant than they appear.
+- Tolerant societies are less free than intolerant ones.
+Q: What was Popper's view about suppressing intolerant opinions?
+* It should be a last resort, when argument gives way to force.
+- It should happen as soon as such views are expressed in public.
+- It is never justified under any circumstances.
+Q: What concern do critics raise?
+* The idea can be misused to silence legitimate disagreement.
+- Popper's argument was too tolerant of violence.
+- Public opinion is unable to influence intolerant people.
+
+=== C2 | Rewilding
+P: Rewilding, the restoration of ecosystems to a state in which natural processes rather than human management shape the landscape, has moved from the margins of conservation to its mainstream. Its most celebrated example is the reintroduction of wolves to Yellowstone National Park in 1995. Freed from predation, the park's elk had overgrazed riverbanks for decades; the return of wolves altered their behaviour, allowing vegetation to recover, which in turn stabilised the banks and benefited a host of other species.
+P: Such cascading effects have made rewilding an appealing narrative, but ecologists warn against overstating them. Subsequent studies have suggested that the Yellowstone story is more complicated than its popular version implies, with factors such as drought and human hunting also playing a role. Ecosystems, they point out, rarely respond to a single intervention in a simple, predictable way.
+P: Rewilding also raises social questions that purely ecological arguments tend to overlook. Farmers whose livestock may be threatened by reintroduced predators understandably resent decisions taken by distant authorities, and projects that ignore local communities have often provoked fierce opposition. Increasingly, practitioners acknowledge that the success of rewilding depends as much on negotiation as on biology.
+Q: What happened after wolves returned to Yellowstone, according to the popular account?
+* Changes in elk behaviour allowed plants and riverbanks to recover.
+- The elk population quickly disappeared from the whole park completely.
+- Farmers began hunting wolves outside the park.
+Q: What do ecologists warn about?
+* The effects of a single change are often exaggerated.
+- Wolves should never be reintroduced to any other national park.
+- Drought was the only cause of the changes.
+Q: According to the last paragraph, what is essential for successful rewilding?
+* Taking the interests of local people into account.
+- Removing farmers and their animals from the surrounding areas.
+- Relying only on ecological research.

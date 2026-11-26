@@ -1,0 +1,150 @@
+# Seviye tespiti — Dinleme kayıtları (özel). Blok: "=== SEVİYE | başlık", konuşma satırları (M:, F:, M2:, F2:), Q: soru, '*' doğru, '-' yanlış. Ses tools/pl/build.py ile üretilir (audio/pl).
+
+=== A2 | At the train station
+F: Excuse me, what time is the next train to Brighton?
+M: The next one is at ten fifteen, but it's a slow train. It stops at every station.
+F: Oh. Is there a faster one?
+M: Yes, there's a fast train at ten forty. It gets to Brighton at eleven thirty, the same time as the slow one.
+F: Then I'll take the later one and have a coffee first. How much is a return ticket?
+M: Twenty-four pounds, or eighteen if you come back after seven this evening.
+F: I'm coming back at five, so I'll pay the full price.
+Q: Which train will the woman take?
+* The ten forty.
+- The ten fifteen.
+- The eleven thirty.
+Q: Why does she choose that train?
+* It arrives at the same time and she wants a coffee.
+- It is cheaper than the other train and has more free seats.
+- The other train is already full.
+Q: How much will she pay?
+* Twenty-four pounds.
+- Eighteen pounds.
+- Seven pounds.
+
+=== A2 | Weekend plans
+M: Hi Emma. Are you doing anything this weekend?
+F: Well, on Saturday morning I'm helping my brother move to his new flat. But I'm free in the afternoon.
+M: Great. Do you want to go to the cinema? There's a new comedy on.
+F: I'd love to, but I've already seen it. What about the art exhibition at the museum?
+M: Good idea. It closes at five on Saturdays, so let's meet at two.
+F: Perfect. And on Sunday I'm having lunch with my parents, so I can't meet then.
+Q: What is Emma doing on Saturday morning?
+* Helping her brother.
+- Visiting her parents.
+- Going to the cinema.
+Q: Why doesn't Emma want to see the comedy?
+* She has seen it before.
+- She doesn't like comedies.
+- It finishes too late.
+Q: Where will they go on Saturday?
+* To a museum.
+- To the cinema.
+- To a restaurant.
+
+=== A2 | A phone message
+F: Hello, this is a message for Mr Kaya. This is Laura from the City Dental Clinic. You have an appointment with Dr Shaw tomorrow at nine thirty, but I'm afraid Dr Shaw is ill. We can offer you an appointment with Dr Patel at the same time, or with Dr Shaw next Thursday at four o'clock. Please call us back before six this evening to tell us which you prefer. Our number is 0161 496 0723. Thank you, and sorry for the change.
+Q: Why is the clinic calling?
+* The dentist can't see Mr Kaya tomorrow.
+- Mr Kaya missed his appointment.
+- The clinic is closing early today.
+Q: What does the clinic offer?
+* A different dentist tomorrow or the same dentist next week.
+- A later appointment tomorrow afternoon with Dr Shaw instead.
+- An appointment with Dr Patel next Thursday.
+Q: When must Mr Kaya call back?
+* Before six this evening.
+- Tomorrow at nine thirty.
+- Next Thursday at four.
+
+=== A2 | Buying a present
+M: I need a birthday present for my sister, but I've got no idea what to get.
+F: What does she like? Books? Music?
+M: She reads a lot, but she's always buying books, so she probably has everything.
+F: What about something for her garden? She loves plants, doesn't she?
+M: She does, but she's just moved to a flat with no garden.
+F: Then why not a plant for her new flat? Something small for the kitchen.
+M: That's a great idea. She'll like that.
+Q: Why doesn't the man want to buy a book?
+* His sister probably has all the books she wants.
+- His sister doesn't really like reading books very much.
+- Books are too expensive.
+Q: What does the man decide to buy?
+* A plant for indoors.
+- Something for a garden.
+- A new kitchen.
+
+=== B1 | Joining a gym
+M: Hi, I'm thinking of joining the gym. Could you tell me about the membership options?
+F: Of course. We have two main options. The standard membership is thirty-five pounds a month and lets you use the gym and the pool at any time. The off-peak membership is twenty-two pounds, but you can only come before four in the afternoon on weekdays, and any time at weekends.
+M: I work until five, so I'd need to come in the evenings.
+F: Then the standard one would be best for you. Classes like yoga and spinning are included in both, but you need to book them online at least a day in advance.
+M: And is there a joining fee?
+F: Usually there's a fifty-pound fee, but this month we're not charging it if you sign up for a year.
+M: Hmm, a year's a long time. I'll think about it.
+Q: Why does the man need the standard membership?
+* He can only go after work.
+- He wants to use the swimming pool.
+- He wants to take yoga classes.
+Q: What does the woman say about classes?
+* They have to be reserved ahead.
+- They cost extra each month.
+- They are only for standard members.
+Q: How can the man avoid the joining fee?
+* By agreeing to a twelve-month membership.
+- By joining before the end of the week.
+- By choosing the off-peak membership.
+Q: How does the man feel at the end?
+* Unsure about committing for so long.
+- Happy to sign up for the whole year immediately.
+- Annoyed about the high prices.
+
+=== B1 | A school trip
+F: Good morning, everyone. Before we leave, here's some information about today's trip. The coach will leave at eight thirty, so please be at the front gate by eight fifteen. We should arrive at the castle at about ten. First, there'll be a guided tour, which lasts an hour and a half. After that you'll have free time until lunch. Remember, you're not allowed to go into the gardens without a teacher, because some areas are closed for repairs. We'll eat lunch in the café at one — it's already paid for, so you don't need money for that. But bring some if you want to visit the gift shop. We'll be back at school around five.
+Q: What time must students arrive at school?
+* Quarter past eight.
+- Half past eight.
+- Ten o'clock.
+Q: Why can't students go into the gardens alone?
+* Parts of them are being repaired.
+- They are only open in the afternoon.
+- Visitors must pay extra to enter.
+Q: What do students need money for?
+* Buying souvenirs.
+- Paying for lunch.
+- The guided tour.
+
+=== B1 | A new flatmate
+M: So how's your new flatmate?
+F: Oh, she's really nice. She's very friendly and she cooks amazing food — she made dinner for both of us twice last week.
+M: Lucky you! My last flatmate never cooked anything.
+F: The only thing is, she plays the guitar late at night. I've got to get up at six for work, so it's a bit of a problem.
+M: Have you said anything to her?
+F: Not yet. I don't want to upset her, because she's only just moved in. Maybe I'll suggest she plays before ten.
+M: That sounds fair. I'm sure she'll understand.
+Q: What does the woman like about her flatmate?
+* She is kind and a good cook.
+- She is very quiet in the evenings.
+- She helps with cleaning the flat.
+Q: What is the problem with the flatmate?
+* She makes noise when the woman is trying to sleep.
+- She never cooks for herself and leaves the kitchen dirty.
+- She gets up very early for work.
+Q: Why hasn't the woman spoken to her yet?
+* She doesn't want to cause a bad feeling so soon.
+- She hasn't seen her flatmate at all for the last few days.
+- She thinks the problem will stop.
+
+=== B1 | Radio: weekend weather
+M: And now the weather for the weekend. Saturday will start cloudy across most of the country, with some light rain in the north during the morning. By the afternoon, though, the clouds will clear and it'll be sunny and quite warm, with temperatures reaching twenty-one degrees in the south. Sunday will be a different story. Strong winds are expected along the coast, and there'll be heavy rain from midday. So if you're planning a trip to the beach, Saturday afternoon is definitely your best chance.
+Q: What will Saturday morning be like in the north?
+* Cloudy with some light rain.
+- Sunny and warm.
+- Windy, with heavy rain all morning.
+Q: When does the heavy rain start on Sunday?
+* Around the middle of the day.
+- Early in the morning, before sunrise.
+- In the evening.
+Q: What does the speaker advise beach visitors?
+* To go on Saturday afternoon.
+- To go on Sunday morning.
+- To stay away all weekend.

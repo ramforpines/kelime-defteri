@@ -1,0 +1,174 @@
+# Seviye tespiti — Okuma metinleri (özel). Blok: "=== SEVİYE | başlık", P: paragraf, Q: soru, '*' doğru, '-' yanlış.
+
+=== A2 | A message from Sophie
+P: Hi Leyla, thanks for inviting me to your birthday party on Saturday! I'd love to come, but I have a small problem. My grandparents are visiting us this weekend, and they are arriving on Saturday afternoon. My mum wants me to be at home when they get here.
+P: Their train arrives at four o'clock, so I can come to your party after dinner, at about eight. Is that OK? I know the party starts at six, so I'm sorry I'll miss the first part. I've already bought your present — I think you'll love it! See you on Saturday. Sophie
+Q: Why will Sophie be late for the party?
+* Her family is expecting visitors.
+- She has to buy a present first.
+- Her train arrives at eight o'clock.
+Q: What time does the party begin?
+* At six o'clock.
+- At four o'clock.
+- At eight o'clock.
+Q: What does Sophie say about the present?
+* She has got it already.
+- She will buy it on Saturday.
+- She isn't sure Leyla will like it.
+
+=== A2 | The town library
+P: The town library is moving to a new building next month. The old library in Park Street is too small, and there is no space for children to read or play. The new library is in the shopping centre, next to the cinema. It is much bigger and it has a café, a children's room and twenty computers.
+P: The old library will close on 28th February, and the new one will open on 5th March. During that week, you cannot borrow or return any books. Opening times will also change: the new library will be open every day from nine in the morning until eight in the evening, and on Sundays until five.
+Q: Why is the library moving?
+* The old building doesn't have enough room.
+- The shopping centre wanted a new cinema.
+- The old library has no computers at all.
+Q: What can't people do during the first week of March?
+* Take books home from the library.
+- Visit the café in the shopping centre.
+- Use the children's room in Park Street.
+Q: When will the new library close on Sundays?
+* At five o'clock.
+- At eight o'clock.
+- At nine o'clock.
+
+=== A2 | Cycling to work
+P: My name is Tom and I work in an office in the city centre. Last year I decided to start cycling to work. Before that, I always went by car, but the traffic was terrible and the journey often took more than forty minutes. Now it takes me only twenty-five minutes by bike.
+P: At first it was difficult because there are some hills on the way, and I arrived at work hot and tired. But after a few weeks it got much easier. I feel healthier now, and I also save a lot of money because I don't need to buy petrol or pay for parking. On rainy days I still take the bus.
+Q: Why did Tom stop driving to work?
+* The journey was too slow.
+- His car was too expensive to repair.
+- There was nowhere to park his bike.
+Q: How did Tom feel when he started cycling?
+* It was hard for him.
+- He enjoyed it immediately.
+- He wanted to stop after a week.
+Q: What does Tom do when the weather is bad?
+* He travels by bus.
+- He drives his car.
+- He stays at home.
+
+=== A2 | Notice: swimming lessons
+P: Swimming lessons for children aged 6 to 12 start again at Riverside Pool on Monday 4th September. Lessons are on Mondays and Wednesdays from 5 to 6 pm. There are three groups: beginners, intermediate and advanced. Teachers will test every child in the first lesson and put them in the right group.
+P: Each lesson costs £6, or you can pay £50 for ten lessons. Children must bring a towel and a swimming hat. Parents can watch from the café upstairs, but they cannot stay next to the pool. To book a place, please speak to the receptionist or call 01632 960 431.
+Q: How will children know which group to join?
+* A teacher will check their swimming.
+- Their parents will choose a group.
+- They will choose by their age.
+Q: What is the cheapest way to pay for ten lessons?
+* Pay £50 at the start.
+- Pay £6 for each lesson.
+- Pay at the café upstairs.
+Q: Where can parents stay during the lessons?
+* In the café.
+- Next to the pool.
+- At reception.
+
+=== A2 | My grandmother's garden
+P: My grandmother lives in a small village in the mountains. She has a big garden behind her house, and she spends most of her day there. She grows tomatoes, potatoes, beans and lots of different flowers. She never buys vegetables from the shop because she has everything she needs.
+P: Every summer I stay with her for two weeks. I help her water the plants in the evening when it's cooler, and in the morning we pick the vegetables for lunch. Last summer she taught me how to make tomato soup. Now I make it at home for my family, but they say it isn't as good as hers!
+Q: Why doesn't the grandmother go to the shop for vegetables?
+* She grows them herself.
+- The village has no shop.
+- The shop is too far away.
+Q: When does the writer water the garden?
+* In the evening.
+- In the morning.
+- At lunchtime.
+Q: What does the writer's family think of the writer's soup?
+* The grandmother's is better.
+- It is better than the grandmother's.
+- They don't like tomato soup.
+
+=== B1 | A new hobby
+P: Three years ago, I had never even thought about rock climbing. I was working long hours in a bank and spending most of my free time on the sofa. Then a friend persuaded me to try a beginners' session at an indoor climbing centre. I was terrified at first — I'm not very good with heights — but by the end of the evening, I was hooked.
+P: What I love most about climbing is that you can't think about anything else while you're doing it. All your attention is on the next hold and the next move. After a stressful day at work, it's the perfect way to clear my head. I've also made a lot of new friends, because climbers always work in pairs and you have to trust your partner completely.
+P: Last summer I climbed outdoors for the first time, in the mountains of northern Spain. It was very different from the climbing wall: the rock was sharp, the weather kept changing, and there were no coloured marks to show the way. It was the hardest thing I've ever done, but also the most rewarding.
+Q: How did the writer feel during the first climbing session?
+* Scared at first, but then very enthusiastic.
+- Bored, because it was too easy for him.
+- Confident, because he was used to heights.
+Q: According to the writer, why is climbing good after work?
+* It makes him focus completely on something else.
+- It gives him a chance to talk about his problems.
+- It is the only exercise he has time for.
+Q: Why has climbing helped the writer make friends?
+* Climbers depend on each other.
+- His colleagues at the bank also climb.
+- The centre organises social events.
+Q: What does the writer say about climbing in Spain?
+* It was difficult but worth it.
+- It was easier than climbing indoors.
+- He didn't enjoy it because of the weather.
+
+=== B1 | The four-day week
+P: A small software company in Manchester has been trying out a four-day working week for the past six months. Staff work from Monday to Thursday and receive the same salary as before. The company's director, Helen Ward, says the experiment has been a great success.
+P: "We were worried that we wouldn't get as much done," she explains, "but in fact productivity has gone up. People are more focused because they know they have less time. We've also cut the number of meetings, and most of them now last fifteen minutes instead of an hour."
+P: Not everyone is completely happy, however. Some employees say that their working days are now more intense and that they feel under pressure to finish everything by Thursday evening. A few customers have also complained that they can't contact the company on Fridays. To solve this, the company now has a small team that answers urgent calls on Fridays, and those staff take Monday off instead.
+Q: What was the director's main concern before the experiment?
+* That less work would be done.
+- That staff would earn less money.
+- That there would be too many meetings.
+Q: Why does the director think productivity has improved?
+* Staff concentrate harder in the time they have.
+- The company has employed a lot of new people recently.
+- Staff now work longer hours on Fridays.
+Q: What problem do some employees mention?
+* Their days feel more stressful than before.
+- They now have to work on Fridays as well as other days.
+- They no longer have enough meetings.
+Q: How has the company dealt with customers' complaints?
+* Some staff work on Fridays and rest on Mondays.
+- Customers can now only call on Thursdays.
+- The company has gone back to a five-day week.
+
+=== B1 | The secret of a good night's sleep
+P: Many of us have trouble sleeping from time to time, but for some people it's a serious problem that affects their health and their work. Sleep expert Dr Mira Patel has some simple advice. "The most important thing," she says, "is to go to bed and get up at the same time every day — even at weekends. Your body likes routine."
+P: She also recommends avoiding phones and laptops for an hour before bed. "The light from screens tells your brain that it's still daytime," she explains. "Reading a paper book is much better." Coffee is another problem: its effects can last for up to eight hours, so a cup in the afternoon can stop you sleeping at night.
+P: Finally, Dr Patel says that if you can't fall asleep after twenty minutes, you should get up and do something relaxing in another room. "Lying in bed worrying about not sleeping only makes things worse."
+Q: Why does Dr Patel advise keeping the same sleeping times at weekends?
+* The body works better with a regular pattern.
+- People have more time to sleep at weekends.
+- It is easier to relax when you are not working.
+Q: What is the problem with screens before bed?
+* They make the brain think it isn't night.
+- They are more tiring for the eyes than books.
+- They make people want to drink coffee.
+Q: What should you do if you can't fall asleep?
+* Leave the bedroom for a while.
+- Stay in bed and try to relax.
+- Have a hot drink and read your phone.
+
+=== B1 | Living abroad
+P: When Marco moved from Italy to Norway for a job, he expected the cold weather to be the biggest challenge. In fact, he soon got used to the winter temperatures. What he found much harder was the darkness. In December, the sun rises at about ten in the morning and sets before three in the afternoon. "I felt tired all the time," he says. "I didn't realise how much I depended on sunlight."
+P: Learning the language was also a challenge. Almost everyone in Norway speaks excellent English, so Marco found it difficult to practise his Norwegian. "As soon as people heard my accent, they switched to English to help me," he laughs. "It was very kind, but it didn't help my Norwegian!"
+P: Five years later, Marco speaks the language fluently and has no plans to leave. He now loves the long summer evenings, when it stays light until almost midnight, and he spends every weekend hiking in the mountains.
+Q: What did Marco find most difficult about the Norwegian winter?
+* The short days.
+- The low temperatures.
+- The heavy snow.
+Q: Why was it hard for Marco to practise Norwegian?
+* People spoke English to him.
+- Nobody understood his accent.
+- He was too busy with his job.
+Q: How does Marco feel about Norway now?
+* He is happy and wants to stay.
+- He is planning to return to Italy.
+- He still finds the summers too short.
+
+=== B1 | A review: The Blue Lantern
+P: I'd heard a lot of good things about The Blue Lantern, a new restaurant by the harbour, so I booked a table for my sister's birthday. When we arrived, we were a little disappointed to be given a table near the kitchen door rather than by the window, even though I had asked for a sea view when I booked.
+P: However, the food more than made up for it. My grilled fish was perfectly cooked, and my sister said her vegetable curry was the best she had ever eaten. The waiter was friendly and knew a lot about the dishes, although he forgot to bring our drinks until we reminded him.
+P: The prices are fairly high, but the portions are generous and the quality is excellent. I would definitely go back — but next time I'd ask again for a table by the window, and check when I arrived.
+Q: Why were the writer and her sister disappointed at first?
+* They didn't get the table they had requested.
+- The restaurant was full when they arrived.
+- The kitchen was closed for the evening.
+Q: What does the writer say about the waiter?
+* He was helpful but made a small mistake.
+- He was rude and didn't know the menu.
+- He brought the wrong food to the table.
+Q: What is the writer's overall opinion of the restaurant?
+* Good value despite the high prices.
+- Too expensive for what it offers.
+- Excellent, with no problems at all.

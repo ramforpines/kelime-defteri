@@ -496,7 +496,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-0d28738d9a.js", "sinav.js": "d/sinav-7820b1f81c.js", "grammar.js": "d/grammar-24c5272e6a.js", "pl-bank.js": "d/pl-bank-002d82561a.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-0d28738d9a.js", "sinav.js": "d/sinav-7820b1f81c.js", "grammar.js": "d/grammar-24c5272e6a.js", "pl-bank.js": "d/pl-bank-be14f8f557.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -593,7 +593,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.178.0';
+const APP_VERSION = '4.179.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4393,17 +4393,17 @@ function plMeanQ(bs,c){
     best={s:'a',k:'a:'+w.word+'|'+f,b,c:1/it.options.length,q:it.question,o:it.options,a:it.options.indexOf(it.correct),lv:L};if(n>15&&Math.abs(b-bs)<0.12)break}
   return best}
 const PL_TXL=['A2','B1','B2','C1'];
-function plText(s,bs,c){   // okuma / dinleme: hedef seviyeye en yakın, çözülmemiş bir metin; en çok PL_TQ soru
-  const P=(window.SINAV||{}).prac||{},L0=plBand(bs+0.3).L,L=L0==='A1'?'A2':L0==='C2'?'C1':L0,used=plUsed(c);
-  const ord=PL_TXL.slice().sort((a,b)=>Math.abs(PL_TXL.indexOf(a)-PL_TXL.indexOf(L))-Math.abs(PL_TXL.indexOf(b)-PL_TXL.indexOf(L)));
-  for(const pass of [0,1])for(const lv of ord){
-    const C=(P[lv]||{})[s==='r'?'R':'L']||[],ok0=C.filter(p=>p.ty==='mc'&&(p.q||[]).length>=2&&!used.has(s+':'+p.id)&&(pass||(!sxDoneRec(p.id)&&!plPrev().has(s+':'+p.id)))),ok4=ok0.filter(p=>p.q.length>=4),ok=ok4.length?ok4:ok0;if(!ok.length)continue;
-    const p=ok[Math.floor(Math.random()*ok.length)];c.tx=(c.tx||[]).concat(s+':'+p.id);
-    const its=sxItems(p,'p'+lv.toLowerCase()).slice(0,PL_TQ),b0=PL_LO[lv]+PL_OFF+0.1+(p.k==='R1'?-0.2:0);
-    return its.map((x,i)=>({s,k:s+':'+p.id+'|'+i,b:b0,c:1/x.o.length,q:x.q,o:x.o,a:x.a,lv,pid:p.id,i}))}
-  return[]}
+function plText(s,bs,c){   // okuma / dinleme: seviye tespitine özel metinlerden, hedef seviyeye en yakın ve daha önce çözülmemiş biri; en çok PL_TQ soru
+  const ORD=['A2','B1','B2','C1','C2'],L0=plBand(bs+0.3).L,L=L0==='A1'?'A2':L0,used=plUsed(c);
+  const A0=(((window.PLB||{})[s==='r'?'rd':'ls'])||[]).filter(x=>!used.has(s+':'+x.id));if(!A0.length)return[];
+  const A=plFresh(A0,x=>s+':'+x.id),dmin=Math.min(...A.map(x=>Math.abs(ORD.indexOf(x.lv)-ORD.indexOf(L)))),near=A.filter(x=>Math.abs(ORD.indexOf(x.lv)-ORD.indexOf(L))===dmin);
+  const x=near[Math.floor(Math.random()*near.length)],b0=PL_LO[x.lv]+PL_OFF+0.1;c.tx=(c.tx||[]).concat(s+':'+x.id);
+  return x.q.slice(0,PL_TQ).map((q,i)=>{const o=shuffle(q.o.slice());return{s,k:s+':'+x.id+'|'+i,b:b0,c:1/o.length,q:q.q,o,a:o.indexOf(q.o[0]),lv:x.lv,pid:x.id,i,nb:1}})}
+function plTextOf(q){
+  const X=(((window.PLB||{})[q.s==='r'?'rd':'ls'])||[]).find(x=>x.id===q.pid);
+  if(X)return q.s==='r'?{pt:X.t,pass:X.p}:{au:X.au};
+  const P=((window.SINAV||{}).prac||{})[q.lv],p=P&&(P[q.s==='r'?'R':'L']||[]).find(x=>x.id===q.pid);return p?sxItems(p,'p'+q.lv.toLowerCase())[q.i]:null}   // eski sürümde başlamış sınavlar
 const plWT=q=>((window.PLB||{}).wt||[]).find(x=>x.id===q.pid)||PL_WT[q.lv];
-function plTextOf(q){const P=window.SINAV.prac[q.lv],p=(P[q.s==='r'?'R':'L']||[]).find(x=>x.id===q.pid);return p?sxItems(p,'p'+q.lv.toLowerCase())[q.i]:null}
 const PL_WT={
  A2:{g:'email',t:'Write an email to an English-speaking friend about a special day you had recently.',p:['where you were and who you were with','what you did that day','why the day was special for you'],tr:'Yakın zamanda yaşadığın özel bir günü İngilizce bilen bir arkadaşına e-postayla anlat.'},
  B1:{g:'article',t:'You see this notice on an English-language website:\n"Articles wanted! A PLACE I LOVE\nDescribe a place that is special to you. What can people do there, and why is it important to you?"\nWrite your article.',p:['describe the place','what people can do there','why it is important to you'],tr:'Senin için özel olan bir yeri anlatan bir makale yaz.'},
