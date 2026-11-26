@@ -46,7 +46,7 @@ F: Hello, this is a message for Mr Kaya. This is Laura from the City Dental Clin
 Q: Why is the clinic calling?
 * The dentist can't see Mr Kaya tomorrow.
 - Mr Kaya missed his appointment.
-- The clinic is closing early today.
+- The clinic is closing early today because of a problem.
 Q: What does the clinic offer?
 * A different dentist tomorrow or the same dentist next week.
 - A later appointment tomorrow afternoon with Dr Shaw instead.

@@ -1,0 +1,239 @@
+# Seviye tespiti — Dinleme kayıtları (özel), ek 1
+
+=== A2 | In a clothes shop
+F: Excuse me, do you have this jacket in a medium?
+M: Let me check. Sorry, we only have small and large in blue. But we have a medium in black.
+F: Hmm, I really wanted blue. Can you order one for me?
+M: Yes, it'll take about three days. Or you can try our other shop in the city centre. They might have it.
+F: I'm going into town tomorrow anyway, so I'll look there first.
+M: Good idea. Shall I call them to check?
+F: Yes please, that would be great.
+Q: What is the problem with the jacket?
+* The shop doesn't have the right size in blue.
+- The jacket is too expensive for her to buy today.
+- The shop only has it in black and blue.
+Q: What will the woman do?
+* Visit another shop tomorrow.
+- Buy the black jacket today.
+- Wait three days for an order.
+Q: What does the man offer to do?
+* Phone the other shop.
+- Order the jacket immediately.
+- Give her a discount.
+
+=== A2 | A message from a friend
+M: Hi Sara, it's Daniel. I'm calling about tomorrow. I'm really sorry, but I can't meet you at the café at eleven because I have to take my mum to the doctor. Can we meet at one o'clock instead? We could have lunch at the pizza place next to the cinema. If that's no good for you, send me a message and we can meet on Sunday. Oh, and don't forget to bring the book I lent you! See you soon.
+Q: Why can't Daniel meet at eleven?
+* He has to go somewhere with his mother.
+- He has a doctor's appointment himself.
+- The café is closed in the morning.
+Q: Where does Daniel suggest meeting?
+* At a restaurant near the cinema.
+- At the café at one o'clock.
+- At his mother's house after the doctor's appointment.
+Q: What should Sara bring?
+* A book.
+- Some lunch.
+- Cinema tickets.
+
+=== B1 | Planning a holiday
+F: So, where shall we go this summer? I was thinking of somewhere by the sea.
+M: Again? We went to the beach last year. I'd prefer somewhere with a bit more to do — a city, maybe.
+F: But cities are so hot in August. What about the mountains? There'd be walking for you and lakes for me to swim in.
+M: That could work. But I don't want to drive for hours.
+F: We could take the train. It's more relaxing anyway, and we could read on the way.
+M: Fine, but let's check the prices first. Last time we left it too late and everything was fully booked.
+Q: Why doesn't the man want to go to the beach?
+* They went there on their last holiday.
+- He doesn't like swimming.
+- The beach is always much too hot and crowded in August.
+Q: Why does the woman suggest the mountains?
+* They offer activities for both of them.
+- They are cheaper than the city.
+- They are close enough to drive to in under an hour.
+Q: What does the man want to do before deciding?
+* Find out how much it will cost.
+- Book a hotel by the lake before it gets full.
+- Ask friends for advice.
+
+=== B1 | A guided tour
+M: Welcome to Hampton Castle. My name's Peter and I'll be your guide this afternoon. The tour lasts about an hour. We'll start in the great hall, which was built in the twelfth century, and then visit the kitchens and the bedrooms. Please don't touch any of the furniture, as much of it is very old and fragile. Photos are allowed everywhere except in the library, where the light can damage the books. At the end of the tour, you're welcome to visit the gardens, which close at six, and the café, which serves excellent homemade cakes.
+Q: What is the oldest part of the castle mentioned?
+* The great hall.
+- The kitchens.
+- The library.
+Q: Why can't visitors take photos in the library?
+* The light could harm the books.
+- The furniture there is fragile.
+- It is a private room.
+Q: What can visitors do after the tour?
+* Go into the gardens until six.
+- Take a tour of the library.
+- Buy old furniture in the shop.
+
+=== B1 | Talking about a new job
+F: How's the new job going?
+M: It's good, thanks. The people are really friendly, and the work's more interesting than at my old company.
+F: That's great. What about the journey? It's quite far, isn't it?
+M: Yes, that's the only real problem. It takes me an hour each way by bus. I'm thinking of buying a bike — there's a cycle path most of the way.
+F: That would probably be quicker too.
+M: Yes, and healthier! My manager also says I can work from home on Fridays, which helps.
+Q: What does the man like about his new job?
+* His colleagues and the work itself.
+- The salary and the short journey.
+- Working from home every day.
+Q: Why is he thinking of buying a bike?
+* To make his long journey easier.
+- Because the bus service has stopped.
+- Because his manager suggested it.
+Q: What happens on Fridays?
+* He doesn't have to go to the office.
+- He cycles to work with his manager.
+- He finishes work early.
+
+=== B2 | A radio interview: a volunteer
+F: You've been volunteering at the hospital for two years now. What made you start?
+M: Well, when my father was ill, he spent a long time in hospital, and I noticed how lonely some of the patients were — especially the older ones who didn't have family visiting. So when he recovered, I decided to give something back.
+F: What does your work involve?
+M: Mostly just talking to people. Sometimes I read the newspaper to them or help them write letters. It sounds simple, but you'd be amazed what a difference it makes. One lady told me my visits were the highlight of her week.
+F: Is it ever difficult?
+M: Of course. Sometimes patients I've got to know very well don't get better, and that's hard. But the staff are very supportive, and we have regular meetings where volunteers can talk about how they're feeling.
+Q: What made the man start volunteering?
+* He saw that some patients had no visitors.
+- His father asked him to help.
+- He wanted to train as a doctor at the hospital.
+Q: How does he describe his work?
+* Simple, but very valuable to patients.
+- Medical tasks such as giving medicine.
+- Mainly organising events for staff.
+Q: How do volunteers cope with the difficult side of the job?
+* They can discuss their feelings in regular meetings.
+- They avoid getting to know patients well.
+- They only work with patients who are recovering.
+
+=== B2 | Discussion: electric cars
+M: I'm thinking of getting an electric car, but I'm not sure.
+F: What's stopping you?
+M: Mainly the price. They're still a lot more expensive than petrol cars, even with the government discount.
+F: True, but they're much cheaper to run. My electricity bill went up a bit, but I've saved a fortune on fuel. And servicing costs are lower, because there are fewer parts that can go wrong.
+M: What about long journeys, though? I visit my parents every month, and it's three hundred kilometres.
+F: I'd be honest — that can be a bit of a pain. You'd probably need to stop once to charge, and sometimes the chargers are busy. But it's only about half an hour, so I usually just have a coffee.
+M: I suppose I could live with that.
+Q: What is the man's main concern?
+* The cost of buying an electric car.
+- The price of electricity.
+- The lack of government support.
+Q: According to the woman, why are electric cars cheaper to maintain?
+* They have fewer parts that can break.
+- Repairs are covered by the government.
+- They don't need to be serviced at all.
+Q: What does the woman say about long journeys?
+* They can be inconvenient but manageable.
+- They are impossible in an electric car.
+- They are faster than in a petrol car.
+Q: How does the man feel at the end?
+* More willing to accept the problem.
+- Certain he won't buy an electric car.
+- Annoyed with the woman's advice.
+
+=== B2 | Lecture introduction: sleep and learning
+F: Today I want to talk about something that every student does, but very few think about carefully — sleep. We often treat sleep as wasted time, something we can cut back on when we're busy. In fact, research shows that sleep plays an active role in learning. While we sleep, the brain sorts through the information we've taken in during the day, strengthening the important memories and discarding the rest. That's why staying up all night before an exam is usually a bad strategy: you may gain a few hours of revision, but you lose the process that helps you remember it. Later in the lecture, I'll look at some practical ways of improving sleep, but first, let's look at what actually happens in the brain.
+Q: What common attitude to sleep does the speaker criticise?
+* That it is time that could be better used.
+- That students sleep too much.
+- That sleep needs are exactly the same for everyone.
+Q: What does the brain do during sleep, according to the speaker?
+* It selects which memories to keep.
+- It forgets everything learned that day.
+- It rests completely without activity.
+Q: What will the speaker talk about next?
+* What happens in the brain during sleep.
+- Some practical tips for improving sleep.
+- How to revise for exams.
+
+=== C1 | Podcast: the cost of convenience
+M: We've become used to having almost anything delivered to our door within a day, sometimes within an hour. It's incredibly convenient, and I'm not going to pretend I don't use these services. But I think we rarely stop to consider the hidden costs. There's the environmental impact, obviously — all those vans making individual deliveries, and the enormous amount of packaging. But there's also a human cost. Many delivery drivers are classed as self-employed, which means they don't get sick pay or holiday pay, and they're often under intense pressure to meet unrealistic targets. And then there's the effect on local shops, which simply can't compete on speed. None of this means we should stop ordering online altogether. But it might mean asking ourselves whether we really need something tomorrow, or whether it could wait a few days.
+Q: What is the speaker's attitude to delivery services?
+* He uses them but thinks people ignore their drawbacks.
+- He refuses to use them at all for ethical and environmental reasons.
+- He believes they have no real disadvantages.
+Q: What problem for drivers does he mention?
+* They lack basic employment benefits.
+- They earn more than shop workers.
+- They are not allowed to work long hours.
+Q: What does he suggest at the end?
+* Thinking about whether fast delivery is really necessary.
+- Stopping all online shopping immediately.
+- Only ever buying things from small local shops.
+
+=== C1 | Interview: an architect
+F: Your buildings are known for using a lot of natural light. Why is that so important to you?
+M: Partly it's practical — good natural light reduces the need for electric lighting, which cuts energy use. But mainly it's about how people feel. There's a lot of evidence that daylight affects mood, concentration and even sleep patterns. When you design an office or a school, you're shaping how hundreds of people will spend most of their day, and I think that's a responsibility you have to take seriously.
+F: Isn't there a risk of buildings becoming too hot, with all that glass?
+M: Absolutely, and that's been a real problem with some modern buildings. The answer isn't to use less glass, necessarily, but to think carefully about orientation and shading — where the sun will be at different times of day and year. It's more work at the design stage, but it saves enormous problems later.
+Q: What is the architect's main reason for using natural light?
+* Its effect on people's wellbeing.
+- It is cheaper to build.
+- Clients always ask for it in their contracts.
+Q: What responsibility does he mention?
+* Buildings influence how people spend their days.
+- Architects must keep costs as low as possible.
+- Schools must follow strict design rules.
+Q: How does he suggest avoiding overheating?
+* Careful planning of direction and shade.
+- Using much less glass in buildings.
+- Installing powerful air conditioning.
+
+=== C1 | Discussion: learning musical instruments as adults
+F: I've always wanted to learn the piano, but I feel it's too late. Everyone says you have to start as a child.
+M: I don't think that's entirely true. Children do have certain advantages — they're less self-conscious, and they usually have more time to practise. But adults have advantages too. You understand why you're learning, you can be more disciplined, and you can grasp music theory much faster.
+F: But I'd never be as good as someone who started at six.
+M: Maybe not as a concert pianist. But is that really the goal? Most adult learners just want to be able to play pieces they love. And there's research suggesting that learning an instrument later in life is very good for the brain.
+F: So you think I should just go for it.
+M: I think the only way you'd regret it is if you never tried.
+Q: According to the man, what advantage do children have?
+* They worry less about how they appear to others.
+- They understand music theory much more easily than adults do.
+- They are more disciplined than adults.
+Q: What does the man suggest about the woman's goals?
+* She doesn't need to aim for a professional level.
+- She should try to become a concert pianist.
+- She should start by studying music theory only, without playing.
+Q: What is the man's final point?
+* Not trying would be the real mistake.
+- She will probably regret starting so late.
+- She should wait until she has more time.
+
+=== C2 | Talk: the myth of the lone genius
+M: Popular history loves the image of the lone genius — the solitary scientist or inventor who, through sheer brilliance, transforms the world. It's a compelling story, but it is, for the most part, a myth. Almost every major breakthrough turns out, on closer inspection, to have depended on a wider network: collaborators whose names have been forgotten, rivals whose work provided the crucial clue, and institutions that supplied funding and equipment. The myth persists partly because it makes for better storytelling, and partly because prizes and patents tend to reward individuals rather than teams. But it has real consequences. Young researchers who believe that success depends on innate brilliance may be discouraged by early setbacks, and organisations that celebrate individual stars may neglect the conditions that actually make innovation possible.
+Q: What is the speaker's main argument?
+* Breakthroughs usually depend on many people and institutions.
+- Most famous inventors secretly stole their best ideas from other people.
+- Individual brilliance is the main source of progress.
+Q: Why does the myth persist, according to the speaker?
+* It makes a better story and fits how rewards are given.
+- Historians have deliberately hidden the truth.
+- Teams generally prefer not to share the credit with their leaders.
+Q: What harmful effect of the myth does he mention?
+* It may discourage young researchers who struggle at first.
+- It makes scientists unwilling to spend any time working alone.
+- It reduces the amount of funding for research.
+
+=== C2 | Conversation: the ethics of travel
+F: I've been feeling increasingly uneasy about flying so much for holidays. The environmental cost is hard to justify.
+M: I understand that, but I'm not convinced that giving up travel entirely is the answer. Tourism is the main source of income for a lot of poorer countries. If everyone in wealthy countries stopped visiting, the people who'd suffer most wouldn't be us.
+F: That's a fair point, though it can also be used as a convenient excuse. And a lot of the money from tourism goes to international hotel chains rather than local communities.
+M: True. So perhaps the question isn't whether to travel but how — fewer, longer trips, staying in locally owned places, travelling by train where it's possible.
+F: I suppose that's more realistic than giving it up altogether. Although I suspect most people won't change unless flying becomes more expensive.
+Q: What argument does the man make against giving up travel?
+* Poorer countries depend heavily on tourists.
+- Flying is less harmful than people think.
+- Travel is essential for personal development.
+Q: How does the woman respond to his argument?
+* She accepts it partly but notes it can be misused.
+- She rejects it completely as an argument with no value.
+- She agrees that it ends the discussion.
+Q: What does the woman predict at the end?
+* Behaviour will change mainly if prices rise.
+- Most people will soon stop flying voluntarily.
+- Train travel will become more popular than flying.

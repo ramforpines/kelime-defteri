@@ -95,7 +95,7 @@ M: When we think of tea in Britain, we tend to imagine it as something timeless,
 Q: What point does the speaker make about tea in Britain?
 * Its long history is more recent than people imagine.
 - It has always been a drink for ordinary people.
-- It was introduced by the government in 1784.
+- It was first introduced to Britain by the government in 1784.
 Q: According to the speaker, what was the effect of high taxes?
 * A large illegal trade developed.
 - People switched to drinking alcohol.
@@ -106,7 +106,7 @@ Q: How did opinions about tea change?
 - It was banned for the working classes.
 Q: What does the speaker suggest at the end?
 * British tea drinking affected other countries greatly.
-- Tea is now more popular in India than in Britain.
+- Tea has now become far more popular in India than in Britain.
 - China stopped exporting tea to Britain.
 
 === C1 | Discussion: remote work
@@ -121,7 +121,7 @@ M: For most organisations, probably. Though it depends enormously on the kind of
 Q: What is the man's main concern about remote work?
 * Young employees may miss out on informal learning.
 - Experienced staff may become less productive.
-- Video calls are too expensive for companies.
+- Video calls are far too expensive for most small companies.
 Q: Why does he say asking questions is harder online?
 * People are reluctant to arrange a call for a small question.
 - Video calls often have technical problems that interrupt the conversation.
@@ -187,7 +187,7 @@ Q: What is the risk of "groupthink"?
 - Decisions take too long to make.
 Q: Why does the speaker say leaders have a special responsibility?
 * People may take criticism of their ideas personally.
-- Leaders are usually the source of disagreement.
+- Leaders are usually the main source of disagreement in teams.
 - Only leaders can stop a discussion.
 
 === C2 | Interview: a historian on archives
