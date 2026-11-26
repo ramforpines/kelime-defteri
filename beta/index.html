@@ -593,7 +593,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.175.4';
+const APP_VERSION = '4.176.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4335,7 +4335,7 @@ const PL_SEC=[
  {k:'k',n:'Kelime kullanımı',ic:'🔤',N:20,m:8,u:'20 soru',ins:'Eş anlamlı, tanım, cümlede kullanım ve birlikte kullanılan kelimeler.'},
  {k:'r',n:'Okuma',ic:'📖',N:2,m:12,u:'2 metin',ins:'Metni oku ve soruları cevapla; metin her soruda açık kalır.'},
  {k:'l',n:'Dinleme',ic:'🎧',N:2,m:10,u:'2 kayıt',ins:'Kaydı dinle ve soruları cevapla; istediğin kadar tekrar dinleyebilirsin.'},
- {k:'w',n:'Yazma',ic:'✍️',N:1,m:20,u:'100–200 kelime',ins:'Verilen konuda 100–200 kelimelik bir metin yaz. Yapay zekâ Cambridge ölçütleriyle değerlendirir.'}];
+ {k:'w',n:'Yazma',ic:'✍️',N:1,m:15,u:'70–100 kelime',ins:'Verilen konuda 70–100 kelimelik bir metin yaz. Yapay zekâ Cambridge ölçütleriyle değerlendirir.'}];
 const PL_MIN=PL_SEC.reduce((a,s)=>a+s.m,0),PL_TQ=5,PL_NSEC=PL_SEC.length;
 const PL_GRID=[];for(let i=0;i<=180;i++)PL_GRID.push(-4.5+i*0.05);
 function plEst(rs,extra){   // rs: [{b,c,ok,dk}] → {t,se}; önsel N(0, 2²); extra: [[ortalama, sapma]] (yazma)
@@ -4397,19 +4397,21 @@ function plWTheta(res,lv){   // yazma sonucu → θ: dönen seviye ve 4 ölçüt
   const sc=res.scores||{},avg=['content','communicative','organisation','language'].reduce((a,k)=>a+(+sc[k]||0),0)/20,L=PL_LV.indexOf(res.level)>=0?res.level:lv;
   return L===lv?PL_LO[L]+Math.max(0.05,Math.min(1.15,avg*1.2)):PL_LO[L]+0.6}
 const plSecRs=(c,k)=>c.rs.filter(r=>r.s===k);
-function plNext(c){   // sıradaki soruyu hazırlar; bölüm bitince sonrakine geçer
-  for(let guard=0;guard<10;guard++){
-    const sec=PL_SEC[c.sec];if(!sec){c.q=null;return}
-    const th=plTh(c).t,bs=th-0.15;
-    if(sec.k==='w'){c.q={s:'w',k:'w',lv:c.wlv||(c.wlv=plWLv(th))};return}
-    if(sec.k==='v'){if(!c.vq)c.vq=plVList();const n=plSecRs(c,'v').length;if(n<c.vq.length){const x=c.vq[n];c.q={s:'v',k:'v:'+x.w,w:x.w,b:x.b,lv:x.lv,nw:x.nw};return}}
-    else if(sec.k==='c'){if((c.tn||0)<sec.N){c.tn=(c.tn||0)+1;const q=plCText(bs,c);if(q){c.q=q;c.cv={};return}}}
-    else if(sec.k==='r'||sec.k==='l'){
-      if(c.qq&&c.qq.length){c.q=c.qq.shift();return}
-      if((c.tn||0)<sec.N){c.tn=(c.tn||0)+1;c.qq=plText(sec.k,bs,c);if(c.qq.length){c.q=c.qq.shift();return}continue}
-    }else if(plSecRs(c,sec.k).length<sec.N){const q=plBankQ(sec.k,bs,c);if(q){c.q=q;return}}
-    c.sec++;c.tn=0;c.qq=[]}
-  c.q=null}
+const plTxtIds=(c,k)=>{const u=new Set(c.rs.filter(r=>r.s===k).map(r=>String(r.k).split('|')[0]));if(c.q&&c.q.s===k)u.add(String(c.q.k).split('|')[0]);return u};
+const plSecDone=c=>PL_SEC.filter(s=>(c.dn||{})[s.k]).length;
+function plNextSec(c){for(let d=1;d<=PL_NSEC;d++){const i=(c.sec+d)%PL_NSEC;if(!(c.dn||{})[PL_SEC[i].k])return i}return -1}
+function plSecEnd(c,k){c.dn=c.dn||{};c.dn[k]=1;c.ss=k;c.q=null;c.qq=[];try{plUp(plBuild(c))}catch(e){}}
+function plNext(c){   // geçerli bölümün sıradaki sorusunu hazırlar; bölüm bitince bölüm sonucu ekranına geçer
+  const sec=PL_SEC[c.sec];c.q=null;if(!sec||(c.dn||{})[sec.k]||c.ss)return;
+  const th=plTh(c).t,bs=th-0.15;
+  if(sec.k==='w'){c.q={s:'w',k:'w',lv:c.wlv||(c.wlv=plWLv(th))};return}
+  if(sec.k==='v'){if(!c.vq)c.vq=plVList();const n=plSecRs(c,'v').length;if(n<c.vq.length){const x=c.vq[n];c.q={s:'v',k:'v:'+x.w,w:x.w,b:x.b,lv:x.lv,nw:x.nw};return}}
+  else if(sec.k==='c'){if(plTxtIds(c,'c').size<sec.N){const q=plCText(bs,c);if(q){c.q=q;c.cv={};return}}}
+  else if(sec.k==='r'||sec.k==='l'){
+    if(c.qq&&c.qq.length&&c.qq[0].s===sec.k){c.q=c.qq.shift();return}
+    if(plTxtIds(c,sec.k).size<sec.N){c.qq=plText(sec.k,bs,c);if(c.qq.length){c.q=c.qq.shift();return}}
+  }else if(plSecRs(c,sec.k).length<sec.N){const q=plBankQ(sec.k,bs,c);if(q){c.q=q;return}}
+  plSecEnd(c,sec.k)}
 function plTick(c){const n=Date.now();c.el=(c.el||0)+Math.min(Math.max(0,n-(c.last||n)),300000);c.last=n}   // soru başına en çok 5 dk sayılır (ara verilen süre sayılmaz)
 let PLB_LOADING=false;
 function plbLoad(cb){if(window.PLB){cb&&cb();return}if(PLB_LOADING)return;PLB_LOADING=true;const s=document.createElement('script');s.src=(window.ASSET&&window.ASSET['pl-bank.js'])||('pl-bank.js?v='+APP_VERSION);
@@ -4422,7 +4424,7 @@ function plStart(){
   if(!plReady(plStart))return;
   PLZ=null;const c={id:Date.now().toString(36),v:2,d:today(),sec:0,si:-1,rs:[],el:0,last:Date.now(),u:Date.now()};
   S.plc=c;UI.pl=1;UI.plr=null;save();render();window.scrollTo(0,0)}
-function plGo(){const c=S.plc;if(!c)return;if(!plReady(plGo))return;c.last=Date.now();UI.pl=1;render();window.scrollTo(0,0)}
+function plGo(){const c=S.plc;if(!c)return;if(!plReady(plGo))return;c.last=Date.now();UI.pl=1;UI.plp=0;render();window.scrollTo(0,0)}
 function plPush(c,r){c.rs.push(r);c.q=null;plNext(c);c.u=Date.now()}
 function plAns(v){
   const c=S.plc,q=c&&c.q;if(!q)return;
@@ -4443,27 +4445,31 @@ function plCDone(){   // C-test metnini değerlendir: her boşluk ayrı bir madd
 async function plWSend(skip){
   const c=S.plc;if(!c||!c.q||c.q.s!=='w'||UI.plBusy)return;plTick(c);
   const txt=String(c.wt||'').trim(),wc=sxWc(txt);
-  if(skip||wc<20){plFinish(null);return}
+  if(wc<20){UI.plErr='short';render();return}
   const lv=c.q.lv,T=PL_WT[lv];UI.plBusy=true;UI.plErr=null;render();let res=null,err=null;
-  try{const x=await sb.functions.invoke('pet-eval',{body:{kind:'w',id:'pl-'+c.id,lv,part:1,genre:T.g,task:T.t,points:T.p.map(p=>'- '+p).join('\n'),text:txt,words:wc,min:100,max:200,topics:(window.GRAMMAR||[]).map(t=>({id:t.id,t:t.title}))}});
+  try{const x=await sb.functions.invoke('pet-eval',{body:{kind:'w',id:'pl-'+c.id,lv,part:1,genre:T.g,task:T.t,points:T.p.map(p=>'- '+p).join('\n'),text:txt,words:wc,min:70,max:100,topics:(window.GRAMMAR||[]).map(t=>({id:t.id,t:t.title}))}});
     if(x.error){let e='net';try{const j=await x.error.context.json();e=j.error||e;UI.plDet=j.detail||''}catch(z){if(/404|not found/i.test(String(x.error.message)))e='setup'}err=e}
     else if(x.data&&x.data.ok)res=x.data.res;else err=(x.data&&x.data.error)||'ai'}
   catch(e){err='net'}
   UI.plBusy=false;
-  if(err&&err!=='short'){UI.plErr=err;render();return}
-  plFinish(res?{res,lv,wc,txt}:null)}
+  if(err){UI.plErr=err;render();return}
+  c.w={res,lv,wc,txt:String(txt).slice(0,2500)};plSecEnd(c,'w');c.u=Date.now();save();render();window.scrollTo(0,0)}
 function plSecEst(c,k){const R=plRs(c.rs.filter(r=>r.s===k),c.rs);return R.length?plEst(R):null}
-function plFinish(w){
-  const c=S.plc;if(!c)return;plTick(c);
-  const ex=[];let tw=null;if(w&&w.res){tw=plWTheta(w.res,w.lv);ex.push([tw,0.45])}
+function plBuild(c){   // şu ana kadarki cevaplardan sonuç kaydı (tamamlanmamışsa part:1)
+  const w=c.w,ex=[];let tw=null;if(w&&w.res){tw=plWTheta(w.res,w.lv);ex.push([tw,0.45])}
   const all=plEst(plRs(c.rs),ex),sec={};
   PL_SEC.forEach(s=>{if(s.k==='w'){if(tw!=null)sec.w={t:Math.round(tw*100)/100};return}const e=plSecEst(c,s.k);if(!e)return;const R=plSecRs(c,s.k).filter(r=>!r.nw);
     sec[s.k]={t:Math.round(e.t*100)/100,se:Math.round(e.se*100)/100,n:R.length,c:R.filter(r=>s.k==='v'?r.y:r.ok).length};
     if(s.k==='v'){const P=plSecRs(c,'v').filter(r=>r.nw);sec.v.fa=P.filter(r=>r.y).length;sec.v.np=P.length}});
-  const rec={id:c.id,v:2,v3:1,d:today(),t:Math.round(all.t*100)/100,se:Math.round(all.se*100)/100,sc:plScore(all.t),b:plBand(all.t).code,sec,dur:Math.round((c.el||0)/1000),exp:PL_MIN*60,
+  const dn=PL_SEC.filter(s=>(c.dn||{})[s.k]).map(s=>s.k);
+  const rec={id:c.id,v:2,v3:1,d:today(),t:Math.round(all.t*100)/100,se:Math.round(all.se*100)/100,sc:plScore(all.t),b:plBand(all.t).code,sec,dn,dur:Math.round((c.el||0)/1000),exp:PL_MIN*60,
     rs:c.rs.map(r=>r.s==='v'?[r.k,r.nw?'nw':r.b,r.y?1:0]:[r.k,r.b,r.c,r.dk?2:r.ok]),x:c.rs.filter(r=>r.x).map(r=>Object.assign({s:r.s},r.x)).slice(0,80),u:Date.now()};
-  if(w&&w.res)rec.w={lv:w.lv,res:w.res,wc:w.wc,txt:String(w.txt).slice(0,2500),t:Math.round(tw*100)/100};
-  S.plr=S.plr||{};S.plr[c.id]=rec;delete S.plc;UI.pl=0;UI.plr=c.id;save();plUp(rec);render();window.scrollTo(0,0)}
+  if(dn.length<PL_NSEC)rec.part=1;
+  if(w&&w.res)rec.w={lv:w.lv,res:w.res,wc:w.wc,txt:w.txt,t:Math.round(tw*100)/100};
+  return rec}
+function plFinish(){
+  const c=S.plc;if(!c)return;plTick(c);const rec=plBuild(c);
+  S.plr=S.plr||{};S.plr[c.id]=rec;delete S.plc;UI.pl=0;UI.plp=0;UI.plr=c.id;save();plUp(rec);render();window.scrollTo(0,0)}
 async function plUp(r){   // kalibrasyon için sunucuya kaydet (pl_runs); tablo yoksa sessizce geçer
   if(!sb||!CLOUD.uid)return;const d=Object.assign({},r);delete d.x;if(d.w)d.w={lv:d.w.lv,t:d.w.t,wc:d.w.wc,res:{level:d.w.res.level,scores:d.w.res.scores}};
   try{await sb.from('pl_runs').upsert({user_id:CLOUD.uid,rid:r.id,data:d,updated_at:new Date().toISOString()})}catch(e){}}
@@ -4499,7 +4505,7 @@ function vPlHome(seg){
    <div class="small">Sınav sorularını cevaplarına göre zorlaştırır ya da kolaylaştırır. Sonunda seviyeni <b>“B2 başlangıcı / ortası / ilerisi”</b> hassasiyetinde, 0–130 puanla ve her bölüm için ayrı ayrı görürsün.</div>
    <div class="small" style="display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px">${PL_SEC.map(s=>`<span>${s.ic}</span><span><b>${s.n}</b></span><span class="muted">${s.u}</span>`).join('')}</div>
    <div class="small muted">Yaklaşık ${PL_MIN} dakika. Süre sınırı yok; istediğin zaman ara verip kaldığın yerden devam edebilirsin. Bilmediğin soruda tahmin etmek yerine <b>Bilmiyorum</b>'u seç; sonuç daha doğru çıkar.</div>
-   ${c&&c.v===2?`<button class="btn primary block" data-act="pl-go">Devam et · ${PL_SEC[c.sec]?esc(PL_SEC[c.sec].n):'Bitir'} (${c.rs.length} cevap)</button>${CLOUD.admin?'<button class="btn block" data-act="pl-new">Baştan başla</button>':''}`
+   ${c&&c.v===2?`<div class="small"><b>Yarım kalan sınavın var</b> · ${plSecDone(c)}/${PL_NSEC} bölüm bitti</div><button class="btn primary block" data-act="pl-go">Devam et · ${PL_SEC[c.sec]?esc(PL_SEC[c.sec].n):''}</button>${c.rs.length?'<button class="btn block" data-act="pl-part">Şu ana kadarki sonucu gör</button>':''}${CLOUD.admin?'<button class="btn block" data-act="pl-new">Baştan başla</button>':''}`
      :wt?`<div class="small" style="color:#b35a00">Sınavı ${wt} gün sonra yeniden çözebilirsin.</div>`:`<button class="btn primary block" data-act="pl-start">Sınava başla</button>`}
   </div>
   ${R.length?`<div class="card stack"><b>Sonuçların</b>${R.map(r=>{const B=plBand(r.t);return`<button class="btn block" style="text-align:left" data-act="pl-res" data-v="${esc(r.id)}"><div class="row" style="justify-content:space-between"><span><b>${esc(B.name)}</b> <span class="muted small">${fmt(r.d)}</span></span><span class="mono">${plScore(r.t)}/130</span></div></button>`}).join('')}</div>`:''}
@@ -4509,11 +4515,14 @@ function plDlg(q){   // "A: ... B: ..." konuşmasını satırlara böl
   const p=String(q).split(/\s(?=B:\s)/);return p.length>1&&/^A:\s/.test(p[0])?p.map(x=>`<div style="margin:2px 0"><b>${esc(x.slice(0,2))}</b>${esc(x.slice(2))}</div>`).join(''):esc(q)}
 function vPl(){
   const c=S.plc;if(!c){UI.pl=0;return''}
-  if(!c.q&&PL_SEC[c.sec])plNext(c);
-  const sec=PL_SEC[c.sec];if(!sec)return`<div class="card stack"><b>Sorular bitti.</b><button class="btn primary block" data-act="pl-wskip">Sonucu gör</button></div>`;
+  if(!c.dn){c.dn={};PL_SEC.slice(0,c.sec).forEach(s=>c.dn[s.k]=1)}   // eski sürümden kalan yarım sınav
+  if(!c.ss&&PL_SEC[c.sec]&&c.dn[PL_SEC[c.sec].k]){const i=plNextSec(c);if(i>=0){c.sec=i;c.q=null;c.qq=[]}else c.sec=PL_NSEC}
+  if(!c.ss&&!c.q&&PL_SEC[c.sec])plNext(c);
+  if(c.ss)return vPlSS(c);
+  const sec=PL_SEC[c.sec];if(!sec)return`<div class="card stack"><b>Sorular bitti.</b><button class="btn primary block" data-act="pl-fin">Sonucu gör</button></div>`;
   const tm=`<span class="mono muted" id="pltm">${plClock(c)}</span>`;
-  const nIn=sec.k==='v'?`${plSecRs(c,'v').length+1}/${(c.vq||[]).length||sec.N}`:sec.k==='r'||sec.k==='l'||sec.k==='c'?`${sec.k==='l'?'kayıt':'metin'} ${c.tn||1}/${sec.N}`:sec.k==='w'?'':`${plSecRs(c,sec.k).length+1}/${sec.N}`;
-  const head=`<div class="qtop"><button class="btn" data-act="pl-quit">Ara ver</button><div class="bar" role="progressbar" aria-valuenow="${c.sec}" aria-valuemin="0" aria-valuemax="${PL_NSEC}"><i style="width:${Math.round(c.sec/PL_NSEC*100)}%"></i></div>${tm}</div>
+  const nIn=sec.k==='v'?`${plSecRs(c,'v').length+1}/${(c.vq||[]).length||sec.N}`:sec.k==='r'||sec.k==='l'||sec.k==='c'?`${sec.k==='l'?'kayıt':'metin'} ${Math.max(1,plTxtIds(c,sec.k).size)}/${sec.N}`:sec.k==='w'?'':`${plSecRs(c,sec.k).length+1}/${sec.N}`;
+  const head=`<div class="qtop"><button class="btn" data-act="pl-quit">Ara ver</button><div class="bar" role="progressbar" aria-valuenow="${plSecDone(c)}" aria-valuemin="0" aria-valuemax="${PL_NSEC}"><i style="width:${Math.round(plSecDone(c)/PL_NSEC*100)}%"></i></div>${tm}</div>
    <div class="row small" style="justify-content:space-between;margin:2px 2px 8px"><span><b>${sec.ic} ${esc(sec.n)}</b> · bölüm ${c.sec+1}/${PL_NSEC}</span><span class="muted">${nIn}</span></div>`;
   if(c.si!==c.sec)return head+`<div class="card stack"><h2 style="margin:0">${sec.ic} ${esc(sec.n)}</h2><div>${esc(sec.ins)}</div><div class="small muted">Tahmini süre: ${sec.m} dk</div><button class="btn primary block" data-act="pl-sec">Bölüme başla</button></div>`;
   const q=c.q;if(!q)return head+'<div class="card muted">Soru hazırlanamadı.</div>';
@@ -4526,11 +4535,11 @@ function vPl(){
   if(q.s==='w'){const T=PL_WT[q.lv],wc=sxWc(c.wt);
     return head+`<div class="card stack"><div class="small">${esc(T.tr)}</div><div lang="en" class="card" style="white-space:pre-line;line-height:1.55;margin:0">${esc(T.t)}</div>
      <div class="small" lang="en"><b>Write about:</b><ul style="margin:4px 0 0 18px;padding:0">${T.p.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>
-     <textarea data-plw rows="12" lang="en" spellcheck="false" autocapitalize="sentences" style="width:100%;font:inherit;line-height:1.5;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:inherit" placeholder="Write 100–200 words…" ${UI.plBusy?'disabled':''}>${esc(c.wt||'')}</textarea>
-     <div class="row" style="justify-content:space-between"><span class="small" id="plwc">${wc} kelime</span><span class="small muted">hedef 100–200</span></div>
+     <textarea data-plw rows="12" lang="en" spellcheck="false" autocapitalize="sentences" style="width:100%;font:inherit;line-height:1.5;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:inherit" placeholder="Write 70–100 words…" ${UI.plBusy?'disabled':''}>${esc(c.wt||'')}</textarea>
+     <div class="row" style="justify-content:space-between"><span class="small" id="plwc">${wc} kelime</span><span class="small muted">hedef 70–100</span></div>
      ${UI.plBusy?'<div class="small"><b>⏳ Yazın değerlendiriliyor…</b> <span class="muted">(30–60 saniye sürebilir)</span></div>'
       :`${UI.plErr?`<div class="small" style="color:#b35a00">${esc(AI_ERR[UI.plErr]||AI_ERR.ai)}${CLOUD.admin&&UI.plDet?`<br><span class="muted" style="word-break:break-all">${esc(UI.plDet)}</span>`:''}</div>`:''}
-       <button class="btn primary block" data-act="pl-wsend">${UI.plErr?'Tekrar dene':'Gönder ve sonucu gör'}</button><button class="btn block" data-act="pl-wskip">Yazmadan bitir</button>`}</div>`}
+       <button class="btn primary block" data-act="pl-wsend">${UI.plErr?'Tekrar dene':'Gönder ve değerlendir'}</button><button class="btn block" data-act="pl-part">Şimdilik atla, sonucu gör</button>`}</div>`}
   let ctx='',qh='';
   if(q.s==='r'||q.s==='l'){const x=plTextOf(q);
     if(x&&q.s==='r'&&x.pass)ctx=`<details class="card small" lang="en" style="margin-bottom:10px" open><summary style="cursor:pointer;font-weight:600">${esc(x.pt||'Metin')}</summary><div class="stack" style="margin-top:8px">${x.pass.map(t=>`<p style="margin:0;white-space:pre-line;line-height:1.55">${esc(t)}</p>`).join('')}</div></details>`;
@@ -4542,30 +4551,43 @@ function vPl(){
   else qh=`<h2 lang="en" style="line-height:1.45;font-weight:600">${plDlg(q.q)}</h2>`;
   return head+`${ctx}<div class="card qcard">${qh}<div class="opts">${q.o.map((o,i)=>`<button class="opt" data-act="pl-ans" data-v="${i}"><kbd>${i+1}</kbd><span lang="en">${esc(o)}</span></button>`).join('')}</div>
    <button class="btn block" style="margin-top:10px" data-act="pl-ans" data-v="-1">🤷 Bilmiyorum</button></div>`}
+function vPlSS(c){   // bir bölüm bitince: o bölümün değerlendirmesi
+  const s=PL_SEC.find(x=>x.k===c.ss)||PL_SEC[0],nx=plNextSec(c),rec=plBuild(c),x=rec.sec[s.k];
+  let body='';
+  if(s.k==='w')body=c.w&&c.w.res?aiHtml(c.w.res,'w'):'';
+  else if(x){const B=plBand(x.t);body=`<div class="score" style="font-size:1.8rem">${esc(B.name)}</div><div class="small muted">bu bölüme göre tahmini seviye</div>
+    <div>${s.k==='v'?`Tanıdığın gerçek kelimeler: <b>${x.c}/${x.n}</b><br><span class="small muted">Uydurma kelimelerden ${x.fa}/${x.np} tanesine “biliyorum” dedin${x.fa>3?' — bu, sonucu biraz aşağı çeker':''}.</span>`:s.k==='c'?`Doğru tamamlanan boşluk: <b>${x.c}/${x.n}</b>`:`Doğru: <b>${x.c}/${x.n}</b>`}</div>`}
+  else body='<div class="small muted">Bu bölümde değerlendirilecek cevap yok.</div>';
+  return`<div class="row small" style="justify-content:space-between;margin:2px 2px 8px"><span>Bölüm ${plSecDone(c)}/${PL_NSEC} bitti</span><span class="mono muted" id="pltm">${plClock(c)}</span></div>
+  <div class="card stack" style="text-align:center"><div class="small muted">Bölüm tamamlandı</div><h2 style="margin:0">${s.ic} ${esc(s.n)}</h2>${body}</div>
+  <div class="card stack">${nx>=0?`<button class="btn primary block" data-act="pl-nx">Sonraki bölüm: ${PL_SEC[nx].ic} ${esc(PL_SEC[nx].n)}</button><button class="btn block" data-act="pl-part">Şu ana kadarki sonucu gör</button><button class="btn block" data-act="pl-quit">Ara ver</button>`
+    :`<button class="btn primary block" data-act="pl-fin">Tüm bölümler bitti · Sonucu gör</button>`}</div>`}
 function plClock(c){const ms=(c.el||0)+Math.min(Math.max(0,Date.now()-(c.last||Date.now())),300000),s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
 setInterval(()=>{const e=document.getElementById('pltm');if(e&&S.plc)e.textContent=plClock(S.plc)},1000);
 function plLvSet(t){const B=plBand(t),i=PL_LV.indexOf(B.L);return B.s===2&&i<5?B.L+','+PL_LV[i+1]:B.L}
-function vPlRes(id){
+function vPlRes(id,part){
   plRecalcAll();
-  const r=(S.plr||{})[id];if(!r){UI.plr=null;return''}
+  const r=part||(S.plr||{})[id];if(!r){UI.plr=null;return''}
   const B=plBand(r.t),lo=plBand(r.t-r.se),hi=plBand(r.t+r.se),lvs=plLvSet(r.t),SEC=r.v===2?PL_SEC:[{k:'k',n:'Kelime',ic:'🔤'},{k:'g',n:'Gramer',ic:'🧩'},{k:'u',n:'Kullanım',ic:'🔗'},{k:'r',n:'Okuma',ic:'📖'},{k:'l',n:'Dinleme',ic:'🎧'},{k:'w',n:'Yazma',ic:'✍️'}];
-  const secs=SEC.map(s=>{const x=r.sec[s.k];if(!x)return'';const b=plBand(x.t);return`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;border-top:1px solid var(--line);padding:7px 0"><span>${s.ic}</span><span><b>${esc(s.n)}</b>${x.n?` <span class="small muted">${x.c}/${x.n} ${s.k==='v'?'biliyorum':'doğru'}${s.k==='v'&&x.np?` · uydurma ${x.fa}/${x.np}`:''}</span>`:''}</span><span><b>${esc(b.name)}</b></span></div>`}).join('');
+  const secs=SEC.map((s,i)=>{const x=r.sec[s.k];if(r.part&&(r.dn||[]).indexOf(s.k)<0)return`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;border-top:1px solid var(--line);padding:7px 0"><span>${s.ic}</span><span><b>${esc(s.n)}</b> <span class="small muted">${x?'yarım kaldı':'tamamlanmadı'}</span></span><button class="btn" style="padding:4px 12px" data-act="pl-goto" data-v="${i}">${x?'Devam':'Başla'}</button></div>`;if(!x)return'';const b=plBand(x.t);return`<div style="display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;border-top:1px solid var(--line);padding:7px 0"><span>${s.ic}</span><span><b>${esc(s.n)}</b>${x.n?` <span class="small muted">${x.c}/${x.n} ${s.k==='v'?'biliyorum':'doğru'}${s.k==='v'&&x.np?` · uydurma ${x.fa}/${x.np}`:''}</span>`:''}</span><span><b>${esc(b.name)}</b></span></div>`}).join('');
   const dm=plMin(r.dur),em=plMin(r.exp),tl=dm<=em?`Bu sınavı yaklaşık <b>${em} dakikada</b> çözmeni bekliyorduk; sen <b>${dm} dakikada</b> bitirdin.`:`Bu sınavı yaklaşık <b>${em} dakikada</b> çözmeni bekliyorduk; sen <b>${dm} dakika</b> çalıştın. Süre sonucu etkilemez.`;
   const prev=plRecs().filter(x=>x.id!==r.id&&(x.u||0)<(r.u||0))[0],kn=r.kn||{};
+  const pn=r.part?PL_NSEC-(r.dn||[]).length:0;
   return`<div class="top"><h1>Seviye tespiti</h1><span class="badge">beta</span></div><div class="stack">
-  <div class="card stack" style="text-align:center"><div class="small muted">${fmt(r.d)} · Tahmini seviyen</div><div class="score" style="font-size:2.3rem">${esc(B.name)}</div>
+  ${r.part?`<div class="card stack" style="border:2px solid #e0a100"><b>⚠️ Tamamlanmamış sınav</b><div class="small">${PL_NSEC-pn}/${PL_NSEC} bölüm bitti. Bu sonuç şu ana kadarki cevaplarına dayanıyor; kalan ${pn} bölümü tamamladıkça kesinleşir.</div><button class="btn primary block" data-act="pl-go">Sınava devam et</button></div>`:''}
+  <div class="card stack" style="text-align:center"><div class="small muted">${fmt(r.d)} · ${r.part?'Şu ana kadarki tahmin':'Tahmini seviyen'}</div><div class="score" style="font-size:2.3rem">${esc(B.name)}</div>
    <div class="mono">${plScore(r.t)}/130${prev?(d=>` <span class="small ${d>=0?'':'muted'}">(${d>=0?'+':''}${d} önceki sınava göre)</span>`)(plScore(r.t)-plScore(prev.t)):''}</div>
    ${plScale(r.t,r.se)}
    <div class="small">${lo.code===hi.code?'Ölçüm bu dilimde oldukça kesin.':`Büyük ihtimalle <b>${esc(lo.name)}</b> ile <b>${esc(hi.name)}</b> arasındasın; en olası yer <b>${esc(B.name)}</b>.`}</div></div>
   <div class="card stack"><b>Bölümler</b><div>${secs}</div><div class="small muted">Bölüm sonuçları daha az soruya dayandığı için genel sonuçtan daha az kesindir.</div></div>
-  ${r.w&&r.w.res?`<div class="card stack"><b>✍️ Yazma değerlendirmesi</b>${aiHtml(r.w.res,'w')}<details class="small"><summary style="cursor:pointer">Yazdığın metin (${r.w.wc} kelime)</summary><div lang="en" style="white-space:pre-line;line-height:1.6;margin-top:6px">${esc(r.w.txt||'')}</div></details></div>`:'<div class="card small muted">Yazma bölümü değerlendirilmedi; sonuç diğer bölümlere göre hesaplandı.</div>'}
-  <div class="card small">⏱ ${tl}</div>
+  ${r.w&&r.w.res?`<div class="card stack"><b>✍️ Yazma değerlendirmesi</b>${aiHtml(r.w.res,'w')}<details class="small"><summary style="cursor:pointer">Yazdığın metin (${r.w.wc} kelime)</summary><div lang="en" style="white-space:pre-line;line-height:1.6;margin-top:6px">${esc(r.w.txt||'')}</div></details></div>`:(r.part?'':'<div class="card small muted">Yazma bölümü değerlendirilmedi; sonuç diğer bölümlere göre hesaplandı.</div>')}
+  ${r.part?'':`<div class="card small">⏱ ${tl}</div>`}
   <div class="card stack"><b>Şimdi ne yapmalı?</b><div class="small">Test sekmesindeki yeni kelimeler senin seviyene göre gelsin: <b>${esc(lvs.replace(',',' + '))}</b>.</div><button class="btn primary block" data-act="pl-lv" data-v="${esc(lvs)}" ${S.set.level===lvs?'disabled':''}>${S.set.level===lvs?'Test seviyen ayarlı':'Test seviyemi ayarla'}</button></div>
-  <div class="card stack"><b>Ölçümü geliştirmemize yardım et</b><div class="small">Bildiğin gerçek bir seviyen ya da sınav puanın var mı? (okul kuru, YDS/YÖKDİL, IELTS, TOEFL…) Bu sonuçları gerçek seviyelerle karşılaştırıp sınavı ayarlamak için kullanılır.</div>
+  ${r.part?'':`<div class="card stack"><b>Ölçümü geliştirmemize yardım et</b><div class="small">Bildiğin gerçek bir seviyen ya da sınav puanın var mı? (okul kuru, YDS/YÖKDİL, IELTS, TOEFL…) Bu sonuçları gerçek seviyelerle karşılaştırıp sınavı ayarlamak için kullanılır.</div>
    <div class="row" style="gap:6px;flex-wrap:wrap">${['?'].concat(PL_LV).map(L=>`<button class="chip" aria-pressed="${(kn.lv||'')===L}" data-act="pl-kn" data-v="${esc(id)}|${L}">${L==='?'?'Bilmiyorum':L}</button>`).join('')}</div>
-   <input data-plkn="${esc(id)}" value="${esc(kn.src||'')}" placeholder="Kaynak (isteğe bağlı): örn. IELTS 6.5, YDS 72, okulda B1 kuru" style="width:100%;font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit"></div>
+   <input data-plkn="${esc(id)}" value="${esc(kn.src||'')}" placeholder="Kaynak (isteğe bağlı): örn. IELTS 6.5, YDS 72, okulda B1 kuru" style="width:100%;font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit"></div>`}
   ${(r.x||[]).length?`<details class="card"><summary style="cursor:pointer"><b>Yanlış ve boş bıraktıkların (${r.x.length})</b></summary><div class="stack" style="margin-top:8px">${r.x.map(x=>`<div class="small" style="border-top:1px solid var(--line);padding:6px 0"><div lang="en" style="white-space:pre-line">${x.s==='m'?plDlg(x.q):esc(x.q)}</div><div style="color:var(--ok)">Doğru: <b>${esc(x.a)}</b></div>${x.u!=null?`<div style="color:var(--bad)">Senin cevabın: ${esc(x.u)}</div>`:'<div class="muted">Bilmiyorum / boş</div>'}</div>`).join('')}</div></details>`:''}
-  <button class="btn" data-act="pl-close">Geri</button></div>`}
+  <button class="btn" data-act="${r.part?'pl-pclose':'pl-close'}">Geri</button></div>`}
 /* --- ana görünüm: Sınavlar / Çalışma --- */
 /* çalışma bölümü sonuçları: hesaba eşitlenir (S.sxp); çözülen bölüm 15 gün sonra sıfırlanabilir */
 const SXP_RESET=15;
@@ -4584,6 +4606,7 @@ function vSx(){
   if(UI.pw)return vPetW();
   if(UI.ps)return vPetS();
   if(UI.sxe)return vSxExam();
+  if(UI.plp&&S.plc&&PL_ON())return vPlRes(null,plBuild(S.plc));
   if(UI.pl&&S.plc&&PL_ON())return vPl();
   if(UI.plr&&(S.plr||{})[UI.plr])return vPlRes(UI.plr);
   sxSync();
@@ -6373,7 +6396,11 @@ document.addEventListener('click',async e=>{
     case'pl-sec':if(S.plc){S.plc.si=S.plc.sec;save();render();window.scrollTo(0,0)}break;
     case'pl-ans':plAns(+g('data-v'));break;
     case'pl-wsend':plWSend(false);break;
-    case'pl-wskip':plFinish(null);break;
+    case'pl-fin':plFinish();break;
+    case'pl-part':if(S.plc){plTick(S.plc);save()}UI.plp=1;UI.pl=0;render();window.scrollTo(0,0);break;
+    case'pl-pclose':UI.plp=0;UI.sxm='t';render();break;
+    case'pl-nx':{const c=S.plc;if(c){const i=plNextSec(c);c.ss=null;c.q=null;c.qq=[];if(i>=0)c.sec=i;save();render();window.scrollTo(0,0)}break}
+    case'pl-goto':{const c=S.plc;if(c){c.ss=null;c.q=null;c.qq=[];c.sec=+g('data-v');c.last=Date.now();UI.plp=0;UI.pl=1;save();render();window.scrollTo(0,0)}break}
     case'pl-cdone':plCDone();break;
     case'pl-copy':plCopy();break;
     case'pl-kn':{const[id,L]=g('data-v').split('|'),r=(S.plr||{})[id];if(r){r.kn=Object.assign({},r.kn||{},{lv:L==='?'?'':L});r.u2=Date.now();save();plUp(r);render()}break}
