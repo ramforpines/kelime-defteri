@@ -1,0 +1,163 @@
+# Seviye tespiti — Dikte: her satır bir cümle (seslendirilir, kişi duyduğunu yazar). Sayı ve özel isim yok.
+
+@A1
+I have a small dog.
+My sister likes cats.
+We go to school by bus.
+The shop is closed today.
+He drinks tea every morning.
+Where is your father?
+It is very cold outside.
+They live in a big house.
+Can you open the window?
+I don't like milk.
+She is my best friend.
+The book is on the table.
+We are hungry now.
+My room is very clean.
+Is this your bag?
+I get up at seven.
+He plays football with his friends.
+The children are in the garden.
+Please close the door.
+I want a glass of water.
+Our teacher is very kind.
+The cat is under the bed.
+She has two brothers.
+What time is it now?
+I like this song very much.
+
+@A2
+We went to the beach last weekend.
+My brother is taller than me.
+I have never been to London.
+She was reading a book when I called.
+Could you tell me where the station is?
+They are going to buy a new car.
+It started to rain in the afternoon.
+I usually walk to work in summer.
+There isn't any milk in the fridge.
+He forgot his keys at home again.
+We stayed in a small hotel near the sea.
+My parents are visiting us next month.
+The film was more interesting than the book.
+I need to buy some bread on the way home.
+She has lived here for three years.
+Did you enjoy the party last night?
+You must wear a helmet on a bike.
+I'm afraid I can't come tomorrow.
+The museum opens at ten in the morning.
+He wants to be a doctor when he grows up.
+We had dinner at an Italian restaurant.
+It was too hot to sleep last night.
+Can I borrow your pen for a minute?
+I didn't have time to finish my homework.
+My grandmother makes the best cakes.
+
+@B1
+If it rains tomorrow, we'll stay at home.
+I've been learning English since I was a child.
+The house was built more than a century ago.
+She asked me whether I wanted to join them.
+I'm looking forward to seeing you again soon.
+He apologised for being late to the meeting.
+You should take an umbrella in case it rains.
+The man who lives next door is a famous writer.
+We had already eaten when they finally arrived.
+I'd rather stay in than go out tonight.
+The concert was cancelled because of the weather.
+It's the most beautiful place I've ever visited.
+She suggested that we take a taxi to the airport.
+I'm not used to getting up so early.
+Unless you hurry, you'll miss the last train.
+My phone was stolen while I was on holiday.
+They've decided to move to the countryside.
+He's been working at the bank for two years.
+Could you remind me to call my mother later?
+The restaurant we went to was quite expensive.
+I wish I had more free time during the week.
+Although it was late, the streets were still busy.
+She's very good at remembering people's names.
+We managed to find a parking space near the entrance.
+The teacher told us to hand in our essays on Friday.
+
+@B2
+If I had known about the delay, I would have left earlier.
+The new policy is expected to come into force next year.
+Despite the heavy traffic, we arrived just in time.
+She denied having taken the money from the drawer.
+The report needs to be finished before the end of the week.
+By the time we got there, most of the guests had left.
+He is thought to be one of the best players of his generation.
+I'd appreciate it if you could let me know as soon as possible.
+The number of people working from home has risen considerably.
+It's high time we did something about the noise from next door.
+Neither of the candidates seemed particularly well prepared.
+The museum, which was opened last year, attracts thousands of visitors.
+You needn't have bought so much food for the party.
+She's been under a lot of pressure at work recently.
+The government has been criticised for its handling of the crisis.
+Had it not been for her help, I would never have finished.
+We were made to wait for over an hour before being seen.
+Hardly anyone noticed that the manager had left the room.
+The longer you put it off, the harder it will become.
+I can't help thinking that we've made a serious mistake.
+Not only did he arrive late, but he also forgot the documents.
+The flight was delayed due to a technical problem with the engine.
+Whatever you decide, I'll support you all the way.
+There's no point in arguing about something we can't change.
+They're considering whether to expand the business overseas.
+
+@C1
+The committee is unlikely to reach a decision before the summer recess.
+Little did they realise how significant their discovery would turn out to be.
+Should you require any further information, please do not hesitate to contact us.
+The findings cast doubt on the effectiveness of the current approach.
+Were it not for the generosity of local donors, the project would have collapsed.
+Rarely have I encountered such a remarkable degree of dedication.
+The proposal has been met with considerable resistance from residents.
+It was not until the following morning that the extent of the damage became clear.
+Her remarks were widely interpreted as a thinly veiled criticism of the government.
+The company has been accused of exaggerating the benefits of its products.
+Having weighed up the alternatives, they opted for the more cautious strategy.
+There is mounting evidence that the policy has had unintended consequences.
+Such was the demand for tickets that the website crashed within minutes.
+The minister refused to comment on speculation about her future.
+Only by working together can we hope to address these challenges effectively.
+The negotiations reached a stalemate after neither side was willing to compromise.
+Much as I admire his ambition, I have serious reservations about his methods.
+The research highlights the importance of early intervention in such cases.
+Under no circumstances should confidential documents be left unattended.
+The building's distinctive design has made it something of a local landmark.
+It remains to be seen whether the reforms will have the desired effect.
+The scheme was abandoned owing to a lack of public support and funding.
+No sooner had the announcement been made than the share price began to fall.
+His account of events differed considerably from that of the other witnesses.
+The inquiry concluded that the accident could have been prevented.
+
+@C2
+The ramifications of the decision are likely to be felt for decades to come.
+Notwithstanding the setbacks, the expedition ultimately achieved its principal objectives.
+Her argument, though ingenious, rests on a number of questionable assumptions.
+The defendant maintained his innocence throughout the protracted proceedings.
+It is incumbent upon all of us to scrutinise the claims made by those in authority.
+The novel's protagonist grapples with an increasingly precarious sense of identity.
+Critics have been quick to dismiss the proposal as little more than a publicity stunt.
+The sheer complexity of the problem defies any straightforward solution.
+Far from alleviating the crisis, the measures appear to have exacerbated it.
+The archive sheds new light on a hitherto neglected chapter of the city's history.
+Such sweeping generalisations do little justice to the nuances of the debate.
+The committee's report was scathing in its assessment of the management's conduct.
+He was renowned for his meticulous attention to detail and his unwavering integrity.
+The government's reluctance to intervene has been widely construed as indifference.
+Be that as it may, the underlying causes of the dispute remain unresolved.
+Her latest work marks a radical departure from the conventions of the genre.
+The ostensible purpose of the visit was to strengthen diplomatic ties.
+What began as a modest local initiative has since burgeoned into a national movement.
+The ensuing controversy overshadowed the many genuine achievements of the project.
+It would be disingenuous to suggest that the outcome was entirely unforeseen.
+The phenomenon has been attributed to a confluence of economic and social factors.
+In retrospect, the warning signs were there for anyone willing to heed them.
+The treaty was hailed as a landmark agreement, albeit one with notable omissions.
+Their reluctance to acknowledge the problem merely compounded the difficulties.
+The documentary offers a sobering portrayal of life on the margins of society.

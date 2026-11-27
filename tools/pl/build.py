@@ -142,7 +142,7 @@ def audio(items):
             from kokoro_onnx import Kokoro
             import numpy as np, soundfile as sf
             k = Kokoro(os.path.join(TTS, 'kokoro-v1.0.int8.onnx'), os.path.join(TTS, 'voices-v1.0.bin'))
-        parts = []; sr = 24000; sp_ = 0.85 if it['lv'] in ('A2', 'B1') else 0.95
+        parts = []; sr = 24000; sp_ = 0.85 if it['lv'] in ('A1', 'A2', 'B1') else 0.95
         for sp, line in it['sc']:
             s, sr = k.create(line, voice=VOICE[sp], speed=sp_, lang='en-gb'); parts.append(s); parts.append(np.zeros(int(sr * 0.5), dtype=s.dtype))
         wav = tempfile.mktemp(suffix='.wav'); sf.write(wav, np.concatenate(parts), sr)
@@ -151,8 +151,41 @@ def audio(items):
     for f in os.listdir(AD):
         if f not in keep: os.remove(os.path.join(AD, f)); print('silindi:', f)
 
-RD = texts('rd*.txt'); LS = texts('ls*.txt', listen=True); audio(LS)
-B = {'v': 1, 'gr': mc('gr*.txt', 'g'), 'mn': mc('mn*.txt', 'm'), 'kv': mc('kv*.txt', 'k', typed=True), 'ct': ctest('ct*.txt'), 'nw': nonwords('nw.txt'), 'wt': wtasks('wt.txt'), 'rd': RD, 'ls': [{k: v for k, v in x.items() if k != 'sc'} | {'n': len(x['sc'])} for x in LS], 'alt': ALT}
+def dictation(fn):   # dikte: tek cümle, sesli; seslendiren kişi sırayla kadın/erkek
+    out = []
+    for lv, L in blocks(fn):
+        assert lv in LV, lv
+        for l in L:
+            t = l.strip(); assert re.search(r'[.?!]$', t) and not re.search(r'\d', t), t
+            it = {'id': hid('d', t), 'lv': lv, 's': t, 't': t[:40]}; it['sc'] = [['F' if len(out) % 2 else 'M', t]]; it['au'] = 'audio/pl/' + it['id'] + '.mp3'; out.append(it)
+    ids = [x['id'] for x in out]; assert len(ids) == len(set(ids)), 'tekrar eden dikte cümlesi'
+    print(f'{fn}: {len(out)} dikte cümlesi · ' + ' '.join(f'{l}:{sum(1 for i in out if i["lv"]==l)}' for l in LV))
+    return out
+
+def typed(fn, pre):   # yazarak cevaplanan sorular: kelime türetme (wf) ve anahtar kelimeyle dönüştürme (kt)
+    if not glob.glob(os.path.join(D, fn)): return []
+    out = []
+    for lv, L in blocks(fn):
+        assert lv in LV, lv
+        d = {}
+        for l in L:
+            k, v = l.split(':', 1); d[k.strip()] = v.strip()
+        ans = [a.strip() for a in d['A'].split('|') if a.strip()]; assert ans, d
+        if pre == 'f':
+            assert set(d) == {'Q', 'W', 'A'} and d['Q'].count('___') == 1, d
+            it = {'id': hid('f', d['Q']), 'lv': lv, 'q': d['Q'], 'w': d['W'].upper(), 'a': ans}
+        else:
+            assert set(d) == {'S', 'K', 'Q', 'A'} and d['Q'].count('___') == 1, d
+            for a in ans: assert re.search(r'(^|\s)' + re.escape(d['K'].lower()), a.lower().replace("can not", "can't") if d['K'].lower() == "can't" else a.lower()), ('anahtar kelime cevapta yok', d['K'], a); n = len(a.split()); assert 2 <= n <= 5, ('2-5 kelime', a)
+            it = {'id': hid('t', d['S'] + d['K']), 'lv': lv, 's': d['S'], 'k': d['K'].upper(), 'q': d['Q'], 'a': ans}
+        out.append(it)
+    ids = [x['id'] for x in out]; assert len(ids) == len(set(ids)), ('tekrar eden soru', fn)
+    print(f'{fn}: {len(out)} soru · ' + ' '.join(f'{l}:{sum(1 for i in out if i["lv"]==l)}' for l in LV))
+    return out
+
+RD = texts('rd*.txt'); LS = texts('ls*.txt', listen=True); DK = dictation('dk*.txt'); audio(LS + DK)
+WF = typed('wf*.txt', 'f'); KT = typed('kt*.txt', 't')
+B = {'v': 1, 'gr': mc('gr*.txt', 'g'), 'mn': mc('mn*.txt', 'm'), 'kv': mc('kv*.txt', 'k', typed=True), 'ct': ctest('ct*.txt'), 'nw': nonwords('nw.txt'), 'wt': wtasks('wt.txt'), 'rd': RD, 'ls': [{k: v for k, v in x.items() if k != 'sc'} | {'n': len(x['sc'])} for x in LS], 'dk': [{k: v for k, v in x.items() if k not in ('sc', 't')} for x in DK], 'wf': WF, 'kt': KT, 'alt': ALT}
 open(os.path.join(ROOT, 'pl-bank.js'), 'w', encoding='utf-8').write(
     '/* Seviye tespiti soru bankası — tools/pl/build.py üretir, elle düzenleme */\nwindow.PLB=' + json.dumps(B, ensure_ascii=False, separators=(',', ':')) + ';\n')
 print('pl-bank.js yazıldı', os.path.getsize(os.path.join(ROOT, 'pl-bank.js')), 'bayt')

@@ -1,0 +1,86 @@
+# Seviye tespiti — Kelime türetme ek
+
+@A2
+Q: My uncle is a ___. He paints pictures.
+W: art
+A: artist
+
+Q: Be ___! The floor is wet.
+W: care
+A: careful
+
+Q: It was a ___ evening. Nothing happened.
+W: bore
+A: boring
+
+Q: She's a very good ___. She takes beautiful photos.
+W: photograph
+A: photographer
+
+Q: The film was ___. I didn't like it.
+W: terror
+A: terrible
+
+Q: Our teacher is very ___. She never shouts.
+W: patience
+A: patient
+
+@B1
+Q: The ___ of the city has grown a lot in ten years.
+W: populate
+A: population
+
+Q: I'm ___ — I don't know where I am.
+W: lose
+A: lost
+
+Q: There was a long ___ at the start of the meeting.
+W: discuss
+A: discussion
+
+@B2
+Q: The project was a complete ___.
+W: fail
+A: failure
+
+Q: She made a ___ contribution to the team's success.
+W: signify
+A: significant
+
+@C1
+Q: The ___ of the decision surprised everyone.
+W: abrupt
+A: abruptness
+
+Q: The company has shown remarkable ___ in a difficult market.
+W: resilient
+A: resilience
+
+Q: His ___ of the facts was deeply misleading.
+W: represent
+A: representation | misrepresentation
+
+@C2
+Q: The ___ of the scheme was apparent from the outset.
+W: futile
+A: futility
+
+Q: The minister's response was ___ vague.
+W: frustrate
+A: frustratingly
+
+Q: The government's ___ on the issue has been widely criticised.
+W: silent
+A: silence
+
+Q: The book is a ___ study of human nature.
+W: penetrate
+A: penetrating
+
+Q: Her ___ to change has been her greatest strength.
+W: adapt
+A: adaptability
+
+Q: The ___ of the old customs is a source of regret for many.
+W: disappear
+A: disappearance

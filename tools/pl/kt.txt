@@ -1,0 +1,405 @@
+# Seviye tespiti — Anahtar kelimeyle cümle dönüştürme (Cambridge tarzı). S: ilk cümle · K: değiştirilmeden kullanılacak kelime · Q: boşluklu ikinci cümle · A: kabul edilen cevaplar (2–5 kelime, | ile)
+
+@B1
+S: I started working here three years ago.
+K: for
+Q: I have ___ three years.
+A: worked here for | been working here for | been here for
+
+S: It's not necessary for you to bring food.
+K: have
+Q: You ___ bring food.
+A: don't have to | do not have to
+
+S: The film was so boring that I fell asleep.
+K: such
+Q: It was ___ film that I fell asleep.
+A: such a boring
+
+S: Tom is taller than his brother.
+K: as
+Q: Tom's brother is ___ Tom.
+A: not as tall as | isn't as tall as
+
+S: "I'm tired," said Anna.
+K: was
+Q: Anna said that ___ tired.
+A: she was
+
+S: Somebody stole my bike last night.
+K: was
+Q: My bike ___ last night.
+A: was stolen
+
+S: I last saw her in 2019.
+K: seen
+Q: I ___ since 2019.
+A: haven't seen her | have not seen her
+
+S: It's a good idea to see a doctor.
+K: should
+Q: You ___ a doctor.
+A: should see | should go and see | should go to
+
+S: I can't go to the party because I have to work.
+K: would
+Q: I ___ to the party, but I have to work.
+A: would go | would like to go | would love to go
+
+S: The museum is too far to walk to.
+K: enough
+Q: The museum isn't ___ walk to.
+A: close enough to | near enough to
+
+S: Maria is the best singer in the class.
+K: better
+Q: Nobody in the class sings ___ Maria.
+A: better than
+
+S: It was raining, so we didn't go out.
+K: because
+Q: We didn't go out ___ raining.
+A: because it was
+
+S: I'd prefer to stay at home tonight.
+K: rather
+Q: I'd ___ at home tonight.
+A: rather stay
+
+S: They built this bridge in 1950.
+K: built
+Q: This bridge ___ in 1950.
+A: was built
+
+S: Do you know where the station is?
+K: me
+Q: Can you tell ___ the station is?
+A: me where
+
+S: My plan is to visit Rome next year.
+K: going
+Q: I ___ Rome next year.
+A: am going to visit | 'm going to visit
+
+S: The last time I went swimming was a year ago.
+K: been
+Q: I ___ for a year.
+A: haven't been swimming | have not been swimming
+
+S: It isn't possible for me to come tomorrow.
+K: able
+Q: I won't ___ tomorrow.
+A: be able to come
+
+S: She doesn't speak French as well as her sister.
+K: than
+Q: Her sister speaks French ___ she does.
+A: better than
+
+S: I didn't have enough money to buy the jacket.
+K: afford
+Q: I couldn't ___ the jacket.
+A: afford to buy
+
+@B2
+S: I haven't seen him for years.
+K: since
+Q: It's years ___ him.
+A: since I saw | since I last saw | since I've seen | since I have seen
+
+S: "Don't touch the paintings," the guide told us.
+K: not
+Q: The guide told us ___ the paintings.
+A: not to touch
+
+S: I regret not studying harder at school.
+K: wish
+Q: I ___ harder at school.
+A: wish I had studied | wish I'd studied
+
+S: It's possible that she missed the train.
+K: might
+Q: She ___ the train.
+A: might have missed
+
+S: I'm sure he didn't take the money.
+K: can't
+Q: He ___ the money.
+A: can't have taken
+
+S: They say he is very rich.
+K: said
+Q: He ___ very rich.
+A: is said to be
+
+S: We couldn't play because of the rain.
+K: prevented
+Q: The rain ___ playing.
+A: prevented us from
+
+S: I'll lend you the car if you promise to drive carefully.
+K: long
+Q: I'll lend you the car ___ promise to drive carefully.
+A: as long as you | so long as you
+
+S: She started learning Chinese two years ago.
+K: been
+Q: She has ___ for two years.
+A: been learning Chinese
+
+S: It was a mistake to sell the house.
+K: should
+Q: We ___ the house.
+A: shouldn't have sold | should not have sold
+
+S: The meeting was cancelled because the manager was ill.
+K: called
+Q: The meeting was ___ because the manager was ill.
+A: called off
+
+S: I didn't know about the problem, so I didn't help.
+K: had
+Q: If I ___ about the problem, I would have helped.
+A: had known
+
+S: People believe the painting is a fake.
+K: believed
+Q: The painting ___ a fake.
+A: is believed to be
+
+S: Although it was cold, we went for a walk.
+K: despite
+Q: We went for a walk ___ cold.
+A: despite it being | despite the fact it was
+
+S: He finds it difficult to get up early.
+K: used
+Q: He isn't ___ up early.
+A: used to getting
+
+S: I'd like you to help me with this.
+K: mind
+Q: Would you ___ me with this?
+A: mind helping
+
+S: "Why don't we take a taxi?" said Sarah.
+K: suggested
+Q: Sarah ___ a taxi.
+A: suggested taking | suggested that we take | suggested we take
+
+S: There's no milk left.
+K: run
+Q: We have ___ milk.
+A: run out of
+
+S: My sister isn't as patient as my brother.
+K: more
+Q: My brother is ___ my sister.
+A: more patient than
+
+S: The last train leaves at midnight.
+K: later
+Q: There are no trains ___ midnight.
+A: later than
+
+@C1
+S: As soon as he arrived, the phone rang.
+K: sooner
+Q: No ___ than the phone rang.
+A: sooner had he arrived
+
+S: I had no idea that she was planning to leave.
+K: did
+Q: Little ___ that she was planning to leave.
+A: did I know | did I realise
+
+S: You must not open this door under any circumstances.
+K: account
+Q: On ___ be opened.
+A: no account must this door | no account should this door
+
+S: If it hadn't been for her help, we would have failed.
+K: but
+Q: ___, we would have failed.
+A: but for her help
+
+S: The demand for tickets was so great that the website crashed.
+K: such
+Q: ___ for tickets that the website crashed.
+A: such was the demand
+
+S: It's possible that the package was sent to the wrong address.
+K: may
+Q: The package ___ to the wrong address.
+A: may have been sent
+
+S: They are considering building a new hospital.
+K: under
+Q: A new hospital is ___.
+A: under consideration
+
+S: She was annoyed that nobody had told her.
+K: being
+Q: She was annoyed at ___.
+A: not being told
+
+S: I'm sure the manager knew about the problem.
+K: must
+Q: The manager ___ about the problem.
+A: must have known
+
+S: It wasn't necessary for you to bring a present.
+K: needn't
+Q: You ___ a present.
+A: needn't have brought
+
+S: People think the fire was started deliberately.
+K: thought
+Q: The fire ___ started deliberately.
+A: is thought to have been
+
+S: We were only able to finish because of your help.
+K: without
+Q: We couldn't have finished ___.
+A: without your help
+
+S: It's a shame I didn't accept the offer.
+K: wish
+Q: I ___ the offer.
+A: wish I had accepted | wish I'd accepted
+
+S: The price of the tickets surprised everyone.
+K: came
+Q: The price of the tickets ___ everyone.
+A: came as a surprise to
+
+S: He didn't apologise at all.
+K: once
+Q: Not ___ apologise.
+A: once did he
+
+S: She is likely to win the competition.
+K: chance
+Q: There is a ___ will win the competition.
+A: good chance that she | good chance she | strong chance that she
+
+S: It was only when I got home that I noticed my wallet was missing.
+K: until
+Q: I didn't notice my wallet was missing ___ home.
+A: until I got
+
+S: Despite her illness, she continued working.
+K: even
+Q: She continued working ___ ill.
+A: even though she was
+
+S: I'd rather you didn't smoke here.
+K: prefer
+Q: I'd ___ smoke here.
+A: prefer you not to | prefer it if you didn't
+
+S: They're going to announce the results tomorrow.
+K: be
+Q: The results ___ tomorrow.
+A: will be announced | are going to be announced | are to be announced
+
+@C2
+S: I had never seen such a beautiful view.
+K: never
+Q: ___ such a beautiful view.
+A: never had I seen
+
+S: Her success was entirely due to hard work.
+K: owed
+Q: She ___ to hard work.
+A: owed her success entirely | owed her success
+
+S: You shouldn't have told him the secret.
+K: wrong
+Q: It was ___ him the secret.
+A: wrong of you to tell | wrong to tell
+
+S: It's pointless trying to persuade him.
+K: point
+Q: There's ___ to persuade him.
+A: no point in trying | no point trying
+
+S: The news came as a complete surprise to us.
+K: taken
+Q: We were ___ by the news.
+A: completely taken aback | taken completely by surprise | taken by surprise
+
+S: However hard she tried, she couldn't open the jar.
+K: matter
+Q: No ___ tried, she couldn't open the jar.
+A: matter how hard she
+
+S: We really must leave now.
+K: time
+Q: It's high ___ now.
+A: time we left
+
+S: He was so tired that he couldn't keep his eyes open.
+K: such
+Q: He was in ___ that he couldn't keep his eyes open.
+A: such a state of tiredness | such a tired state
+
+S: I only realised how serious the situation was when I read the report.
+K: did
+Q: Only when I read the report ___ how serious the situation was.
+A: did I realise
+
+S: The committee rejected the proposal unanimously.
+K: favour
+Q: Nobody on the committee was ___ the proposal.
+A: in favour of
+
+S: She is very unlikely to accept the offer.
+K: hardly
+Q: She will ___ the offer.
+A: hardly accept
+
+S: The film wasn't as good as I had expected.
+K: up
+Q: The film didn't ___ my expectations.
+A: live up to
+
+S: The government should act immediately.
+K: high
+Q: It is ___ the government acted.
+A: high time
+
+S: He pretended not to notice me.
+K: out
+Q: He made ___ hadn't noticed me.
+A: out that he | out he
+
+S: It's possible that she didn't receive my message.
+K: may
+Q: She ___ my message.
+A: may not have received
+
+S: He didn't say anything during the meeting.
+K: word
+Q: He didn't ___ during the meeting.
+A: say a word | say a single word | utter a word
+
+S: Everyone was surprised by his resignation.
+K: surprise
+Q: His resignation ___ everyone.
+A: came as a surprise to
+
+S: She was so angry that she couldn't speak.
+K: such
+Q: ___ that she couldn't speak.
+A: such was her anger
+
+S: The plan failed because nobody supported it.
+K: lack
+Q: The plan failed ___ support.
+A: due to a lack of | because of a lack of | owing to a lack of | through lack of
+
+S: It doesn't matter to me what you decide.
+K: difference
+Q: It makes ___ what you decide.
+A: no difference to me

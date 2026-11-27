@@ -1,0 +1,514 @@
+# Seviye tespiti — Kelime türetme (yazarak). Q: boşluklu cümle · W: kök kelime · A: kabul edilen cevaplar (| ile)
+
+@A2
+Q: My brother is a ___. He plays the guitar in a band.
+W: music
+A: musician
+
+Q: The film was very ___. I laughed a lot.
+W: fun
+A: funny
+
+Q: Please drive ___. The roads are icy.
+W: careful
+A: carefully
+
+Q: She is the best ___ in our team.
+W: play
+A: player
+
+Q: I was ___ because I didn't sleep well.
+W: tire
+A: tired
+
+Q: It's a very ___ day, so take your sunglasses.
+W: sun
+A: sunny
+
+Q: He is very ___. He helps everyone.
+W: friend
+A: friendly
+
+Q: The test was ___. Everybody passed.
+W: easily
+A: easy
+
+Q: My grandfather was a ___ for forty years.
+W: farm
+A: farmer
+
+Q: This chair is very ___. I could sit here all day.
+W: comfort
+A: comfortable
+
+Q: We had a ___ holiday in Spain.
+W: wonder
+A: wonderful
+
+Q: I don't like this jacket. It's too ___.
+W: colour
+A: colourful | colorful
+
+Q: She speaks English very ___.
+W: good
+A: well
+
+Q: Be careful! The knife is ___.
+W: danger
+A: dangerous
+
+Q: It was a very ___ story. I was scared.
+W: frighten
+A: frightening
+
+Q: The ___ of the hotel was very helpful.
+W: manage
+A: manager
+
+Q: I'm ___ in learning Spanish.
+W: interest
+A: interested
+
+Q: The children were very ___ in the morning.
+W: noise
+A: noisy
+
+Q: The museum is ___ on Mondays.
+W: close
+A: closed
+
+@B1
+Q: The ___ of the new bridge took three years.
+W: build
+A: building | construction
+
+Q: Smoking is very ___ to your health.
+W: harm
+A: harmful
+
+Q: She showed great ___ when she saved the child.
+W: brave
+A: bravery
+
+Q: I'm sorry, but your answer is ___.
+W: correct
+A: incorrect
+
+Q: The ___ between the two cities is about three hundred kilometres.
+W: distant
+A: distance
+
+Q: He felt ___ after the long flight.
+W: exhaust
+A: exhausted
+
+Q: The new phone is ___ more expensive than the old one.
+W: consider
+A: considerably
+
+Q: The museum has a large ___ of old coins.
+W: collect
+A: collection
+
+Q: It's ___ to drive without a licence.
+W: legal
+A: illegal
+
+Q: My parents gave me a lot of ___ when I was young.
+W: free
+A: freedom
+
+Q: The ___ of the competition will receive a prize.
+W: win
+A: winner
+
+Q: I can't make a ___ about which university to choose.
+W: decide
+A: decision
+
+Q: The instructions were very ___, so I couldn't follow them.
+W: clear
+A: unclear
+
+Q: She has a lot of ___ as a teacher.
+W: experienced
+A: experience
+
+Q: The concert was a great ___.
+W: succeed
+A: success
+
+Q: He's very ___ — he never tells lies.
+W: honesty
+A: honest
+
+Q: We need to find a ___ to this problem.
+W: solve
+A: solution
+
+Q: The weather was ___ bad, so we stayed at home.
+W: extreme
+A: extremely
+
+Q: Her ___ to the party surprised everyone.
+W: arrive
+A: arrival
+
+Q: The hotel staff were very ___.
+W: help
+A: helpful
+
+Q: The ___ of the house is in the city centre.
+W: own
+A: owner
+
+Q: It was ___ of him to forget her birthday.
+W: thought
+A: thoughtless
+
+Q: There's a ___ that it will rain later.
+W: possible
+A: possibility
+
+Q: I'd like to make a ___ about the food.
+W: complain
+A: complaint
+
+Q: The town is ___ for its beautiful beaches.
+W: fame
+A: famous
+
+Q: You need ___ to enter the building.
+W: permit
+A: permission
+
+Q: The children were ___ by the magician's tricks.
+W: amaze
+A: amazed
+
+Q: She gave a very ___ speech at the wedding.
+W: emotion
+A: emotional
+
+@B2
+Q: There is a growing ___ that the climate is changing.
+W: aware
+A: awareness
+
+Q: The ___ of the project depends on good teamwork.
+W: succeed
+A: success
+
+Q: His behaviour was completely ___.
+W: accept
+A: unacceptable
+
+Q: The new law has been very ___ with young people.
+W: popularity
+A: popular | unpopular
+
+Q: She has a very ___ personality.
+W: compete
+A: competitive
+
+Q: The film received ___ reviews from critics.
+W: favour
+A: favourable | favorable
+
+Q: We need to ___ our website to attract more customers.
+W: modern
+A: modernise | modernize
+
+Q: His ___ to help was greatly appreciated.
+W: willing
+A: willingness
+
+Q: The results were ___ to say the least.
+W: disappoint
+A: disappointing
+
+Q: The ___ of the population live in cities.
+W: major
+A: majority
+
+Q: The government plans to ___ the use of plastic bags.
+W: courage
+A: discourage
+
+Q: It was a ___ decision, and many people disagreed with it.
+W: controversy
+A: controversial
+
+Q: The museum is ___ to wheelchair users.
+W: access
+A: accessible | inaccessible
+
+Q: Her ___ to detail makes her an excellent editor.
+W: attend
+A: attention
+
+Q: The company is facing serious financial ___.
+W: difficult
+A: difficulties | difficulty
+
+Q: Regular exercise can ___ the risk of heart disease.
+W: low
+A: lower
+
+Q: The ___ of the new manager was announced yesterday.
+W: appoint
+A: appointment
+
+Q: The evidence was ___, so the case was dropped.
+W: sufficient
+A: insufficient
+
+Q: He spoke with great ___ about his childhood.
+W: passionate
+A: passion
+
+Q: The ___ of the two companies created a global giant.
+W: merge
+A: merger
+
+Q: Prices have risen ___ over the past year.
+W: dramatic
+A: dramatically
+
+Q: The new system is far more ___ than the old one.
+W: rely
+A: reliable
+
+Q: There's no ___ between the two cases.
+W: compare
+A: comparison
+
+Q: The meeting was ___ postponed until next week.
+W: expect
+A: unexpectedly
+
+Q: She was praised for her ___ in difficult circumstances.
+W: patient
+A: patience
+
+Q: The ___ of the old factory will create space for new homes.
+W: demolish
+A: demolition
+
+Q: His explanation was ___ and easy to follow.
+W: logic
+A: logical
+
+Q: The ___ of the scheme was questioned by experts.
+W: effective
+A: effectiveness
+
+Q: The town has a very ___ atmosphere at night.
+W: life
+A: lively
+
+@C1
+Q: The plan was rejected because of its ___ high cost.
+W: prohibit
+A: prohibitively
+
+Q: The ___ of the two reports is striking.
+W: similar
+A: similarity
+
+Q: His ___ to compromise led to the collapse of the talks.
+W: willing
+A: unwillingness
+
+Q: The new policy has been widely ___.
+W: critic
+A: criticised | criticized
+
+Q: The ___ of the evidence was questioned in court.
+W: reliable
+A: reliability
+
+Q: The book offers a ___ account of the war.
+W: compel
+A: compelling
+
+Q: Their ___ for the project was obvious.
+W: enthusiastic
+A: enthusiasm
+
+Q: The decision had ___ consequences for the town.
+W: foresee
+A: unforeseen
+
+Q: The company is committed to the ___ of waste.
+W: minimum
+A: minimisation | minimization
+
+Q: The two descriptions were ___ different.
+W: strike
+A: strikingly
+
+Q: Her ___ to the cause has inspired many others.
+W: commit
+A: commitment
+
+Q: The minister's comments were seen as ___.
+W: provoke
+A: provocative
+
+Q: The ___ of the region depends heavily on tourism.
+W: prosper
+A: prosperity
+
+Q: Such behaviour is completely ___ in a professional setting.
+W: justify
+A: unjustifiable | unjustified
+
+Q: The report highlights the ___ between rich and poor.
+W: equal
+A: inequality | inequalities
+
+Q: He has an ___ knowledge of the subject.
+W: encyclopedia
+A: encyclopedic | encyclopaedic
+
+Q: The ___ of the rules has caused confusion.
+W: interpret
+A: interpretation | misinterpretation
+
+Q: The project was completed ___ on time.
+W: remark
+A: remarkably
+
+Q: She spoke with ___ about the dangers of the plan.
+W: convince
+A: conviction
+
+Q: The new law will ___ the rights of workers.
+W: strength
+A: strengthen
+
+Q: The results were ___ with earlier research.
+W: consist
+A: consistent | inconsistent
+
+Q: The ___ of the treaty took several years.
+W: ratify
+A: ratification
+
+Q: The film is a ___ portrait of life in the city.
+W: move
+A: moving
+
+Q: The policy has been ___ implemented.
+W: success
+A: successfully | unsuccessfully
+
+Q: The ___ of the building is in doubt.
+W: safe
+A: safety
+
+Q: His ___ remarks offended many people.
+W: sense
+A: insensitive
+
+Q: The company's ___ has been damaged by the scandal.
+W: repute
+A: reputation
+
+Q: The judge described the crime as ___.
+W: forgive
+A: unforgivable
+
+@C2
+Q: The proposal was dismissed as ___ by the committee.
+W: practice
+A: impractical | unpractical
+
+Q: The evidence against him was ___.
+W: overwhelm
+A: overwhelming
+
+Q: The ___ of the region's wildlife is under threat.
+W: diverse
+A: diversity
+
+Q: His argument suffers from a ___ lack of evidence.
+W: concern
+A: concerning
+
+Q: The author's ___ of rural life is remarkably vivid.
+W: depict
+A: depiction
+
+Q: The decision was ___ condemned by human rights groups.
+W: universe
+A: universally
+
+Q: The ___ of the old system has been widely welcomed.
+W: abolish
+A: abolition
+
+Q: The story is ___ by a series of flashbacks.
+W: punctuate
+A: punctuated
+
+Q: His ___ to admit his mistake cost him his job.
+W: refuse
+A: refusal
+
+Q: The painting's ___ was confirmed by experts.
+W: authentic
+A: authenticity
+
+Q: The government has pledged to ___ the economy.
+W: stable
+A: stabilise | stabilize
+
+Q: The report was ___ critical of the management.
+W: scathe
+A: scathingly
+
+Q: The ___ of the treaty was a major diplomatic achievement.
+W: negotiate
+A: negotiation
+
+Q: Their ___ attitude towards the rules caused problems.
+W: care
+A: careless | carefree
+
+Q: The ___ of public services has been criticised.
+W: private
+A: privatisation | privatization
+
+Q: The ___ between the two theories is often overlooked.
+W: distinct
+A: distinction
+
+Q: The plan was ___ from the start.
+W: feasible
+A: unfeasible | infeasible
+
+Q: The ___ of the population is growing rapidly.
+W: urban
+A: urbanisation | urbanization
+
+Q: Her remarks were ___ taken out of context.
+W: deliberate
+A: deliberately
+
+Q: The novel explores the ___ of memory.
+W: fragile
+A: fragility
+
+Q: The company was accused of ___ its profits.
+W: state
+A: overstating | understating
+
+Q: The ___ of the scandal was immense.
+W: magnify
+A: magnitude
+
+Q: He was praised for his ___ in the face of adversity.
+W: resilient
+A: resilience
