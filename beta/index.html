@@ -496,7 +496,7 @@ textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(
 <script src="d/exam-f2a953ad23.js"></script>
 <script src="d/mock-7f97eb403e.js"></script>
 <script src="d/supabase-7c13da89ef.js"></script>
-<script>window.ASSET={"phrases.js": "d/phrases-0d28738d9a.js", "sinav.js": "d/sinav-7820b1f81c.js", "grammar.js": "d/grammar-24c5272e6a.js", "pl-bank.js": "d/pl-bank-e9f8a26e99.js"};</script>
+<script>window.ASSET={"phrases.js": "d/phrases-0d28738d9a.js", "sinav.js": "d/sinav-7820b1f81c.js", "grammar.js": "d/grammar-24c5272e6a.js", "pl-bank.js": "d/pl-bank-d2244d67a8.js"};</script>
 <!--/ASSETS-->
 <script>
 const DATA=window.WORDS||[];
@@ -593,7 +593,7 @@ const nf=n=>n.toLocaleString('tr-TR');
 
 /* ---------- durum ---------- */
 const KEY='kelime-defteri-v2';
-const APP_VERSION = '4.180.0';
+const APP_VERSION = '4.181.0';
 const EXTR=window.EXTR||{};
 function exH(t){let x=0x811c9dc5;for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)+'.'+t.length}
 function exMore(w){return w.exs&&w.exs.length?'<dt>Diğer örnekler</dt><dd>'+w.exs.map(t=>{const v=EXTR[exH(t)];return '<i>'+esc(t)+'</i>'+(v?'<br><span class="extr">('+esc(v)+')</span>':'')}).join('<br>')+'</dd>':''}
@@ -4328,14 +4328,17 @@ const PL_LV=['A1','A2','B1','B2','C1','C2'],PL_LO={A1:-3.6,A2:-2.4,B1:-1.2,B2:0,
 function plBand(t){t=Math.max(-3.599,Math.min(3.599,t));const L=PL_LV[Math.floor((t+3.6)/1.2)],s=Math.max(0,Math.min(2,Math.floor((t-PL_LO[L])/0.4+1e-9)));return{L,s,name:L+' '+PL_SUB[s],code:L+'.'+(s+1)}}
 const plScore=t=>Math.round(Math.max(0,Math.min(130,10+(t+3.6)/1.2*20)));   // 0–130: her seviye 20 puan (A1 10–30 … C2 110–130), 10 altı A1 öncesi
 const PL_SEC=[
- {k:'v',n:'Kelime taraması',ic:'⚡',N:60,m:4,u:'60 kelime',ins:'Ekrana gelen kelimeyi tanıyor musun? Bazıları uydurma kelimedir. Anlamını bildiğin gerçek bir kelimeyse “Biliyorum”, emin değilsen ya da uydurmaysa “Bilmiyorum” de. Hızlı ilerle, düşünmeye gerek yok.'},
+ {k:'v',n:'Kelime taraması',ic:'⚡',N:40,m:3,u:'40 kelime',ins:'Ekrana gelen kelimeyi tanıyor musun? Bazıları uydurma kelimedir. Anlamını bildiğin gerçek bir kelimeyse “Biliyorum”, emin değilsen ya da uydurmaysa “Bilmiyorum” de. Hızlı ilerle, düşünmeye gerek yok.'},
  {k:'c',n:'Metin tamamlama',ic:'🧩',N:2,m:12,u:'2 metin',ins:'Metinde bazı kelimelerin ikinci yarısı silinmiş. Eksik harfleri yaz; kutudaki çizgi sayısı eksik harf sayısını gösterir. Bitince “Metni bitir”e bas.'},
- {k:'g',n:'Gramer',ic:'📐',N:25,m:12,u:'25 soru',ins:'Cümleyi ya da konuşmayı dilbilgisi açısından doğru tamamlayan seçeneği bul.'},
+ {k:'g',n:'Gramer',ic:'📐',N:20,m:10,u:'20 soru',ins:'Cümleyi ya da konuşmayı dilbilgisi açısından doğru tamamlayan seçeneği bul.'},
+ {k:'y',n:'Cümle dönüştürme',ic:'🔁',N:6,m:6,u:'6 soru',ins:'İkinci cümleyi, ilk cümleyle aynı anlama gelecek şekilde tamamla. Kalın yazılan kelimeyi mutlaka kullan ve değiştirme; boşluğa 2–5 kelime yaz.'},
  {k:'m',n:'Anlam ve ima',ic:'💬',N:8,m:5,u:'8 soru',ins:'Kısa konuşmaları oku: B aslında ne demek istiyor?'},
  {k:'k',n:'Kelime kullanımı',ic:'🔤',N:20,m:8,u:'20 soru',ins:'Eş anlamlı, tanım, cümlede kullanım ve birlikte kullanılan kelimeler.'},
+ {k:'t',n:'Kelime türetme',ic:'🧬',N:10,m:5,u:'10 soru',ins:'Cümlenin sonundaki büyük harfli kelimeden, boşluğa uyan yeni bir kelime türet ve yaz (ör. DECIDE → decision).'},
  {k:'a',n:'Kelime anlamı',ic:'📘',N:16,m:6,u:'16 soru',ins:'Uygulamadaki testler gibi: kelimenin Türkçe karşılığını ya da İngilizce tanımını seç.'},
  {k:'r',n:'Okuma',ic:'📖',N:2,m:12,u:'2 metin',ins:'Metni oku ve soruları cevapla; metin her soruda açık kalır.'},
  {k:'l',n:'Dinleme',ic:'🎧',N:2,m:10,u:'2 kayıt',ins:'Kaydı dinle ve soruları cevapla; istediğin kadar tekrar dinleyebilirsin.'},
+ {k:'d',n:'Dikte',ic:'📝',N:8,m:6,u:'8 cümle',ins:'Kısa bir cümle duyacaksın; duyduğun cümleyi aynen yaz. Cümleyi en fazla üç kez dinle. Büyük harf ve noktalama önemli değil.'},
  {k:'w',n:'Yazma',ic:'✍️',N:1,m:15,u:'70–100 kelime',ins:'Verilen konuda 70–100 kelimelik bir metin yaz. Yapay zekâ Cambridge ölçütleriyle değerlendirir.'}];
 const PL_MIN=PL_SEC.reduce((a,s)=>a+s.m,0),PL_TQ=5,PL_NSEC=PL_SEC.length;
 const PL_GRID=[];for(let i=0;i<=180;i++)PL_GRID.push(-4.5+i*0.05);
@@ -4358,9 +4361,9 @@ function plZ(){   // seviye içi sıklık sapması: aynı seviyede sık kelime k
   Object.keys(zs).forEach(L=>{const[n,s,q]=zs[L],m=s/n;zs[L]={m,sd:Math.sqrt(Math.max(1,q/n-m*m))}});
   PLZ={byL,adj:w=>{const o=zs[w.level];return o?Math.max(-0.5,Math.min(0.5,-0.3*(F[w.word]-o.m)/o.sd)):0}};return PLZ}
 function plVList(){   // 40 gerçek (seviyelere yayılmış) + 20 uydurma kelime, karışık
-  const Z=plZ(),out=[],cnt={A1:5,A2:6,B1:8,B2:8,C1:8,C2:5};
+  const Z=plZ(),out=[],cnt={A1:3,A2:4,B1:6,B2:6,C1:5,C2:3};
   PL_LV.forEach(L=>{const A=shuffle(plFresh(Z.byL[L]||[],w=>'v:'+w.word).slice()).slice(0,cnt[L]);A.forEach(w=>out.push({w:w.word,b:Math.round((PL_LO[L]+PL_OFF+Z.adj(w))*100)/100,lv:L}))});
-  shuffle(plFresh(window.PLB.nw,w=>'v:'+w).slice()).slice(0,20).forEach(w=>out.push({w,nw:1}));
+  shuffle(plFresh(window.PLB.nw,w=>'v:'+w).slice()).slice(0,13).forEach(w=>out.push({w,nw:1}));
   return shuffle(out)}
 /* önceki seviye tespitlerinde sorulanlar: yeni sınavda önce hiç sorulmamışlar seçilir, havuz biterse tekrar sorulabilir */
 function plPrev(){const u=new Map();Object.values(S.plr||{}).concat(S.plc&&S.plc.id?[]:[]).forEach(r=>{const t=r.u||0,add=k=>{if(!u.has(k)||u.get(k)<t)u.set(k,t)};(r.rs||[]).forEach(e=>add(String(e[0]).split('|')[0]));if(r.w&&r.w.pid)add('w:'+r.w.pid)});return u}
@@ -4392,6 +4395,29 @@ function plMeanQ(bs,c){
     let it=null;try{it=makeItem(w,f,'pl')}catch(e){}if(!it||!it.options||it.options.length<3)continue;
     best={s:'a',k:'a:'+w.word+'|'+f,b,c:1/it.options.length,q:it.question,o:it.options,a:it.options.indexOf(it.correct),lv:L};if(n>15&&Math.abs(b-bs)<0.12)break}
   return best}
+/* yazarak cevaplanan sorular: dikte (d), kelime türetme (t), cümle dönüştürme (y). Tahmin payı yok (c=0) */
+const PL_NUM='zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty'.split(' ');
+function plNorm(x){   // karşılaştırma için: küçük harf, noktalama yok, kısaltmalar açık, Amerikan yazımı İngiliz yazımına
+  let t=' '+String(x||'').toLowerCase().replace(/[’‘`´]/g,"'").replace(/[“”"]/g,' ').replace(/-/g,' ').replace(/[^a-z0-9' ]/g,' ')+' ';
+  t=t.replace(/(\d+)/g,(m,n)=>+n<=20?PL_NUM[+n]:m).replace(/\bcan't\b/g,'cannot').replace(/\bcan not\b/g,'cannot').replace(/\bwon't\b/g,'will not').replace(/\bshan't\b/g,'shall not').replace(/n't\b/g,' not')
+   .replace(/'m\b/g,' am').replace(/'re\b/g,' are').replace(/'ve\b/g,' have').replace(/'ll\b/g,' will')
+   .replace(/\b(\w{3,})iz(e|es|ed|ing|ation|ations)\b/g,'$1is$2').replace(/\b(fav|col|hum|neighb|beh|hon|lab|flav|harb|rum)or(s|ed|ing|ite|able|ably|ful|less)?\b/g,'$1our$2').replace(/\b(cent|met|theat|fib)er(s)?\b/g,'$1re$2')
+   .replace(/\btravel(ed|er|ers|ing)\b/g,'travell$1').replace(/\b(analy|paraly)z(e|ed|es|ing)\b/g,'$1s$2');
+  return t.replace(/\s+/g,' ').trim()}
+function plWDist(a,b){const A=a.split(' ').filter(Boolean),B=b.split(' ').filter(Boolean),d=[];for(let i=0;i<=A.length;i++){d[i]=[i];for(let j=1;j<=B.length;j++)d[i][j]=i?Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(A[i-1]===B[j-1]?0:1)):j}return d[A.length][B.length]}
+function plTypedQ(s,bs,c){
+  const B=window.PLB||{},U=plUsed(c),A0=((s==='d'?B.dk:s==='t'?B.wf:B.kt)||[]).filter(x=>!U.has(s+':'+x.id));if(!A0.length)return null;
+  const off=s==='d'?0.2:s==='y'?0.3:0,A=plFresh(A0,x=>s+':'+x.id),ws=A.map(x=>Math.exp(-0.9*Math.abs(PL_LO[x.lv]+PL_OFF+off-bs))),tot=ws.reduce((a,b)=>a+b,0);
+  let r=Math.random()*tot,x=A[A.length-1];for(let i=0;i<A.length;i++){r-=ws[i];if(r<=0){x=A[i];break}}
+  return{s,k:s+':'+x.id,id:x.id,b:PL_LO[x.lv]+PL_OFF+off,c:0,lv:x.lv}}
+const plTItem=q=>{const B=window.PLB||{};return((q.s==='d'?B.dk:q.s==='t'?B.wf:B.kt)||[]).find(x=>x.id===q.id)};
+function plTDone(){
+  const c=S.plc,q=c&&c.q;if(!q||['d','t','y'].indexOf(q.s)<0)return;const X=plTItem(q);if(!X)return;plTick(c);
+  const u=String(c.tv||'').trim(),nu=plNorm(u);let ok=0,show='',ans='';
+  if(q.s==='d'){const e=plWDist(plNorm(X.s),nu),n=plNorm(X.s).split(' ').length;ok=u&&(e===0||(n>8&&e<=1))?1:0;show='🎧 (dikte)';ans=X.s}
+  else{ok=u&&X.a.some(a=>plNorm(a)===nu)?1:0;ans=X.a[0];show=q.s==='t'?X.q.replace('___','_____')+' ('+X.w+')':X.s+' → '+X.q.replace('___','_____')+' ['+X.k+']'}
+  const r={s:q.s,k:q.k,b:Math.round(q.b*100)/100,c:0,ok,lv:q.lv};if(!u)r.dk=1;if(!ok)r.x={q:show,a:ans,u:u||null};
+  c.tv='';plPush(c,r);save();render();window.scrollTo(0,0)}
 const PL_TXL=['A2','B1','B2','C1'];
 function plText(s,bs,c){   // okuma / dinleme: seviye tespitine özel metinlerden, hedef seviyeye en yakın ve daha önce çözülmemiş biri; en çok PL_TQ soru
   const ORD=['A2','B1','B2','C1','C2'],L0=plBand(bs+0.3).L,L=L0==='A1'?'A2':L0,used=plUsed(c);
@@ -4427,7 +4453,7 @@ function plNext(c){   // geçerli bölümün sıradaki sorusunu hazırlar; böl�
   else if(sec.k==='r'||sec.k==='l'){
     if(c.qq&&c.qq.length&&c.qq[0].s===sec.k){c.q=c.qq.shift();return}
     if(plTxtIds(c,sec.k).size<sec.N){c.qq=plText(sec.k,bs,c);if(c.qq.length){c.q=c.qq.shift();return}}
-  }else if(plSecRs(c,sec.k).length<sec.N){const q=sec.k==='a'?plMeanQ(bs,c):plBankQ(sec.k,bs,c);if(q){c.q=q;return}}
+  }else if(plSecRs(c,sec.k).length<sec.N){const q=sec.k==='a'?plMeanQ(bs,c):['d','t','y'].indexOf(sec.k)>=0?plTypedQ(sec.k,bs,c):plBankQ(sec.k,bs,c);if(q){c.q=q;c.tv='';return}}
   plSecEnd(c,sec.k)}
 function plTick(c){const n=Date.now();c.el=(c.el||0)+Math.min(Math.max(0,n-(c.last||n)),300000);c.last=n}   // soru başına en çok 5 dk sayılır (ara verilen süre sayılmaz)
 let PLB_LOADING=false;
@@ -4547,6 +4573,13 @@ function vPl(){
   const q=c.q;if(!q)return head+'<div class="card muted">Soru hazırlanamadı.</div>';
   if(q.s==='v')return head+`<div class="card stack" style="text-align:center;padding:28px 16px"><div class="small muted">Bu kelimeyi biliyor musun?</div><div lang="en" style="font-size:2.2rem;font-weight:800;letter-spacing:.01em;margin:10px 0 18px">${esc(q.w)}</div>
    <div class="row" style="gap:10px"><button class="btn block" style="flex:1" data-act="pl-ans" data-v="0">✗ Bilmiyorum</button><button class="btn primary block" style="flex:1" data-act="pl-ans" data-v="1">✓ Biliyorum</button></div></div>`;
+  if(q.s==='d'||q.s==='t'||q.s==='y'){const X=plTItem(q);if(!X)return head+'<div class="card muted">Soru bulunamadı.</div>';
+    const inp=(w,ph)=>`<input data-plt value="${esc(c.tv||'')}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en" placeholder="${ph}" style="${w};font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card,#fff);color:inherit">`;
+    let body='';
+    if(q.s==='d')body=`<div class="small muted">Cümleyi dinle ve aynen yaz (en fazla 3 kez dinle).</div><div data-exaud="${esc(X.au)}"></div>${inp('width:100%','Duyduğun cümleyi yaz…')}`;
+    else if(q.s==='t'){const p=X.q.split('___');body=`<div class="small muted">Büyük harfli kelimeden türet</div><div lang="en" style="font-size:1.1rem;line-height:2.2">${esc(p[0])}${inp('width:11ch;display:inline-block','…')}${esc(p[1])} <b style="letter-spacing:.04em">(${esc(X.w)})</b></div>`}
+    else{const p=X.q.split('___');body=`<div class="small muted">Aynı anlamı ver — kalın kelimeyi değiştirmeden kullan, 2–5 kelime</div><div lang="en" class="card" style="margin:0">${esc(X.s)}</div><div style="text-align:center;font-weight:800;letter-spacing:.08em;font-size:1.1rem">${esc(X.k)}</div><div lang="en" style="font-size:1.05rem;line-height:2.2">${esc(p[0])}${inp('width:min(24ch,100%);display:inline-block','2–5 kelime')}${esc(p[1])}</div>`}
+    return head+`<div class="card stack">${body}<button class="btn primary block" data-act="pl-tdone">Cevapla</button><button class="btn block" data-act="pl-tskip">🤷 Bilmiyorum</button></div>`}
   if(q.s==='c'){const T=window.PLB.ct.find(x=>x.id===q.id);if(!T)return head;let gi=0;
     const body=T.s.map(g=>{if(typeof g==='string')return esc(g);const i=gi++,n=Math.max(g.a.length,...(g.x||[]).map(x=>x.length));
       return`<span style="white-space:nowrap">${esc(g.p)}<input class="plc" data-plc="${i}" value="${esc((c.cv||{})[i]||'')}" maxlength="${n}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="width:${n*1.6-0.3}ch" aria-label="${g.a.length} harf eksik"></span>`}).join('');
@@ -4576,7 +4609,7 @@ function vPlSS(c){   // bir bölüm bitince: o bölümün değerlendirmesi
   let body='';
   if(s.k==='w')body=c.w&&c.w.res?aiHtml(c.w.res,'w'):'';
   else if(x){const B=plBand(x.t);body=`<div class="score" style="font-size:1.8rem">${esc(B.name)}</div><div class="small muted">bu bölüme göre tahmini seviye</div>
-    <div>${s.k==='v'?`Tanıdığın gerçek kelimeler: <b>${x.c}/${x.n}</b><br><span class="small muted">Uydurma kelimelerden ${x.fa}/${x.np} tanesine “biliyorum” dedin${x.fa>3?' — bu, sonucu biraz aşağı çeker':''}.</span>`:s.k==='c'?`Doğru tamamlanan boşluk: <b>${x.c}/${x.n}</b>`:`Doğru: <b>${x.c}/${x.n}</b>`}</div>`}
+    <div>${s.k==='v'?`Tanıdığın gerçek kelimeler: <b>${x.c}/${x.n}</b><br><span class="small muted">Uydurma kelimelerden ${x.fa}/${x.np} tanesine “biliyorum” dedin${x.fa>3?' — bu, sonucu biraz aşağı çeker':''}.</span>`:s.k==='c'?`Doğru tamamlanan boşluk: <b>${x.c}/${x.n}</b>`:s.k==='d'?`Doğru yazılan cümle: <b>${x.c}/${x.n}</b>`:`Doğru: <b>${x.c}/${x.n}</b>`}</div>`}
   else body='<div class="small muted">Bu bölümde değerlendirilecek cevap yok.</div>';
   return`<div class="row small" style="justify-content:space-between;margin:2px 2px 8px"><span>Bölüm ${plSecDone(c)}/${PL_NSEC} bitti</span><span class="mono muted" id="pltm">${plClock(c)}</span></div>
   <div class="card stack" style="text-align:center"><div class="small muted">Bölüm tamamlandı</div><h2 style="margin:0">${s.ic} ${esc(s.n)}</h2>${body}</div>
@@ -4736,6 +4769,8 @@ document.addEventListener('input',e=>{
     const ck=document.getElementById('petwck');if(ck)ck.innerHTML=pwCkHtml(T,d.t);clearTimeout(PW_T);PW_T=setTimeout(save,1500)}
 });
 ['paste','drop'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target&&e.target.getAttribute&&e.target.getAttribute('data-sxw')){e.preventDefault();toast('Sınavda yapıştırma kapalı; cevabını kendin yaz.',2500)}},true));
+document.addEventListener('input',e=>{const t=e.target;if(t&&t.hasAttribute&&t.hasAttribute('data-plt')&&S.plc){S.plc.tv=t.value.slice(0,300);persistLocal()}});
+document.addEventListener('keydown',e=>{const t=e.target;if(e.key==='Enter'&&t&&t.hasAttribute&&t.hasAttribute('data-plt')&&S.plc){e.preventDefault();S.plc.tv=t.value;plTDone()}});
 document.addEventListener('input',e=>{const t=e.target;if(!t||!t.hasAttribute||!t.hasAttribute('data-plc')||!S.plc)return;S.plc.cv=S.plc.cv||{};S.plc.cv[t.getAttribute('data-plc')]=t.value;persistLocal()});
 let PLWT=null;document.addEventListener('input',e=>{if(!e.target||!e.target.hasAttribute||!e.target.hasAttribute('data-plw')||!S.plc)return;S.plc.wt=e.target.value;const c=document.getElementById('plwc');if(c)c.textContent=sxWc(e.target.value)+' kelime';persistLocal();clearTimeout(PLWT);PLWT=setTimeout(save,3000)});
 document.addEventListener('input',e=>{const w=e.target&&e.target.getAttribute&&e.target.getAttribute('data-sxw');if(!w||!UI.sxw)return;const r=sxRec(UI.sxw);if(!r||r.state.sec.W.done)return;
@@ -6415,6 +6450,8 @@ document.addEventListener('click',async e=>{
     case'pl-nx':{const c=S.plc;if(c){const i=plNextSec(c);c.ss=null;c.q=null;c.qq=[];if(i>=0)c.sec=i;save();render();window.scrollTo(0,0)}break}
     case'pl-goto':{const c=S.plc;if(c){c.ss=null;c.q=null;c.qq=[];c.sec=+g('data-v');c.last=Date.now();UI.plp=0;UI.pl=1;save();render();window.scrollTo(0,0)}break}
     case'pl-cdone':plCDone();break;
+    case'pl-tdone':plTDone();break;
+    case'pl-tskip':if(S.plc){S.plc.tv='';plTDone()}break;
     case'pl-copy':plCopy();break;
     case'pl-res':UI.plr=g('data-v');UI.sxm='t';render();window.scrollTo(0,0);break;
     case'pl-close':UI.plr=null;UI.sxm='t';render();break;
